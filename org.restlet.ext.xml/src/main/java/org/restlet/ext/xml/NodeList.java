@@ -1,35 +1,30 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml;
 
 import java.util.AbstractList;
-
 import org.w3c.dom.Node;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
- * 
+ * DOM nodes set that implements the standard List interface for easier iteration.
+ *
  * @author Jerome Louvel
  */
-public class NodeList extends AbstractList<Node> implements
-        org.w3c.dom.NodeList {
+public class NodeList extends AbstractList<Node> implements org.w3c.dom.NodeList {
 
     /** The wrapped node list. */
-    private volatile org.w3c.dom.NodeList nodes;
+    private final org.w3c.dom.NodeList nodes;
 
     /**
      * Constructor.
-     * 
-     * @param nodes
-     *            The node list to wrap.
+     *
+     * @param nodes The node list to wrap.
      */
     public NodeList(org.w3c.dom.NodeList nodes) {
         this.nodes = nodes;
@@ -40,16 +35,12 @@ public class NodeList extends AbstractList<Node> implements
         return this.nodes.item(index);
     }
 
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
+    /** {@inheritDoc org.w3c.dom.NodeList#getLength()} */
     public int getLength() {
         return this.nodes.getLength();
     }
 
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
+    /** {@inheritDoc org.w3c.dom.NodeList#item(int)} */
     public Node item(int index) {
         return this.nodes.item(index);
     }
@@ -58,5 +49,4 @@ public class NodeList extends AbstractList<Node> implements
     public int size() {
         return this.nodes.getLength();
     }
-
 }

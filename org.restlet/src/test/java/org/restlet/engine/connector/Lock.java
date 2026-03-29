@@ -1,11 +1,19 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
 package org.restlet.engine.connector;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Lock {
     private static final Logger LOGGER = Logger.getLogger("Lock");
@@ -34,5 +42,4 @@ public class Lock {
     private static void log(final String message) {
         LOGGER.fine(Instant.now().toString() + " " + message);
     }
-
 }

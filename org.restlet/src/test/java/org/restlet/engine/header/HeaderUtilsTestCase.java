@@ -1,29 +1,21 @@
 /**
- * Copyright 2005-2024 Qlik
- *
- * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
- * select the license that you prefer but you may not use this file except in
- * compliance with one of these Licenses.
- *
- * You can obtain a copy of the Apache 2.0 license at
- * http://www.opensource.org/licenses/apache-2.0
- *
- * You can obtain a copy of the EPL 1.0 license at
- * http://www.opensource.org/licenses/eclipse-1.0
- *
- * See the Licenses for the specific language governing permissions and
- * limitations under the Licenses.
- *
- * Alternatively, you can obtain a royalty free commercial license with less
- * limitations, transferable or non-transferable, directly at
- * https://restlet.talend.com/
- *
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.header;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.restlet.data.Digest.ALGORITHM_MD5;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -31,71 +23,62 @@ import org.restlet.data.Header;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
+class HeaderUtilsTestCase {
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+    @Test
+    void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
+        // Given a retry_after header that contains a decimal value
+        Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
 
-public class HeaderUtilsTestCase {
+        // Given a response
+        Response response = new Response(new Request());
 
-	@Test
-	public void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
-		// Given a retry_after header that contains a decimal value
-		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
+        // When I copy the retry_after header to the response
+        HeaderUtils.copyResponseTransportHeaders(
+                new Series<>(Header.class, Collections.singletonList(header)), response);
 
-		// Given a response
-		Response response = new Response(new Request());
+        // Then the response contains a valid value for the retry_after header
+        assertNotNull(response.getRetryAfter());
+    }
 
-		// When I copy the retry_after header to the response
-		HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)),
-				response);
+    @Test
+    void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
+        // Given a retry_after header that contains an alphabetical value
+        Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
 
-		// Then the response contains a valid value for the retry_after header
-		assertNotNull(response.getRetryAfter());
-	}
+        // Given a response
+        Response response = new Response(new Request());
 
-	@Test
-	public void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
-		// Given a retry_after header that contains an alphabetical value
-		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
+        // When I copy the retry_after header to the response
+        HeaderUtils.copyResponseTransportHeaders(
+                new Series<>(Header.class, Collections.singletonList(header)), response);
 
-		// Given a response
-		Response response = new Response(new Request());
+        // Then the response does not contain a retry_after header
+        assertNull(response.getRetryAfter());
+    }
 
-		// When I copy the retry_after header to the response
-		HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)),
-				response);
+    @Test
+    void testExtracting() {
+        ArrayList<Header> headers = new ArrayList<>();
+        String md5hash = "aaaaaaaaaaaaaaaa";
+        // encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
+        String encodedWithPadding = Base64.getEncoder().encodeToString(md5hash.getBytes());
+        String encodedNoPadding = encodedWithPadding.substring(0, 22);
 
-		// Then the response does not contain a retry_after header
-		assertNull(response.getRetryAfter());
-	}
+        Header header = new Header(HeaderConstants.HEADER_CONTENT_MD5, encodedWithPadding);
+        headers.add(header);
 
-	@Test
-	public void testExtracting() {
-		ArrayList<Header> headers = new ArrayList<>();
-		String md5hash = "aaaaaaaaaaaaaaaa";
-		// encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
-		String encodedWithPadding = Base64.getEncoder().encodeToString(md5hash.getBytes());
-		String encodedNoPadding = encodedWithPadding.substring(0, 22);
+        // extract Content-MD5 header with padded Base64 encoding, make sure it
+        // decodes to the original hash
+        Representation rep = HeaderUtils.extractEntityHeaders(headers, null);
+        assertEquals(ALGORITHM_MD5, rep.getDigest().getAlgorithm());
+        assertEquals(md5hash, new String(rep.getDigest().getValue()));
 
-		Header header = new Header(HeaderConstants.HEADER_CONTENT_MD5, encodedWithPadding);
-		headers.add(header);
-
-		// extract Content-MD5 header with padded Base64 encoding, make sure it
-		// decodes to original hash
-		Representation rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
-
-		// extract header with UNpadded encoding, make sure it also decodes to
-		// original hash
-		header.setValue(encodedNoPadding);
-		rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
-	}
+        // extract the header with UNpadded encoding, make sure it also decodes to
+        //  the original hash
+        header.setValue(encodedNoPadding);
+        rep = HeaderUtils.extractEntityHeaders(headers, null);
+        assertEquals(ALGORITHM_MD5, rep.getDigest().getAlgorithm());
+        assertEquals(md5hash, new String(rep.getDigest().getValue()));
+    }
 }

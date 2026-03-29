@@ -1,16 +1,23 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
-import org.restlet.*;
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -19,34 +26,33 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.MapVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Unit test for the {@link CookieAuthenticator} class.
- * 
+ *
  * @author Jerome Louvel
  */
-public class CookieAuthenticatorTestCase {
+class CookieAuthenticatorTestCase {
 
     public static class CookieGuardedApplication extends Application {
 
         @Override
         public Restlet createInboundRoot() {
-            CookieAuthenticator co = new CookieAuthenticator(getContext(),
-                    false, "My cookie realm", "MyExtraSecretKey".getBytes());
+            CookieAuthenticator co =
+                    new CookieAuthenticator(
+                            getContext(), false, "My cookie realm", "MyExtraSecretKey".getBytes());
 
             MapVerifier mapVerifier = new MapVerifier();
             mapVerifier.getLocalSecrets().put("scott", "tiger".toCharArray());
             co.setVerifier(mapVerifier);
 
-            Restlet hr = new Restlet() {
+            Restlet hr =
+                    new Restlet() {
 
-                @Override
-                public void handle(Request request, Response response) {
-                    response.setEntity("Hello, world!", MediaType.TEXT_PLAIN);
-                }
-
-            };
+                        @Override
+                        public void handle(Request request, Response response) {
+                            response.setEntity("Hello, world!", MediaType.TEXT_PLAIN);
+                        }
+                    };
 
             co.setNext(hr);
             return co;
@@ -54,7 +60,7 @@ public class CookieAuthenticatorTestCase {
     }
 
     @Test
-    public void testCookieAuth1() {
+    void testCookieAuth1() {
         CookieGuardedApplication cga = new CookieGuardedApplication();
         Component c = new Component();
         c.getDefaultHost().attachDefault(cga);
@@ -71,8 +77,8 @@ public class CookieAuthenticatorTestCase {
         loginForm.add("login", "scott");
         loginForm.add("password", "titi");
 
-        ResourceException exception = assertThrows(ResourceException.class,
-                () -> loginCr.post(loginForm));
+        ResourceException exception =
+                assertThrows(ResourceException.class, () -> loginCr.post(loginForm));
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, exception.getStatus());
 
         // 3) Login with right credentials

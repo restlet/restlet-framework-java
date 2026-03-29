@@ -1,29 +1,27 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
-
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit test case for the File Reference parsing.
- * 
+ *
  * @author Jerome Louvel
  */
-public class FileReferenceTestCase {
+class FileReferenceTestCase {
 
     @Test
-    public void testCreation() {
+    void testCreation() {
         String path = "D:\\Restlet\\build.xml";
         LocalReference fr = LocalReference.createFileReference(path);
         fr.getFile();

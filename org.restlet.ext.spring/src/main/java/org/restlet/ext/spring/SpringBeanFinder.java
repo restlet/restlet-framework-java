@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.spring;
 
 import org.restlet.Context;
@@ -18,21 +17,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * An alternative to {@link SpringFinder} which uses Spring's BeanFactory
- * mechanism to load a prototype bean by name.
- * 
- * If both a {@link BeanFactory} and a {@link ApplicationContext} are provided,
- * the bean will be looked up first in the application context and then in the
- * bean factory.
- * 
- * Concurrency note: instances of this class or its subclasses can be invoked by
- * several threads at the same time and therefore must be thread-safe. You
- * should be especially careful when storing state in member variables.
- * 
+ * An alternative to {@link SpringFinder} which uses Spring's BeanFactory mechanism to load a
+ * prototype bean by name.
+ *
+ * <p>If both a {@link BeanFactory} and a {@link ApplicationContext} are provided, the bean will be
+ * looked up first in the application context and then in the bean factory.
+ *
+ * <p>Concurrency note: instances of this class or its subclasses can be invoked by several threads
+ * at the same time and therefore must be thread-safe. You should be especially careful when storing
+ * state in member variables.
+ *
  * @author Rhett Sutphin
  */
-public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
-        ApplicationContextAware {
+public class SpringBeanFinder extends SpringFinder
+        implements BeanFactoryAware, ApplicationContextAware {
 
     /** The parent application context. */
     private volatile ApplicationContext applicationContext;
@@ -46,24 +44,17 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     /** The associated router. */
     private volatile Router router;
 
-    /**
-     * Default constructor.
-     */
-    public SpringBeanFinder() {
-    }
+    /** Default constructor. */
+    public SpringBeanFinder() {}
 
     /**
      * Constructor.
-     * 
-     * @param router
-     *            The associated router used to retrieve the context.
-     * @param beanFactory
-     *            The Spring bean factory.
-     * @param beanName
-     *            The bean name.
+     *
+     * @param router The associated router used to retrieve the context.
+     * @param beanFactory The Spring bean factory.
+     * @param beanName The bean name.
      */
-    public SpringBeanFinder(Router router, BeanFactory beanFactory,
-            String beanName) {
+    public SpringBeanFinder(Router router, BeanFactory beanFactory, String beanName) {
         this.router = router;
         setBeanFactory(beanFactory);
         setBeanName(beanName);
@@ -74,9 +65,10 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
         final Object resource = findBean();
 
         if (!(resource instanceof ServerResource)) {
-            throw new ClassCastException(getBeanName()
-                    + " does not resolve to an instance of "
-                    + org.restlet.resource.ServerResource.class.getName());
+            throw new ClassCastException(
+                    getBeanName()
+                            + " does not resolve to an instance of "
+                            + org.restlet.resource.ServerResource.class.getName());
         }
 
         return (org.restlet.resource.ServerResource) resource;
@@ -89,18 +81,17 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
         } else if (getApplicationContext() != null
                 && getApplicationContext().containsBean(getBeanName())) {
             return getApplicationContext().getBean(getBeanName());
-        } else if (getBeanFactory() != null
-                && getBeanFactory().containsBean(getBeanName())) {
+        } else if (getBeanFactory() != null && getBeanFactory().containsBean(getBeanName())) {
             return getBeanFactory().getBean(getBeanName());
         } else {
-            throw new IllegalStateException(String.format(
-                    "No bean named %s present.", getBeanName()));
+            throw new IllegalStateException(
+                    String.format("No bean named %s present.", getBeanName()));
         }
     }
 
     /**
      * Returns the parent application context.
-     * 
+     *
      * @return The parent context.
      */
     public ApplicationContext getApplicationContext() {
@@ -109,7 +100,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Returns the parent bean factory.
-     * 
+     *
      * @return The parent bean factory.
      */
     public BeanFactory getBeanFactory() {
@@ -118,7 +109,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Returns the bean name.
-     * 
+     *
      * @return The bean name.
      */
     public String getBeanName() {
@@ -127,13 +118,12 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     @Override
     public Context getContext() {
-        return (getRouter() == null) ? Context.getCurrent() : getRouter()
-                .getContext();
+        return (getRouter() == null) ? Context.getCurrent() : getRouter().getContext();
     }
 
     /**
      * Returns the associated router.
-     * 
+     *
      * @return The associated router.
      */
     public Router getRouter() {
@@ -142,9 +132,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Sets the parent application context
-     * 
-     * @param applicationContext
-     *            The parent context.
+     *
+     * @param applicationContext The parent context.
      */
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -152,9 +141,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Sets the parent bean factory.
-     * 
-     * @param beanFactory
-     *            The parent bean factory.
+     *
+     * @param beanFactory The parent bean factory.
      */
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
@@ -162,9 +150,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Sets the bean name.
-     * 
-     * @param beanName
-     *            The bean name.
+     *
+     * @param beanName The bean name.
      */
     public void setBeanName(String beanName) {
         this.beanName = beanName;
@@ -172,12 +159,10 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Sets the associated router.
-     * 
-     * @param router
-     *            The associated router.
+     *
+     * @param router The associated router.
      */
     public void setRouter(Router router) {
         this.router = router;
     }
-
 }

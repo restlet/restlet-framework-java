@@ -1,36 +1,45 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.application;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.*;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.util.Series;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
+import org.restlet.data.Header;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
+import org.restlet.data.Method;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.util.Series;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Tests cases for the tunnel filter.
- */
-public class TunnelFilterTestCase {
+/** Tests cases for the tunnel filter. */
+class TunnelFilterTestCase {
 
     /** . */
     private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
@@ -39,7 +48,8 @@ public class TunnelFilterTestCase {
     private static final String QUERY = "http://example.org/?start=2013-11-26T03%3A45%2B1300";
 
     /** . */
-    private static final String QUERY_PREF = "http://example.org/?start=2013-11-26T03%3A45%2B1300&media=txt";
+    private static final String QUERY_PREF =
+            "http://example.org/?start=2013-11-26T03%3A45%2B1300&media=txt";
 
     /** . */
     private static final String START_REF_FOR_PATH_TEST = "http://www.example.com/abc/def/";
@@ -74,7 +84,8 @@ public class TunnelFilterTestCase {
     }
 
     @SafeVarargs
-    final <A extends Metadata> void assertEqualSet(List<? extends Preference<A>> actual, A... expected) {
+    final <A extends Metadata> void assertEqualSet(
+            List<? extends Preference<A>> actual, A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
             System.out.println("Should: " + Arrays.asList(expected));
@@ -89,8 +100,7 @@ public class TunnelFilterTestCase {
                 }
             }
             if (!contained) {
-                final String message = exp
-                        + " should be in, but is missing in " + actual;
+                final String message = exp + " should be in, but is missing in " + actual;
                 fail(message);
             }
         }
@@ -112,10 +122,6 @@ public class TunnelFilterTestCase {
         assertNotSame(this.request.getMethod(), method);
     }
 
-    /**
-     * @param expectedCut
-     * @param expectedExtensions
-     */
     private void check(String expectedCut, String expectedExtensions) {
         final Reference resourceRef = this.request.getResourceRef();
         assertEquals(expectedCut, resourceRef.toString());
@@ -127,19 +133,14 @@ public class TunnelFilterTestCase {
     }
 
     /**
-     *
-     * @param expectedSubPathCut
-     *            if null, the same as subPathOrig
-     * @param expectedExtension
-     *            if null, then same as "" for this test
+     * @param expectedSubPathCut if null, the same as subPathOrig
+     * @param expectedExtension if null, then the same as "" for this test
      */
-    private void checkFromPath(String expectedSubPathCut,
-                               String expectedExtension) {
+    private void checkFromPath(String expectedSubPathCut, String expectedExtension) {
         if (expectedSubPathCut == null) {
             check(this.lastCreatedReference, expectedExtension);
         } else {
-            check(START_REF_FOR_PATH_TEST + expectedSubPathCut,
-                    expectedExtension);
+            check(START_REF_FOR_PATH_TEST + expectedSubPathCut, expectedExtension);
         }
     }
 
@@ -152,8 +153,6 @@ public class TunnelFilterTestCase {
     }
 
     /**
-     *
-     * @param subPathToCheck
      * @see #createGet(String)
      * @see #createRequest(Method, String)
      */
@@ -161,25 +160,21 @@ public class TunnelFilterTestCase {
         createGet(START_REF_FOR_PATH_TEST + subPathToCheck);
     }
 
-    /**
-     *
-     */
+    /** */
     void createPost(String reference) {
         createRequest(Method.POST, reference);
     }
 
     /**
      * Creates a {@link Request} and put it into {@link #request}.<br>
-     * To use the methods provided by the test case class use ever the provided
-     * create methods to create a request.
+     * To use the methods provided by the test case class, use ever the provided create methods to
+     * create a request.
      *
-     * @param method
-     * @param reference
      * @see #createPost(String)
      * @see #createGet(String)
      * @see #createGetFromPath(String)
      */
-    void createRequest(Method method, String reference) {
+    private void createRequest(Method method, String reference) {
         this.request = new Request(method, reference);
         this.request.setOriginalRef(new Reference(reference));
         this.response = new Response(this.request);
@@ -193,49 +188,43 @@ public class TunnelFilterTestCase {
         application.getTunnelService().setExtensionsTunnel(false);
     }
 
-    /**
-     * Call this method to filter the current request
-     */
+    /** Call this method to filter the current request */
     private void filter() {
         this.tunnelFilter.beforeHandle(this.request, this.response);
         setPrefs();
     }
 
     private void setPrefs() {
-        this.accMediaTypes = this.request.getClientInfo()
-                .getAcceptedMediaTypes();
+        this.accMediaTypes = this.request.getClientInfo().getAcceptedMediaTypes();
         this.accLanguages = this.request.getClientInfo().getAcceptedLanguages();
-        this.accCharsets = this.request.getClientInfo()
-                .getAcceptedCharacterSets();
+        this.accCharsets = this.request.getClientInfo().getAcceptedCharacterSets();
         this.accEncodings = this.request.getClientInfo().getAcceptedEncodings();
     }
 
     @BeforeEach
-    public void setUpEach() throws Exception {
+    void setUpEach() {
         Application app = new Application(new Context());
         Application.setCurrent(app);
         this.tunnelFilter = new TunnelFilter(app.getContext());
-        this.tunnelFilter.getApplication().getTunnelService()
-                .setExtensionsTunnel(true);
+        this.tunnelFilter.getApplication().getTunnelService().setExtensionsTunnel(true);
     }
 
     @AfterEach
-    protected void tearDownEach() throws Exception {
+    void tearDownEach() {
         this.tunnelFilter = null;
         this.request = null;
         this.response = null;
     }
 
-    @Test
-    public void testExtMappingOff1() {
+    @ParameterizedTest
+    @ValueSource(strings = {EFFECTED, UNEFFECTED})
+    void testExtensionsMappingOff(String reference) {
         extensionTunnelOff();
-        createGet(UNEFFECTED);
-        this.accLanguages
-                .add(new Preference<>(Language.valueOf("ajh")));
-        this.accMediaTypes.add(new Preference<>(
-                MediaType.APPLICATION_STUFFIT));
+        createGet(reference);
+        this.accLanguages.add(new Preference<>(Language.valueOf("ajh")));
+        this.accMediaTypes.add(new Preference<>(MediaType.APPLICATION_STUFFIT));
         filter();
-        assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
+        assertEquals(reference, this.request.getResourceRef().toString());
         assertLanguages(Language.valueOf("ajh"));
         assertMediaTypes(MediaType.APPLICATION_STUFFIT);
         assertCharSets();
@@ -243,39 +232,27 @@ public class TunnelFilterTestCase {
     }
 
     @Test
-    public void testExtMappingOff2() {
-        extensionTunnelOff();
-        createGet(EFFECTED);
-        this.accLanguages
-                .add(new Preference<>(Language.valueOf("ajh")));
-        this.accMediaTypes.add(new Preference<>(
-                MediaType.APPLICATION_STUFFIT));
-        filter();
-        assertEquals(EFFECTED, this.request.getResourceRef().toString());
-        assertLanguages(Language.valueOf("ajh"));
-        assertMediaTypes(MediaType.APPLICATION_STUFFIT);
-        assertCharSets();
-        assertEncodings();
-    }
-
-    @Test
-    public void testExtMappingOn() {
+    void shouldDetectExtensionWithoutMediaType() {
         createGet(UNEFFECTED);
         filter();
         check(UNEFFECTED, "ab");
         assertLanguages();
         assertCharSets();
-        assertCharSets();
         assertMediaTypes();
+    }
 
+    @Test
+    void shouldDetectMediaType() {
         createGet(EFFECTED);
         filter();
         check("http://example.org/adf.asdf/af", null);
         assertMediaTypes(MediaType.TEXT_HTML);
         assertLanguages();
         assertCharSets();
-        assertCharSets();
+    }
 
+    @Test
+    void shouldCutPathAndExtension() {
         createGetFromPath("afhhh");
         filter();
         checkFromPath(null, null);
@@ -283,7 +260,10 @@ public class TunnelFilterTestCase {
         assertLanguages();
         assertEncodings();
         assertCharSets();
+    }
 
+    @Test
+    void shouldCutPathAndDetectExtension() {
         createGetFromPath("hksf.afsdf");
         filter();
         checkFromPath(null, "afsdf");
@@ -291,7 +271,10 @@ public class TunnelFilterTestCase {
         assertLanguages();
         assertEncodings();
         assertCharSets();
+    }
 
+    @Test
+    void shouldKeepPathAndDetectExtensionAndMediaType() {
         createGetFromPath("hksf.afsdf.html");
         filter();
         checkFromPath("hksf.afsdf", "afsdf");
@@ -299,29 +282,31 @@ public class TunnelFilterTestCase {
         assertLanguages();
         assertEncodings();
         assertCharSets();
+    }
 
-        createGetFromPath("hksf.afsdf.html.txt");
+    @ParameterizedTest
+    @CsvSource({
+        "hksf.afsdf.html.txt,hksf.afsdf.html,afsdf.html",
+        "hksf.html.afsdf.txt,hksf.html.afsdf,html.afsdf"
+    })
+    void shouldKeepPathAndDetectExtensionAndKeepLastMediaType(
+            String path, String expectedSubPathCut, String expectedExtension) {
+        createGetFromPath(path);
         filter();
-        checkFromPath("hksf.afsdf.html", "afsdf.html");
+        checkFromPath(expectedSubPathCut, expectedExtension);
         assertMediaTypes(MediaType.TEXT_PLAIN);
         assertLanguages();
         assertEncodings();
         assertCharSets();
+    }
 
-        createGetFromPath("hksf.html.afsdf.txt");
-        filter();
-        checkFromPath("hksf.html.afsdf", "html.afsdf");
-        assertMediaTypes(MediaType.TEXT_PLAIN);
-        assertLanguages();
-        assertEncodings();
-        assertCharSets();
-
+    @Test
+    void shouldKeepPathAndDetectExtensionAndKeepLastMediaTypeAndLastLanguage() {
         createGetFromPath("hksf.html.afsdf.txt.en.fr");
         filter();
         checkFromPath("hksf.html.afsdf.txt.en", "html.afsdf.txt.en");
         // Take care about the fact that only one extension per metadata "type"
         // is allowed: ie only one Language, one encoding, one media type, etc.
-        // assertMediaTypes(MediaType.TEXT_PLAIN);
         assertMediaTypes();
         assertLanguages(Language.FRENCH);
         assertEncodings();
@@ -334,7 +319,10 @@ public class TunnelFilterTestCase {
         assertLanguages(Language.ENGLISH);
         assertEncodings();
         assertCharSets();
+    }
 
+    @Test
+    void shouldDetectNoExtension() {
         createGet(START_REF_FOR_PATH_TEST);
         filter();
         checkFromPath(null, null);
@@ -345,12 +333,11 @@ public class TunnelFilterTestCase {
     }
 
     @Test
-    public void testMethodTunnelingViaHeader() {
+    void testMethodTunnelingViaHeader() {
         tunnelFilter.getTunnelService().setMethodTunnel(true);
         Map<String, Object> attributesHeader = new HashMap<>();
         Series<Header> headers = new Series<>(Header.class);
-        headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE,
-                Method.GET.getName());
+        headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE, Method.GET.getName());
         headers.add(HeaderConstants.HEADER_X_FORWARDED_FOR, "TEST");
         attributesHeader.put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
@@ -364,24 +351,21 @@ public class TunnelFilterTestCase {
         assertMethod(Method.POST);
 
         createPost(UNEFFECTED);
-        tunnelFilter.getTunnelService().setMethodHeader(
-                HeaderConstants.HEADER_X_FORWARDED_FOR);
+        tunnelFilter.getTunnelService().setMethodHeader(HeaderConstants.HEADER_X_FORWARDED_FOR);
         this.request.setAttributes(attributesHeader);
         filter();
         assertNotSameMethod(Method.PUT);
 
         createPost(UNEFFECTED);
-        tunnelFilter.getTunnelService().setMethodHeader(
-                HeaderConstants.HEADER_X_FORWARDED_FOR);
+        tunnelFilter.getTunnelService().setMethodHeader(HeaderConstants.HEADER_X_FORWARDED_FOR);
         tunnelFilter.getTunnelService().setHeadersTunnel(false);
         this.request.setAttributes(attributesHeader);
         filter();
         assertMethod(Method.POST);
-
     }
 
     @Test
-    public void testWithMatrixParam() {
+    void testWithMatrixParam() {
         createGet(EFFECTED + ";abcdef");
         filter();
         check("http://example.org/adf.asdf/af;abcdef", null);
@@ -392,7 +376,7 @@ public class TunnelFilterTestCase {
     }
 
     @Test
-    public void testMethodTunnelingViaUserAgent() {
+    void testMethodTunnelingViaUserAgent() {
         tunnelFilter.getTunnelService().setExtensionsTunnel(false);
         tunnelFilter.getTunnelService().setHeadersTunnel(false);
         tunnelFilter.getTunnelService().setMethodTunnel(false);
@@ -401,26 +385,28 @@ public class TunnelFilterTestCase {
         tunnelFilter.getTunnelService().setUserAgentTunnel(true);
 
         createGet(UNEFFECTED);
-        this.accMediaTypes.add(new Preference<>(
-                MediaType.APPLICATION_ZIP));
+        this.accMediaTypes.add(new Preference<>(MediaType.APPLICATION_ZIP));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
         assertMediaTypes(MediaType.APPLICATION_ZIP);
         assertCharSets();
         assertEncodings();
 
-        this.userAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
+        this.userAgent =
+                "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
         createGet(UNEFFECTED);
-        this.accMediaTypes.add(new Preference<>(
-                MediaType.APPLICATION_ZIP));
+        this.accMediaTypes.add(new Preference<>(MediaType.APPLICATION_ZIP));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
-        assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML,
-                MediaType.APPLICATION_XML, MediaType.ALL);
+        assertMediaTypes(
+                MediaType.TEXT_HTML,
+                MediaType.APPLICATION_XHTML,
+                MediaType.APPLICATION_XML,
+                MediaType.ALL);
     }
 
     @Test
-    public void testMethodTunnelingViaQuery() {
+    void testMethodTunnelingViaQuery() {
         tunnelFilter.getTunnelService().setExtensionsTunnel(false);
         tunnelFilter.getTunnelService().setHeadersTunnel(false);
         tunnelFilter.getTunnelService().setMethodTunnel(false);

@@ -1,0 +1,8 @@
+/**
+ * Support for JAAS authentication and authorization framework.
+ *
+ * @since Restlet 2.0
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/jaas">User Guide
+ *     - JAAS extension</a>
+ */
+package org.restlet.ext.jaas;

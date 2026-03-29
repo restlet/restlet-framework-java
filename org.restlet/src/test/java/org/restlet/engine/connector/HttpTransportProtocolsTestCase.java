@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static java.lang.String.format;
@@ -25,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -47,10 +45,8 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.util.Series;
 
-/**
- * Test the support of HTTP2 and HTTP3 transport protocols.
- */
-public class HttpTransportProtocolsTestCase {
+/** Test the support of HTTP2 and HTTP3 transport protocols. */
+class HttpTransportProtocolsTestCase {
 
     protected static final String KEYSTORE_FILE_NAME = "dummy.p12";
     protected static final String KEYSTORE_PASSWORD = "testtest";
@@ -59,8 +55,10 @@ public class HttpTransportProtocolsTestCase {
 
     @BeforeAll
     public static void setup() throws IOException {
-        Path keystorePath = Files.createTempFile("HttpTransportProtocolsTestCase", KEYSTORE_FILE_NAME);
-        final InputStream resourceAsStream = SslBaseConnectorsTestCase.class.getResourceAsStream(KEYSTORE_FILE_NAME);
+        Path keystorePath =
+                Files.createTempFile("HttpTransportProtocolsTestCase", KEYSTORE_FILE_NAME);
+        final InputStream resourceAsStream =
+                SslBaseConnectorsTestCase.class.getResourceAsStream(KEYSTORE_FILE_NAME);
         assert resourceAsStream != null;
         Files.copy(resourceAsStream, keystorePath, REPLACE_EXISTING);
         testKeystoreFile = keystorePath.toFile();
@@ -77,7 +75,8 @@ public class HttpTransportProtocolsTestCase {
         public static void setup() {
             Engine.clearThreadLocalVariables();
             Engine nre = Engine.register(false);
-            nre.getRegisteredServers().add(0, new org.restlet.engine.connector.HttpServerHelper(null));
+            nre.getRegisteredServers()
+                    .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
             nre.getRegisteredClients().add(0, new HttpClientHelper(null));
         }
 
@@ -105,9 +104,15 @@ public class HttpTransportProtocolsTestCase {
         }
 
         static Stream<Arguments> validTestCases() {
-            return Stream.of(Arguments.of(null, newJdkHttpClient(HttpClient.Version.HTTP_1_1)), // server default to
-                                                                                                // HTTP1_1
-                    Arguments.of(null, newJdkHttpClient(HttpClient.Version.HTTP_2)), // server default to HTTP1_1
+            return Stream.of(
+                    Arguments.of(
+                            null,
+                            newJdkHttpClient(HttpClient.Version.HTTP_1_1)), // server default to
+                    // HTTP1_1
+                    Arguments.of(
+                            null,
+                            newJdkHttpClient(
+                                    HttpClient.Version.HTTP_2)), // server default to HTTP1_1
                     Arguments.of("HTTP1_1", newJdkHttpClient(HttpClient.Version.HTTP_1_1)),
                     Arguments.of("HTTP1_1", newJdkHttpClient(HttpClient.Version.HTTP_2)),
                     Arguments.of("HTTP2", newJdkHttpClient(HttpClient.Version.HTTP_1_1)),
@@ -122,7 +127,8 @@ public class HttpTransportProtocolsTestCase {
         }
 
         static Stream<Arguments> invalidTestCases() {
-            return Stream.of(Arguments.of(null, newJettyHttpClient("HTTP2")), // server default to HTTP1_1
+            return Stream.of(
+                    Arguments.of(null, newJettyHttpClient("HTTP2")), // server default to HTTP1_1
                     Arguments.of("HTTP1_1", newJettyHttpClient("HTTP2")));
         }
     }
@@ -134,9 +140,9 @@ public class HttpTransportProtocolsTestCase {
         public static void setup() {
             Engine.clearThreadLocalVariables();
             Engine nre = Engine.register(false);
-            nre.getRegisteredServers().add(0, new org.restlet.engine.connector.HttpsServerHelper(null));
+            nre.getRegisteredServers()
+                    .add(0, new org.restlet.engine.connector.HttpsServerHelper(null));
             nre.getRegisteredClients().add(0, new HttpClientHelper(null));
-
         }
 
         @AfterAll
@@ -152,9 +158,15 @@ public class HttpTransportProtocolsTestCase {
         }
 
         static Stream<Arguments> validTestCases() {
-            return Stream.of(Arguments.of(null, newJdkHttpsClient(HttpClient.Version.HTTP_1_1)), // server default to
-                                                                                                 // HTTP1_1
-                    Arguments.of(null, newJdkHttpsClient(HttpClient.Version.HTTP_2)), // server default to HTTP1_1
+            return Stream.of(
+                    Arguments.of(
+                            null,
+                            newJdkHttpsClient(HttpClient.Version.HTTP_1_1)), // server default to
+                    // HTTP1_1
+                    Arguments.of(
+                            null,
+                            newJdkHttpsClient(
+                                    HttpClient.Version.HTTP_2)), // server default to HTTP1_1
                     Arguments.of("HTTP1_1", newJdkHttpsClient(HttpClient.Version.HTTP_1_1)),
                     Arguments.of("HTTP1_1", newJdkHttpsClient(HttpClient.Version.HTTP_2)),
                     Arguments.of("HTTP2", newJdkHttpsClient(HttpClient.Version.HTTP_2)),
@@ -176,7 +188,8 @@ public class HttpTransportProtocolsTestCase {
         }
 
         static Stream<Arguments> invalidTestCases() {
-            return Stream.of(Arguments.of("HTTP2", newJdkHttpsClient(HttpClient.Version.HTTP_1_1)),
+            return Stream.of(
+                    Arguments.of("HTTP2", newJdkHttpsClient(HttpClient.Version.HTTP_1_1)),
                     Arguments.of(null, newJettyHttpsClient("HTTP2")), // server default to http1
                     Arguments.of("HTTP1_1", newJettyHttpsClient("HTTP2")),
                     Arguments.of("HTTP2", newJettyHttpsClient("HTTP1_1")),
@@ -214,7 +227,8 @@ public class HttpTransportProtocolsTestCase {
 
         @ParameterizedTest(name = "server: {0} / client: {1}")
         @MethodSource("validTestCases")
-        public void clientCompliesWithServer(final String httpTransportProtocol, final TestHttpClient testHttpClient)
+        void clientCompliesWithServer(
+                final String httpTransportProtocol, final TestHttpClient testHttpClient)
                 throws Exception {
             final Server server = newServer(httpTransportProtocol);
             server.start();
@@ -224,36 +238,40 @@ public class HttpTransportProtocolsTestCase {
 
         @ParameterizedTest(name = "server: {0} / client: {1}")
         @MethodSource("invalidTestCases")
-        public void clientDoesNotComplyWithServer(final String httpTransportProtocol,
-                final TestHttpClient testHttpClient) throws Exception {
+        void clientDoesNotComplyWithServer(
+                final String httpTransportProtocol, final TestHttpClient testHttpClient)
+                throws Exception {
             final Server server = newServer(httpTransportProtocol);
             server.start();
 
-            RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                    () -> testHttpClient.sendRequest(server.getActualPort()));
+            final int actualPort = server.getActualPort();
+            RuntimeException runtimeException =
+                    assertThrows(
+                            RuntimeException.class, () -> testHttpClient.sendRequest(actualPort));
             assertEquals("Error while sending request", runtimeException.getMessage());
         }
 
         @ParameterizedTest(name = "server: {0}")
-        @ValueSource(strings = {
-                "", "invalid", "http3" })
-        public void invalidServerConfiguration(final String httpTransportProtocol) {
+        @ValueSource(strings = {"", "invalid", "http3"})
+        void invalidServerConfiguration(final String httpTransportProtocol) {
             final Server server = newServer(httpTransportProtocol);
 
             final Exception exception = assertThrows(IllegalArgumentException.class, server::start);
             assertEquals(
-                    format("'%s' is not one of the supported values: %s", httpTransportProtocol, expectedProtocols()),
+                    format(
+                            "'%s' is not one of the supported values: %s",
+                            httpTransportProtocol, expectedProtocols()),
                     exception.getMessage());
         }
-
     }
 
-    private static final Restlet HELLO_WORLD_RESTLET = new Restlet() {
-        @Override
-        public void handle(Request request, Response response) {
-            response.setEntity("hello, world", MediaType.TEXT_PLAIN);
-        }
-    };
+    private static final Restlet HELLO_WORLD_RESTLET =
+            new Restlet() {
+                @Override
+                public void handle(Request request, Response response) {
+                    response.setEntity("hello, world", MediaType.TEXT_PLAIN);
+                }
+            };
 
     interface TestHttpClient {
         String sendRequest(final int port) throws Exception;
@@ -295,8 +313,11 @@ public class HttpTransportProtocolsTestCase {
                     sslContextFactory.setTrustStorePath(testKeystoreFile.getPath());
                     sslContextFactory.setTrustStorePassword(KEYSTORE_PASSWORD);
                     sslContextFactory.setTrustStoreType(KEYSTORE_TYPE);
-                    httpClient = HttpClient.newBuilder().sslContext(sslContextFactory.createSslContext())
-                            .version(httpVersion).build();
+                    httpClient =
+                            HttpClient.newBuilder()
+                                    .sslContext(sslContextFactory.createSslContext())
+                                    .version(httpVersion)
+                                    .build();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -305,8 +326,10 @@ public class HttpTransportProtocolsTestCase {
 
         @Override
         public String sendRequest(int port) {
-            final HttpRequest requestGet = HttpRequest.newBuilder()
-                    .uri(URI.create(protocol.getSchemeName() + "://localhost:" + port)).build();
+            final HttpRequest requestGet =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(protocol.getSchemeName() + "://localhost:" + port))
+                            .build();
             try {
                 return httpClient.send(requestGet, HttpResponse.BodyHandlers.ofString()).body();
             } catch (Exception e) {
@@ -332,10 +355,14 @@ public class HttpTransportProtocolsTestCase {
 
         @Override
         public String sendRequest(int port) {
-            final Client client = new Client(newClientContext(), List.of(protocol),
-                    HttpClientHelper.class.getCanonicalName());
+            final Client client =
+                    new Client(
+                            newClientContext(),
+                            List.of(protocol),
+                            HttpClientHelper.class.getCanonicalName());
 
-            final Request request = new Request(Method.GET, protocol.getSchemeName() + "://localhost:" + port);
+            final Request request =
+                    new Request(Method.GET, protocol.getSchemeName() + "://localhost:" + port);
             final Response response = client.handle(request);
 
             if (response.getStatus().isError()) {
@@ -348,7 +375,6 @@ public class HttpTransportProtocolsTestCase {
         protected Context newClientContext() {
             Context context = new Context();
             context.getParameters().add("httpClientTransportMode", httpClientTransportMode);
-            // context.getParameters().add("http3PemWorkDir", );
 
             if (Protocol.HTTPS.equals(protocol)) {
                 context.getParameters().add("truststorePath", testKeystoreFile.getPath());

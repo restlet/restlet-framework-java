@@ -1,16 +1,14 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.jetty.resource;
 
 import java.util.logging.Level;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.restlet.Application;
@@ -27,9 +25,8 @@ import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.representation.ObjectRepresentation;
 
 /**
- * All test cases relying on a client and a server should inherit from this
- * class.
- * 
+ * All test cases relying on a client and a server should inherit from this class.
+ *
  * @author Jerome Louvel
  */
 public abstract class JettyConnectorTestCase {
@@ -40,7 +37,7 @@ public abstract class JettyConnectorTestCase {
 
     private String uri;
 
-    public JettyConnectorTestCase() {
+    protected JettyConnectorTestCase() {
         super();
     }
 
@@ -117,5 +114,4 @@ public abstract class JettyConnectorTestCase {
         c.stop();
         c = null;
     }
-
 }

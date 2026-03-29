@@ -1,19 +1,17 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 
-public class Bug1145TestCase {
+class Bug1145TestCase {
     public static class Bug1145TestCaseRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
@@ -63,7 +61,7 @@ public class Bug1145TestCase {
     }
 
     @Test
-    public void test0() throws Exception {
+    void test0() throws Exception {
         Request request = new Request(Method.GET, "http://localhost:" + testPort);
         Response result = client.handle(request);
         assertEquals(Status.SUCCESS_OK, result.getStatus());

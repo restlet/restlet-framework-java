@@ -1,38 +1,44 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.representation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.restlet.*;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.routing.Router;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Test {@link DigesterRepresentation}.
  *
  * @author Thierry Boileau
  */
-public class DigesterRepresentationTestCase {
+class DigesterRepresentationTestCase {
 
     /** Component used for the tests. */
     private Component component;
+
     private int serverPort;
 
     @BeforeEach
@@ -55,9 +61,10 @@ public class DigesterRepresentationTestCase {
     }
 
     @Test
-    public void checkDigestSentByClient() {
+    void checkDigestSentByClient() {
         Client client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.PUT, "http://localhost:" + serverPort + "/checkRequestEntity");
+        Request request =
+                new Request(Method.PUT, "http://localhost:" + serverPort + "/checkRequestEntity");
         request.setEntity(getDigestedRepresentation("0123456789"));
         Response response = client.handle(request);
 
@@ -65,41 +72,44 @@ public class DigesterRepresentationTestCase {
     }
 
     @Test
-    public void checkDigestSentByServer() {
+    void checkDigestSentByServer() {
         Client client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET, "http://localhost:" + serverPort + "/checkResponseEntity");
+        Request request =
+                new Request(Method.GET, "http://localhost:" + serverPort + "/checkResponseEntity");
         Response response = client.handle(request);
 
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertTrue(checkRepresentation(response.getEntity()));
     }
 
-    /**
-     * Internal class used for test purpose.
-     *
-     */
+    /** Internal class used for test purpose. */
     private class TestDigestApplication extends Application {
 
         @Override
         public Restlet createInboundRoot() {
             Router router = new Router(getContext());
 
-            router.attach("/checkRequestEntity", new Restlet() {
-                @Override
-                public void handle(Request request, Response response) {
-                    Status responseStatus = checkRepresentation(request.getEntity())
-                            ? Status.SUCCESS_OK
-                            : Status.CLIENT_ERROR_BAD_REQUEST;
-                    response.setStatus(responseStatus);
-                }
-            });
+            router.attach(
+                    "/checkRequestEntity",
+                    new Restlet() {
+                        @Override
+                        public void handle(Request request, Response response) {
+                            Status responseStatus =
+                                    checkRepresentation(request.getEntity())
+                                            ? Status.SUCCESS_OK
+                                            : Status.CLIENT_ERROR_BAD_REQUEST;
+                            response.setStatus(responseStatus);
+                        }
+                    });
 
-            router.attach("/checkResponseEntity", new Restlet() {
-                @Override
-                public void handle(Request request, Response response) {
-                    response.setEntity(getDigestedRepresentation("9876543210"));
-                }
-            });
+            router.attach(
+                    "/checkResponseEntity",
+                    new Restlet() {
+                        @Override
+                        public void handle(Request request, Response response) {
+                            response.setEntity(getDigestedRepresentation("9876543210"));
+                        }
+                    });
             return router;
         }
     }
@@ -117,7 +127,8 @@ public class DigesterRepresentationTestCase {
 
     private DigesterRepresentation getDigestedRepresentation(final String string) {
         try {
-            DigesterRepresentation digester = new DigesterRepresentation(new StringRepresentation(string));
+            DigesterRepresentation digester =
+                    new DigesterRepresentation(new StringRepresentation(string));
             // Consume first
             digester.exhaust();
             // Set the digest
@@ -128,5 +139,4 @@ public class DigesterRepresentationTestCase {
             throw new RuntimeException(e);
         }
     }
-
 }

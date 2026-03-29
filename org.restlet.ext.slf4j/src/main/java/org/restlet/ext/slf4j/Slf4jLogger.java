@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.slf4j;
 
 import java.util.logging.Level;
@@ -14,46 +13,40 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- * JULI logger that efficiently wraps a SLF4J logger. It prevents the creation
- * of intermediary {@link LogRecord} objects in favor of direct calls to the
- * SLF4J API.
- * 
+ * JULI logger that efficiently wraps a SLF4J logger. It prevents the creation of intermediary
+ * {@link LogRecord} objects in favor of direct calls to the SLF4J API.
+ *
  * @author Jerome Louvel
  */
 public class Slf4jLogger extends Logger {
 
     /** The wrapped SLF4J logger. */
-    private org.slf4j.Logger slf4jLogger;
+    private org.slf4j.Logger wrappedSlf4jLogger;
 
     /**
      * Constructor.
-     * 
-     * @param slf4jLogger
-     *            The SLF4J logger to wrap.
+     *
+     * @param wrappedSlf4jLogger The SLF4J logger to wrap.
      */
-    public Slf4jLogger(org.slf4j.Logger slf4jLogger) {
-        super(slf4jLogger.getName(), null);
-        this.slf4jLogger = slf4jLogger;
+    public Slf4jLogger(org.slf4j.Logger wrappedSlf4jLogger) {
+        super(wrappedSlf4jLogger.getName(), null);
+        this.wrappedSlf4jLogger = wrappedSlf4jLogger;
     }
 
     /**
      * Constructor.
-     * 
-     * @param name
-     *            The logger name.
-     * @param resourceBundleName
-     *            The optional resource bundle name.
+     *
+     * @param name The logger name.
+     * @param resourceBundleName The optional resource bundle name.
      */
     protected Slf4jLogger(String name, String resourceBundleName) {
         super(name, resourceBundleName);
     }
 
     /**
-     * Logs a configuration message. By default, it invokes
-     * {@link org.slf4j.Logger#debug(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a configuration message. By default, it invokes {@link org.slf4j.Logger#debug(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void config(String msg) {
@@ -61,11 +54,9 @@ public class Slf4jLogger extends Logger {
     }
 
     /**
-     * Logs a fine trace. By default, it invokes
-     * {@link org.slf4j.Logger#debug(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a fine trace. By default, it invokes {@link org.slf4j.Logger#debug(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void fine(String msg) {
@@ -73,11 +64,9 @@ public class Slf4jLogger extends Logger {
     }
 
     /**
-     * Logs a finer trace. By default, it invokes
-     * {@link org.slf4j.Logger#trace(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a finer trace. By default, it invokes {@link org.slf4j.Logger#trace(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void finer(String msg) {
@@ -85,11 +74,9 @@ public class Slf4jLogger extends Logger {
     }
 
     /**
-     * Logs a finest trace. By default, it invokes
-     * {@link org.slf4j.Logger#trace(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a finest trace. By default, it invokes {@link org.slf4j.Logger#trace(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void finest(String msg) {
@@ -98,19 +85,17 @@ public class Slf4jLogger extends Logger {
 
     /**
      * Returns the wrapped SLF4J logger.
-     * 
+     *
      * @return The wrapped SLF4J logger.
      */
     public org.slf4j.Logger getSlf4jLogger() {
-        return slf4jLogger;
+        return wrappedSlf4jLogger;
     }
 
     /**
-     * Logs an info message. By default, it invokes
-     * {@link org.slf4j.Logger#info(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs an info message. By default, it invokes {@link org.slf4j.Logger#info(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void info(String msg) {
@@ -219,11 +204,11 @@ public class Slf4jLogger extends Logger {
     }
 
     @Override
-    public void log(LogRecord record) {
-        Level level = record.getLevel();
-        String msg = record.getMessage();
-        Object[] params = record.getParameters();
-        Throwable thrown = record.getThrown();
+    public void log(LogRecord logRecord) {
+        Level level = logRecord.getLevel();
+        String msg = logRecord.getMessage();
+        Object[] params = logRecord.getParameters();
+        Throwable thrown = logRecord.getThrown();
 
         if (thrown != null) {
             log(level, msg, thrown);
@@ -236,20 +221,17 @@ public class Slf4jLogger extends Logger {
 
     /**
      * Sets the wrapped SLF4J logger.
-     * 
-     * @param slf4jLogger
-     *            The wrapped SLF4J logger.
+     *
+     * @param wrappedSlf4jLogger The wrapped SLF4J logger.
      */
-    public void setSlf4jLogger(org.slf4j.Logger slf4jLogger) {
-        this.slf4jLogger = slf4jLogger;
+    public void setSlf4jLogger(org.slf4j.Logger wrappedSlf4jLogger) {
+        this.wrappedSlf4jLogger = wrappedSlf4jLogger;
     }
 
     /**
-     * Logs a severe message. By default, it invokes
-     * {@link org.slf4j.Logger#error(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a severe message. By default, it invokes {@link org.slf4j.Logger#error(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void severe(String msg) {
@@ -257,15 +239,12 @@ public class Slf4jLogger extends Logger {
     }
 
     /**
-     * Logs a warning message. By default, it invokes
-     * {@link org.slf4j.Logger#warn(String)}.
-     * 
-     * @param msg
-     *            The message to log.
+     * Logs a warning message. By default, it invokes {@link org.slf4j.Logger#warn(String)}.
+     *
+     * @param msg The message to log.
      */
     @Override
     public void warning(String msg) {
         getSlf4jLogger().warn(msg);
     }
-
 }

@@ -1,14 +1,19 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.io.IOException;
+import java.io.Serial;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,23 +27,18 @@ import org.restlet.engine.application.StatusInfo;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 
-import java.io.IOException;
-import java.io.Serial;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Unit tests for the status service.
- * 
+ *
  * @author Jerome Louvel
  */
 @SuppressWarnings("unchecked")
-public class StatusServiceTestCase  {
+class StatusServiceTestCase {
 
     StatusService statusService = new StatusService();
 
     @BeforeEach
-	void setUp() {
+    void setUp() {
         // Restore a clean engine
         Engine.clearThreadLocalVariables();
         Engine.register(true);
@@ -52,8 +52,9 @@ public class StatusServiceTestCase  {
     }
 
     @Test
-    public void shouldConvertToStatus() {
-        AnnotatedNotSerializableException statusException = new AnnotatedNotSerializableException("test message", 50);
+    void shouldConvertToStatus() {
+        AnnotatedNotSerializableException statusException =
+                new AnnotatedNotSerializableException("test message", 50);
 
         Status status = statusService.toStatus(statusException, null, null);
 
@@ -62,8 +63,9 @@ public class StatusServiceTestCase  {
     }
 
     @Test
-    public void exceptionShouldNotBeSerialized() throws IOException {
-        AnnotatedNotSerializableException statusException = new AnnotatedNotSerializableException("test message", 50);
+    void exceptionShouldNotBeSerialized() throws IOException {
+        AnnotatedNotSerializableException statusException =
+                new AnnotatedNotSerializableException("test message", 50);
         Status status = new Status(400, statusException);
 
         Representation representation = statusServiceToRepresentation(status);
@@ -81,26 +83,30 @@ public class StatusServiceTestCase  {
     }
 
     @Test
-    public void shouldSerializeAnnotatedException() throws IOException {
-        Status status = new Status(400, AnnotatedSerializableException.withoutCause("test message", 50));
+    void shouldSerializeAnnotatedException() throws IOException {
+        Status status =
+                new Status(400, AnnotatedSerializableException.withoutCause("test message", 50));
 
         Representation representation = statusServiceToRepresentation(status);
 
         assertEquals(MediaType.APPLICATION_JAVA_OBJECT, representation.getMediaType());
-        AnnotatedSerializableException throwable = ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
+        AnnotatedSerializableException throwable =
+                ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
         assertEquals(50, throwable.value);
         assertEquals("test message", throwable.getMessage());
         assertNull(throwable.getCause());
     }
 
     @Test
-    public void shouldSerializeAnnotatedExceptionWithCause() throws IOException {
-        Status status = new Status(400, AnnotatedSerializableException.withCause("test message", 50));
+    void shouldSerializeAnnotatedExceptionWithCause() throws IOException {
+        Status status =
+                new Status(400, AnnotatedSerializableException.withCause("test message", 50));
 
         Representation representation = statusServiceToRepresentation(status);
 
         assertEquals(MediaType.APPLICATION_JAVA_OBJECT, representation.getMediaType());
-        AnnotatedSerializableException throwable = ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
+        AnnotatedSerializableException throwable =
+                ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
         assertEquals(50, throwable.value);
         assertEquals("test message", throwable.getMessage());
         assertEquals(0, throwable.getStackTrace().length);
@@ -108,8 +114,9 @@ public class StatusServiceTestCase  {
     }
 
     @Test
-    public void shouldSerializeAnnotatedExceptionWithStackTrace() throws IOException {
-        Status status = new Status(400, AnnotatedSerializableException.withCause("test message", 50));
+    void shouldSerializeAnnotatedExceptionWithStackTrace() throws IOException {
+        Status status =
+                new Status(400, AnnotatedSerializableException.withCause("test message", 50));
 
         Request request = new Request();
         Response response = new Response(request);
@@ -121,7 +128,8 @@ public class StatusServiceTestCase  {
         Representation representation = statusService.toRepresentation(status, request, response);
 
         assertEquals(MediaType.APPLICATION_JAVA_OBJECT, representation.getMediaType());
-        AnnotatedSerializableException throwable = ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
+        AnnotatedSerializableException throwable =
+                ((ObjectRepresentation<AnnotatedSerializableException>) representation).getObject();
         assertEquals(50, throwable.value);
         assertEquals("test message", throwable.getMessage());
         assertEquals(1, throwable.getStackTrace().length);
@@ -137,8 +145,7 @@ public class StatusServiceTestCase  {
     @org.restlet.resource.Status(value = 400, serialize = false)
     private static class AnnotatedNotSerializableException extends Throwable {
 
-        @Serial
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         private final int value;
 
@@ -148,7 +155,7 @@ public class StatusServiceTestCase  {
         }
 
         @SuppressWarnings("unused")
-		public int getValue() {
+        public int getValue() {
             return value;
         }
     }
@@ -156,36 +163,39 @@ public class StatusServiceTestCase  {
     @org.restlet.resource.Status(value = 401)
     private static class AnnotatedSerializableException extends Throwable {
 
-        @Serial
-        private static final long serialVersionUID = 1L;
+        @Serial private static final long serialVersionUID = 1L;
 
         private int value;
 
-        public static AnnotatedSerializableException withoutCause(final String message, final int value) {
+        public static AnnotatedSerializableException withoutCause(
+                final String message, final int value) {
             StackTraceElement[] stackTrace = new StackTraceElement[1];
             stackTrace[0] = new StackTraceElement("DeclaringClass", "MethodName", "FileName", 1);
 
-            AnnotatedSerializableException annotatedSerializableException = new AnnotatedSerializableException(message, value);
+            AnnotatedSerializableException annotatedSerializableException =
+                    new AnnotatedSerializableException(message, value);
             annotatedSerializableException.setStackTrace(stackTrace);
             return annotatedSerializableException;
         }
 
-        public static AnnotatedSerializableException withCause(final String message, final int value) {
+        public static AnnotatedSerializableException withCause(
+                final String message, final int value) {
             StackTraceElement[] stackTrace = new StackTraceElement[1];
             stackTrace[0] = new StackTraceElement("DeclaringClass", "MethodName", "FileName", 1);
 
             Throwable rootCause = new IOException("File '/toto.txt' is not readable");
             rootCause.setStackTrace(stackTrace);
 
-            AnnotatedSerializableException annotatedSerializableException = new AnnotatedSerializableException(message, value, rootCause);
+            AnnotatedSerializableException annotatedSerializableException =
+                    new AnnotatedSerializableException(message, value, rootCause);
             annotatedSerializableException.setStackTrace(stackTrace);
             return annotatedSerializableException;
         }
 
         @SuppressWarnings("unused")
-		public AnnotatedSerializableException() {}
+        public AnnotatedSerializableException() {}
 
-       public AnnotatedSerializableException(String message, int value) {
+        public AnnotatedSerializableException(String message, int value) {
             super(message);
             this.value = value;
         }
@@ -199,5 +209,4 @@ public class StatusServiceTestCase  {
             return value;
         }
     }
-
 }

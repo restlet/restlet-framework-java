@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
@@ -22,50 +20,35 @@ import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
 /**
- * Filter that can transform XML representations by applying an XSLT transform
- * sheet. It uses the {@link org.restlet.representation.TransformRepresentation}
- * to actually transform the XML entities.<br>
+ * Filter that can transform XML representations by applying an XSLT transform sheet. It uses the
+ * {@link org.restlet.representation.Representation} to actually transform the XML entities.<br>
  * <br>
- * Concurrency note: instances of this class or its subclasses can be invoked by
- * several threads at the same time and therefore must be thread-safe. You
- * should be especially careful when storing state in member variables.
- * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by several threads at
+ * the same time and therefore must be thread-safe. You should be especially careful when storing
+ * state in member variables.
+ *
  * @author Jerome Louvel
  */
 public class Transformer extends Filter {
-    /**
-     * Mode that transforms request entities before their handling by the
-     * attached Restlet.
-     */
+    /** Mode that transforms request entities before their handling by the attached Restlet. */
     public static final int MODE_REQUEST = 1;
 
-    /**
-     * Mode that transforms response entities after their handling by the
-     * attached Restlet.
-     */
+    /** Mode that transforms response entities after their handling by the attached Restlet. */
     public static final int MODE_RESPONSE = 2;
 
     /** The transformation mode. */
     private volatile int mode;
 
-    /**
-     * The character set of the result representation. The default value is
-     * null.
-     */
+    /** The character set of the result representation. The default value is null. */
     private volatile CharacterSet resultCharacterSet;
 
-    /**
-     * The encodings of the result representation.
-     */
+    /** The encodings of the result representation. */
     private volatile List<Encoding> resultEncodings;
 
     /** The languages of the result representation. */
     private volatile List<Language> resultLanguages;
 
-    /**
-     * The media type of the result representation. MediaType.APPLICATION_XML by
-     * default.
-     */
+    /** The media type of the result representation. MediaType.APPLICATION_XML by default. */
     private volatile MediaType resultMediaType;
 
     /** The XSLT transform sheet to apply to message entities. */
@@ -73,11 +56,9 @@ public class Transformer extends Filter {
 
     /**
      * Constructor.
-     * 
-     * @param mode
-     *            The transformation mode.
-     * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *
+     * @param mode The transformation mode.
+     * @param transformSheet The XSLT transform sheet to apply to message entities.
      */
     public Transformer(int mode, Representation transformSheet) {
         this.mode = mode;
@@ -103,11 +84,10 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Indicates if the filter can transform the given message entity. By
-     * default, it always returns true.
-     * 
-     * @param representation
-     *            The entity representation to test.
+     * Indicates if the filter can transform the given message entity. By default, it always returns
+     * true.
+     *
+     * @param representation The entity representation to test.
      * @return True if the transformation can be applied.
      */
     protected boolean canTransform(Representation representation) {
@@ -116,7 +96,7 @@ public class Transformer extends Filter {
 
     /**
      * Returns the transformation mode. See MODE_* constants.
-     * 
+     *
      * @return The transformation mode.
      */
     public int getMode() {
@@ -124,9 +104,8 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Returns the character set of the result representation. The default value
-     * is null.
-     * 
+     * Returns the character set of the result representation. The default value is null.
+     *
      * @return The character set of the result representation.
      */
     public CharacterSet getResultCharacterSet() {
@@ -135,7 +114,7 @@ public class Transformer extends Filter {
 
     /**
      * Returns the modifiable list of encodings of the result representation.
-     * 
+     *
      * @return The encoding of the result representation.
      */
     public List<Encoding> getResultEncodings() {
@@ -145,7 +124,7 @@ public class Transformer extends Filter {
             synchronized (this) {
                 re = this.resultEncodings;
                 if (re == null) {
-                    this.resultEncodings = re = new CopyOnWriteArrayList<Encoding>();
+                    this.resultEncodings = re = new CopyOnWriteArrayList<>();
                 }
             }
         }
@@ -154,7 +133,7 @@ public class Transformer extends Filter {
 
     /**
      * Returns the modifiable list of languages of the result representation.
-     * 
+     *
      * @return The language of the result representation.
      */
     public List<Language> getResultLanguages() {
@@ -164,7 +143,7 @@ public class Transformer extends Filter {
             synchronized (this) {
                 v = this.resultLanguages;
                 if (v == null) {
-                    this.resultLanguages = v = new CopyOnWriteArrayList<Language>();
+                    this.resultLanguages = v = new CopyOnWriteArrayList<>();
                 }
             }
         }
@@ -174,7 +153,7 @@ public class Transformer extends Filter {
     /**
      * Returns the media type of the result representation. The default value is
      * MediaType.APPLICATION_XML.
-     * 
+     *
      * @return The media type of the result representation.
      */
     public MediaType getResultMediaType() {
@@ -183,7 +162,7 @@ public class Transformer extends Filter {
 
     /**
      * Returns the XSLT transform sheet to apply to message entities.
-     * 
+     *
      * @return The XSLT transform sheet to apply to message entities.
      */
     public Representation getTransformSheet() {
@@ -192,9 +171,8 @@ public class Transformer extends Filter {
 
     /**
      * Sets the transformation mode. See MODE_* constants.
-     * 
-     * @param mode
-     *            The transformation mode.
+     *
+     * @param mode The transformation mode.
      */
     public void setMode(int mode) {
         this.mode = mode;
@@ -202,9 +180,8 @@ public class Transformer extends Filter {
 
     /**
      * Sets the character set of the result representation.
-     * 
-     * @param resultCharacterSet
-     *            The character set of the result representation.
+     *
+     * @param resultCharacterSet The character set of the result representation.
      */
     public void setResultCharacterSet(CharacterSet resultCharacterSet) {
         this.resultCharacterSet = resultCharacterSet;
@@ -212,9 +189,8 @@ public class Transformer extends Filter {
 
     /**
      * Sets the encodings of the result representation.
-     * 
-     * @param resultEncodings
-     *            The encodings of the result representation.
+     *
+     * @param resultEncodings The encodings of the result representation.
      */
     public void setResultEncodings(List<Encoding> resultEncodings) {
         this.resultEncodings = resultEncodings;
@@ -222,9 +198,8 @@ public class Transformer extends Filter {
 
     /**
      * Sets the languages of the result representation.
-     * 
-     * @param resultLanguages
-     *            The languages of the result representation.
+     *
+     * @param resultLanguages The languages of the result representation.
      */
     public void setResultLanguages(List<Language> resultLanguages) {
         this.resultLanguages = resultLanguages;
@@ -232,9 +207,8 @@ public class Transformer extends Filter {
 
     /**
      * Sets the media type of the result representation.
-     * 
-     * @param resultMediaType
-     *            The media type of the result representation.
+     *
+     * @param resultMediaType The media type of the result representation.
      */
     public void setResultMediaType(MediaType resultMediaType) {
         this.resultMediaType = resultMediaType;
@@ -242,25 +216,22 @@ public class Transformer extends Filter {
 
     /**
      * Sets the XSLT transform sheet to apply to message entities.
-     * 
-     * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *
+     * @param transformSheet The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
     }
 
     /**
-     * Transforms a source XML representation by applying an XSLT transform
-     * sheet to it.
-     * 
-     * @param source
-     *            The source XML representation.
+     * Transforms a source XML representation by applying an XSLT transform sheet to it.
+     *
+     * @param source The source XML representation.
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        final Representation result = new TransformRepresentation(getContext(),
-                source, getTransformSheet());
+        final Representation result =
+                new TransformRepresentation(getContext(), source, getTransformSheet());
 
         if (this.resultLanguages != null) {
             result.getLanguages().addAll(getResultLanguages());
@@ -274,5 +245,4 @@ public class Transformer extends Filter {
         result.setMediaType(getResultMediaType());
         return result;
     }
-
 }

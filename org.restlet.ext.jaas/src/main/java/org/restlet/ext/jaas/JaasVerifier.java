@@ -1,22 +1,19 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.jaas;
 
 import java.security.Principal;
-
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
@@ -25,12 +22,14 @@ import org.restlet.security.Verifier;
 
 /**
  * Verifier that leverages the JAAS pluggable authentication mechanism.
- * 
+ *
  * @author Jerome Louvel
- * @see <a href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
- *      Tutorials</a>
- * @see <a href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS Reference
- *      Guide</a>
+ * @see <a
+ *     href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
+ *     Tutorials</a>
+ * @see <a
+ *     href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
+ *     Reference Guide</a>
  */
 public class JaasVerifier implements Verifier {
 
@@ -45,28 +44,26 @@ public class JaasVerifier implements Verifier {
 
     /**
      * Constructor.
-     * 
-     * @param name
-     *            The JAAS login context name.
+     *
+     * @param name The JAAS login context name.
      */
     public JaasVerifier(String name) {
         this.name = name;
     }
 
     /**
-     * Creates a callback handler for the given parameters. By default it
-     * returns one handler that handles name and password JAAS callbacks.
-     * 
+     * Creates a callback handler for the given parameters. By default it returns one handler that
+     * handles name and password JAAS callbacks.
+     *
      * @return The callback handler created.
      */
-    protected CallbackHandler createCallbackHandler(Request request,
-            Response response) {
+    protected CallbackHandler createCallbackHandler(Request request, Response response) {
         return new ChallengeCallbackHandler(request, response);
     }
 
     /**
      * Returns the optional JAAS login configuration.
-     * 
+     *
      * @return The optional JAAS login configuration.
      */
     public Configuration getConfiguration() {
@@ -75,7 +72,7 @@ public class JaasVerifier implements Verifier {
 
     /**
      * Returns the JAAS login context name.
-     * 
+     *
      * @return The JAAS login context name.
      */
     public String getName() {
@@ -84,7 +81,7 @@ public class JaasVerifier implements Verifier {
 
     /**
      * Gets the user principal class name.
-     * 
+     *
      * @return the user principal class name.
      */
     public String getUserPrincipalClassName() {
@@ -93,9 +90,8 @@ public class JaasVerifier implements Verifier {
 
     /**
      * Sets the optional JAAS login configuration.
-     * 
-     * @param configuration
-     *            The optional JAAS login configuration.
+     *
+     * @param configuration The optional JAAS login configuration.
      */
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
@@ -103,38 +99,33 @@ public class JaasVerifier implements Verifier {
 
     /**
      * Sets the JAAS login context name.
-     * 
-     * @param contextName
-     *            The JAAS login context name.
+     *
+     * @param contextName The JAAS login context name.
      */
     public void setName(String contextName) {
         this.name = contextName;
     }
 
     /**
-     * Sets the user principal class name. If a {@link User} is not associated
-     * with the {@link Request}'s {@link ClientInfo} and if one of the
-     * principals returned after the JAAS login is of this type, a new {@link User} will be associated with the
-     * {@link ClientInfo} using its
+     * Sets the user principal class name. If a {@link User} is not associated with the {@link
+     * Request}'s {@link ClientInfo} and if one of the principals returned after the JAAS login is
+     * of this type, a new {@link User} will be associated with the {@link ClientInfo} using its
      * name.
-     * 
-     * @param userPrincipalClassName
-     *            the user principal class name.
+     *
+     * @param userPrincipalClassName the user principal class name.
      */
     public void setUserPrincipalClassName(String userPrincipalClassName) {
         this.userPrincipalClassName = userPrincipalClassName;
     }
 
     /**
-     * Verifies that the proposed secret is correct for the specified
-     * identifier. By default, it creates a JAAS login context with the callback
-     * handler obtained by {@link #createCallbackHandler(Request, Response)} and
-     * calls the {@link LoginContext#login()} method on it.
-     * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
+     * Verifies that the proposed secret is correct for the specified identifier. By default, it
+     * creates a JAAS login context with the callback handler obtained by {@link
+     * #createCallbackHandler(Request, Response)} and calls the {@link LoginContext#login()} method
+     * on it.
+     *
+     * @param request The request sent.
+     * @param response The response to modify.
      * @return Result of the verification based on the RESULT_* constants.
      */
     public int verify(Request request, Response response) {
@@ -146,15 +137,16 @@ public class JaasVerifier implements Verifier {
                 subject.getPrincipals().add(request.getClientInfo().getUser());
             }
             if (request.getClientInfo().getRoles() != null) {
-                subject.getPrincipals().addAll(
-                        request.getClientInfo().getRoles());
+                subject.getPrincipals().addAll(request.getClientInfo().getRoles());
             }
-            subject.getPrincipals().addAll(
-                    request.getClientInfo().getPrincipals());
+            subject.getPrincipals().addAll(request.getClientInfo().getPrincipals());
 
-            LoginContext loginContext = new LoginContext(getName(), subject,
-                    createCallbackHandler(request, response),
-                    getConfiguration());
+            LoginContext loginContext =
+                    new LoginContext(
+                            getName(),
+                            subject,
+                            createCallbackHandler(request, response),
+                            getConfiguration());
             loginContext.login();
 
             /*
@@ -168,7 +160,7 @@ public class JaasVerifier implements Verifier {
                     request.getClientInfo().getPrincipals().add(principal);
                 }
                 /*
-                 * If no user has been set yet and if this principal if of the
+                 * If no user has been set yet and if this principal is of the
                  * type we expect for a user, we create a new User based on the
                  * principal's name.
                  */

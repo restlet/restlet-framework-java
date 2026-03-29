@@ -1,27 +1,26 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.resource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 /**
  * Test the annotated resources, client and server sides.
- * 
+ *
  * @author Jerome Louvel
  */
-public class AnnotatedResource20TestCase extends AbstractAnnotatedResourceTestCase {
+class AnnotatedResource20TestCase extends AbstractAnnotatedResourceTestCase {
 
     private MyResource20 myResource;
 
@@ -38,14 +37,16 @@ public class AnnotatedResource20TestCase extends AbstractAnnotatedResourceTestCa
     }
 
     @Test
-    public void testGet() {
+    void testGet() {
         assertThrows(MyException01.class, () -> myResource.represent());
         assertEquals(400, clientResource.getStatus().getCode());
     }
 
     @Test
-    public void testGetAndSerializeException() {
-        MyException02 e = assertThrows(MyException02.class, () -> myResource.representAndSerializeException());
+    void testGetAndSerializeException() {
+        MyException02 e =
+                assertThrows(
+                        MyException02.class, () -> myResource.representAndSerializeException());
         assertEquals("my custom error", e.getCustomProperty());
         assertEquals(400, clientResource.getStatus().getCode());
     }

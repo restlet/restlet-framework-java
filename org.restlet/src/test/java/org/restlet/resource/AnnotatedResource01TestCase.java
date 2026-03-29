@@ -1,30 +1,30 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.StringRepresentation;
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Test the annotated resources, client and server sides.
  *
  * @author Jerome Louvel
  */
-public class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
+class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
 
     private MyResource01 myResource;
 
@@ -40,12 +40,12 @@ public class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFi
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         assertEquals("Done", myResource.remove());
     }
 
     @Test
-    public void testGet() throws IOException, ResourceException {
+    void testGet() throws IOException, ResourceException {
         MyBean myBean = myResource.represent();
         assertNotNull(myBean);
         assertEquals("myName", myBean.getName());
@@ -53,25 +53,25 @@ public class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFi
 
         ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
         String result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML).getText();
-        assertTrue(result
-                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                && result.contains("<java version=\""));
+        assertTrue(
+                result.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                        && result.contains("<java version=\""));
         ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = false;
     }
 
     @Test
-    public void testOptions() {
+    void testOptions() {
         assertEquals("MyDescription", myResource.describe());
     }
 
     @Test
-    public void testPost() {
+    void testPost() {
         MyBean myBean = new MyBean("myName", "myDescription");
         assertTrue(myResource.accept(myBean));
     }
 
     @Test
-    public void testPut() throws ResourceException {
+    void testPut() throws ResourceException {
         // Get current representation
         MyBean myBean = myResource.represent();
         assertNotNull(myBean);
@@ -88,5 +88,4 @@ public class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFi
             assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
         }
     }
-
 }

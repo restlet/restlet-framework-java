@@ -1,0 +1,9 @@
+/**
+ * Integration with Gson 2.8.
+ *
+ * @since Restlet 2.2
+ * @see <a href="https://github.com/google/gson">Gson Web site</a>
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/gson">User Guide
+ *     - Gson extension</a>
+ */
+package org.restlet.ext.gson;

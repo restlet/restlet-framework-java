@@ -1,13 +1,16 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.restlet.data.Status.SUCCESS_OK;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,19 +22,15 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.restlet.data.Status.SUCCESS_OK;
-
 /**
  * Test case for the {@link JsonpFilter} class.
  *
  * @author Cyril Lakech
  */
-public class JsonpFilterTestCase {
+class JsonpFilterTestCase {
 
     @Test
-    public void testAfterHandle() {
+    void testAfterHandle() {
 
         JsonpFilter filter = new JsonpFilter(null);
 
@@ -46,8 +45,8 @@ public class JsonpFilterTestCase {
         filter.afterHandle(request, response);
 
         Representation actual = response.getEntity();
-        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
-                new JsonRepresentation(jsonString));
+        Representation expected =
+                new JsonpRepresentation(callback, SUCCESS_OK, new JsonRepresentation(jsonString));
 
         assertInstanceOf(JsonpRepresentation.class, actual);
         assertEquals(expected, actual);
@@ -55,7 +54,7 @@ public class JsonpFilterTestCase {
     }
 
     @Test
-    public void testAfterHandleText() {
+    void testAfterHandleText() {
 
         JsonpFilter filter = new JsonpFilter(null);
 
@@ -70,8 +69,11 @@ public class JsonpFilterTestCase {
         filter.afterHandle(request, response);
 
         Representation actual = response.getEntity();
-        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
-                new StringRepresentation(jsonString, MediaType.TEXT_HTML));
+        Representation expected =
+                new JsonpRepresentation(
+                        callback,
+                        SUCCESS_OK,
+                        new StringRepresentation(jsonString, MediaType.TEXT_HTML));
 
         assertInstanceOf(JsonpRepresentation.class, actual);
         assertEquals(expected, actual);
@@ -79,7 +81,7 @@ public class JsonpFilterTestCase {
     }
 
     @Test
-    public void testAfterHandle_without_callback_should_return_entity_unchanged() {
+    void testAfterHandle_without_callback_should_return_entity_unchanged() {
 
         JsonpFilter filter = new JsonpFilter(null);
 
@@ -98,8 +100,7 @@ public class JsonpFilterTestCase {
     }
 
     @Test
-    public void testAfterHandle_with_other_mediatype_should_return_entity_unchanged()
-            throws Exception {
+    void testAfterHandle_with_other_mediatype_should_return_entity_unchanged() {
 
         JsonpFilter filter = new JsonpFilter(null);
 
@@ -108,8 +109,8 @@ public class JsonpFilterTestCase {
         ref.addQueryParameter(callback, "test");
         Request request = new Request(Method.GET, ref);
         Response response = new Response(request);
-        final StringRepresentation expected = new StringRepresentation("",
-                MediaType.APPLICATION_XML);
+        final StringRepresentation expected =
+                new StringRepresentation("", MediaType.APPLICATION_XML);
         response.setEntity(expected);
 
         filter.afterHandle(request, response);

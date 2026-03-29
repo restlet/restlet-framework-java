@@ -1,27 +1,29 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.routing;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.util.RouteList;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Test case for RouteList class.
- * 
+ *
  * @author Kevin Conaway
  */
-public class RouteListTestCase {
+class RouteListTestCase {
 
     static class MockScoringRoute extends Route {
         int score;
@@ -38,7 +40,7 @@ public class RouteListTestCase {
     }
 
     @Test
-    public void testGetLast() {
+    void testGetLast() {
         final RouteList list = new RouteList();
 
         assertNull(list.getLast(null, null, 1f));
@@ -54,7 +56,7 @@ public class RouteListTestCase {
     }
 
     @Test
-    public void testGetNext() {
+    void testGetNext() {
         final RouteList list = new RouteList();
 
         assertNull(list.getNext(null, null, 1f));
@@ -75,7 +77,7 @@ public class RouteListTestCase {
     }
 
     @Test
-    public void testGetRandom() {
+    void testGetRandom() {
         final RouteList list = new RouteList();
 
         assertNull(list.getRandom(null, null, 1f));
@@ -90,13 +92,11 @@ public class RouteListTestCase {
         list.add(new MockScoringRoute(7));
         list.add(new MockScoringRoute(8));
 
-        final MockScoringRoute r = (MockScoringRoute) list.getRandom(null,
-                null, 5f);
+        final MockScoringRoute r = (MockScoringRoute) list.getRandom(null, null, 5f);
 
         assertNotNull(r);
         assertTrue(r.score > 5);
 
         assertNull(list.getRandom(null, null, 9f));
     }
-
 }

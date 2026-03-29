@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import java.net.Socket;
@@ -14,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
-
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.AbstractNetworkConnector;
@@ -37,8 +35,9 @@ import org.restlet.Server;
 import org.restlet.engine.adapter.JettyServerCall;
 
 /**
- * Abstract Jetty web server connector. Here is the list of parameters that are
- * supported. They should be set in the Server's context before it is started:
+ * Abstract Jetty web server connector. Here is the list of parameters that are supported. They
+ * should be set in the Server's context before it is started:
+ *
  * <table>
  * <caption>list of supported parameters</caption>
  * <tr>
@@ -135,7 +134,7 @@ import org.restlet.engine.adapter.JettyServerCall;
  * <td>int</td>
  * <td>8*1024</td>
  * <td>HTTP response header size in bytes; larger headers will allow for more
- * and/or larger cookies and longer HTTP headers (e.g. for redirection);
+ * and/or larger cookies and longer HTTP headers (e.g., for redirection);
  * however, larger headers will also consume more memory</td>
  * </tr>
  * <tr>
@@ -203,30 +202,28 @@ import org.restlet.engine.adapter.JettyServerCall;
  * <td>Server shutdown timeout in milliseconds. Defaults to 30000.</td>
  * </tr>
  * </table>
- * 
- * @see <a href= "https://jetty.org/docs/jetty/12/index.html">Jetty 12
- *      documentation</a>
+ *
+ * @see <a href= "https://jetty.org/docs/jetty/12/index.html">Jetty 12 documentation</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public abstract class JettyServerHelper
-        extends org.restlet.engine.adapter.HttpServerHelper {
+public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper {
 
     /** The wrapped Jetty server. */
     private volatile org.eclipse.jetty.server.Server wrappedServer;
 
     /**
      * Constructor.
-     * 
+     *
      * @param server The server to help.
      */
-    public JettyServerHelper(Server server) {
+    protected JettyServerHelper(Server server) {
         super(server);
     }
 
     /**
      * Creates a Jetty HTTP configuration.
-     * 
+     *
      * @return A Jetty HTTP configuration.
      */
     protected HttpConfiguration createHttpConfiguration() {
@@ -245,7 +242,7 @@ public abstract class JettyServerHelper
 
     /**
      * Creates new internal Jetty connection factories.
-     * 
+     *
      * @param configuration The HTTP configuration.
      * @return New internal Jetty connection factories.
      */
@@ -258,30 +255,33 @@ public abstract class JettyServerHelper
      * @param server The Jetty server.
      * @return The Jetty connectors.
      */
-    protected abstract List<Connector> createConnectors(
-            org.eclipse.jetty.server.Server server);
+    protected abstract List<Connector> createConnectors(org.eclipse.jetty.server.Server server);
 
     /**
      * Creates a Jetty connector based on a classical TCP type of transport.
-     * 
+     *
      * @param server The Jetty server.
      * @return A Jetty connector.
      */
     protected ServerConnector createServerConnector(
-            final org.eclipse.jetty.server.Server server,
-            final HttpConfiguration configuration) {
+            final org.eclipse.jetty.server.Server server, final HttpConfiguration configuration) {
         final int acceptors = getConnectorAcceptors();
         final int selectors = getConnectorSelectors();
         final Executor executor = getConnectorExecutor();
         final Scheduler scheduler = getConnectorScheduler();
         final ByteBufferPool byteBufferPool = getConnectorByteBufferPool();
 
-        final ConnectionFactory[] connectionFactories = createConnectionFactories(
-                configuration);
+        final ConnectionFactory[] connectionFactories = createConnectionFactories(configuration);
 
-        final ServerConnector connector = new ServerConnector(server, executor,
-                scheduler, byteBufferPool, acceptors, selectors,
-                connectionFactories);
+        final ServerConnector connector =
+                new ServerConnector(
+                        server,
+                        executor,
+                        scheduler,
+                        byteBufferPool,
+                        acceptors,
+                        selectors,
+                        connectionFactories);
 
         final String address = getHelped().getAddress();
         if (address != null) {
@@ -297,24 +297,21 @@ public abstract class JettyServerHelper
 
     /**
      * Creates a Jetty low-resource monitor.
-     * 
+     *
      * @param server A Jetty server.
      * @return A Jetty low-resource monitor or null.
      */
-    private LowResourceMonitor createLowResourceMonitor(
-            org.eclipse.jetty.server.Server server) {
+    private LowResourceMonitor createLowResourceMonitor(org.eclipse.jetty.server.Server server) {
         final LowResourceMonitor result;
 
         final int period = getLowResourceMonitorPeriod();
         if (period > 0) {
             result = new LowResourceMonitor(server);
-            result.setMonitoredConnectors(
-                    Arrays.asList(server.getConnectors()));
+            result.setMonitoredConnectors(Arrays.asList(server.getConnectors()));
             result.setPeriod(period);
             result.setMonitorThreads(getLowResourceMonitorThreads());
             result.setMaxMemory(getLowResourceMonitorMaxMemory());
-            result.setLowResourcesIdleTimeout(
-                    getLowResourceMonitorIdleTimeout());
+            result.setLowResourcesIdleTimeout(getLowResourceMonitorIdleTimeout());
         } else {
             result = null;
         }
@@ -324,7 +321,7 @@ public abstract class JettyServerHelper
 
     /**
      * Creates a Jetty server.
-     * 
+     *
      * @return A Jetty server.
      */
     private org.eclipse.jetty.server.Server createServer() {
@@ -332,15 +329,14 @@ public abstract class JettyServerHelper
         final ThreadPool threadPool = createThreadPool();
 
         // Server
-        final org.eclipse.jetty.server.Server jettyServer = new org.eclipse.jetty.server.Server(
-                threadPool);
+        final org.eclipse.jetty.server.Server jettyServer =
+                new org.eclipse.jetty.server.Server(threadPool);
 
         int serverMaxConnections = getServerMaxConnections();
         if (serverMaxConnections > 0) {
-            ConnectionLimit connectionLimit = new ConnectionLimit(
-                    serverMaxConnections, jettyServer);
-            connectionLimit
-                    .setIdleTimeout(getServerMaxConnectionsIdleTimeout());
+            ConnectionLimit connectionLimit =
+                    new ConnectionLimit(serverMaxConnections, jettyServer);
+            connectionLimit.setIdleTimeout(getServerMaxConnectionsIdleTimeout());
             jettyServer.addBean(connectionLimit);
         }
 
@@ -356,10 +352,8 @@ public abstract class JettyServerHelper
         // Connectors
         createConnectors(jettyServer).forEach(jettyServer::addConnector);
 
-        // Low-resource monitor (must be created after connectors have been
-        // added)
-        LowResourceMonitor lowResourceMonitor = createLowResourceMonitor(
-                jettyServer);
+        // Low-resource monitor (must be created after connectors have been added)
+        LowResourceMonitor lowResourceMonitor = createLowResourceMonitor(jettyServer);
         jettyServer.addBean(lowResourceMonitor);
 
         return jettyServer;
@@ -374,17 +368,17 @@ public abstract class JettyServerHelper
         final Handler.Abstract result;
 
         final JettyServerHelper jettyServerHelper = this;
-        Handler.Abstract jettyServerHelperWrapperHandler = new Handler.Abstract() {
-            @Override
-            public boolean handle(Request request, Response response,
-                    Callback callback) {
-                JettyServerCall httpCall = new JettyServerCall(
-                        jettyServerHelper.getHelped(), request, response,
-                        callback);
-                jettyServerHelper.handle(httpCall);
-                return true; // Indicates that the request is accepted
-            };
-        };
+        Handler.Abstract jettyServerHelperWrapperHandler =
+                new Handler.Abstract() {
+                    @Override
+                    public boolean handle(Request request, Response response, Callback callback) {
+                        JettyServerCall httpCall =
+                                new JettyServerCall(
+                                        jettyServerHelper.getHelped(), request, response, callback);
+                        jettyServerHelper.handle(httpCall);
+                        return true; // Indicates that the request is accepted
+                    }
+                };
 
         if (getShutdownGracefully()) {
             // StatisticsHandler for graceful shutdown
@@ -400,7 +394,7 @@ public abstract class JettyServerHelper
 
     /**
      * Creates a Jetty thread pool.
-     * 
+     *
      * @return A Jetty thread pool.
      */
     private ThreadPool createThreadPool() {
@@ -419,32 +413,30 @@ public abstract class JettyServerHelper
     }
 
     /**
-     * Connector acceptor thread count. Defaults to -1. When -1, Jetty will
-     * default to 1.
-     * 
+     * Connector acceptor thread count. Defaults to -1. When -1, Jetty will default to 1.
+     *
      * @return Connector acceptor thread count.
      */
     public int getConnectorAcceptors() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("connector.acceptors", "-1"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("connector.acceptors", "-1"));
     }
 
     /**
      * Connector "accept" queue size. Defaults to 0.
-     * <p>
-     * Also known as "accept" backlog.
-     * 
+     *
+     * <p>Also known as "accept" backlog.
+     *
      * @return Connector accept queue size.
      */
     public int getConnectorAcceptQueueSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("connector.acceptQueueSize", "0"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("connector.acceptQueueSize", "0"));
     }
 
     /**
-     * Connector byte buffer pool. Defaults to null. When null, will use a new
-     * {@link ArrayByteBufferPool}.
-     * 
+     * Connector byte buffer pool. Defaults to null. When null, will use a new {@link
+     * ArrayByteBufferPool}.
+     *
      * @return Connector byte buffer pool or null.
      */
     public ByteBufferPool getConnectorByteBufferPool() {
@@ -452,9 +444,8 @@ public abstract class JettyServerHelper
     }
 
     /**
-     * Connector executor. Defaults to null. When null, will use the server's
-     * thread pool.
-     * 
+     * Connector executor. Defaults to null. When null, will use the server's thread pool.
+     *
      * @return Connector executor or null.
      */
     public Executor getConnectorExecutor() {
@@ -463,24 +454,23 @@ public abstract class JettyServerHelper
 
     /**
      * Connector idle timeout in milliseconds. Defaults to 30000.
-     * <p>
-     * See {@link Socket#setSoTimeout(int)}.
-     * <p>
-     * This value is interpreted as the maximum time between some progress being
-     * made on the connection. So if a single byte is read or written, then the
-     * timeout is reset.
-     * 
+     *
+     * <p>See {@link Socket#setSoTimeout(int)}.
+     *
+     * <p>This value is interpreted as the maximum time between some progress being made on the
+     * connection. So if a single byte is read or written, then the timeout is reset.
+     *
      * @return Connector idle timeout.
      */
     public int getConnectorIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("connector.idleTimeout", "30000"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("connector.idleTimeout", "30000"));
     }
 
     /**
-     * Connector scheduler. Defaults to null. When null, will use a new
-     * {@link ScheduledExecutorScheduler}.
-     * 
+     * Connector scheduler. Defaults to null. When null, will use a new {@link
+     * ScheduledExecutorScheduler}.
+     *
      * @return Connector scheduler or null.
      */
     public Scheduler getConnectorScheduler() {
@@ -488,114 +478,107 @@ public abstract class JettyServerHelper
     }
 
     /**
-     * Connector selector thread count. Defaults to -1. When less or equal than
-     * 0, Jetty computes a default value derived from a heuristic over available
-     * CPUs and thread pool size.
-     * 
+     * Connector selector thread count. Defaults to -1. When less or equal than 0, Jetty computes a
+     * default value derived from a heuristic over available CPUs and thread pool size.
+     *
      * @return Connector acceptor thread count.
      */
     public int getConnectorSelectors() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("connector.selectors", "-1"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("connector.selectors", "-1"));
     }
 
     /**
      * HTTP header cache size in bytes. Defaults to 512.
-     * 
+     *
      * @return HTTP header cache size.
      */
     public int getHttpHeaderCacheSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("http.headerCacheSize", "1024"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("http.headerCacheSize", "1024"));
     }
 
     /**
      * HTTP output buffer size in bytes. Defaults to 32*1024.
-     * <p>
-     * A larger buffer can improve performance by allowing a content producer to
-     * run without blocking, however, larger buffers consume more memory and may
-     * induce some latency before a client starts processing the content.
-     * 
+     *
+     * <p>A larger buffer can improve performance by allowing a content producer to run without
+     * blocking, however, larger buffers consume more memory and may induce some latency before a
+     * client starts processing the content.
+     *
      * @return HTTP output buffer size.
      */
     public int getHttpOutputBufferSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("http.outputBufferSize", "32768"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("http.outputBufferSize", "32768"));
     }
 
     /**
      * HTTP request header size in bytes. Defaults to 8*1024.
-     * <p>
-     * Larger headers will allow for more and/or larger cookies plus larger form
-     * content encoded in a URL. However, larger headers consume more memory and
-     * can make a server more vulnerable to denial of service attacks.
-     * 
+     *
+     * <p>Larger headers will allow for more and/or larger cookies plus larger form content encoded
+     * in a URL. However, larger headers consume more memory and can make a server more vulnerable
+     * to denial of service attacks.
+     *
      * @return HTTP request header size.
      */
     public int getHttpRequestHeaderSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("http.requestHeaderSize", "8192"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("http.requestHeaderSize", "8192"));
     }
 
     /**
      * HTTP response header size in bytes. Defaults to 8*1024.
-     * <p>
-     * Larger headers will allow for more and/or larger cookies and longer HTTP
-     * headers (e.g., for redirection). However, larger headers will also
-     * consume more memory.
-     * 
+     *
+     * <p>Larger headers will allow for more and/or larger cookies and longer HTTP headers (e.g.,
+     * for redirection). However, larger headers will also consume more memory.
+     *
      * @return HTTP response header size.
      */
     public int getHttpResponseHeaderSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("http.responseHeaderSize", "8192"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("http.responseHeaderSize", "8192"));
     }
 
     /**
      * Low-resource monitor idle timeout in milliseconds. Defaults to 1000.
-     * <p>
-     * Applied to EndPoints when in the low-resources state.
-     * 
+     *
+     * <p>Applied to EndPoints when in the low-resources state.
+     *
      * @return Low-resource monitor idle timeout.
      */
     public int getLowResourceMonitorIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("lowResource.idleTimeout", "1000"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("lowResource.idleTimeout", "1000"));
     }
 
     /**
-     * Low-resource monitor max memory in bytes. Defaults to 0. When 0, the
-     * check is disabled.
-     * <p>
-     * Memory used is calculated as (totalMemory-freeMemory).
-     * 
+     * Low-resource monitor max memory in bytes. Defaults to 0. When 0, the check is disabled.
+     *
+     * <p>Memory used is calculated as (totalMemory-freeMemory).
+     *
      * @return Low-resource monitor max memory.
      */
     public long getLowResourceMonitorMaxMemory() {
-        return Long.parseLong(getHelpedParameters()
-                .getFirstValue("lowResource.maxMemory", "0"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("lowResource.maxMemory", "0"));
     }
 
     /**
-     * Low-resource monitor period in milliseconds. Defaults to 1000. When 0,
-     * low-resource monitoring is disabled.
-     * 
+     * Low-resource monitor period in milliseconds. Defaults to 1000. When 0, low-resource
+     * monitoring is disabled.
+     *
      * @return Low-resource monitor period.
      */
     public int getLowResourceMonitorPeriod() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("lowResource.period", "1000"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("lowResource.period", "1000"));
     }
 
     /**
-     * Low-resource monitor, whether to check if we're low on threads. Defaults
-     * to true.
-     * 
+     * Low-resource monitor, whether to check if we're low on threads. Defaults to true.
+     *
      * @return Low-resource monitor threads.
      */
     public boolean getLowResourceMonitorThreads() {
-        return Boolean.parseBoolean(getHelpedParameters()
-                .getFirstValue("lowResource.threads", "true"));
+        return Boolean.parseBoolean(
+                getHelpedParameters().getFirstValue("lowResource.threads", "true"));
     }
 
     /**
@@ -604,39 +587,35 @@ public abstract class JettyServerHelper
      * @return Low-resource monitor max connections.
      */
     public int getServerMaxConnections() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("server.maxConnections", "0"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("server.maxConnections", "0"));
     }
 
     /**
-     * The endpoint idle timeout in milliseconds to apply when the connection
-     * limit is reached. Defaults to 0. When 0, there is no idle timeout.
-     * <p>
-     * The maximum time allowed for the endpoint to close when the connection
-     * limit is reached.
+     * The endpoint idle timeout in milliseconds to apply when the connection limit is reached.
+     * Defaults to 0. When 0, there is no idle timeout.
      *
-     * @return The endpoint idle timeout in milliseconds to apply when the
-     *         connection limit is reached.
+     * <p>The maximum time allowed for the endpoint to close when the connection limit is reached.
+     *
+     * @return The endpoint idle timeout in milliseconds to apply when the connection limit is
+     *     reached.
      */
     public long getServerMaxConnectionsIdleTimeout() {
-        return Long.parseLong(getHelpedParameters()
-                .getFirstValue("server.maxConnections.idleTimeout", "0"));
+        return Long.parseLong(
+                getHelpedParameters().getFirstValue("server.maxConnections.idleTimeout", "0"));
     }
 
     /**
-     * When true, upon JVM shutdown, the Jetty server will block incoming
-     * requests and wait for pending requests to end before shutting down.
-     * Otherwise, incoming requests are not blocked and all requests are
-     * aborted. Defaults to true.
-     * 
-     * @return True if upon JVM shutdown, the Jetty server will block incoming
-     *         requests and wait for pending requests to end before shutting
-     *         down. Otherwise, incoming requests are not blocked and all
-     *         requests are aborted.
+     * When true, upon JVM shutdown, the Jetty server will block incoming requests and wait for
+     * pending requests to end before shutting down. Otherwise, incoming requests are not blocked
+     * and all requests are aborted. Defaults to true.
+     *
+     * @return True if upon JVM shutdown, the Jetty server will block incoming requests and wait for
+     *     pending requests to end before shutting down. Otherwise, incoming requests are not
+     *     blocked and all requests are aborted.
      */
     public boolean getShutdownGracefully() {
-        return Boolean.parseBoolean(getHelpedParameters()
-                .getFirstValue("shutdown.gracefully", "true"));
+        return Boolean.parseBoolean(
+                getHelpedParameters().getFirstValue("shutdown.gracefully", "true"));
     }
 
     /**
@@ -645,68 +624,68 @@ public abstract class JettyServerHelper
      * @return Server shutdown timeout.
      */
     public long getShutdownTimeout() {
-        return Long.parseLong(
-                getHelpedParameters().getFirstValue("shutdown.timeout", "0"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("shutdown.timeout", "0"));
     }
 
     /**
      * Thread pool idle timeout in milliseconds. Defaults to 60000.
-     * <p>
-     * Threads that are idle for longer than this period may be stopped.
-     * 
+     *
+     * <p>Threads that are idle for longer than this period may be stopped.
+     *
      * @return Thread pool idle timeout.
      */
     public int getThreadPoolIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("threadPool.idleTimeout", "60000"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("threadPool.idleTimeout", "60000"));
     }
 
     /**
      * Thread pool maximum threads. Defaults to 200.
-     * 
+     *
      * @return Thread pool maximum threads.
      */
     public int getThreadPoolMaxThreads() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("threadPool.maxThreads", "200"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("threadPool.maxThreads", "200"));
     }
 
     /**
      * Thread pool minimum threads. Defaults to 8.
-     * 
+     *
      * @return Thread pool minimum threads.
      */
     public int getThreadPoolMinThreads() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("threadPool.minThreads", "8"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("threadPool.minThreads", "8"));
     }
 
     /**
      * Thread pool stop timeout in milliseconds. Defaults to 5000.
-     * <p>
-     * The maximum time allowed for the service to shut down.
-     * 
+     *
+     * <p>The maximum time allowed for the service to shut down.
+     *
      * @return Thread pool stop timeout.
      */
     public long getThreadPoolStopTimeout() {
-        return Long.parseLong(getHelpedParameters()
-                .getFirstValue("threadPool.stopTimeout", "5000"));
+        return Long.parseLong(
+                getHelpedParameters().getFirstValue("threadPool.stopTimeout", "5000"));
     }
 
     /**
      * Thread pool threads priority. Defaults to {@link Thread#NORM_PRIORITY}.
-     * 
+     *
      * @return Thread pool maximum threads.
      */
     public int getThreadPoolThreadsPriority() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadPool.threadsPriority",
-                String.valueOf(Thread.NORM_PRIORITY)));
+        return Integer.parseInt(
+                getHelpedParameters()
+                        .getFirstValue(
+                                "threadPool.threadsPriority",
+                                String.valueOf(Thread.NORM_PRIORITY)));
     }
 
     /**
      * Returns the wrapped Jetty server.
-     * 
+     *
      * @return The wrapped Jetty server.
      */
     protected org.eclipse.jetty.server.Server getWrappedServer() {
@@ -718,11 +697,10 @@ public abstract class JettyServerHelper
 
     /**
      * Sets the wrapped Jetty server.
-     * 
+     *
      * @param wrappedServer The wrapped Jetty server.
      */
-    protected void setWrappedServer(
-            org.eclipse.jetty.server.Server wrappedServer) {
+    protected void setWrappedServer(org.eclipse.jetty.server.Server wrappedServer) {
         Objects.requireNonNull(wrappedServer);
         this.wrappedServer = wrappedServer;
     }
@@ -731,11 +709,14 @@ public abstract class JettyServerHelper
     public void start() throws Exception {
         super.start();
         org.eclipse.jetty.server.Server server = getWrappedServer();
-        AbstractNetworkConnector connector = (AbstractNetworkConnector) server
-                .getConnectors()[0];
+        AbstractNetworkConnector connector = (AbstractNetworkConnector) server.getConnectors()[0];
 
-        getLogger().info("Starting the Jetty " + getProtocols()
-                + " server on port " + getHelped().getPort());
+        getLogger()
+                .info(
+                        "Starting the Jetty "
+                                + getProtocols()
+                                + " server on port "
+                                + getHelped().getPort());
         try {
             server.start();
             // We won't know the local port until after the server starts
@@ -746,13 +727,16 @@ public abstract class JettyServerHelper
             server.stop();
             throw e;
         }
-
     }
 
     @Override
-    public void stop() throws Exception {
-        getLogger().info("Stopping the Jetty " + getProtocols()
-                + " server on port " + getHelped().getPort());
+    public synchronized void stop() throws Exception {
+        getLogger()
+                .info(
+                        "Stopping the Jetty "
+                                + getProtocols()
+                                + " server on port "
+                                + getHelped().getPort());
         if (this.wrappedServer != null) {
             getWrappedServer().stop();
         }

@@ -1,15 +1,26 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
-import org.restlet.*;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -20,18 +31,9 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * Test that the client address is available for all the connectors
- * 
+ *
  * @author Kevin Conaway
  */
 public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
@@ -75,14 +77,16 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
             boolean localAddress = false;
 
             try {
-                Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+                Enumeration<NetworkInterface> networkInterfaces =
+                        NetworkInterface.getNetworkInterfaces();
                 while (networkInterfaces.hasMoreElements()) {
                     NetworkInterface networkInterface = networkInterfaces.nextElement();
                     Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
                     while (inetAddresses.hasMoreElements()) {
                         final InetAddress inetAddress = inetAddresses.nextElement();
-                        if (inetAddress.getHostAddress().equals(
-                                getRequest().getClientInfo().getAddress())) {
+                        if (inetAddress
+                                .getHostAddress()
+                                .equals(getRequest().getClientInfo().getAddress())) {
                             localAddress = true;
                         }
                     }

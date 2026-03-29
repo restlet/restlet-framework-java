@@ -1,48 +1,49 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.header.TagReader;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.header.TagReader;
 
 /**
  * Test {@link org.restlet.data.Tag}.
  *
  * @author Jerome Louvel
  */
-public class TagTestCase {
+class TagTestCase {
 
     @Test
-    public void testSimpleTag() {
+    void testSimpleTag() {
         assertEquals("my-tag", Tag.parse("\"my-tag\"").getName());
         assertFalse(Tag.parse("\"my-tag\"").isWeak());
     }
 
     @Test
-    public void testInvalidTag() {
+    void testInvalidTag() {
         assertNull(Tag.parse("my-tag"));
         assertNull(Tag.parse("\"my-tag"));
     }
 
     @Test
-    public void testAllTag() {
+    void testAllTag() {
         assertEquals(Tag.ALL.getName(), Tag.parse("*").getName());
     }
 
     @Test
-    public void testWeakTag() {
+    void testWeakTag() {
         assertEquals(Tag.ALL.getName(), Tag.parse("W/*").getName());
         assertTrue(Tag.parse("W/*").isWeak());
 
@@ -51,7 +52,7 @@ public class TagTestCase {
     }
 
     @Test
-    public void testListOfValidTags() {
+    void testListOfValidTags() {
         List<Tag> tags = new ArrayList<>();
         new TagReader("\"xyz\", \"r2d2\", \"c3pio\", *").addValues(tags);
         assertEquals("xyz", tags.get(0).getName());
@@ -62,7 +63,7 @@ public class TagTestCase {
     }
 
     @Test
-    public void testListOfTagsWithInvalidTag() {
+    void testListOfTagsWithInvalidTag() {
         List<Tag> tags = new ArrayList<>();
         new TagReader("\"xyz\", \"r2d2\", c3pio, *").addValues(tags);
         assertEquals("xyz", tags.get(0).getName());
@@ -70,5 +71,4 @@ public class TagTestCase {
         assertEquals(Tag.ALL.getName(), tags.get(2).getName());
         assertEquals(3, tags.size());
     }
-
 }

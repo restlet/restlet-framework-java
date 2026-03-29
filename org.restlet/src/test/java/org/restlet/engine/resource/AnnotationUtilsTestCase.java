@@ -1,34 +1,30 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Method;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test case for generic interfaces.
  *
  * @author Valdis Rigdon
  */
-public class AnnotationUtilsTestCase {
+class AnnotationUtilsTestCase {
 
-    public interface IChild extends IParent<String> {
-
-    }
+    public interface IChild extends IParent<String> {}
 
     public interface IParent<T> {
 
@@ -37,11 +33,10 @@ public class AnnotationUtilsTestCase {
 
         @Put
         void update(T generic);
-
     }
 
     @Test
-    public void testGetAnnotationsWithGenericParameterType() {
+    void testGetAnnotationsWithGenericParameterType() {
         List<AnnotationInfo> infos = AnnotationUtils.getInstance().getAnnotations(IChild.class);
         assertEquals(4, infos.size(), "Wrong count: " + infos);
         boolean found = false;
@@ -62,7 +57,7 @@ public class AnnotationUtilsTestCase {
     }
 
     @Test
-    public void testGetAnnotationsWithGenericReturnType() {
+    void testGetAnnotationsWithGenericReturnType() {
         List<AnnotationInfo> infos = AnnotationUtils.getInstance().getAnnotations(IChild.class);
         assertEquals(4, infos.size(), "Wrong count: " + infos);
         boolean found = false;

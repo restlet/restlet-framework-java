@@ -1,14 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -16,9 +17,6 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Jetty HTTP server connector.
@@ -56,14 +54,17 @@ public class HttpServerHelper extends JettyServerHelper {
      */
     @Override
     protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-        HttpTransportProtocol httpTransportProtocol = HttpTransportProtocol.fromName(getHttpTransportProtocol());
+        HttpTransportProtocol httpTransportProtocol =
+                HttpTransportProtocol.fromName(getHttpTransportProtocol());
 
         return switch (httpTransportProtocol) {
-        case HTTP1_1 -> new ConnectionFactory[] {
-                new HttpConnectionFactory(configuration) };
-        case HTTP2 -> new ConnectionFactory[] {
-                new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
-                new HTTP2CServerConnectionFactory(configuration) };
+            case HTTP1_1 -> new ConnectionFactory[] {new HttpConnectionFactory(configuration)};
+            case HTTP2 ->
+                    new ConnectionFactory[] {
+                        new HttpConnectionFactory(
+                                configuration), // still necessary to support protocol upgrade
+                        new HTTP2CServerConnectionFactory(configuration)
+                    };
         };
     }
 
@@ -78,27 +79,29 @@ public class HttpServerHelper extends JettyServerHelper {
      * @return Supported HTTP transport protocol.
      */
     public String getHttpTransportProtocol() {
-        return getHelpedParameters().getFirstValue("http.transport.protocol", HttpTransportProtocol.HTTP1_1.name());
+        return getHelpedParameters()
+                .getFirstValue("http.transport.protocol", HttpTransportProtocol.HTTP1_1.name());
     }
 
-    /**
-     * Supported HTTP transport protocols.
-     */
+    /** Supported HTTP transport protocols. */
     private enum HttpTransportProtocol {
-        HTTP1_1, HTTP2;
+        HTTP1_1,
+        HTTP2;
 
         static HttpTransportProtocol fromName(final String name) {
             try {
                 return HttpTransportProtocol.valueOf(name);
             } catch (final IllegalArgumentException iae) {
-                String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
+                String supportedHttpTransportProtocols =
+                        Arrays.toString(HttpTransportProtocol.values());
 
-                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
-                        supportedHttpTransportProtocols);
+                final String errorMessage =
+                        String.format(
+                                "'%s' is not one of the supported values: %s",
+                                name, supportedHttpTransportProtocols);
 
                 throw new IllegalArgumentException(errorMessage);
             }
         }
     }
-
 }

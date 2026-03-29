@@ -1,18 +1,16 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.jetty.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -24,12 +22,12 @@ import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 
 /**
- * Test annotated resource that reimplements of one the annotated method from
- * its abstract super class that implements several annotated interfaces.
- * 
+ * Test annotated resource that reimplements of one the annotated method from its abstract super
+ * class that implements several annotated interfaces.
+ *
  * @author Thierry Boileau
  */
-public class AnnotatedResource11TestCase extends JettyConnectorTestCase {
+class AnnotatedResource11TestCase extends JettyConnectorTestCase {
 
     protected Application createApplication(final String path) {
         return new Application() {
@@ -44,12 +42,12 @@ public class AnnotatedResource11TestCase extends JettyConnectorTestCase {
 
     /**
      * Test annotated methods.
-     * 
+     *
      * @throws IOException
      * @throws ResourceException
      */
     @Test
-    public void test() throws IOException, ResourceException {
+    void test() throws IOException, ResourceException {
         Request request = createRequest(Method.GET);
         Response response = handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -62,5 +60,4 @@ public class AnnotatedResource11TestCase extends JettyConnectorTestCase {
         assertEquals("accept", response.getEntity().getText());
         response.getEntity().release();
     }
-
 }

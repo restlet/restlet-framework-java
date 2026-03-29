@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.velocity;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -32,15 +30,14 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.util.Resolver;
 
 /**
- * Velocity template representation. Useful for dynamic string-based
- * representations.
- * 
+ * Velocity template representation. Useful for dynamic string-based representations.
+ *
  * @author Jerome Louvel
  */
 public class TemplateRepresentation extends WriterRepresentation {
     /**
      * Velocity context based on a Resolver.
-     * 
+     *
      * @see Resolver
      */
     private static class ResolverContext implements org.apache.velocity.context.Context {
@@ -49,9 +46,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
         /**
          * Constructor.
-         * 
-         * @param resolver
-         *            The resolver.
+         *
+         * @param resolver The resolver.
          */
         public ResolverContext(Resolver<? extends Object> resolver) {
             super();
@@ -64,20 +60,15 @@ public class TemplateRepresentation extends WriterRepresentation {
         }
 
         /**
-         * Gets the value corresponding to the provided key from the context.
-         * 
-         * @Param key The name of the desired value.
-         * @Return The value corresponding to the provided key.
+         * Gets the value corresponding to the provided key from the context. @Param key The name of
+         * the desired value. @Return The value corresponding to the provided key.
          */
         public Object get(String key) {
             return this.resolver.resolve(key);
         }
 
         /**
-         * Returns null since a resolver does not know by advance the whole
-         * values.
-         * 
-         * @Return null.
+         * Returns null since a resolver does not know by advance the whole values. @Return null.
          */
         @Override
         public String[] getKeys() {
@@ -86,11 +77,9 @@ public class TemplateRepresentation extends WriterRepresentation {
 
         /**
          * Returns null since a resolver as a data model cannot be updated.
-         * 
-         * @param key
-         *            The name to key the provided value with.
-         * @param value
-         *            The corresponding value.
+         *
+         * @param key The name to key the provided value with.
+         * @param value The corresponding value.
          * @return null.
          */
         public Object put(String key, Object value) {
@@ -99,16 +88,14 @@ public class TemplateRepresentation extends WriterRepresentation {
 
         /**
          * Does nothing since resolver as a data model cannot be updated.
-         * 
-         * @param value
-         *            The name of the value to remove.
+         *
+         * @param key The name of the value to remove.
          * @return null.
          */
         @Override
         public Object remove(String key) {
             return null;
         }
-
     }
 
     /** The template's data model. */
@@ -125,124 +112,108 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Constructor based on a Velocity 'encoded' representation.
-     * 
-     * @param templateRepresentation
-     *            The representation to 'decode'.
-     * @param dataModel
-     *            The Velocity template's data model.
-     * @param mediaType
-     *            The representation's media type.
-     * @throws IOException
+     *
+     * @param templateRepresentation The representation to 'decode'.
+     * @param dataModel The Velocity template's data model.
+     * @param mediaType The representation's media-type.
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
      */
-    public TemplateRepresentation(Representation templateRepresentation,
-            Map<String, Object> dataModel, MediaType mediaType)
-            throws ResourceNotFoundException, ParseErrorException, IOException {
+    public TemplateRepresentation(
+            Representation templateRepresentation,
+            Map<String, Object> dataModel,
+            MediaType mediaType)
+            throws ResourceNotFoundException, ParseErrorException {
         super(mediaType);
         setDataModel(dataModel);
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
-                .getCharacterSet() : CharacterSet.DEFAULT;
+        CharacterSet charSet =
+                (templateRepresentation.getCharacterSet() != null)
+                        ? templateRepresentation.getCharacterSet()
+                        : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
 
         if (templateRepresentation.getModificationDate() != null) {
-            this.template.setLastModified(templateRepresentation
-                    .getModificationDate().getTime());
+            this.template.setLastModified(templateRepresentation.getModificationDate().getTime());
         }
 
         this.template.setName("org.restlet.resource.representation");
         this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
-        this.template.setResourceLoader(new RepresentationResourceLoader(
-                templateRepresentation));
+        this.template.setResourceLoader(new RepresentationResourceLoader(templateRepresentation));
         this.template.process();
         this.templateName = null;
     }
 
     /**
      * Constructor based on a Velocity 'encoded' representation.
-     * 
-     * @param templateRepresentation
-     *            The representation to 'decode'.
-     * @param mediaType
-     *            The representation's media type.
-     * @throws IOException
+     *
+     * @param templateRepresentation The representation to 'decode'.
+     * @param mediaType The representation's media-type.
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
      */
-    public TemplateRepresentation(Representation templateRepresentation,
-            MediaType mediaType) throws ResourceNotFoundException,
-            ParseErrorException, IOException {
+    public TemplateRepresentation(Representation templateRepresentation, MediaType mediaType)
+            throws ResourceNotFoundException, ParseErrorException {
         super(mediaType);
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
-                .getCharacterSet() : CharacterSet.DEFAULT;
+        CharacterSet charSet =
+                (templateRepresentation.getCharacterSet() != null)
+                        ? templateRepresentation.getCharacterSet()
+                        : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
-        this.template.setLastModified((templateRepresentation
-                .getModificationDate() == null) ? new Date().getTime()
-                : templateRepresentation.getModificationDate().getTime());
+        this.template.setLastModified(
+                (templateRepresentation.getModificationDate() == null)
+                        ? new Date().getTime()
+                        : templateRepresentation.getModificationDate().getTime());
         this.template.setName("org.restlet.resource.representation");
         this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
-        this.template.setResourceLoader(new RepresentationResourceLoader(
-                templateRepresentation));
+        this.template.setResourceLoader(new RepresentationResourceLoader(templateRepresentation));
         this.template.process();
         this.templateName = null;
     }
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Velocity template's name. The actual template is retrieved
-     *            using the Velocity configuration.
-     * @param dataModel
-     *            The Velocity template's data model.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Velocity template's name. The actual template is retrieved using the
+     *     Velocity configuration.
+     * @param dataModel The Velocity template's data model.
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(String templateName,
-            Map<String, Object> dataModel, MediaType mediaType) {
+    public TemplateRepresentation(
+            String templateName, Map<String, Object> dataModel, MediaType mediaType) {
         super(mediaType);
 
-        try {
-            setDataModel(dataModel);
-            this.engine = new VelocityEngine();
-            this.template = null;
-            this.templateName = templateName;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        setDataModel(dataModel);
+        this.engine = new VelocityEngine();
+        this.template = null;
+        this.templateName = templateName;
     }
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Velocity template's name. The full path is resolved by the
-     *            configuration.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Velocity template's name. The full path is resolved by the
+     *     configuration.
+     * @param mediaType The representation's media-type.
      */
     public TemplateRepresentation(String templateName, MediaType mediaType) {
-        this(templateName, new ConcurrentHashMap<String, Object>(), mediaType);
+        this(templateName, new ConcurrentHashMap<>(), mediaType);
     }
 
     /**
      * Constructor.
-     * 
-     * @param template
-     *            The Velocity template.
-     * @param dataModel
-     *            The Velocity template's data model.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param template The Velocity template.
+     * @param dataModel The Velocity template's data model.
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(Template template,
-            Map<String, Object> dataModel, MediaType mediaType) {
+    public TemplateRepresentation(
+            Template template, Map<String, Object> dataModel, MediaType mediaType) {
         super(mediaType);
         setDataModel(dataModel);
         this.engine = null;
@@ -252,11 +223,9 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param template
-     *            The Velocity template.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param template The Velocity template.
+     * @param mediaType The representation's media-type.
      */
     public TemplateRepresentation(Template template, MediaType mediaType) {
         super(mediaType);
@@ -267,7 +236,7 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns the Velocity context.
-     * 
+     *
      * @return The Velocity context.
      */
     private org.apache.velocity.context.Context getContext() {
@@ -276,7 +245,7 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns the Velocity engine.
-     * 
+     *
      * @return The Velocity engine.
      */
     public VelocityEngine getEngine() {
@@ -285,22 +254,19 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns the Velocity template.
-     * 
+     *
      * @return The Velocity template.
      */
     public Template getTemplate() {
-        if (this.template == null) {
-            if (this.templateName != null) {
-                try {
-                    getEngine().init();
-                    this.template = getEngine().getTemplate(this.templateName);
-                } catch (Exception e) {
-                    final Context context = Context.getCurrent();
+        if (this.template == null && this.templateName != null) {
+            try {
+                getEngine().init();
+                this.template = getEngine().getTemplate(this.templateName);
+            } catch (Exception e) {
+                final Context currentContext = Context.getCurrent();
 
-                    if (context != null) {
-                        context.getLogger().log(Level.WARNING,
-                                "Unable to get template", e);
-                    }
+                if (currentContext != null) {
+                    currentContext.getLogger().log(Level.WARNING, "Unable to get template", e);
                 }
             }
         }
@@ -310,9 +276,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the Velocity context.
-     * 
-     * @param context
-     *            The Velocity context
+     *
+     * @param context The Velocity context
      */
     private void setContext(org.apache.velocity.context.Context context) {
         this.context = context;
@@ -320,36 +285,30 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the template's data model.
-     * 
-     * @param dataModel
-     *            The template's data model.
+     *
+     * @param dataModel The template's data model.
      */
     public void setDataModel(Map<String, Object> dataModel) {
         setContext(new VelocityContext(dataModel));
     }
 
     /**
-     * Sets the template's data model from a request/response pair. This default
-     * implementation uses a Resolver.
-     * 
+     * Sets the template's data model from a request/response pair. This default implementation uses
+     * a Resolver.
+     *
      * @see Resolver
      * @see Resolver#createResolver(Request, Response)
-     * 
-     * @param request
-     *            The request where data are located.
-     * @param response
-     *            The response where data are located.
+     * @param request The request where data are located.
+     * @param response The response where data are located.
      */
     public void setDataModel(Request request, Response response) {
-        setContext(new ResolverContext(Resolver.createResolver(request,
-                response)));
+        setContext(new ResolverContext(Resolver.createResolver(request, response)));
     }
 
     /**
      * Sets the template's data model from a resolver.
-     * 
-     * @param resolver
-     *            The resolver.
+     *
+     * @param resolver The resolver.
      */
     public void setDataModel(Resolver<Object> resolver) {
         setContext(new ResolverContext(resolver));
@@ -357,9 +316,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Writes the datum as a stream of characters.
-     * 
-     * @param writer
-     *            The writer to use when writing.
+     *
+     * @param writer The writer to use when writing.
      */
     @Override
     public void write(Writer writer) throws IOException {
@@ -368,18 +326,13 @@ public class TemplateRepresentation extends WriterRepresentation {
             // Process the template
             getTemplate().merge(getContext(), writer);
         } catch (Exception e) {
-            final Context context = Context.getCurrent();
+            final Context currentContext = Context.getCurrent();
 
-            if (context != null) {
-                context.getLogger().log(Level.WARNING,
-                        "Unable to process the template", e);
+            if (currentContext != null) {
+                currentContext.getLogger().log(Level.WARNING, "Unable to process the template", e);
             }
 
-            e.printStackTrace();
-
-            throw new IOException("Template processing error. "
-                    + e.getMessage());
+            throw new IOException("Template processing error. " + e.getMessage());
         }
     }
-
 }

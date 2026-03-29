@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +39,7 @@ import org.restlet.representation.StringRepresentation;
  *
  * @author Florian Buecklers
  */
-public class AsyncTestCase {
+class AsyncTestCase {
 
     private Context context;
 
@@ -62,25 +60,24 @@ public class AsyncTestCase {
     private void testCall(Context context, int count, Method method) throws Exception {
         final CountDownLatch latch = new CountDownLatch(count);
 
-        final Uniform responseHandler = (request, response) -> {
-            String item = request.getResourceRef().getQueryAsForm()
-                    .getFirstValue("item");
+        final Uniform responseHandler =
+                (request, response) -> {
+                    String item = request.getResourceRef().getQueryAsForm().getFirstValue("item");
 
-            try {
-                assertEquals(item, Integer.toString(response.getAge()));
-                if (responseEntityExpected(request.getMethod())) {
-                    assertEquals(Status.SUCCESS_OK, response.getStatus());
-                    assertTrue(response.isEntityAvailable());
-                    assertNotNull(response.getEntityAsText());
-                } else {
-                    assertEquals(Status.SUCCESS_NO_CONTENT,
-                            response.getStatus());
-                    assertFalse(response.isEntityAvailable());
-                }
-            } finally {
-                latch.countDown();
-            }
-        };
+                    try {
+                        assertEquals(item, Integer.toString(response.getAge()));
+                        if (responseEntityExpected(request.getMethod())) {
+                            assertEquals(Status.SUCCESS_OK, response.getStatus());
+                            assertTrue(response.isEntityAvailable());
+                            assertNotNull(response.getEntityAsText());
+                        } else {
+                            assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+                            assertFalse(response.isEntityAvailable());
+                        }
+                    } finally {
+                        latch.countDown();
+                    }
+                };
 
         Restlet client = context.getClientDispatcher();
         for (int i = 0; i < count; ++i) {
@@ -108,43 +105,51 @@ public class AsyncTestCase {
         originComponent = new Component();
 
         // Create a new Restlet that will display some path information.
-        final Restlet trace = new Restlet(originComponent.getContext()
-                .createChildContext()) {
-            @Override
-            public void handle(Request request, Response response) {
-                // let's set the item number as age ;-)
-                response.setAge(Integer.parseInt(request.getResourceRef()
-                        .getQueryAsForm().getFirstValue("item")));
+        final Restlet trace =
+                new Restlet(originComponent.getContext().createChildContext()) {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        // let's set the item number as age ;-)
+                        response.setAge(
+                                Integer.parseInt(
+                                        request.getResourceRef()
+                                                .getQueryAsForm()
+                                                .getFirstValue("item")));
 
-                if (responseEntityExpected(request.getMethod())) {
-                    // Print the requested URI path
-                    String message = "Resource URI:  "
-                            + request.getResourceRef() + '\n'
-                            + "Base URI:      "
-                            + request.getResourceRef().getBaseRef() + '\n'
-                            + "Remaining part: "
-                            + request.getResourceRef().getRemainingPart()
-                            + '\n' + "Method name: " + request.getMethod()
-                            + '\n';
+                        if (responseEntityExpected(request.getMethod())) {
+                            // Print the requested URI path
+                            String message =
+                                    "Resource URI:  "
+                                            + request.getResourceRef()
+                                            + '\n'
+                                            + "Base URI:      "
+                                            + request.getResourceRef().getBaseRef()
+                                            + '\n'
+                                            + "Remaining part: "
+                                            + request.getResourceRef().getRemainingPart()
+                                            + '\n'
+                                            + "Method name: "
+                                            + request.getMethod()
+                                            + '\n';
 
-                    if (requestEntityExpected(request.getMethod())) {
-                        message += request.getEntityAsText();
-                        request.getEntity().release();
+                            if (requestEntityExpected(request.getMethod())) {
+                                message += request.getEntityAsText();
+                                request.getEntity().release();
+                            }
+
+                            response.setEntity(
+                                    new StringRepresentation(message, MediaType.TEXT_PLAIN));
+
+                            response.setStatus(Status.SUCCESS_OK);
+                        } else {
+                            // consume entity
+                            if (requestEntityExpected(request.getMethod()))
+                                request.getEntityAsText();
+
+                            response.setStatus(Status.SUCCESS_NO_CONTENT);
+                        }
                     }
-
-                    response.setEntity(new StringRepresentation(message,
-                            MediaType.TEXT_PLAIN));
-
-                    response.setStatus(Status.SUCCESS_OK);
-                } else {
-                    // consume entity
-                    if (requestEntityExpected(request.getMethod()))
-                        request.getEntityAsText();
-
-                    response.setStatus(Status.SUCCESS_NO_CONTENT);
-                }
-            }
-        };
+                };
 
         originComponent.getDefaultHost().attach("", trace);
 
@@ -165,22 +170,22 @@ public class AsyncTestCase {
     }
 
     @Test
-    public void testGet() throws Exception {
+    void testGet() throws Exception {
         testCall(context, 10, Method.GET);
     }
 
     @Test
-    public void testPost() throws Exception {
+    void testPost() throws Exception {
         testCall(context, 10, Method.POST);
     }
 
     @Test
-    public void testPut() throws Exception {
+    void testPut() throws Exception {
         testCall(context, 10, Method.PUT);
     }
 
     @Test
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         testCall(context, 10, Method.DELETE);
     }
 

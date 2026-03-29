@@ -1,15 +1,21 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.application;
 
-import org.restlet.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -17,136 +23,155 @@ import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Application implementation.
- * 
+ *
  * @author Jerome Louvel
  */
 public class ApplicationHelper extends CompositeHelper<Application> {
-	/**
-	 * Constructor.
-	 * 
-	 * @param application The application to help.
-	 */
-	public ApplicationHelper(Application application) {
-		super(application);
-	}
+    /**
+     * Constructor.
+     *
+     * @param application The application to help.
+     */
+    public ApplicationHelper(Application application) {
+        super(application);
+    }
 
-	/**
-	 * In addition to the default behavior, it saves the current application
-	 * instance into the current thread.
-	 * 
-	 * @param request  The request to handle.
-	 * @param response The response to update.
-	 */
-	@Override
-	public void handle(Request request, Response response) {
-		// Save the current application
-		// Plan to move current application as attribute of the Response in incoming 2.5
-		// release
-		final Application currentApplication = getHelped() != null ? getHelped() : Application.getCurrent();
-		Application.setCurrent(currentApplication);
+    /**
+     * In addition to the default behavior, it saves the current application instance into the
+     * current thread.
+     *
+     * @param request The request to handle.
+     * @param response The response to modify.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        // Save the current application
+        // Plan to move the current application as an attribute of the Response in the incoming 2.5
+        // release
+        final Application currentApplication =
+                getHelped() != null ? getHelped() : Application.getCurrent();
+        Application.setCurrent(currentApplication);
 
-		// Actually handle call
-		try {
-			super.handle(request, response);
-		} finally {
-			// restore the current application
-			Application.setCurrent(currentApplication);
-		}
-	}
+        // Actually handle call
+        try {
+            super.handle(request, response);
+        } finally {
+            // restore the current application
+            Application.setCurrent(currentApplication);
+        }
+    }
 
-	/**
-	 * Sets the context.
-	 * 
-	 * @param context The context.
-	 */
-	public void setContext(Context context) {
-		if (context != null) {
-			setOutboundNext(context.getClientDispatcher());
-		}
-	}
+    /**
+     * Sets the context.
+     *
+     * @param context The context.
+     */
+    public void setContext(Context context) {
+        if (context != null) {
+            setOutboundNext(context.getClientDispatcher());
+        }
+    }
 
-	/** Start hook. */
-	@Override
-	public synchronized void start() throws Exception {
-		Filter filter = null;
+    /** Start hook. */
+    @Override
+    public synchronized void start() throws Exception {
+        attachServicesFilters();
 
-		for (Service service : getHelped().getServices()) {
-			if (service.isEnabled()) {
-				// Attach the service inbound filters
-				filter = service.createInboundFilter((getContext() == null) ? null : getContext().createChildContext());
+        // Attach the Application's server root Restlet
+        setInboundNext(getHelped().getInboundRoot());
 
-				if (filter != null) {
-					addInboundFilter(filter);
-				}
+        if (getOutboundNext() == null) {
+            // Warn about a chaining problem
+            getLogger()
+                    .fine(
+                            "By default, an application should be attached to a parent component to let application's outbound root handle calls properly.");
+            setOutboundNext(newOutboundNext());
+        }
+    }
 
-				// Attach the service outbound filters
-				filter = service
-						.createOutboundFilter((getContext() == null) ? null : getContext().createChildContext());
+    private void attachServicesFilters() {
+        Filter filter;
 
-				if (filter != null) {
-					addOutboundFilter(filter);
-				}
-			}
-		}
+        for (Service service : getHelped().getServices()) {
+            if (service.isEnabled()) {
+                // Attach the service inbound filters
+                Context context = (getContext() == null) ? null : getContext().createChildContext();
+                filter = service.createInboundFilter(context);
 
-		// Attach the Application's server root Restlet
-		setInboundNext(getHelped().getInboundRoot());
+                if (filter != null) {
+                    addInboundFilter(filter);
+                }
 
-		if (getOutboundNext() == null) {
-			// Warn about chaining problem
-			getLogger().fine(
-					"By default, an application should be attached to a parent component in order to let application's outbound root handle calls properly.");
-			setOutboundNext(new Restlet() {
-				final Map<Protocol, Client> clients = new ConcurrentHashMap<Protocol, Client>();
+                // Attach the service outbound filters
+                context = (getContext() == null) ? null : getContext().createChildContext();
+                filter = service.createOutboundFilter(context);
 
-				@Override
-				public void handle(Request request, Response response) {
-					Protocol rProtocol = request.getProtocol();
-					Reference rReference = request.getResourceRef();
-					Protocol protocol = (rProtocol != null) ? rProtocol
-							: (rReference != null) ? rReference.getSchemeProtocol() : null;
+                if (filter != null) {
+                    addOutboundFilter(filter);
+                }
+            }
+        }
+    }
 
-					if (protocol != null) {
-						Client c = clients.get(protocol);
+    /** Creates a new outbound next Restlet. */
+    private static Restlet newOutboundNext() {
+        return new Restlet() {
+            final Map<Protocol, Client> clients = new ConcurrentHashMap<>();
 
-						if (c == null) {
-							c = new Client(protocol);
-							clients.put(protocol, c);
-							getLogger().fine("Added runtime client for protocol: " + protocol.getName());
-						}
+            @Override
+            public void handle(Request request, Response response) {
+                final Protocol rProtocol = request.getProtocol();
+                final Reference rReference = request.getResourceRef();
+                final Protocol protocol;
 
-						c.handle(request, response);
-					} else {
-						response.setStatus(Status.SERVER_ERROR_INTERNAL,
-								"The server isn't properly configured to handle client calls.");
-						getLogger()
-								.warning("There is no protocol detected for this request: " + request.getResourceRef());
-					}
-				}
+                if (rProtocol != null) {
+                    protocol = rProtocol;
+                } else {
+                    protocol = (rReference != null) ? rReference.getSchemeProtocol() : null;
+                }
 
-				@Override
-				public synchronized void stop() throws Exception {
-					super.stop();
-					for (Client client : clients.values()) {
-						client.stop();
-					}
-				}
-			});
-		}
-	}
+                if (protocol != null) {
+                    Client c =
+                            clients.computeIfAbsent(
+                                    protocol,
+                                    p -> {
+                                        getLogger()
+                                                .fine(
+                                                        "Added runtime client for protocol: "
+                                                                + p.getName());
+                                        return new Client(p);
+                                    });
+                    c.handle(request, response);
+                } else {
+                    response.setStatus(
+                            Status.SERVER_ERROR_INTERNAL,
+                            "The server isn't properly configured to handle client calls.");
+                    getLogger()
+                            .warning(
+                                    "There is no protocol detected for this request: "
+                                            + request.getResourceRef());
+                }
+            }
 
-	@Override
-	public synchronized void stop() throws Exception {
-		clear();
-	}
+            @Override
+            public synchronized void stop() throws Exception {
+                super.stop();
+                for (Client client : clients.values()) {
+                    client.stop();
+                }
+            }
+        };
+    }
 
-	@Override
-	public void update() throws Exception {
-	}
+    @Override
+    public synchronized void stop() throws Exception {
+        clear();
+    }
 
+    @Override
+    public void update() throws Exception {
+        // Nothing to do here
+    }
 }

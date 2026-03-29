@@ -1,0 +1,9 @@
+/**
+ * Integration with Spring Framework 5.2.
+ *
+ * @since Restlet 1.0
+ * @see <a href="https://spring.io/">Spring Framework</a>
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/spring">User
+ *     Guide - Spring extension</a>
+ */
+package org.restlet.ext.spring;

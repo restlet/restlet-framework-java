@@ -1,14 +1,16 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.adapter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.data.Header;
 import org.restlet.data.Protocol;
@@ -17,19 +19,15 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Logger;
-
 /**
  * Low-level call for the HTTP connectors.
- * 
+ *
  * @author Jerome Louvel
  */
 public abstract class Call {
     /**
      * Returns true if the given exception is caused by a broken connection.
-     * 
+     *
      * @param exception The exception to inspect.
      * @return True if the given exception is caused by a broken connection.
      */
@@ -39,19 +37,21 @@ public abstract class Call {
         // detect Tomcat and Jetty exceptions
         if (exception instanceof IOException) {
             String exceptionName = exception.getClass().getName();
-            result = (exceptionName.endsWith("ClientAbortException")
-                    || exceptionName.endsWith("jetty.io.EofException"));
+            result =
+                    (exceptionName.endsWith("ClientAbortException")
+                            || exceptionName.endsWith("jetty.io.EofException"));
         }
 
         // check for known exception messages
         if (!result) {
             String exceptionMessage = exception.getMessage();
             if (exceptionMessage != null) {
-                result = (exceptionMessage.indexOf("Broken pipe") != -1)
-                        || (exceptionMessage.equals(
-                                "An existing connection must have been closed by the remote party.")
+                result =
+                        (exceptionMessage.contains("Broken pipe"))
                                 || (exceptionMessage.equals(
-                                        "An open connection has been abandonned by your network stack.")));
+                                                "An existing connection must have been closed by the remote party.")
+                                        || (exceptionMessage.equals(
+                                                "An open connection has been abandonned by your network stack.")));
             }
         }
 
@@ -110,10 +110,8 @@ public abstract class Call {
     /** The protocol version. */
     private volatile String version;
 
-    /**
-     * Constructor.
-     */
-    public Call() {
+    /** Constructor. */
+    protected Call() {
         this.hostDomain = null;
         this.hostPort = -1;
         this.clientAddress = null;
@@ -122,9 +120,9 @@ public abstract class Call {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
-        this.requestHeaders = new Series<Header>(Header.class);
+        this.requestHeaders = new Series<>(Header.class);
         this.requestUri = null;
-        this.responseHeaders = new Series<Header>(Header.class);
+        this.responseHeaders = new Series<>(Header.class);
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
@@ -135,7 +133,7 @@ public abstract class Call {
     /**
      * Returns the client address.<br>
      * Corresponds to the IP address of the requesting client.
-     * 
+     *
      * @return The client address.
      */
     public String getClientAddress() {
@@ -145,7 +143,7 @@ public abstract class Call {
     /**
      * Returns the client port.<br>
      * Corresponds to the TCP/IP port of the requesting client.
-     * 
+     *
      * @return The client port.
      */
     public int getClientPort() {
@@ -154,7 +152,7 @@ public abstract class Call {
 
     /**
      * Returns the host domain.
-     * 
+     *
      * @return The host domain.
      */
     public String getHostDomain() {
@@ -163,7 +161,7 @@ public abstract class Call {
 
     /**
      * Returns the host port.
-     * 
+     *
      * @return The host port.
      */
     public int getHostPort() {
@@ -172,7 +170,7 @@ public abstract class Call {
 
     /**
      * Returns the logger.
-     * 
+     *
      * @return The logger.
      */
     public Logger getLogger() {
@@ -181,7 +179,7 @@ public abstract class Call {
 
     /**
      * Returns the request method.
-     * 
+     *
      * @return The request method.
      */
     public String getMethod() {
@@ -190,7 +188,7 @@ public abstract class Call {
 
     /**
      * Returns the exact protocol (HTTP or HTTPS).
-     * 
+     *
      * @return The exact protocol (HTTP or HTTPS).
      */
     public Protocol getProtocol() {
@@ -202,7 +200,7 @@ public abstract class Call {
 
     /**
      * Returns the reason phrase.
-     * 
+     *
      * @return The reason phrase.
      */
     public String getReasonPhrase() {
@@ -211,7 +209,7 @@ public abstract class Call {
 
     /**
      * Returns the representation wrapping the given stream.
-     * 
+     *
      * @param stream The response input stream.
      * @return The wrapping representation.
      */
@@ -221,7 +219,7 @@ public abstract class Call {
 
     /**
      * Returns the modifiable list of request headers.
-     * 
+     *
      * @return The modifiable list of request headers.
      */
     public Series<Header> getRequestHeaders() {
@@ -229,9 +227,8 @@ public abstract class Call {
     }
 
     /**
-     * Returns the URI on the request line (most like a relative reference, but
-     * not necessarily).
-     * 
+     * Returns the URI on the request line (most like a relative reference, but not necessarily).
+     *
      * @return The URI on the request line.
      */
     public String getRequestUri() {
@@ -240,7 +237,7 @@ public abstract class Call {
 
     /**
      * Returns the modifiable list of server headers.
-     * 
+     *
      * @return The modifiable list of server headers.
      */
     public Series<Header> getResponseHeaders() {
@@ -250,7 +247,7 @@ public abstract class Call {
     /**
      * Returns the response address.<br>
      * Corresponds to the IP address of the responding server.
-     * 
+     *
      * @return The response address.
      */
     public String getServerAddress() {
@@ -259,7 +256,7 @@ public abstract class Call {
 
     /**
      * Returns the server port.
-     * 
+     *
      * @return The server port.
      */
     public int getServerPort() {
@@ -268,17 +265,16 @@ public abstract class Call {
 
     /**
      * Returns the status code.
-     * 
+     *
      * @return The status code.
-     * @throws IOException
      */
-    public int getStatusCode() throws IOException {
+    public int getStatusCode() {
         return this.statusCode;
     }
 
     /**
      * Returns the user principal.
-     * 
+     *
      * @return The user principal.
      */
     public java.security.Principal getUserPrincipal() {
@@ -287,7 +283,7 @@ public abstract class Call {
 
     /**
      * Returns the protocol version used.
-     * 
+     *
      * @return The protocol version used.
      */
     public String getVersion() {
@@ -296,14 +292,14 @@ public abstract class Call {
 
     /**
      * Indicates if the client wants a persistent connection.
-     * 
+     *
      * @return True if the client wants a persistent connection.
      */
     protected abstract boolean isClientKeepAlive();
 
     /**
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
-     * 
+     *
      * @return True if the confidentiality of the call is ensured (ex: via SSL).
      */
     public boolean isConfidential() {
@@ -312,7 +308,7 @@ public abstract class Call {
 
     /**
      * Returns true if the given exception is caused by a broken connection.
-     * 
+     *
      * @param exception The exception to inspect.
      * @return True if the given exception is caused by a broken connection.
      */
@@ -322,9 +318,8 @@ public abstract class Call {
 
     /**
      * Indicates if both the client and the server want a persistent connection.
-     * 
-     * @return True if the connection should be kept alive after the call
-     *         processing.
+     *
+     * @return True if the connection should be kept alive after the call processing.
      */
     protected boolean isKeepAlive() {
         return isClientKeepAlive() && isServerKeepAlive();
@@ -332,7 +327,7 @@ public abstract class Call {
 
     /**
      * Indicates if the request entity is chunked.
-     * 
+     *
      * @return True if the request entity is chunked.
      */
     protected boolean isRequestChunked() {
@@ -341,7 +336,7 @@ public abstract class Call {
 
     /**
      * Indicates if the response entity is chunked.
-     * 
+     *
      * @return True if the response entity is chunked.
      */
     protected boolean isResponseChunked() {
@@ -350,14 +345,14 @@ public abstract class Call {
 
     /**
      * Indicates if the server wants a persistent connection.
-     * 
+     *
      * @return True if the server wants a persistent connection.
      */
     protected abstract boolean isServerKeepAlive();
 
     /**
      * Sets the client address.
-     * 
+     *
      * @param clientAddress The client address.
      */
     protected void setClientAddress(String clientAddress) {
@@ -366,7 +361,7 @@ public abstract class Call {
 
     /**
      * Sets the client port.
-     * 
+     *
      * @param clientPort The client port.
      */
     protected void setClientPort(int clientPort) {
@@ -375,9 +370,8 @@ public abstract class Call {
 
     /**
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
-     * 
-     * @param confidential True if the confidentiality of the call is ensured
-     *                     (ex: via SSL).
+     *
+     * @param confidential True if the confidentiality of the call is ensured (ex: via SSL).
      */
     protected void setConfidential(boolean confidential) {
         this.confidential = confidential;
@@ -385,7 +379,7 @@ public abstract class Call {
 
     /**
      * Sets the host domain name.
-     * 
+     *
      * @param hostDomain The baseRef domain name.
      */
     public void setHostDomain(String hostDomain) {
@@ -394,7 +388,7 @@ public abstract class Call {
 
     /**
      * Sets the host port.
-     * 
+     *
      * @param hostPort The host port.
      */
     public void setHostPort(int hostPort) {
@@ -403,7 +397,7 @@ public abstract class Call {
 
     /**
      * Sets the request method.
-     * 
+     *
      * @param method The request method.
      */
     protected void setMethod(String method) {
@@ -412,7 +406,7 @@ public abstract class Call {
 
     /**
      * Sets the exact protocol used (HTTP or HTTPS).
-     * 
+     *
      * @param protocol The protocol.
      */
     public void setProtocol(Protocol protocol) {
@@ -421,7 +415,7 @@ public abstract class Call {
 
     /**
      * Sets the reason phrase.
-     * 
+     *
      * @param reasonPhrase The reason phrase.
      */
     public void setReasonPhrase(String reasonPhrase) {
@@ -430,7 +424,7 @@ public abstract class Call {
 
     /**
      * Sets the full request URI.
-     * 
+     *
      * @param requestUri The full request URI.
      */
     protected void setRequestUri(String requestUri) {
@@ -444,7 +438,7 @@ public abstract class Call {
     /**
      * Sets the response address.<br>
      * Corresponds to the IP address of the responding server.
-     * 
+     *
      * @param responseAddress The response address.
      */
     public void setServerAddress(String responseAddress) {
@@ -453,7 +447,7 @@ public abstract class Call {
 
     /**
      * Sets the server port.
-     * 
+     *
      * @param serverPort The server port.
      */
     public void setServerPort(int serverPort) {
@@ -462,7 +456,7 @@ public abstract class Call {
 
     /**
      * Sets the status code.
-     * 
+     *
      * @param code The status code.
      */
     public void setStatusCode(int code) {
@@ -471,7 +465,7 @@ public abstract class Call {
 
     /**
      * Sets the user principal.
-     * 
+     *
      * @param principal The user principal.
      */
     public void setUserPrincipal(java.security.Principal principal) {
@@ -480,11 +474,10 @@ public abstract class Call {
 
     /**
      * Sets the protocol version used.
-     * 
+     *
      * @param version The protocol version used.
      */
     public void setVersion(String version) {
         this.version = version;
     }
-
 }

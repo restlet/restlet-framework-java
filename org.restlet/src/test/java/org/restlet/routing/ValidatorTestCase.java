@@ -1,30 +1,29 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.routing;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Test {@link org.restlet.routing.Validator}.
  *
  * @author Jerome Louvel
  */
-public class ValidatorTestCase {
+class ValidatorTestCase {
 
     @Test
-    public void testRequired() {
+    void testRequired() {
         // Create mock call
         Request rq = new Request();
         Response rs = new Response(rq);
@@ -46,7 +45,7 @@ public class ValidatorTestCase {
     }
 
     @Test
-    public void testFormat() {
+    void testFormat() {
         // Create mock call
         Request rq = new Request();
         Response rs = new Response(rq);

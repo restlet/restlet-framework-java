@@ -1,69 +1,68 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.header;
-
-import org.restlet.data.Range;
-import org.restlet.representation.Representation;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.restlet.data.Range;
+import org.restlet.representation.Representation;
 
 /**
  * Range header reader.
- * 
+ *
  * @author Jerome Louvel
  */
 public class RangeReader {
 
-	private static final String BYTES_RANGE_PREFIX = "bytes ";
+    private static final String BYTES_RANGE_PREFIX = "bytes ";
 
-	/**
-	 * Parse the Content-Range header value and update the given representation.
-	 * 
-	 * @param value          Content-range header.
-	 * @param representation Representation to update.
-	 */
-	public static void update(String value, Representation representation) {
-		if (value != null && value.startsWith(BYTES_RANGE_PREFIX)) {
-			value = value.substring(BYTES_RANGE_PREFIX.length());
+    /**
+     * Parse the Content-Range header value and update the given representation.
+     *
+     * @param value Content-range header.
+     * @param representation Representation to update.
+     */
+    public static void update(String value, Representation representation) {
+        if (value != null && value.startsWith(BYTES_RANGE_PREFIX)) {
+            value = value.substring(BYTES_RANGE_PREFIX.length());
 
-			int index = value.indexOf("-");
-			int index1 = value.indexOf("/");
+            int index = value.indexOf('-');
+            int index1 = value.indexOf('/');
 
-			if (index != -1) {
-				long startIndex = (index == 0) ? Range.INDEX_LAST : Long.parseLong(value.substring(0, index));
-				long endIndex = Long.parseLong(value.substring(index + 1, index1));
+            if (index != -1) {
+                long startIndex =
+                        (index == 0) ? Range.INDEX_LAST : Long.parseLong(value.substring(0, index));
+                long endIndex = Long.parseLong(value.substring(index + 1, index1));
 
-				representation.setRange(new Range(startIndex, endIndex - startIndex + 1));
-			}
+                representation.setRange(new Range(startIndex, endIndex - startIndex + 1));
+            }
 
-			String strLength = value.substring(index1 + 1);
-			if (!("*".equals(strLength))) {
-				representation.setSize(Long.parseLong(strLength));
-			}
-		}
-	}
+            String strLength = value.substring(index1 + 1);
+            if (!("*".equals(strLength))) {
+                representation.setSize(Long.parseLong(strLength));
+            }
+        }
+    }
 
-	/**
-	 * Parse the Range header and returns the list of corresponding Range objects.
-	 * 
-	 * @param rangeHeader The Range header value.
-	 * @return The list of corresponding Range objects.
-	 */
-	public static List<Range> read(String rangeHeader) {
-		List<Range> result = new ArrayList<Range>();
-		String prefix = "bytes=";
-		if (rangeHeader != null && rangeHeader.startsWith(prefix)) {
-			rangeHeader = rangeHeader.substring(prefix.length());
+    /**
+     * Parse the Range header and returns the list of corresponding Range objects.
+     *
+     * @param rangeHeader The Range header value.
+     * @return The list of corresponding Range objects.
+     */
+    public static List<Range> read(String rangeHeader) {
+        List<Range> result = new ArrayList<>();
+        String prefix = "bytes=";
+        if (rangeHeader != null && rangeHeader.startsWith(prefix)) {
+            rangeHeader = rangeHeader.substring(prefix.length());
 
-			String[] array = rangeHeader.split(",");
+            String[] array = rangeHeader.split(",");
             for (String s : array) {
                 String value = s.trim();
                 long index = 0;
@@ -83,15 +82,14 @@ public class RangeReader {
                 }
                 result.add(new Range(index, length));
             }
-		}
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Private constructor to ensure that the class acts as a true utility class
-	 * i.e., it isn't instantiable and extensible.
-	 */
-	private RangeReader() {
-	}
+    /**
+     * Private constructor to ensure that the class acts as a true utility class i.e., it isn't
+     * instantiable and extensible.
+     */
+    private RangeReader() {}
 }

@@ -224,8 +224,7 @@
                                 </goals>
                                 <configuration>
                                     <rules>
-                                        <CheckMavenCentral
-                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                        <CheckMavenCentral implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
                                             <strict>false</strict>
                                             <release>${release}</release>
                                         </CheckMavenCentral>
@@ -312,6 +311,50 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <projectVersionPolicyId>SemVerVersionPolicy</projectVersionPolicyId>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <java>
+                        <!-- These are the defaults, you can override if you want -->
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
+                        <cleanthat />
+                        <googleJavaFormat>
+                            <style>AOSP</style>
+                            <formatJavadoc>true</formatJavadoc>
+                        </googleJavaFormat>
+                        <tableTestFormatter />
+                        <importOrder /> <!-- standard import order -->
+                        <removeUnusedImports />
+                        <forbidWildcardImports />
+                        <formatAnnotations />
+                        <licenseHeader>
+                            <content><![CDATA[/**
+ * Copyright 2005-$YEAR Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */]]></content>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <pluginManagement>

@@ -1,371 +1,395 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
-import org.restlet.engine.Engine;
-
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.restlet.engine.Engine;
 
 /**
  * Method to execute when handling a call.
- * 
+ *
  * @author Jerome Louvel
  */
 public final class Method implements Comparable<Method> {
 
-	/** Map of registered methods. */
-	private static final Map<String, Method> _methods = new ConcurrentHashMap<String, Method>();
+    /** Map of registered methods. */
+    private static final Map<String, Method> _methods = new ConcurrentHashMap<>();
 
-	/**
-	 * Pseudo-method use to match all methods.
-	 */
-	public static final Method ALL = new Method("*", "Pseudo-method use to match all methods.");
+    /** Pseudo-method use to match all methods. */
+    public static final Method ALL = new Method("*", "Pseudo-method use to match all methods.");
 
-	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
+    private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
 
-	/**
-	 * Used with a proxy that can dynamically switch to being a tunnel.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9">HTTP RFC
-	 *      - 9.9 CONNECT</a>
-	 */
-	public static final Method CONNECT = new Method("CONNECT",
-			"Used with a proxy that can dynamically switch to being a tunnel", BASE_HTTP + "#sec9.9", false, false);
+    /**
+     * Used with a proxy that can dynamically switch to being a tunnel.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9">HTTP RFC - 9.9
+     *     CONNECT</a>
+     */
+    public static final Method CONNECT =
+            new Method(
+                    "CONNECT",
+                    "Used with a proxy that can dynamically switch to being a tunnel",
+                    BASE_HTTP + "#sec9.9",
+                    false,
+                    false);
 
-	/**
-	 * Requests that the origin server deletes the resource identified by the
-	 * request URI.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP RFC
-	 *      - 9.7 DELETE</a>
-	 */
-	public static final Method DELETE = new Method("DELETE",
-			"Requests that the origin server deletes the resource identified by the request URI", BASE_HTTP + "#sec9.7",
-			false, true);
+    /**
+     * Requests that the origin server deletes the resource identified by the request URI.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP RFC - 9.7
+     *     DELETE</a>
+     */
+    public static final Method DELETE =
+            new Method(
+                    "DELETE",
+                    "Requests that the origin server deletes the resource identified by the request URI",
+                    BASE_HTTP + "#sec9.7",
+                    false,
+                    true);
 
-	/**
-	 * Retrieves whatever information (in the form of an entity) that is identified
-	 * by the request URI.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP RFC
-	 *      - 9.3 GET</a>
-	 */
-	public static final Method GET = new Method("GET",
-			"Retrieves whatever information (in the form of an entity) that is identified by the request URI",
-			BASE_HTTP + "#sec9.3", true, true);
+    /**
+     * Retrieves whatever information (in the form of an entity) that is identified by the request
+     * URI.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP RFC - 9.3
+     *     GET</a>
+     */
+    public static final Method GET =
+            new Method(
+                    "GET",
+                    "Retrieves whatever information (in the form of an entity) that is identified by the request URI",
+                    BASE_HTTP + "#sec9.3",
+                    true,
+                    true);
 
-	/**
-	 * Identical to GET except that the server must not return a message body in the
-	 * response but only the message header.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP RFC
-	 *      - 9.4 HEAD</a>
-	 */
-	public static final Method HEAD = new Method("HEAD",
-			"Identical to GET except that the server must not return a message body in the response",
-			BASE_HTTP + "#sec9.4", true, true);
+    /**
+     * Identical to GET except that the server must not return a message body in the response but
+     * only the message header.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP RFC - 9.4
+     *     HEAD</a>
+     */
+    public static final Method HEAD =
+            new Method(
+                    "HEAD",
+                    "Identical to GET except that the server must not return a message body in the response",
+                    BASE_HTTP + "#sec9.4",
+                    true,
+                    true);
 
-	/**
-	 * Requests for information about the communication options available on the
-	 * request/response chain identified by the URI.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP RFC
-	 *      - 9.2 OPTIONS</a>
-	 */
-	public static final Method OPTIONS = new Method("OPTIONS",
-			"Requests for information about the communication options available on the request/response chain identified by the URI",
-			BASE_HTTP + "#sec9.2", true, true);
+    /**
+     * Requests for information about the communication options available on the request/response
+     * chain identified by the URI.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP RFC - 9.2
+     *     OPTIONS</a>
+     */
+    public static final Method OPTIONS =
+            new Method(
+                    "OPTIONS",
+                    "Requests for information about the communication options available on the request/response chain identified by the URI",
+                    BASE_HTTP + "#sec9.2",
+                    true,
+                    true);
 
-	/**
-	 * Requests that the origin server applies partial modifications contained in
-	 * the entity enclosed in the request to the resource identified by the request
-	 * URI.
-	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH RFC 5789</a>
-	 */
-	public static final Method PATCH = new Method("PATCH",
-			"Requests that the origin server applies partial modifications to the resource identified by the request URI",
-			"http://tools.ietf.org/html/rfc5789", false, false);
+    /**
+     * Requests that the origin server applies partial modifications contained in the entity
+     * enclosed in the request to the resource identified by the request URI.
+     *
+     * @see <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH RFC 5789</a>
+     */
+    public static final Method PATCH =
+            new Method(
+                    "PATCH",
+                    "Requests that the origin server applies partial modifications to the resource identified by the request URI",
+                    "http://tools.ietf.org/html/rfc5789",
+                    false,
+                    false);
 
-	/**
-	 * Requests that the origin server accepts the entity enclosed in the request as
-	 * a new subordinate of the resource identified by the request URI.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP RFC
-	 *      - 9.5 POST</a>
-	 */
-	public static final Method POST = new Method("POST",
-			"Requests that the origin server accepts the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
-			BASE_HTTP + "#sec9.5", false, false);
+    /**
+     * Requests that the origin server accepts the entity enclosed in the request as a new
+     * subordinate of the resource identified by the request URI.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP RFC - 9.5
+     *     POST</a>
+     */
+    public static final Method POST =
+            new Method(
+                    "POST",
+                    "Requests that the origin server accepts the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
+                    BASE_HTTP + "#sec9.5",
+                    false,
+                    false);
 
-	/**
-	 * Requests that the enclosed entity be stored under the supplied request URI.
-	 * 
-	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
-	 *      HTTP RFC - 9.6 PUT</a>
-	 */
-	public static final Method PUT = new Method("PUT",
-			"Requests that the enclosed entity be stored under the supplied request URI", BASE_HTTP + "#sec9.6", false,
-			true);
+    /**
+     * Requests that the enclosed entity be stored under the supplied request URI.
+     *
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6" HTTP RFC - 9.6
+     *     PUT</a>
+     */
+    public static final Method PUT =
+            new Method(
+                    "PUT",
+                    "Requests that the enclosed entity be stored under the supplied request URI",
+                    BASE_HTTP + "#sec9.6",
+                    false,
+                    true);
 
-	/**
-	 * Used to invoke a remote, application-layer loop-back of the request message.
-	 * 
-	 * @see <a href=
-	 *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8">HTTP RFC
-	 *      - 9.8 TRACE</a>
-	 */
-	public static final Method TRACE = new Method("TRACE",
-			"Used to invoke a remote, application-layer loop-back of the request message", BASE_HTTP + "#sec9.8", true,
-			true);
+    /**
+     * Used to invoke a remote, application-layer loop-back of the request message.
+     *
+     * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8">HTTP RFC - 9.8
+     *     TRACE</a>
+     */
+    public static final Method TRACE =
+            new Method(
+                    "TRACE",
+                    "Used to invoke a remote, application-layer loop-back of the request message",
+                    BASE_HTTP + "#sec9.8",
+                    true,
+                    true);
 
-	/**
-	 * Adds a new Method to the list of registered methods.
-	 * 
-	 * @param method The method to register.
-	 */
-	public static void register(Method method) {
-		String name = (method == null) ? null : method.getName().toLowerCase();
-		if ((name != null) && !name.isEmpty()) {
-			_methods.put(name, method);
-		}
-	}
+    /**
+     * Adds a new Method to the list of registered methods.
+     *
+     * @param method The method to register.
+     */
+    public static void register(Method method) {
+        String name = (method == null) ? null : method.getName().toLowerCase();
+        if ((name != null) && !name.isEmpty()) {
+            _methods.put(name, method);
+        }
+    }
 
-	/**
-	 * Sorts the given list of methods by name.
-	 * 
-	 * @param methods The methods to sort.
-	 */
-	public static void sort(List<Method> methods) {
-		Collections.sort(methods, new Comparator<Method>() {
-			public int compare(Method m1, Method m2) {
-				return m1.getName().compareTo(m2.getName());
-			}
-		});
-	}
+    /**
+     * Sorts the given list of methods by name.
+     *
+     * @param methods The methods to sort.
+     */
+    public static void sort(List<Method> methods) {
+        methods.sort(Comparator.comparing(Method::getName));
+    }
 
-	/**
-	 * Returns the method associated to a given method name. If an existing constant
-	 * exists then it is returned, otherwise a new instance is created.
-	 * 
-	 * @param name The method name.
-	 * @return The associated method.
-	 */
-	public static Method valueOf(final String name) {
-		Method result = null;
+    /**
+     * Returns the method associated with a given method name. If an existing constant exists, then
+     * it is returned, otherwise a new instance is created.
+     *
+     * @param name The method name.
+     * @return The associated method.
+     */
+    public static Method valueOf(final String name) {
+        Method result = null;
 
-		if ((name != null) && !name.isEmpty()) {
-			result = Method._methods.get(name.toLowerCase());
-			if (result == null) {
-				result = new Method(name);
-			}
-		}
+        if ((name != null) && !name.isEmpty()) {
+            result = Method._methods.get(name.toLowerCase());
+            if (result == null) {
+                result = new Method(name);
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/** The description. */
-	private final String description;
+    /** The description. */
+    private final String description;
 
-	/**
-	 * Indicates if the side effects of several requests is the same as a single
-	 * request.
-	 */
-	private volatile boolean idempotent;
+    /** Indicates if the side effects of several requests is the same as a single request. */
+    private volatile boolean idempotent;
 
-	/** The name. */
-	private volatile String name;
+    /** The name. */
+    private volatile String name;
 
-	/** Indicates if the method replies with a response. */
-	private final boolean replying;
+    /** Indicates if the method replies with a response. */
+    private final boolean replying;
 
-	/**
-	 * Indicates if it should have the significance of taking an action other than
-	 * retrieval.
-	 */
-	private final boolean safe;
+    /** Indicates if it should have the significance of taking an action other than retrieval. */
+    private final boolean safe;
 
-	/** The URI of the specification describing the method. */
-	private volatile String uri;
+    /** The URI of the specification describing the method. */
+    private volatile String uri;
 
-	static {
-		// Let the engine register all methods (the default ones and the ones to
-		// be discovered) as soon as the Method class is loaded or at least
-		// used.
-		Engine.getInstance();
-	}
+    static {
+        // Let the engine register all methods (the default ones and the ones to
+        // be discovered) as soon as the Method class is loaded or at least
+        // used.
+        Engine.getInstance();
+    }
 
-	/**
-	 * Constructor for unsafe and non idempotent methods.
-	 * 
-	 * @param name The technical name of the method.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(final String name) {
-		this(name, null);
-	}
+    /**
+     * Constructor for unsafe and non-idempotent methods.
+     *
+     * @param name The technical name of the method.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(final String name) {
+        this(name, null);
+    }
 
-	/**
-	 * Constructor for unsafe and non idempotent methods.
-	 * 
-	 * @param name        The technical name of the method.
-	 * @param description The description.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description) {
-		this(name, description, null, false, false);
-	}
+    /**
+     * Constructor for unsafe and non-idempotent methods.
+     *
+     * @param name The technical name of the method.
+     * @param description The description.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(String name, String description) {
+        this(name, description, null, false, false);
+    }
 
-	/**
-	 * Constructor for unsafe and non idempotent methods.
-	 * 
-	 * @param name        The technical name.
-	 * @param description The description.
-	 * @param uri         The URI of the specification describing the method.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description, String uri) {
-		this(name, description, uri, false, false);
-	}
+    /**
+     * Constructor for unsafe and non-idempotent methods.
+     *
+     * @param name The technical name.
+     * @param description The description.
+     * @param uri The URI of the specification describing the method.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(String name, String description, String uri) {
+        this(name, description, uri, false, false);
+    }
 
-	/**
-	 * Constructor for methods that reply to requests with responses.
-	 * 
-	 * @param name        The technical name.
-	 * @param description The description.
-	 * @param uri         The URI of the specification describing the method.
-	 * @param safe        Indicates if the method is safe.
-	 * @param idempotent  Indicates if the method is idempotent.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description, String uri, boolean safe, boolean idempotent) {
-		this(name, description, uri, safe, idempotent, true);
-	}
+    /**
+     * Constructor for methods that reply to requests with responses.
+     *
+     * @param name The technical name.
+     * @param description The description.
+     * @param uri The URI of the specification describing the method.
+     * @param safe Indicates if the method is safe.
+     * @param idempotent Indicates if the method is idempotent.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(String name, String description, String uri, boolean safe, boolean idempotent) {
+        this(name, description, uri, safe, idempotent, true);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param name        The technical name.
-	 * @param description The description.
-	 * @param uri         The URI of the specification describing the method.
-	 * @param safe        Indicates if the method is safe.
-	 * @param idempotent  Indicates if the method is idempotent.
-	 * @param replying    Indicates if the method replies with a response.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description, String uri, boolean safe, boolean idempotent, boolean replying) {
-		this.name = name;
-		this.description = description;
-		this.uri = uri;
-		this.safe = safe;
-		this.idempotent = idempotent;
-		this.replying = replying;
-	}
+    /**
+     * Constructor.
+     *
+     * @param name The technical name.
+     * @param description The description.
+     * @param uri The URI of the specification describing the method.
+     * @param safe Indicates if the method is safe.
+     * @param idempotent Indicates if the method is idempotent.
+     * @param replying Indicates if the method replies with a response.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(
+            String name,
+            String description,
+            String uri,
+            boolean safe,
+            boolean idempotent,
+            boolean replying) {
+        this.name = name;
+        this.description = description;
+        this.uri = uri;
+        this.safe = safe;
+        this.idempotent = idempotent;
+        this.replying = replying;
+    }
 
-	/**
-	 * Compares this method to another. Based on the method name.
-	 * 
-	 * @param o The other method.
-	 */
-	public int compareTo(Method o) {
-		if (o != null) {
-			return this.getName().compareTo(o.getName());
-		}
-		return 1;
-	}
+    /**
+     * Compares this method to another. Based on the method name.
+     *
+     * @param o The other method.
+     */
+    public int compareTo(Method o) {
+        if (o != null) {
+            return this.getName().compareTo(o.getName());
+        }
+        return 1;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(final Object object) {
-		return (object instanceof Method) && ((Method) object).getName().equals(getName());
-	}
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Method that)) {
+            return false;
+        }
+        return Objects.equals(getName(), that.getName());
+    }
 
-	/**
-	 * Returns the description.
-	 * 
-	 * @return The description.
-	 */
-	public String getDescription() {
-		return this.description;
-	}
+    /**
+     * Returns the description.
+     *
+     * @return The description.
+     */
+    public String getDescription() {
+        return this.description;
+    }
 
-	/**
-	 * Returns the name.
-	 * 
-	 * @return The name.
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Returns the name.
+     *
+     * @return The name.
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the URI of the specification describing the method.
-	 * 
-	 * @return The URI of the specification describing the method.
-	 */
-	public String getUri() {
-		return this.uri;
-	}
+    /**
+     * Returns the URI of the specification describing the method.
+     *
+     * @return The URI of the specification describing the method.
+     */
+    public String getUri() {
+        return this.uri;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode() {
-		return (getName() == null) ? 0 : getName().hashCode();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return (getName() == null) ? 0 : getName().hashCode();
+    }
 
-	/**
-	 * Indicates if the side-effects of several requests is the same as a single
-	 * request.
-	 * 
-	 * @return True if the method is idempotent.
-	 */
-	public boolean isIdempotent() {
-		return idempotent;
-	}
+    /**
+     * Indicates if the side effects of several requests is the same as a single request.
+     *
+     * @return True if the method is idempotent.
+     */
+    public boolean isIdempotent() {
+        return idempotent;
+    }
 
-	/**
-	 * Indicates if the method replies with a response.
-	 * 
-	 * @return True if the method replies with a response.
-	 */
-	public boolean isReplying() {
-		return replying;
-	}
+    /**
+     * Indicates if the method replies with a response.
+     *
+     * @return True if the method replies with a response.
+     */
+    public boolean isReplying() {
+        return replying;
+    }
 
-	/**
-	 * Indicates if it should have the significance of taking an action other than
-	 * retrieval.
-	 * 
-	 * @return True if the method is safe.
-	 */
-	public boolean isSafe() {
-		return safe;
-	}
+    /**
+     * Indicates if it should have the significance of taking an action other than retrieval.
+     *
+     * @return True if the method is safe.
+     */
+    public boolean isSafe() {
+        return safe;
+    }
 
-	/**
-	 * Returns the name.
-	 * 
-	 * @return The name.
-	 */
-	@Override
-	public String toString() {
-		return getName();
-	}
+    /**
+     * Returns the name.
+     *
+     * @return The name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

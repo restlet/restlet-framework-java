@@ -1,13 +1,14 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,8 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-/**
- * Tests cases for the tunneling of preferences based on user agent.
- */
-public class UserAgentTunnelFilterTestCase {
+/** Tests cases for the tunneling of preferences based on user agent. */
+class UserAgentTunnelFilterTestCase {
 
     private Application application;
 
@@ -48,18 +45,19 @@ public class UserAgentTunnelFilterTestCase {
 
     @BeforeEach
     public void setUpEach() {
-        this.application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                Router router = new Router(getContext());
-                router.attachDefault(UserAgentTestResource.class);
-                return router;
-            }
-        };
+        this.application =
+                new Application() {
+                    @Override
+                    public Restlet createInboundRoot() {
+                        Router router = new Router(getContext());
+                        router.attachDefault(UserAgentTestResource.class);
+                        return router;
+                    }
+                };
     }
 
     @Test
-    public void testTunnelOff() {
+    void testTunnelOff() {
         this.application.getTunnelService().setUserAgentTunnel(false);
         Request request = createRequest();
         Response response = new Response(request);
@@ -69,7 +67,7 @@ public class UserAgentTunnelFilterTestCase {
     }
 
     @Test
-    public void testTunnelOn() {
+    void testTunnelOn() {
         this.application.getTunnelService().setUserAgentTunnel(true);
         Request request = createRequest();
         Response response = new Response(request);

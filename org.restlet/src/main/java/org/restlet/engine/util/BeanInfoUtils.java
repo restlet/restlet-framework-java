@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.util;
 
 import java.beans.BeanInfo;
@@ -17,43 +16,47 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Utilities to get the {@link BeanInfo} of a class.
- * 
+ *
  * @author Manuel Boillod
  */
 public class BeanInfoUtils {
 
-	/** BeanInfo cache. */
-	private static final ConcurrentMap<Class<?>, BeanInfo> cache = new ConcurrentHashMap<Class<?>, BeanInfo>();
+    /** BeanInfo cache. */
+    private static final ConcurrentMap<Class<?>, BeanInfo> cache = new ConcurrentHashMap<>();
 
-	/**
-	 * Get a BeanInfo from cache or create it. Stop introspection to {@link Object}
-	 * or {@link Throwable} if the class is a subtype of {@link Throwable}
-	 * 
-	 * @param clazz The class
-	 * @return BeanInfo of the class
-	 */
-	public static BeanInfo getBeanInfo(Class<?> clazz) {
-		BeanInfo result = cache.get(clazz);
+    /**
+     * Get a BeanInfo from the cache or create it. Stop introspection to {@link Object} or {@link
+     * Throwable} if the class is a subtype of {@link Throwable}
+     *
+     * @param clazz The class
+     * @return BeanInfo of the class
+     */
+    public static BeanInfo getBeanInfo(Class<?> clazz) {
+        BeanInfo result = cache.get(clazz);
 
-		if (result == null) {
-			// Inspect the class itself for annotations
+        if (result == null) {
+            // Inspect the class itself for annotations
 
-			Class<?> stopClass = Throwable.class.isAssignableFrom(clazz) ? Throwable.class : Object.class;
-			try {
-				result = Introspector.getBeanInfo(clazz, stopClass, Introspector.IGNORE_ALL_BEANINFO);
-			} catch (IntrospectionException e) {
-				throw new RuntimeException("Could not get BeanInfo of class " + clazz.getName(), e);
-			}
+            Class<?> stopClass =
+                    Throwable.class.isAssignableFrom(clazz) ? Throwable.class : Object.class;
+            try {
+                result =
+                        Introspector.getBeanInfo(
+                                clazz, stopClass, Introspector.IGNORE_ALL_BEANINFO);
+            } catch (IntrospectionException e) {
+                throw new IllegalArgumentException(
+                        "Could not get BeanInfo of class " + clazz.getName(), e);
+            }
 
-			// Put the list in the cache if no one was previously present
-			BeanInfo prev = cache.putIfAbsent(clazz, result);
+            // Put the list in the cache if no one was previously present
+            BeanInfo prev = cache.putIfAbsent(clazz, result);
 
-			if (prev != null) {
-				// Reuse the previous entry
-				result = prev;
-			}
-		}
+            if (prev != null) {
+                // Reuse the previous entry
+                result = prev;
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

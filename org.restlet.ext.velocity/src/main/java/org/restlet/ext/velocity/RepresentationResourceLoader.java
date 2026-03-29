@@ -1,19 +1,17 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.velocity;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
@@ -21,19 +19,18 @@ import org.apache.velocity.util.ExtProperties;
 import org.restlet.representation.Representation;
 
 /**
- * Velocity resource loader based on a static map of representations or on a
- * default representation.
- * 
+ * Velocity resource loader based on a static map of representations or on a default representation.
+ *
  * @author Jerome Louvel
  */
 public class RepresentationResourceLoader extends ResourceLoader {
 
     /** The cache of template representations. */
-    private static final Map<String, Representation> store = new ConcurrentHashMap<String, Representation>();
+    private static final Map<String, Representation> store = new ConcurrentHashMap<>();
 
     /**
      * Returns the cache of template representations.
-     * 
+     *
      * @return The cache of template representations.
      */
     public static Map<String, Representation> getStore() {
@@ -45,9 +42,8 @@ public class RepresentationResourceLoader extends ResourceLoader {
 
     /**
      * Constructor.
-     * 
-     * @param defaultRepresentation
-     *            The default representation to use.
+     *
+     * @param defaultRepresentation The default representation to use.
      */
     public RepresentationResourceLoader(Representation defaultRepresentation) {
         this.defaultRepresentation = defaultRepresentation;
@@ -65,7 +61,8 @@ public class RepresentationResourceLoader extends ResourceLoader {
     }
 
     @Override
-    public Reader getResourceReader(String source, String encoding) throws ResourceNotFoundException {
+    public Reader getResourceReader(String source, String encoding)
+            throws ResourceNotFoundException {
         try {
             Representation resultRepresentation = getStore().get(source);
 
@@ -85,6 +82,6 @@ public class RepresentationResourceLoader extends ResourceLoader {
 
     @Override
     public void init(ExtProperties configuration) {
+        // No-op
     }
-
 }

@@ -1,38 +1,35 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.header;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.engine.util.DateUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
+import org.restlet.engine.util.DateUtils;
 
 /**
  * Unit tests for the Cookie related classes.
- * 
+ *
  * @author Jerome Louvel
  */
-public class CookieReaderTestCase {
+class CookieReaderTestCase {
     /**
      * Test one cookie header.
-     * 
-     * @param headerValue
-     *            The cookie header value.
+     *
+     * @param headerValue The cookie header value.
      * @throws IOException
      */
     private void testCookie(String headerValue) throws IOException {
@@ -54,9 +51,8 @@ public class CookieReaderTestCase {
 
     /**
      * Test one cookie header.
-     * 
-     * @param headerValue
-     *            The cookie header value.
+     *
+     * @param headerValue The cookie header value.
      * @throws IOException
      */
     private void testCookieValues(String headerValue) throws IOException {
@@ -90,16 +86,14 @@ public class CookieReaderTestCase {
 
     /**
      * Test a cookie date value.
-     * 
-     * @param dateValue
-     *            The cookie date value.
+     *
+     * @param dateValue The cookie date value.
      */
     private void testCookieDate(String dateValue) {
         final Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
 
         // Rewrite the date
-        final String newDateValue = DateUtils.format(date,
-                DateUtils.FORMAT_RFC_1036.get(0));
+        final String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036.getFirst());
 
         // Compare initial and new headers
         assertEquals(dateValue, newDateValue);
@@ -107,16 +101,12 @@ public class CookieReaderTestCase {
 
     /**
      * Test one set cookie header.
-     * 
-     * @param headerValue
-     *            The set cookie header value.
-     * @param compare
-     *            Indicates if the new header should be compared with the old
-     *            one.
+     *
+     * @param headerValue The set cookie header value.
+     * @param compare Indicates if the new header should be compared with the old one.
      * @throws IOException
      */
-    private void testCookieSetting(String headerValue, boolean compare)
-            throws IOException {
+    private void testCookieSetting(String headerValue, boolean compare) throws IOException {
         CookieSettingReader cr = new CookieSettingReader(headerValue);
         CookieSetting cookie = cr.readValue();
 
@@ -125,17 +115,14 @@ public class CookieReaderTestCase {
 
         // Compare initial and new headers
         if (compare) {
-            boolean result = newHeaderValue.toLowerCase().startsWith(
-                    headerValue.toLowerCase());
+            boolean result = newHeaderValue.toLowerCase().startsWith(headerValue.toLowerCase());
             assertTrue(result);
         }
     }
 
-    /**
-     * Tests the parsing of cookies.
-     */
+    /** Tests the parsing of cookies. */
     @Test
-    public void testParsing() throws IOException {
+    void testParsing() throws IOException {
         // Netscape specification
         testCookie("CUSTOMER=WILE_E_COYOTE");
         testCookie("CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001");
@@ -151,38 +138,36 @@ public class CookieReaderTestCase {
 
         // RFC 2109
         testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"");
-        testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
-        testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Path=\"/acme\"");
-        testCookie("$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
+        testCookie(
+                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
+        testCookie(
+                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Path=\"/acme\"");
+        testCookie(
+                "$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
 
+        testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"", true);
         testCookieSetting(
-                "Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"",
-                true);
+                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
+        testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"", true);
         testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"",
-                true);
-        testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"",
-                true);
+                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
         testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"",
-                true);
-        testCookieSetting(
-                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"",
-                true);
+                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"", true);
 
         // Bug #49
         testCookieSetting(
                 "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; expires=Thu, 02 Mar 2006 21:09:00 GMT; path=/; domain=.admeta.com",
                 false);
-        testCookieValues("Cookie 1=One; Cookie 2=Two; Cookie 3=Three; Cookie 4=Four; Cookie 5=\"Five\"; Cookie 6=\"Six\"");
+        testCookieValues(
+                "Cookie 1=One; Cookie 2=Two; Cookie 3=Three; Cookie 4=Four; Cookie 5=\"Five\"; Cookie 6=\"Six\"");
     }
 
     @Test
-    public void testParsingTooLongMaxAgeShouldBeCapedToIntegerMAX_VALUE() throws IOException {
-        CookieSettingReader cr = new CookieSettingReader(
-                "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; max-age=31536000000; path=/; domain=.admeta.com");
+    void testParsingTooLongMaxAgeShouldBeCapedToIntegerMAX_VALUE() throws IOException {
+        CookieSettingReader cr =
+                new CookieSettingReader(
+                        "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; max-age=31536000000; path=/; domain=.admeta.com");
         CookieSetting cookie = cr.readValue();
-        assertEquals(cookie.getMaxAge(), Integer.MAX_VALUE);
+        assertEquals(Integer.MAX_VALUE, cookie.getMaxAge());
     }
-
 }

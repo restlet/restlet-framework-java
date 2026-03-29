@@ -1,27 +1,23 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml.internal;
 
 import java.util.HashMap;
-
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 /**
  * Abstract SAX XML Reader.
- * 
+ *
  * @author Warren Janssens
  */
 public abstract class AbstractXmlReader implements XMLReader {
@@ -44,12 +40,10 @@ public abstract class AbstractXmlReader implements XMLReader {
     /** The properties map. */
     private final HashMap<String, Object> properties;
 
-    /**
-     * Default constructor.
-     */
-    public AbstractXmlReader() {
-        this.features = new HashMap<String, Boolean>();
-        this.properties = new HashMap<String, Object>();
+    /** Default constructor. */
+    protected AbstractXmlReader() {
+        this.features = new HashMap<>();
+        this.properties = new HashMap<>();
         this.contentHandler = null;
         this.entityResolver = null;
         this.errorHandler = null;
@@ -58,7 +52,7 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Return the content handler.
-     * 
+     *
      * @return The content handler.
      * @see XMLReader#getContentHandler()
      */
@@ -68,7 +62,7 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Return the DTD handler.
-     * 
+     *
      * @return The DTD handler.
      * @see XMLReader#getDTDHandler()
      */
@@ -78,7 +72,7 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Return the entity resolver.
-     * 
+     *
      * @return The entity resolver.
      * @see XMLReader#getEntityResolver()
      */
@@ -88,7 +82,7 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Return the error handler.
-     * 
+     *
      * @return The error handler.
      * @see XMLReader#getErrorHandler()
      */
@@ -98,36 +92,31 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Returns the feature by name.
-     * 
-     * @param name
-     *            The feature name.
+     *
+     * @param name The feature name.
      * @return The feature.
      * @see XMLReader#getFeature(String)
      */
-    public boolean getFeature(String name) throws SAXNotRecognizedException,
-            SAXNotSupportedException {
+    public boolean getFeature(String name) {
         final Boolean result = features.get(name);
-        return result == null ? false : result.booleanValue();
+        return result != null && result;
     }
 
     /**
      * Returns the property by name.
-     * 
-     * @param name
-     *            The property name.
+     *
+     * @param name The property name.
      * @return The property.
      * @see XMLReader#getProperty(String)
      */
-    public Object getProperty(String name) throws SAXNotRecognizedException,
-            SAXNotSupportedException {
+    public Object getProperty(String name) {
         return properties.get(name);
     }
 
     /**
      * Sets the content handler.
-     * 
-     * @param contentHandler
-     *            The content handler.
+     *
+     * @param contentHandler The content handler.
      * @see XMLReader#setContentHandler(ContentHandler)
      */
     public void setContentHandler(ContentHandler contentHandler) {
@@ -136,9 +125,8 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Sets the DTD handler.
-     * 
-     * @param handler
-     *            The DTD handler.
+     *
+     * @param handler The DTD handler.
      * @see XMLReader#setDTDHandler(DTDHandler)
      */
     public void setDTDHandler(DTDHandler handler) {
@@ -147,9 +135,8 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Sets the entity resolver.
-     * 
-     * @param entityResolver
-     *            The entity resolver.
+     *
+     * @param entityResolver The entity resolver.
      * @see XMLReader#setEntityResolver(EntityResolver)
      */
     public void setEntityResolver(EntityResolver entityResolver) {
@@ -158,9 +145,8 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Sets the error handler.
-     * 
-     * @param errorHandler
-     *            The error handler.
+     *
+     * @param errorHandler The error handler.
      * @see XMLReader#setErrorHandler(ErrorHandler)
      */
     public void setErrorHandler(ErrorHandler errorHandler) {
@@ -169,30 +155,23 @@ public abstract class AbstractXmlReader implements XMLReader {
 
     /**
      * Sets a feature.
-     * 
-     * @param name
-     *            The feature name.
-     * @param value
-     *            The feature value.
+     *
+     * @param name The feature name.
+     * @param value The feature value.
      * @see XMLReader#setFeature(String, boolean)
      */
-    public void setFeature(String name, boolean value)
-            throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setFeature(String name, boolean value) {
         this.features.put(name, value);
     }
 
     /**
      * Sets a property.
-     * 
-     * @param name
-     *            The property name.
-     * @param value
-     *            The property value.
+     *
+     * @param name The property name.
+     * @param value The property value.
      * @see XMLReader#setProperty(String, Object)
      */
-    public void setProperty(String name, Object value)
-            throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setProperty(String name, Object value) {
         this.properties.put(name, value);
     }
-
 }

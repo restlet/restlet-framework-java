@@ -1,27 +1,25 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.util;
 
+import java.util.Map;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.util.CallResolver;
 import org.restlet.engine.util.MapResolver;
 
-import java.util.Map;
-
 /**
- * Resolves a name into a value. By default, the {@link #createResolver(Map)}
- * static method can adapt a Java map into a resolver. Another useful method is
- * {@link #createResolver(Request, Response)}, which can expose a Restlet call
- * into a compact data model, with the following variables:
- * 
+ * Resolves a name into a value. By default, the {@link #createResolver(Map)} static method can
+ * adapt a Java map into a resolver. Another useful method is {@link #createResolver(Request,
+ * Response)}, which can expose a Restlet call into a compact data model, with the following
+ * variables:
+ *
  * <table>
  * <caption>list of supported variables</caption>
  * <tr>
@@ -200,12 +198,12 @@ import java.util.Map;
  * <td>Integer</td>
  * </tr>
  * </table>
+ *
  * <br>
- * 
- * Below is the list of name sub-parts, for Reference variables, that can
- * replace the asterix in the variable names above:<br>
+ * Below is the list of name sub-parts, for Reference variables, that can replace the asterix in the
+ * variable names above:<br>
  * <br>
- * 
+ *
  * <table>
  * <caption>list of name sub-parts, for Reference variables, that can replace
  * the asterix in the variable names above</caption>
@@ -265,40 +263,39 @@ import java.util.Map;
  * <td>String</td>
  * </tr>
  * </table>
- * 
+ *
  * @author Jerome Louvel
  */
 public abstract class Resolver<T> {
 
-	/**
-	 * Creates a resolver that is based on a given map.
-	 * 
-	 * @param map Map between names and values.
-	 * @return The map resolver.
-	 */
-	public static Resolver<?> createResolver(Map<String, ?> map) {
-		return new MapResolver(map);
-	}
+    /**
+     * Creates a resolver based on a given map.
+     *
+     * @param map Map between names and values.
+     * @return The map resolver.
+     */
+    public static Resolver<?> createResolver(Map<String, ?> map) {
+        return new MapResolver(map);
+    }
 
-	/**
-	 * Creates a resolver that is based on a call (request, response couple). It
-	 * first looks up the response attributes, then the request attributes and
-	 * finally the variables listed in this class Javadocs above.
-	 * 
-	 * @param request  The request.
-	 * @param response The response.
-	 * @return The call resolver.
-	 */
-	public static Resolver<?> createResolver(Request request, Response response) {
-		return new CallResolver(request, response);
-	}
+    /**
+     * Creates a resolver based on a call (request, response couple). It first looks up the response
+     * attributes, then the request attributes, and finally the variables listed in this class
+     * Javadocs above.
+     *
+     * @param request The request.
+     * @param response The response.
+     * @return The call resolver.
+     */
+    public static Resolver<?> createResolver(Request request, Response response) {
+        return new CallResolver(request, response);
+    }
 
-	/**
-	 * Resolves a name into a value.
-	 * 
-	 * @param name The name to resolve.
-	 * @return The resolved value.
-	 */
-	public abstract T resolve(String name);
-
+    /**
+     * Resolves a name into a value.
+     *
+     * @param name The name to resolve.
+     * @return The resolved value.
+     */
+    public abstract T resolve(String name);
 }

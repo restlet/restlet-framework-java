@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static java.lang.String.format;
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Message;
@@ -38,8 +36,8 @@ import org.restlet.util.WrapperRepresentation;
 /**
  * This tests the ability of the connectors to handle chunked encoding.
  *
- * The test uses each connector to PUT an entity that will be sent chunked and
- * also to receive a chunked response.
+ * <p>The test uses each connector to PUT an entity that will be sent chunked and also to receive a
+ * chunked response.
  */
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
@@ -73,7 +71,10 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         final Response response = client.handle(request);
 
         try {
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), format("test #%d: response's status is wrong", testIndex));
+            assertEquals(
+                    Status.SUCCESS_OK,
+                    response.getStatus(),
+                    format("test #%d: response's status is wrong", testIndex));
             assertXML(testIndex, response.getEntity());
         } finally {
             response.release();
@@ -88,13 +89,15 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         try {
             assertChunkedHeader(response);
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), format("test #%d: response's status is wrong", testIndex));
+            assertEquals(
+                    Status.SUCCESS_OK,
+                    response.getStatus(),
+                    format("test #%d: response's status is wrong", testIndex));
             assertXML(testIndex, response.getEntity());
         } finally {
             response.release();
             client.stop();
         }
-
     }
 
     public static class PutTestResource extends ServerResource {
@@ -119,27 +122,29 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private void assertXML(int testIndex, Representation entity) {
         try {
-            String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
+            String expected =
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
             String text = entity.getText();
-            assertEquals(expected, text, format("test #%d: xml representation is wrong", testIndex));
+            assertEquals(
+                    expected, text, format("test #%d: xml representation is wrong", testIndex));
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
     }
 
     private static void assertChunkedHeader(Message message) {
-        final Header transferEncoding = message.getHeaders()
-                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        final Header transferEncoding =
+                message.getHeaders().getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         assertNotNull(transferEncoding);
         assertEquals("chunked", transferEncoding.getValue());
     }
 
     private static Representation createTestXml() {
-        String xmlRepresentationAsString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
+        String xmlRepresentationAsString =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
         Representation rep = new StringRepresentation(xmlRepresentationAsString);
         rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
 
         return rep;
     }
-
 }

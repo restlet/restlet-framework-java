@@ -1,75 +1,67 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
-
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.security.AuthenticatorUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.security.AuthenticatorUtils;
+
 /**
  * Test {@link org.restlet.data.Reference}.
- * 
+ *
  * @author Kelly McLaughlin (mclaughlin77[at]gmail.com)
  */
-public class AuthenticationInfoTestCase {
-    /**
-     * Test parsing an Authorization-Info header string.
-     */
+class AuthenticationInfoTestCase {
+    /** Test parsing an Authorization-Info header string. */
     @Test
-    public void testAuthenticationInfoHeaderParse() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("00000002", 1,
-                "MDAzMTAw1", "auth", null);
+    void testAuthenticationInfoHeaderParse() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("00000002", 1, "MDAzMTAw1", "auth", null);
         String authInfoHeader = "nc=00000001, qop=auth, cnonce=\"MDAzMTAw1\", nextnonce=00000002";
-        AuthenticationInfo parsedAuthInfo = AuthenticatorUtils.parseAuthenticationInfo(authInfoHeader);
+        AuthenticationInfo parsedAuthInfo =
+                AuthenticatorUtils.parseAuthenticationInfo(authInfoHeader);
 
         assertEquals(authInfo, parsedAuthInfo);
         assertEquals(parsedAuthInfo, authInfo);
     }
 
-    /**
-     * Test cnonce getting/setting.
-     */
+    /** Test cnonce getting/setting. */
     @Test
-    public void testCnonce() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
-                1111111, "testcnonce", "auth", "FFFFFF");
-        assertEquals(authInfo.getClientNonce(), "testcnonce");
+    void testCnonce() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
+        assertEquals("testcnonce", authInfo.getClientNonce());
 
         String newCnonce = "newcnonce";
         authInfo.setClientNonce(newCnonce);
-        assertEquals(authInfo.getClientNonce(), "newcnonce");
+        assertEquals("newcnonce", authInfo.getClientNonce());
     }
 
-    /**
-     * Equality tests.
-     */
+    /** Equality tests. */
     @Test
-    public void testEquals() {
-        final AuthenticationInfo authInfo1 = new AuthenticationInfo(
-                "testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
-        final AuthenticationInfo authInfo2 = new AuthenticationInfo(
-                "testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
+    void testEquals() {
+        final AuthenticationInfo authInfo1 =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
+        final AuthenticationInfo authInfo2 =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
 
         assertEquals(authInfo1, authInfo2);
         assertEquals(authInfo1, authInfo2);
     }
 
-    /**
-     * Test nextnonce getting/setting.
-     */
+    /** Test nextnonce getting/setting. */
     @Test
-    public void testNextNonce() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
-                1111111, "testcnonce", "auth", "FFFFFF");
+    void testNextNonce() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getNextServerNonce(), "testnonce");
 
         String newNonce = "newnonce";
@@ -77,13 +69,11 @@ public class AuthenticationInfoTestCase {
         assertEquals(authInfo.getNextServerNonce(), "newnonce");
     }
 
-    /**
-     * Test nonce-count getting/setting.
-     */
+    /** Test nonce-count getting/setting. */
     @Test
-    public void testNonceCount() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
-                1111111, "testcnonce", "auth", "FFFFFF");
+    void testNonceCount() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getNonceCount(), 1111111);
 
         int newNonceCount = 2222222;
@@ -91,13 +81,11 @@ public class AuthenticationInfoTestCase {
         assertEquals(authInfo.getNonceCount(), 2222222);
     }
 
-    /**
-     * Test message-qop getting/setting.
-     */
+    /** Test message-qop getting/setting. */
     @Test
-    public void testQop() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
-                1111111, "testcnonce", "auth", "FFFFFF");
+    void testQop() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getQuality(), "auth");
 
         String newQop = "auth-int";
@@ -105,13 +93,11 @@ public class AuthenticationInfoTestCase {
         assertEquals(authInfo.getQuality(), "auth-int");
     }
 
-    /**
-     * Test response-auth getting/setting.
-     */
+    /** Test response-auth getting/setting. */
     @Test
-    public void testResponseAuth() {
-        AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
-                1111111, "testcnonce", "auth", "FFFFFF");
+    void testResponseAuth() {
+        AuthenticationInfo authInfo =
+                new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getResponseDigest(), "FFFFFF");
 
         String newResponseAuth = "000000";
@@ -120,11 +106,11 @@ public class AuthenticationInfoTestCase {
     }
 
     @Test
-    public void testUnEquals() {
-        final AuthenticationInfo authInfo1 = new AuthenticationInfo(
-                "testnonce1", 1111111, "testcnonce1", "auth", "FFFFFF");
-        final AuthenticationInfo authInfo2 = new AuthenticationInfo(
-                "testnonce2", 1111111, "testcnonce2", "auth", "FFFFFF");
+    void testUnEquals() {
+        final AuthenticationInfo authInfo1 =
+                new AuthenticationInfo("testnonce1", 1111111, "testcnonce1", "auth", "FFFFFF");
+        final AuthenticationInfo authInfo2 =
+                new AuthenticationInfo("testnonce2", 1111111, "testcnonce2", "auth", "FFFFFF");
 
         assertNotEquals(authInfo1, authInfo2);
         assertNotEquals(null, authInfo1);

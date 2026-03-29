@@ -1,0 +1,10 @@
+/**
+ * Integration with Jackson 2.10. Jackson is a high-performance JSON processor able to serialize
+ * objects to JSON and back again.
+ *
+ * @since Restlet 2.0
+ * @see <a href="https://github.com/FasterXML/jackson">Jackson Web site</a>
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/jackson">User
+ *     Guide - Jackson extension</a>
+ */
+package org.restlet.ext.jackson;

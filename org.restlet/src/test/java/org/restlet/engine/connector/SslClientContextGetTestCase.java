@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static java.lang.String.format;
@@ -49,8 +48,8 @@ public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
         final Request request = new Request(Method.GET, uri);
         final Response response = client.handle(request);
 
-        assertEquals(Status.SUCCESS_OK, response.getStatus(),
-                response.getStatus().getDescription());
+        assertEquals(
+                Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
         assertEquals("Hello world", response.getEntity().getText());
         client.stop();
     }
@@ -86,9 +85,7 @@ public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
 
         @Override
         public Representation get(Variant variant) {
-            return new StringRepresentation("Hello world",
-                    MediaType.TEXT_PLAIN);
+            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
         }
     }
-
 }

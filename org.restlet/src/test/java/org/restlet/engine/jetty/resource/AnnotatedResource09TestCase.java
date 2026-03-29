@@ -1,22 +1,22 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.jetty.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.restlet.data.MediaType.*;
+import static org.restlet.data.MediaType.APPLICATION_XML;
+import static org.restlet.data.MediaType.TEXT_HTML;
+import static org.restlet.data.MediaType.TEXT_PLAIN;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.Application;
@@ -34,19 +34,19 @@ import org.restlet.routing.Router;
  *
  * @author Thierry Boileau
  */
-public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
+class AnnotatedResource09TestCase extends JettyConnectorTestCase {
 
-    public static final Method SI = new Method("SI", "What a method!",
-            "http://restlet.org", true, true);
+    public static final Method SI =
+            new Method("SI", "What a method!", "http://restlet.org", true, true);
 
-    public static final Method SNI = new Method("SNI", "What a method!",
-            "http://restlet.org", true, false);
+    public static final Method SNI =
+            new Method("SNI", "What a method!", "http://restlet.org", true, false);
 
-    public static final Method USI = new Method("USI", "What a method!",
-            "http://restlet.org", false, true);
+    public static final Method USI =
+            new Method("USI", "What a method!", "http://restlet.org", false, true);
 
-    public static final Method USNI = new Method("USNI", "What a method!",
-            "http://restlet.org", false, false);
+    public static final Method USNI =
+            new Method("USNI", "What a method!", "http://restlet.org", false, false);
 
     protected Application createApplication(final String path) {
         return new Application() {
@@ -59,8 +59,8 @@ public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
         };
     }
 
-    private final static String TEXT = "text";
-    private final static Form FORM = new Form("name=value");
+    private static final String TEXT = "text";
+    private static final Form FORM = new Form("name=value");
 
     static Stream<Method> methodsProvider() {
         return Stream.of(SI, SNI, USI, USNI);
@@ -68,7 +68,7 @@ public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
 
     @ParameterizedTest
     @MethodSource("methodsProvider")
-    public void testCustomMethod(final Method method) throws IOException, ResourceException {
+    void testCustomMethod(final Method method) throws IOException, ResourceException {
         final String methodName = method.getName().toLowerCase();
 
         Request request = createRequest(method);
@@ -76,7 +76,8 @@ public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
         assertTrue(response.getStatus().isSuccess());
         releaseResponse(response);
 
-        // the annotated method of the ServerResource that generates HTML and does not require an entity is invoked
+        // the annotated method of the ServerResource that generates HTML and does not require an
+        // entity is invoked
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes().add(new Preference<>(TEXT_HTML));
         response = handle(request);
@@ -87,7 +88,8 @@ public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
         // Invokes the annotated method of the ServerResource that
         //  - generates XML
         //  - does not require an entity
-        //  - which annotation does not handle input media type (@SIMethod(":xml") is preferred over @SIMethod("xml"))
+        //  - which annotation does not handle input media type (@SIMethod(":xml") is preferred over
+        // @SIMethod("xml"))
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes().add(new Preference<>(APPLICATION_XML));
         response = handle(request);
@@ -116,14 +118,17 @@ public class AnnotatedResource09TestCase extends JettyConnectorTestCase {
         assertEquals(TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals(methodName + "-txt|text", response.getEntity().getText());
 
-        // Without client's preference, one of the annotated method of the ServerResource that handles a Form is invoked
+        // Without client's preference, one of the annotated method of the ServerResource that
+        // handles a Form is invoked
         // (declarations order in class cannot be guaranteed)
         request = createRequest(method);
         request.setEntity(FORM.getWebRepresentation());
         response = handle(request);
 
-        assertTrue(Arrays.asList(TEXT_PLAIN, TEXT_HTML).contains(response.getEntity().getMediaType()));
-        assertTrue(Arrays.asList(methodName + "-form:txt", methodName + "-form:html").contains(response.getEntity().getText()));
+        assertTrue(
+                Arrays.asList(TEXT_PLAIN, TEXT_HTML).contains(response.getEntity().getMediaType()));
+        assertTrue(
+                Arrays.asList(methodName + "-form:txt", methodName + "-form:html")
+                        .contains(response.getEntity().getText()));
     }
-
 }

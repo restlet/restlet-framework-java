@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.gson;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -21,41 +19,36 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
 /**
- * Converter between the JSON and Representation classe based on Gson library.
- * 
+ * Converter between the JSON and Representation classes based on the Gson library.
+ *
  * @author Neal Mi
  */
 public class GsonConverter extends ConverterHelper {
 
     /** Variant with media type application/json. */
-    private static final VariantInfo VARIANT_JSON = new VariantInfo(
-            MediaType.APPLICATION_JSON);
+    private static final VariantInfo VARIANT_JSON = new VariantInfo(MediaType.APPLICATION_JSON);
 
     /**
      * Creates the unmarshaling {@link GsonRepresentation}.
-     * 
+     *
      * @param <T>
-     * @param source
-     *            The source representation to unmarshal.
-     * @param objectClass
-     *            The object class to instantiate.
+     * @param source The source representation to unmarshal.
+     * @param objectClass The object class to instantiate.
      * @return The unmarshaling {@link GsonRepresentation}.
      */
-    protected <T> GsonRepresentation<T> create(Representation source,
-            Class<T> objectClass) {
-        return new GsonRepresentation<T>(source, objectClass);
+    protected <T> GsonRepresentation<T> create(Representation source, Class<T> objectClass) {
+        return new GsonRepresentation<>(source, objectClass);
     }
 
     /**
      * Creates the marshaling {@link GsonRepresentation}.
-     * 
+     *
      * @param <T>
-     * @param source
-     *            The source object to marshal.
+     * @param source The source object to marshal.
      * @return The marshaling {@link GsonRepresentation}.
      */
     protected <T> GsonRepresentation<T> create(T source) {
-        return new GsonRepresentation<T>(source);
+        return new GsonRepresentation<>(source);
     }
 
     @Override
@@ -83,7 +76,7 @@ public class GsonConverter extends ConverterHelper {
 
     @Override
     public float score(Object source, Variant target, Resource resource) {
-        float result = -1.0F;
+        final float result;
 
         if (source instanceof GsonRepresentation<?>) {
             result = 1.0F;
@@ -101,14 +94,12 @@ public class GsonConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
+    public <T> float score(Representation source, Class<T> target, Resource resource) {
         float result = -1.0F;
 
         if (source instanceof GsonRepresentation<?>) {
             result = 1.0F;
-        } else if ((target != null)
-                && GsonRepresentation.class.isAssignableFrom(target)) {
+        } else if ((target != null) && GsonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
         } else if (VARIANT_JSON.isCompatible(source)) {
             result = 0.8F;
@@ -119,8 +110,8 @@ public class GsonConverter extends ConverterHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation source, Class<T> target,
-            Resource resource) throws IOException {
+    public <T> T toObject(Representation source, Class<T> target, Resource resource)
+            throws IOException {
         Object result = null;
 
         // The source for the gson conversion
@@ -134,8 +125,7 @@ public class GsonConverter extends ConverterHelper {
 
         if (gsonSource != null) {
             // Handle the conversion
-            if ((target != null)
-                    && GsonRepresentation.class.isAssignableFrom(target)) {
+            if ((target != null) && GsonRepresentation.class.isAssignableFrom(target)) {
                 result = gsonSource;
             } else {
                 result = gsonSource.getObject();
@@ -146,8 +136,7 @@ public class GsonConverter extends ConverterHelper {
     }
 
     @Override
-    public Representation toRepresentation(Object source, Variant target,
-            Resource resource) throws IOException {
+    public Representation toRepresentation(Object source, Variant target, Resource resource) {
         Representation result = null;
 
         if (source instanceof GsonRepresentation) {
@@ -158,8 +147,7 @@ public class GsonConverter extends ConverterHelper {
             }
 
             if (VARIANT_JSON.isCompatible(target)) {
-                GsonRepresentation<Object> gsonRepresentation = create(source);
-                result = gsonRepresentation;
+                result = create(source);
             }
         }
 
@@ -167,9 +155,7 @@ public class GsonConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
-            Class<T> entity) {
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences, Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
     }
-
 }

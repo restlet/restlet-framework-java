@@ -1,33 +1,32 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.ssl;
 
-import org.restlet.data.Parameter;
-import org.restlet.util.Series;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSocketFactory;
 import java.io.FileInputStream;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSocketFactory;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
 
 /**
- * This {@link SslContextFactory} makes it possible to configure most basic
- * options when building an SSLContext. See the {@link #init(Series)} method for
- * the list of parameters supported by this factory when configuring your HTTP
- * client or server connector. Here is the list of SSL related parameters that
- * are also supported:
+ * This {@link SslContextFactory} makes it possible to configure most basic options when building an
+ * SSLContext. See the {@link #init(Series)} method for the list of parameters supported by this
+ * factory when configuring your HTTP client or server connector. Here is the list of SSL related
+ * parameters that are also supported:
+ *
  * <table>
  * <caption>list of supported parameters</caption>
  * <tr>
@@ -146,750 +145,808 @@ import java.util.Set;
  * into account if the "needClientAuthentication" parameter is 'false'.</td>
  * </tr>
  * </table>
- * <p>
- * In short, two instances of KeyStore are used when configuring an SSLContext:
- * the key store (which contains the public and private keys and certificates to
- * be used locally) and the trust store (which generally holds the CA
- * certificates to be trusted when connecting to a remote host). Both keystore
- * and trust store are KeyStores. When not explicitly set using the setters of
- * this class, the values will default to the default system properties,
- * following the behavior described in the JSSE reference guide.
- * </p>
- * <p>
- * There is more information in the <a href=
- * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html"
- * >JSSE Reference Guide</a>.
- * </p>
- * 
+ *
+ * <p>In short, two instances of KeyStore are used when configuring an SSLContext: the key store
+ * (which contains the public and private keys and certificates to be used locally) and the trust
+ * store (which generally holds the CA certificates to be trusted when connecting to a remote host).
+ * Both keystore and trust store are KeyStores. When not explicitly set using the setters of this
+ * class, the values will default to the default system properties, following the behavior described
+ * in the JSSE reference guide.
+ *
+ * <p>There is more information in the <a href=
+ * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html" >JSSE
+ * Reference Guide</a>.
+ *
  * @author Bruno Harbulot
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
  * @see <a href=
- *      "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#AppA">JSSE
- *      Reference - Standard names</a>
+ *     "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#AppA">JSSE
+ *     Reference - Standard names</a>
  */
 public class DefaultSslContextFactory extends SslContextFactory {
 
-	/** The whitespace-separated list of disabled cipher suites. */
-	private volatile String[] disabledCipherSuites = null;
+    private static final String JAVAX_NET_SSL_KEY_PASSWORD = "javax.net.ssl.keyPassword";
+    private static final String JAVAX_NET_SSL_KEY_STORE_PASSWORD = "javax.net.ssl.keyStorePassword";
+    private static final String USER_HOME = "user.home";
+    private static final String JAVAX_NET_SSL_TRUST_STORE_PASSWORD =
+            "javax.net.ssl.trustStorePassword";
 
-	/** The whitespace-separated list of disabled SSL protocols. */
-	private volatile String[] disabledProtocols = null;
+    /** The whitespace-separated list of disabled cipher suites. */
+    private volatile String[] disabledCipherSuites = null;
 
-	/** The whitespace-separated list of enabled cipher suites. */
-	private volatile String[] enabledCipherSuites = null;
+    /** The whitespace-separated list of disabled SSL protocols. */
+    private volatile String[] disabledProtocols = null;
 
-	/** The whitespace-separated list of enabled SSL protocols. */
-	private volatile String[] enabledProtocols = null;
+    /** The whitespace-separated list of enabled cipher suites. */
+    private volatile String[] enabledCipherSuites = null;
 
-	/** The name of the KeyManager algorithm. */
-	private volatile String keyManagerAlgorithm = System.getProperty("ssl.KeyManagerFactory.algorithm", "SunX509");
+    /** The whitespace-separated list of enabled SSL protocols. */
+    private volatile String[] enabledProtocols = null;
 
-	/** The password for the key in the keystore (as a String). */
-	private volatile char[] keyStoreKeyPassword = (System.getProperty("javax.net.ssl.keyPassword",
-			System.getProperty("javax.net.ssl.keyStorePassword")) != null) ? System
-					.getProperty("javax.net.ssl.keyPassword", System.getProperty("javax.net.ssl.keyStorePassword"))
-					.toCharArray() : null;
+    private static final String SUN_X509 = "SunX509";
 
-	/** The password for the keystore (as a String). */
-	private volatile char[] keyStorePassword = (System.getProperty("javax.net.ssl.keyStorePassword") != null)
-			? System.getProperty("javax.net.ssl.keyStorePassword").toCharArray()
-			: null;
+    /** The name of the KeyManager algorithm. */
+    private volatile String keyManagerAlgorithm =
+            System.getProperty("ssl.KeyManagerFactory.algorithm", SUN_X509);
 
-	/** The path to the KeyStore file. */
-	private volatile String keyStorePath = System
-			.getProperty("javax.net.ssl.keyStore",
-					(System.getProperty("user.home") != null) ? ((System.getProperty("user.home").endsWith("/"))
-							? System.getProperty("user.home") + ".keystore"
-							: System.getProperty("user.home") + "/.keystore") : null);
+    /** The password for the key in the keystore (as a String). */
+    private volatile char[] keyStoreKeyPassword =
+            (System.getProperty(
+                                    JAVAX_NET_SSL_KEY_PASSWORD,
+                                    System.getProperty(JAVAX_NET_SSL_KEY_STORE_PASSWORD))
+                            != null)
+                    ? System.getProperty(
+                                    JAVAX_NET_SSL_KEY_PASSWORD,
+                                    System.getProperty(JAVAX_NET_SSL_KEY_STORE_PASSWORD))
+                            .toCharArray()
+                    : null;
 
-	/** The name of the keystore provider. */
-	private volatile String keyStoreProvider = System.getProperty("javax.net.ssl.keyStoreProvider");
+    /** The password for the keystore (as a String). */
+    private volatile char[] keyStorePassword =
+            (System.getProperty(JAVAX_NET_SSL_KEY_STORE_PASSWORD) != null)
+                    ? System.getProperty(JAVAX_NET_SSL_KEY_STORE_PASSWORD).toCharArray()
+                    : null;
 
-	/** The keyStore type of the keystore. */
-	private volatile String keyStoreType = System.getProperty("javax.net.ssl.keyStoreType", "JKS");
+    /** The path to the KeyStore file. */
+    private volatile String keyStorePath =
+            System.getProperty("javax.net.ssl.keyStore", getDefaultKeyStorePath());
 
-	/** Indicates if we require client certificate authentication. */
-	private volatile boolean needClientAuthentication = false;
+    private static String getDefaultKeyStorePath() {
+        final String userHome = System.getProperty(USER_HOME);
+        if (userHome == null) {
+            return null;
+        } else if (userHome.endsWith("/")) {
+            return userHome + ".keystore";
+        } else {
+            return userHome + "/.keystore";
+        }
+    }
 
-	/** The standard name of the protocol to use when creating the SSLContext. */
-	private volatile String protocol = "TLS";
+    /** The name of the keystore provider. */
+    private volatile String keyStoreProvider = System.getProperty("javax.net.ssl.keyStoreProvider");
 
-	/** The name of the SecureRandom algorithm. */
-	private volatile String secureRandomAlgorithm = null;
+    /** The keyStore type of the keystore. */
+    private volatile String keyStoreType = System.getProperty("javax.net.ssl.keyStoreType", "JKS");
 
-	/** The name of the TrustManager algorithm. */
-	private volatile String trustManagerAlgorithm = System.getProperty("ssl.TrustManagerFactory.algorithm", "SunX509");
+    /** Indicates if we require client certificate authentication. */
+    private volatile boolean needClientAuthentication = false;
 
-	/** The password for the trust store keystore. */
-	private volatile char[] trustStorePassword = (System.getProperty("javax.net.ssl.trustStorePassword") != null)
-			? System.getProperty("javax.net.ssl.trustStorePassword").toCharArray()
-			: null;
+    /** The standard name of the protocol to use when creating the SSLContext. */
+    private volatile String protocol = "TLS";
 
-	/** The path to the trust store (keystore) file. */
-	private volatile String trustStorePath = System.getProperty("javax.net.ssl.trustStore");
+    /** The name of the SecureRandom algorithm. */
+    private volatile String secureRandomAlgorithm = null;
 
-	/** The name of the trust store (keystore) provider. */
-	private volatile String trustStoreProvider = System.getProperty("javax.net.ssl.trustStoreProvider");
+    /** The name of the TrustManager algorithm. */
+    private volatile String trustManagerAlgorithm =
+            System.getProperty("ssl.TrustManagerFactory.algorithm", SUN_X509);
 
-	/** The KeyStore type of the trust store. */
-	private volatile String trustStoreType = System.getProperty("javax.net.ssl.trustStoreType");
+    /** The password for the trust store keystore. */
+    private volatile char[] trustStorePassword =
+            (System.getProperty(JAVAX_NET_SSL_TRUST_STORE_PASSWORD) != null)
+                    ? System.getProperty(JAVAX_NET_SSL_TRUST_STORE_PASSWORD).toCharArray()
+                    : null;
 
-	/** Indicates if we would like client certificate authentication. */
-	private volatile boolean wantClientAuthentication = false;
+    /** The path to the trust store (keystore) file. */
+    private volatile String trustStorePath = System.getProperty("javax.net.ssl.trustStore");
 
-	/**
-	 * This class is likely to contain sensitive information; cloning is therefore
-	 * not allowed.
-	 */
-	@Override
-	protected final DefaultSslContextFactory clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
+    /** The name of the trust store (keystore) provider. */
+    private volatile String trustStoreProvider =
+            System.getProperty("javax.net.ssl.trustStoreProvider");
 
-	/**
-	 * Creates a configured and initialized SSLContext from the values set via the
-	 * various setters of this class. If <code>keyStorePath</code>,
-	 * <code>keyStoreProvider</code>, <code>keyStoreType</code> are all
-	 * <code>null</code>, the SSLContext will be initialized with a
-	 * <code>null</core> array of <code>KeyManager</code>s. Similarly, if
-	 * <code>trustStorePath</code>, <code>trustStoreProvider</code>,
-	 * <code>trustStoreType</code> are all <code>null</code>, a <code>null</code>
-	 * array of <code>TrustManager</code>s will be used.
-	 * 
-	 * @see SSLContext#init(javax.net.ssl.KeyManager[],
-	 *      javax.net.ssl.TrustManager[], SecureRandom)
-	 */
-	@Override
-	public javax.net.ssl.SSLContext createSslContext() throws Exception {
-		final javax.net.ssl.SSLContext result;
+    /** The KeyStore type of the trust store. */
+    private volatile String trustStoreType = System.getProperty("javax.net.ssl.trustStoreType");
 
-		final javax.net.ssl.KeyManagerFactory kmf;
-		if ((this.keyStorePath != null) || (this.keyStoreProvider != null) || (this.keyStoreType != null)) {
-			final KeyStore keyStore = loadKeyStore(this.keyStorePath, this.keyStoreProvider, this.keyStoreType, this.keyStorePassword);
+    /** Indicates if we would like client certificate authentication. */
+    private volatile boolean wantClientAuthentication = false;
 
-			// Creates the key-manager factory.
-			kmf = javax.net.ssl.KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
-			kmf.init(keyStore, this.keyStoreKeyPassword);
-		} else {
-			kmf = null;
-		}
+    /** This class is likely to contain sensitive information; cloning is therefore not allowed. */
+    @Override
+    protected final DefaultSslContextFactory clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
-		final javax.net.ssl.TrustManagerFactory tmf;
-		if ((this.trustStorePath != null) || (this.trustStoreProvider != null) || (this.trustStoreType != null)) {
-			final KeyStore trustStore = loadKeyStore(this.trustStorePath, this.trustStoreProvider, this.trustStoreType, this.trustStorePassword);
+    /**
+     * Creates a configured and initialized SSLContext from the values set via the
+     * various setters of this class. If <code>keyStorePath</code>,
+     * <code>keyStoreProvider</code>, <code>keyStoreType</code> are all
+     * <code>null</code>, the SSLContext will be initialized with a
+     * <code>null</core> array of <code>KeyManager</code>s. Similarly, if
+     * <code>trustStorePath</code>, <code>trustStoreProvider</code>,
+     * <code>trustStoreType</code> are all <code>null</code>, a <code>null</code>
+     * array of <code>TrustManager</code>s will be used.
+     *
+     * @see SSLContext#init(javax.net.ssl.KeyManager[],
+     * javax.net.ssl.TrustManager[], SecureRandom)
+     */
+    @Override
+    public javax.net.ssl.SSLContext createSslContext() throws Exception {
+        final javax.net.ssl.SSLContext result;
 
-			// Creates the trust-manager factory.
-			tmf = javax.net.ssl.TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
-			tmf.init(trustStore);
-		} else {
-			tmf = null;
-		}
+        final javax.net.ssl.KeyManagerFactory kmf;
+        if ((this.keyStorePath != null)
+                || (this.keyStoreProvider != null)
+                || (this.keyStoreType != null)) {
+            final KeyStore keyStore =
+                    loadKeyStore(
+                            this.keyStorePath,
+                            this.keyStoreProvider,
+                            this.keyStoreType,
+                            this.keyStorePassword);
 
-		final SecureRandom sr;
-		if (this.secureRandomAlgorithm != null) {
-			sr = SecureRandom.getInstance(this.secureRandomAlgorithm);
-		} else {
-			sr = null;
-		}
+            // Creates the key-manager factory.
+            kmf = javax.net.ssl.KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
+            kmf.init(keyStore, this.keyStoreKeyPassword);
+        } else {
+            kmf = null;
+        }
 
-		// Creates the SSL context
-		final javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(this.protocol);
-		sslContext.init(kmf != null ? kmf.getKeyManagers() : null, tmf != null ? tmf.getTrustManagers() : null, sr);
+        final javax.net.ssl.TrustManagerFactory tmf;
+        if ((this.trustStorePath != null)
+                || (this.trustStoreProvider != null)
+                || (this.trustStoreType != null)) {
+            final KeyStore trustStore =
+                    loadKeyStore(
+                            this.trustStorePath,
+                            this.trustStoreProvider,
+                            this.trustStoreType,
+                            this.trustStorePassword);
 
-		// Wraps the SSL context to be able to set cipher suites and other
-		// properties after SSL engine creation, for example
-		result = createWrapper(sslContext);
-		return result;
-	}
+            // Creates the trust-manager factory.
+            tmf = javax.net.ssl.TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
+            tmf.init(trustStore);
+        } else {
+            tmf = null;
+        }
 
-	/**
-	 * Creates a new {@link SSLContext} wrapper. Necessary to properly initialize
-	 * the {@link SSLEngine} or {@link SSLSocketFactory} or
-	 * {@link javax.net.ssl.SSLServerSocketFactory} created.
-	 * 
-	 * @param sslContext The SSL context to wrap.
-	 * @return The SSL context wrapper.
-	 */
-	protected javax.net.ssl.SSLContext createWrapper(javax.net.ssl.SSLContext sslContext) {
-		return new DefaultSslContext(this, sslContext);
-	}
+        final SecureRandom sr;
+        if (this.secureRandomAlgorithm != null) {
+            sr = SecureRandom.getInstance(this.secureRandomAlgorithm);
+        } else {
+            sr = null;
+        }
 
-	/**
-	 * Returns the whitespace-separated list of disabled cipher suites.
-	 * 
-	 * @return The whitespace-separated list of disabled cipher suites.
-	 */
-	public String[] getDisabledCipherSuites() {
-		return disabledCipherSuites;
-	}
+        // Creates the SSL context
+        final javax.net.ssl.SSLContext sslContext =
+                javax.net.ssl.SSLContext.getInstance(this.protocol);
+        sslContext.init(
+                kmf != null ? kmf.getKeyManagers() : null,
+                tmf != null ? tmf.getTrustManagers() : null,
+                sr);
 
-	/**
-	 * Returns the whitespace-separated list of disabled SSL protocols.
-	 * 
-	 * @return The whitespace-separated list of disabled SSL protocols.
-	 */
-	public String[] getDisabledProtocols() {
-		return disabledProtocols;
-	}
+        // Wraps the SSL context to be able to set cipher suites and other
+        // properties after SSL engine creation, for example
+        result = createWrapper(sslContext);
+        return result;
+    }
 
-	/**
-	 * Returns the whitespace-separated list of enabled cipher suites.
-	 * 
-	 * @return The whitespace-separated list of enabled cipher suites.
-	 */
-	public String[] getEnabledCipherSuites() {
-		return enabledCipherSuites;
-	}
+    /**
+     * Creates a new {@link SSLContext} wrapper. Necessary to properly initialize the {@link
+     * SSLEngine} or {@link SSLSocketFactory} or {@link javax.net.ssl.SSLServerSocketFactory}
+     * created.
+     *
+     * @param sslContext The SSL context to wrap.
+     * @return The SSL context wrapper.
+     */
+    protected javax.net.ssl.SSLContext createWrapper(javax.net.ssl.SSLContext sslContext) {
+        return new DefaultSslContext(this, sslContext);
+    }
 
-	/**
-	 * Returns the whitespace-separated list of enabled SSL protocols.
-	 * 
-	 * @return The whitespace-separated list of enabled SSL protocols.
-	 */
-	public String[] getEnabledProtocols() {
-		return enabledProtocols;
-	}
+    /**
+     * Returns the whitespace-separated list of disabled cipher suites.
+     *
+     * @return The whitespace-separated list of disabled cipher suites.
+     */
+    public String[] getDisabledCipherSuites() {
+        return disabledCipherSuites;
+    }
 
-	/**
-	 * Returns the name of the KeyManager algorithm.
-	 * 
-	 * @return The name of the KeyManager algorithm.
-	 */
-	public String getKeyManagerAlgorithm() {
-		return keyManagerAlgorithm;
-	}
+    /**
+     * Returns the whitespace-separated list of disabled SSL protocols.
+     *
+     * @return The whitespace-separated list of disabled SSL protocols.
+     */
+    public String[] getDisabledProtocols() {
+        return disabledProtocols;
+    }
 
-	/**
-	 * Returns the password for the key in the keystore (as a String).
-	 * 
-	 * @return The password for the key in the keystore (as a String).
-	 */
-	public char[] getKeyStoreKeyPassword() {
-		return keyStoreKeyPassword;
-	}
+    /**
+     * Returns the whitespace-separated list of enabled cipher suites.
+     *
+     * @return The whitespace-separated list of enabled cipher suites.
+     */
+    public String[] getEnabledCipherSuites() {
+        return enabledCipherSuites;
+    }
 
-	/**
-	 * Returns the password for the keystore (as a String).
-	 * 
-	 * @return The password for the keystore (as a String).
-	 */
-	public char[] getKeyStorePassword() {
-		return keyStorePassword;
-	}
+    /**
+     * Returns the whitespace-separated list of enabled SSL protocols.
+     *
+     * @return The whitespace-separated list of enabled SSL protocols.
+     */
+    public String[] getEnabledProtocols() {
+        return enabledProtocols;
+    }
 
-	/**
-	 * Returns the path to the KeyStore file.
-	 * 
-	 * @return The path to the KeyStore file.
-	 */
-	public String getKeyStorePath() {
-		return keyStorePath;
-	}
+    /**
+     * Returns the name of the KeyManager algorithm.
+     *
+     * @return The name of the KeyManager algorithm.
+     */
+    public String getKeyManagerAlgorithm() {
+        return keyManagerAlgorithm;
+    }
 
-	/**
-	 * Returns the name of the keystore provider.
-	 * 
-	 * @return The name of the keystore provider.
-	 */
-	public String getKeyStoreProvider() {
-		return keyStoreProvider;
-	}
+    /**
+     * Returns the password for the key in the keystore (as a String).
+     *
+     * @return The password for the key in the keystore (as a String).
+     */
+    public char[] getKeyStoreKeyPassword() {
+        return keyStoreKeyPassword;
+    }
 
-	/**
-	 * Returns the keyStore type of the keystore.
-	 * 
-	 * @return The keyStore type of the keystore.
-	 */
-	public String getKeyStoreType() {
-		return keyStoreType;
-	}
+    /**
+     * Returns the password for the keystore (as a String).
+     *
+     * @return The password for the keystore (as a String).
+     */
+    public char[] getKeyStorePassword() {
+        return keyStorePassword;
+    }
 
-	/**
-	 * Returns the secure socket protocol name, "TLS" by default.
-	 * 
-	 * @return The secure socket protocol.
-	 */
-	public String getProtocol() {
-		return this.protocol;
-	}
+    /**
+     * Returns the path to the KeyStore file.
+     *
+     * @return The path to the KeyStore file.
+     */
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
 
-	/**
-	 * Returns the name of the SecureRandom algorithm.
-	 * 
-	 * @return The name of the SecureRandom algorithm.
-	 */
-	public String getSecureRandomAlgorithm() {
-		return secureRandomAlgorithm;
-	}
+    /**
+     * Returns the name of the keystore provider.
+     *
+     * @return The name of the keystore provider.
+     */
+    public String getKeyStoreProvider() {
+        return keyStoreProvider;
+    }
 
-	/**
-	 * Returns the selected cipher suites. The selection is the subset of supported
-	 * suites that are both in the enabled suites and out of the disabled suites.
-	 * 
-	 * @param supportedCipherSuites The initial cipher suites to restrict.
-	 * @return The selected cipher suites.
-	 */
-	public String[] getSelectedCipherSuites(String[] supportedCipherSuites) {
-		Set<String> resultSet = new HashSet<String>();
+    /**
+     * Returns the keyStore type of the keystore.
+     *
+     * @return The keyStore type of the keystore.
+     */
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
 
-		if (supportedCipherSuites != null) {
-			for (String supportedCipherSuite : supportedCipherSuites) {
-				if (((getEnabledCipherSuites() == null)
-						|| Arrays.asList(getEnabledCipherSuites()).contains(supportedCipherSuite))
-						&& ((getDisabledCipherSuites() == null)
-								|| !Arrays.asList(getDisabledCipherSuites()).contains(supportedCipherSuite))) {
-					resultSet.add(supportedCipherSuite);
-				}
-			}
-		}
+    /**
+     * Returns the secure socket protocol name, "TLS" by default.
+     *
+     * @return The secure socket protocol.
+     */
+    public String getProtocol() {
+        return this.protocol;
+    }
 
-		String[] result = new String[resultSet.size()];
-		return resultSet.toArray(result);
-	}
+    /**
+     * Returns the name of the SecureRandom algorithm.
+     *
+     * @return The name of the SecureRandom algorithm.
+     */
+    public String getSecureRandomAlgorithm() {
+        return secureRandomAlgorithm;
+    }
 
-	/**
-	 * Returns the selected SSL protocols. The selection is the subset of supported
-	 * protocols whose name starts with the name of {@link #getEnabledProtocols()} name.
-	 * 
-	 * @param supportedProtocols The selected SSL protocols.
-	 * @return The selected SSL protocols.
-	 */
-	public String[] getSelectedSslProtocols(String[] supportedProtocols) {
-		Set<String> resultSet = new HashSet<String>();
+    /**
+     * Returns the selected cipher suites. The selection is the subset of supported suites that are
+     * both in the enabled suites and out of the disabled suites.
+     *
+     * @param supportedCipherSuites The initial cipher suites to restrict.
+     * @return The selected cipher suites.
+     */
+    public String[] getSelectedCipherSuites(String[] supportedCipherSuites) {
+        Set<String> resultSet = new HashSet<>();
 
-		if (supportedProtocols != null) {
-			for (String supportedProtocol : supportedProtocols) {
-				if (((getEnabledProtocols() == null)
-						|| Arrays.asList(getEnabledProtocols()).contains(supportedProtocol))
-						&& ((getDisabledProtocols() == null)
-								|| !Arrays.asList(getDisabledProtocols()).contains(supportedProtocol))) {
-					resultSet.add(supportedProtocol);
-				}
-			}
-		}
+        if (supportedCipherSuites != null) {
+            for (String supportedCipherSuite : supportedCipherSuites) {
+                if (((getEnabledCipherSuites() == null)
+                                || Arrays.asList(getEnabledCipherSuites())
+                                        .contains(supportedCipherSuite))
+                        && ((getDisabledCipherSuites() == null)
+                                || !Arrays.asList(getDisabledCipherSuites())
+                                        .contains(supportedCipherSuite))) {
+                    resultSet.add(supportedCipherSuite);
+                }
+            }
+        }
 
-		String[] result = new String[resultSet.size()];
-		return resultSet.toArray(result);
-	}
+        String[] result = new String[resultSet.size()];
+        return resultSet.toArray(result);
+    }
 
-	/**
-	 * Returns the name of the TrustManager algorithm.
-	 * 
-	 * @return The name of the TrustManager algorithm.
-	 */
-	public String getTrustManagerAlgorithm() {
-		return trustManagerAlgorithm;
-	}
+    /**
+     * Returns the selected SSL protocols. The selection is the subset of supported protocols whose
+     * name starts with the name of {@link #getEnabledProtocols()} name.
+     *
+     * @param supportedProtocols The selected SSL protocols.
+     * @return The selected SSL protocols.
+     */
+    public String[] getSelectedSslProtocols(String[] supportedProtocols) {
+        Set<String> resultSet = new HashSet<>();
 
-	/**
-	 * Returns the password for the trust store keystore.
-	 * 
-	 * @return The password for the trust store keystore.
-	 */
-	public char[] getTrustStorePassword() {
-		return trustStorePassword;
-	}
+        if (supportedProtocols != null) {
+            for (String supportedProtocol : supportedProtocols) {
+                if (((getEnabledProtocols() == null)
+                                || Arrays.asList(getEnabledProtocols()).contains(supportedProtocol))
+                        && ((getDisabledProtocols() == null)
+                                || !Arrays.asList(getDisabledProtocols())
+                                        .contains(supportedProtocol))) {
+                    resultSet.add(supportedProtocol);
+                }
+            }
+        }
 
-	/**
-	 * Returns the path to the trust store (keystore) file.
-	 * 
-	 * @return The path to the trust store (keystore) file.
-	 */
-	public String getTrustStorePath() {
-		return trustStorePath;
-	}
+        String[] result = new String[resultSet.size()];
+        return resultSet.toArray(result);
+    }
 
-	/**
-	 * Returns the name of the trust store (keystore) provider.
-	 * 
-	 * @return The name of the trust store (keystore) provider.
-	 */
-	public String getTrustStoreProvider() {
-		return trustStoreProvider;
-	}
+    /**
+     * Returns the name of the TrustManager algorithm.
+     *
+     * @return The name of the TrustManager algorithm.
+     */
+    public String getTrustManagerAlgorithm() {
+        return trustManagerAlgorithm;
+    }
 
-	/**
-	 * Returns the KeyStore type of the trust store.
-	 * 
-	 * @return The KeyStore type of the trust store.
-	 */
-	public String getTrustStoreType() {
-		return trustStoreType;
-	}
+    /**
+     * Returns the password for the trust store keystore.
+     *
+     * @return The password for the trust store keystore.
+     */
+    public char[] getTrustStorePassword() {
+        return trustStorePassword;
+    }
 
-	/**
-	 * Sets the following options according to parameters that may have been set up
-	 * directly in the HttpsClientHelper or HttpsServerHelper parameters. See class
-	 * Javadocs for the list of parameters supported.
-	 * 
-	 * @param helperParameters Typically, the parameters that would have been
-	 *                         obtained from HttpsServerHelper.getParameters()
-	 */
-	@Override
-	public void init(Series<Parameter> helperParameters) {
-		// Parses and set the disabled cipher suites
-		String[] disabledCipherSuitesArray = helperParameters.getValuesArray("disabledCipherSuites");
-		Set<String> disabledCipherSuites = new HashSet<>();
+    /**
+     * Returns the path to the trust store (keystore) file.
+     *
+     * @return The path to the trust store (keystore) file.
+     */
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
 
-		for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
-            Collections.addAll(disabledCipherSuites, disabledCipherSuiteSeries.split(" "));
-		}
+    /**
+     * Returns the name of the trust store (keystore) provider.
+     *
+     * @return The name of the trust store (keystore) provider.
+     */
+    public String getTrustStoreProvider() {
+        return trustStoreProvider;
+    }
 
-        if (disabledCipherSuites.isEmpty()) {
+    /**
+     * Returns the KeyStore type of the trust store.
+     *
+     * @return The KeyStore type of the trust store.
+     */
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
+
+    /**
+     * Sets the following options according to parameters that may have been set up directly in the
+     * HttpsClientHelper or HttpsServerHelper parameters. See class Javadocs for the list of
+     * parameters supported.
+     *
+     * @param helperParameters Typically, the parameters that would have been obtained from
+     *     HttpsServerHelper.getParameters()
+     */
+    @Override
+    public void init(Series<Parameter> helperParameters) {
+        // Parses and set the disabled cipher suites
+        String[] disabledCipherSuitesArray =
+                helperParameters.getValuesArray("disabledCipherSuites");
+        Set<String> disabledCipherSuitesSet = new HashSet<>();
+
+        for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
+            Collections.addAll(disabledCipherSuitesSet, disabledCipherSuiteSeries.split(" "));
+        }
+
+        if (disabledCipherSuitesSet.isEmpty()) {
             setDisabledCipherSuites(null);
         } else {
-            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
-            disabledCipherSuites.toArray(disabledCipherSuitesArray);
+            disabledCipherSuitesArray = new String[disabledCipherSuitesSet.size()];
+            disabledCipherSuitesSet.toArray(disabledCipherSuitesArray);
             setDisabledCipherSuites(disabledCipherSuitesArray);
         }
 
         // Parses and set the disabled protocols
-		String[] disabledProtocolsArray = helperParameters.getValuesArray("disabledProtocols");
-		Set<String> disabledProtocols = new HashSet<>();
+        String[] disabledProtocolsArray = helperParameters.getValuesArray("disabledProtocols");
+        Set<String> disabledProtocolsSet = new HashSet<>();
 
-		for (String disabledProtocolsSeries : disabledProtocolsArray) {
-            Collections.addAll(disabledProtocols, disabledProtocolsSeries.split(" "));
-		}
+        for (String disabledProtocolsSeries : disabledProtocolsArray) {
+            Collections.addAll(disabledProtocolsSet, disabledProtocolsSeries.split(" "));
+        }
 
-        if (disabledProtocols.isEmpty()) {
+        if (disabledProtocolsSet.isEmpty()) {
             setDisabledProtocols(null);
         } else {
-            disabledProtocolsArray = new String[disabledProtocols.size()];
-            disabledProtocols.toArray(disabledProtocolsArray);
+            disabledProtocolsArray = new String[disabledProtocolsSet.size()];
+            disabledProtocolsSet.toArray(disabledProtocolsArray);
             setDisabledProtocols(disabledProtocolsArray);
         }
 
         // Parses and set the enabled cipher suites
-		String[] enabledCipherSuitesArray = helperParameters.getValuesArray("enabledCipherSuites");
-		Set<String> enabledCipherSuites = new HashSet<>();
+        String[] enabledCipherSuitesArray = helperParameters.getValuesArray("enabledCipherSuites");
+        Set<String> enabledCipherSuitesSet = new HashSet<>();
 
-		for (String enabledCipherSuiteSeries : enabledCipherSuitesArray) {
-            Collections.addAll(enabledCipherSuites, enabledCipherSuiteSeries.split(" "));
-		}
+        for (String enabledCipherSuiteSeries : enabledCipherSuitesArray) {
+            Collections.addAll(enabledCipherSuitesSet, enabledCipherSuiteSeries.split(" "));
+        }
 
-        if (enabledCipherSuites.isEmpty()) {
+        if (enabledCipherSuitesSet.isEmpty()) {
             setEnabledCipherSuites(null);
         } else {
-            enabledCipherSuitesArray = new String[enabledCipherSuites.size()];
-            enabledCipherSuites.toArray(enabledCipherSuitesArray);
+            enabledCipherSuitesArray = new String[enabledCipherSuitesSet.size()];
+            enabledCipherSuitesSet.toArray(enabledCipherSuitesArray);
             setEnabledCipherSuites(enabledCipherSuitesArray);
         }
 
         // Parses and set the enabled protocols
-		String[] enabledProtocolsArray = helperParameters.getValuesArray("enabledProtocols");
-		Set<String> enabledProtocols = new HashSet<>();
+        String[] enabledProtocolsArray = helperParameters.getValuesArray("enabledProtocols");
+        Set<String> enabledProtocolsSet = new HashSet<>();
 
-		for (String enabledProtocolSeries : enabledProtocolsArray) {
-            Collections.addAll(enabledProtocols, enabledProtocolSeries.split(" "));
-		}
+        for (String enabledProtocolSeries : enabledProtocolsArray) {
+            Collections.addAll(enabledProtocolsSet, enabledProtocolSeries.split(" "));
+        }
 
-        if (enabledProtocols.isEmpty()) {
+        if (enabledProtocolsSet.isEmpty()) {
             setEnabledProtocols(null);
         } else {
-            enabledProtocolsArray = new String[enabledProtocols.size()];
-            enabledProtocols.toArray(enabledProtocolsArray);
+            enabledProtocolsArray = new String[enabledProtocolsSet.size()];
+            enabledProtocolsSet.toArray(enabledProtocolsArray);
             setEnabledProtocols(enabledProtocolsArray);
         }
 
-        setKeyManagerAlgorithm(helperParameters.getFirstValue("keyManagerAlgorithm", true,
-				System.getProperty("ssl.KeyManagerFactory.algorithm", "SunX509")));
-		setKeyStorePassword(helperParameters.getFirstValue("keyStorePassword", true,
-				System.getProperty("javax.net.ssl.keyStorePassword", "")));
-		setKeyStoreKeyPassword(
-				helperParameters.getFirstValue("keyPassword", true, System.getProperty("javax.net.ssl.keyPassword")));
+        setKeyManagerAlgorithm(
+                helperParameters.getFirstValue(
+                        "keyManagerAlgorithm",
+                        true,
+                        System.getProperty("ssl.KeyManagerFactory.algorithm", SUN_X509)));
+        setKeyStorePassword(
+                helperParameters.getFirstValue(
+                        "keyStorePassword",
+                        true,
+                        System.getProperty(JAVAX_NET_SSL_KEY_STORE_PASSWORD, "")));
+        setKeyStoreKeyPassword(
+                helperParameters.getFirstValue(
+                        "keyPassword", true, System.getProperty(JAVAX_NET_SSL_KEY_PASSWORD)));
 
-		if (this.keyStoreKeyPassword == null) {
-			this.keyStoreKeyPassword = this.keyStorePassword;
-		}
+        if (this.keyStoreKeyPassword == null) {
+            this.keyStoreKeyPassword = this.keyStorePassword;
+        }
 
-		setKeyStorePath(
-				helperParameters.getFirstValue("keyStorePath", true, System.getProperty("javax.net.ssl.keyStore")));
-		setKeyStoreType(
-				helperParameters.getFirstValue("keyStoreType", true, System.getProperty("javax.net.ssl.keyStoreType")));
-		setNeedClientAuthentication(
-				Boolean.parseBoolean(helperParameters.getFirstValue("needClientAuthentication", true, "false")));
-		setProtocol(helperParameters.getFirstValue("protocol", true, "TLS"));
-		setSecureRandomAlgorithm(helperParameters.getFirstValue("secureRandomAlgorithm", true));
-		setTrustManagerAlgorithm(helperParameters.getFirstValue("trustManagerAlgorithm", true,
-				System.getProperty("ssl.TrustManagerFactory.algorithm", "SunX509")));
-		setTrustStorePassword(helperParameters.getFirstValue("trustStorePassword", true,
-				System.getProperty("javax.net.ssl.trustStorePassword")));
-		setTrustStorePath(
-				helperParameters.getFirstValue("trustStorePath", true, System.getProperty("javax.net.ssl.trustStore")));
-		setTrustStoreType(helperParameters.getFirstValue("trustStoreType", true,
-				System.getProperty("javax.net.ssl.trustStoreType")));
-		setWantClientAuthentication(
-				Boolean.parseBoolean(helperParameters.getFirstValue("wantClientAuthentication", true, "false")));
-	}
+        setKeyStorePath(
+                helperParameters.getFirstValue(
+                        "keyStorePath", true, System.getProperty("javax.net.ssl.keyStore")));
+        setKeyStoreType(
+                helperParameters.getFirstValue(
+                        "keyStoreType", true, System.getProperty("javax.net.ssl.keyStoreType")));
+        setNeedClientAuthentication(
+                Boolean.parseBoolean(
+                        helperParameters.getFirstValue("needClientAuthentication", true, "false")));
+        setProtocol(helperParameters.getFirstValue("protocol", true, "TLS"));
+        setSecureRandomAlgorithm(helperParameters.getFirstValue("secureRandomAlgorithm", true));
+        setTrustManagerAlgorithm(
+                helperParameters.getFirstValue(
+                        "trustManagerAlgorithm",
+                        true,
+                        System.getProperty("ssl.TrustManagerFactory.algorithm", SUN_X509)));
+        setTrustStorePassword(
+                helperParameters.getFirstValue(
+                        "trustStorePassword",
+                        true,
+                        System.getProperty(JAVAX_NET_SSL_TRUST_STORE_PASSWORD)));
+        setTrustStorePath(
+                helperParameters.getFirstValue(
+                        "trustStorePath", true, System.getProperty("javax.net.ssl.trustStore")));
+        setTrustStoreType(
+                helperParameters.getFirstValue(
+                        "trustStoreType",
+                        true,
+                        System.getProperty("javax.net.ssl.trustStoreType")));
+        setWantClientAuthentication(
+                Boolean.parseBoolean(
+                        helperParameters.getFirstValue("wantClientAuthentication", true, "false")));
+    }
 
-	/**
-	 * Indicates if we require client certificate authentication.
-	 * 
-	 * @return True if we require client certificate authentication.
-	 */
-	public boolean isNeedClientAuthentication() {
-		return needClientAuthentication;
-	}
+    /**
+     * Indicates if we require client certificate authentication.
+     *
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return needClientAuthentication;
+    }
 
-	/**
-	 * Indicates if we would like client certificate authentication.
-	 * 
-	 * @return True if we would like client certificate authentication.
-	 */
-	public boolean isWantClientAuthentication() {
-		return wantClientAuthentication;
-	}
+    /**
+     * Indicates if we would like client certificate authentication.
+     *
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return wantClientAuthentication;
+    }
 
-	/**
-	 * Loads a keystore according to its file path, type and password.
-	 * @param path The file path of the keystore.
-	 * @param provider The name of the keystore provider.
-	 * @param type The keystore type of the keystore.
-	 * @param password the optional password of the keystore.
-	 * @return a keystore.
-	 * @throws Exception
-	 */
-	protected KeyStore loadKeyStore(String path, String provider, String type, char[] password) throws Exception {
-		final String nonNullKeyStoreType = (type != null) ? type : KeyStore.getDefaultType();
-		final KeyStore keyStore = (provider != null)
-				? KeyStore.getInstance(nonNullKeyStoreType, provider)
-				: KeyStore.getInstance(nonNullKeyStoreType);
+    /**
+     * Loads a keystore according to its file path, type and password.
+     *
+     * @param path The file path of the keystore.
+     * @param provider The name of the keystore provider.
+     * @param type The keystore type of the keystore.
+     * @param password the optional password of the keystore.
+     * @return a keystore.
+     * @throws Exception
+     */
+    protected KeyStore loadKeyStore(String path, String provider, String type, char[] password)
+            throws Exception {
+        final String nonNullKeyStoreType = (type != null) ? type : KeyStore.getDefaultType();
+        final KeyStore keyStore =
+                (provider != null)
+                        ? KeyStore.getInstance(nonNullKeyStoreType, provider)
+                        : KeyStore.getInstance(nonNullKeyStoreType);
 
-		try (FileInputStream keyStoreInputStream = ((path != null) && (!"NONE".equals(path)))
-				? new FileInputStream(path)
-				: null) {
-			keyStore.load(keyStoreInputStream, password);
-		}
+        try (FileInputStream keyStoreInputStream =
+                ((path != null) && (!"NONE".equals(path))) ? new FileInputStream(path) : null) {
+            keyStore.load(keyStoreInputStream, password);
+        }
 
-		return keyStore;
-	}
+        return keyStore;
+    }
 
-	/**
-	 * Sets the whitespace-separated list of disabled cipher suites.
-	 * 
-	 * @param disabledCipherSuites The whitespace-separated list of disabled cipher
-	 *                             suites.
-	 */
-	public void setDisabledCipherSuites(String[] disabledCipherSuites) {
-		this.disabledCipherSuites = disabledCipherSuites;
-	}
+    /**
+     * Sets the whitespace-separated list of disabled cipher suites.
+     *
+     * @param disabledCipherSuites The whitespace-separated list of disabled cipher suites.
+     */
+    public void setDisabledCipherSuites(String[] disabledCipherSuites) {
+        this.disabledCipherSuites = disabledCipherSuites;
+    }
 
-	/**
-	 * Sets the whitespace-separated list of disabled SSL protocols.
-	 * 
-	 * @param disabledProtocols The whitespace-separated list of disabled SSL
-	 *                          protocols.
-	 */
-	public void setDisabledProtocols(String[] disabledProtocols) {
-		this.disabledProtocols = disabledProtocols;
-	}
+    /**
+     * Sets the whitespace-separated list of disabled SSL protocols.
+     *
+     * @param disabledProtocols The whitespace-separated list of disabled SSL protocols.
+     */
+    public void setDisabledProtocols(String[] disabledProtocols) {
+        this.disabledProtocols = disabledProtocols;
+    }
 
-	/**
-	 * Sets the whitespace-separated list of enabled cipher suites.
-	 * 
-	 * @param enabledCipherSuites The whitespace-separated list of enabled cipher
-	 *                            suites.
-	 */
-	public void setEnabledCipherSuites(String[] enabledCipherSuites) {
-		this.enabledCipherSuites = enabledCipherSuites;
-	}
+    /**
+     * Sets the whitespace-separated list of enabled cipher suites.
+     *
+     * @param enabledCipherSuites The whitespace-separated list of enabled cipher suites.
+     */
+    public void setEnabledCipherSuites(String[] enabledCipherSuites) {
+        this.enabledCipherSuites = enabledCipherSuites;
+    }
 
-	/**
-	 * Sets the standard name of the protocols to use when creating the SSL sockets
-	 * or engines.
-	 * 
-	 * @param enabledProtocols The standard name of the protocols to use when
-	 *                         creating the SSL sockets or engines.
-	 */
-	public void setEnabledProtocols(String[] enabledProtocols) {
-		this.enabledProtocols = enabledProtocols;
-	}
+    /**
+     * Sets the standard name of the protocols to use when creating the SSL sockets or engines.
+     *
+     * @param enabledProtocols The standard name of the protocols to use when creating the SSL
+     *     sockets or engines.
+     */
+    public void setEnabledProtocols(String[] enabledProtocols) {
+        this.enabledProtocols = enabledProtocols;
+    }
 
-	/**
-	 * Sets the KeyManager algorithm. The default value is that of the
-	 * <i>ssl.KeyManagerFactory.algorithm</i> system property, or <i>"SunX509"</i>
-	 * if the system property has not been set up.
-	 * 
-	 * @param keyManagerAlgorithm The KeyManager algorithm.
-	 */
-	public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
-		this.keyManagerAlgorithm = keyManagerAlgorithm;
-	}
+    /**
+     * Sets the KeyManager algorithm. The default value is that of the
+     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or <i>"SunX509"</i> if the system
+     * property has not been set up.
+     *
+     * @param keyManagerAlgorithm The KeyManager algorithm.
+     */
+    public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
+        this.keyManagerAlgorithm = keyManagerAlgorithm;
+    }
 
-	/**
-	 * Sets the password of the key in the keystore. The default value is that of
-	 * the <i>javax.net.ssl.keyPassword</i> system property, falling back to
-	 * <i>javax.net.ssl.keyStorePassword</i>. This system property name is not
-	 * standard.
-	 * 
-	 * @param keyStoreKeyPassword The password of the key in the keystore.
-	 */
-	public void setKeyStoreKeyPassword(char[] keyStoreKeyPassword) {
-		this.keyStoreKeyPassword = keyStoreKeyPassword;
-	}
+    /**
+     * Sets the password of the key in the keystore. The default value is that of the
+     * <i>javax.net.ssl.keyPassword</i> system property, falling back to
+     * <i>javax.net.ssl.keyStorePassword</i>. This system property name is not standard.
+     *
+     * @param keyStoreKeyPassword The password of the key in the keystore.
+     */
+    public void setKeyStoreKeyPassword(char[] keyStoreKeyPassword) {
+        this.keyStoreKeyPassword = keyStoreKeyPassword;
+    }
 
-	/**
-	 * Sets the password of the key in the keystore. The default value is that of
-	 * the <i>javax.net.ssl.keyPassword</i> system property, falling back to
-	 * <i>javax.net.ssl.keyStorePassword</i>. This system property name is not
-	 * standard.
-	 * 
-	 * @param keyStoreKeyPassword The password of the key in the keystore.
-	 */
-	public void setKeyStoreKeyPassword(String keyStoreKeyPassword) {
-		this.keyStoreKeyPassword = (keyStoreKeyPassword != null) ? keyStoreKeyPassword.toCharArray() : null;
-	}
+    /**
+     * Sets the password of the key in the keystore. The default value is that of the
+     * <i>javax.net.ssl.keyPassword</i> system property, falling back to
+     * <i>javax.net.ssl.keyStorePassword</i>. This system property name is not standard.
+     *
+     * @param keyStoreKeyPassword The password of the key in the keystore.
+     */
+    public void setKeyStoreKeyPassword(String keyStoreKeyPassword) {
+        this.keyStoreKeyPassword =
+                (keyStoreKeyPassword != null) ? keyStoreKeyPassword.toCharArray() : null;
+    }
 
-	/**
-	 * Sets the keystore password. The default value is that of the
-	 * <i>javax.net.ssl.keyStorePassword</i> system property.
-	 * 
-	 * @param keyStorePassword Sets the keystore password.
-	 */
-	public void setKeyStorePassword(char[] keyStorePassword) {
-		this.keyStorePassword = keyStorePassword;
-	}
+    /**
+     * Sets the keystore password. The default value is that of the
+     * <i>javax.net.ssl.keyStorePassword</i> system property.
+     *
+     * @param keyStorePassword Sets the keystore password.
+     */
+    public void setKeyStorePassword(char[] keyStorePassword) {
+        this.keyStorePassword = keyStorePassword;
+    }
 
-	/**
-	 * Sets the keystore password. The default value is that of the
-	 * <i>javax.net.ssl.keyStorePassword</i> system property.
-	 * 
-	 * @param keyStorePassword Sets the keystore password.
-	 */
-	public void setKeyStorePassword(String keyStorePassword) {
-		this.keyStorePassword = (keyStorePassword != null) ? keyStorePassword.toCharArray() : null;
-	}
+    /**
+     * Sets the keystore password. The default value is that of the
+     * <i>javax.net.ssl.keyStorePassword</i> system property.
+     *
+     * @param keyStorePassword Sets the keystore password.
+     */
+    public void setKeyStorePassword(String keyStorePassword) {
+        this.keyStorePassword = (keyStorePassword != null) ? keyStorePassword.toCharArray() : null;
+    }
 
-	/**
-	 * Sets the path to the keystore file. The default value is that of the
-	 * <i>javax.net.ssl.keyStore</i> system property.
-	 * 
-	 * @param keyStorePath The path to the keystore file.
-	 */
-	public void setKeyStorePath(String keyStorePath) {
-		this.keyStorePath = keyStorePath;
-	}
+    /**
+     * Sets the path to the keystore file. The default value is that of the
+     * <i>javax.net.ssl.keyStore</i> system property.
+     *
+     * @param keyStorePath The path to the keystore file.
+     */
+    public void setKeyStorePath(String keyStorePath) {
+        this.keyStorePath = keyStorePath;
+    }
 
-	/**
-	 * Sets the name of the keystore provider. The default value is that of the
-	 * <i>javax.net.ssl.keyStoreProvider</i> system property.
-	 * 
-	 * @param keyStoreProvider The name of the keystore provider.
-	 */
-	public void setKeyStoreProvider(String keyStoreProvider) {
-		this.keyStoreProvider = keyStoreProvider;
-	}
+    /**
+     * Sets the name of the keystore provider. The default value is that of the
+     * <i>javax.net.ssl.keyStoreProvider</i> system property.
+     *
+     * @param keyStoreProvider The name of the keystore provider.
+     */
+    public void setKeyStoreProvider(String keyStoreProvider) {
+        this.keyStoreProvider = keyStoreProvider;
+    }
 
-	/**
-	 * Sets the KeyStore type of the keystore. The default value is that of the
-	 * <i>javax.net.ssl.keyStoreType</i> system property.
-	 * 
-	 * @param keyStoreType The KeyStore type of the keystore.
-	 */
-	public void setKeyStoreType(String keyStoreType) {
-		this.keyStoreType = keyStoreType;
-	}
+    /**
+     * Sets the KeyStore type of the keystore. The default value is that of the
+     * <i>javax.net.ssl.keyStoreType</i> system property.
+     *
+     * @param keyStoreType The KeyStore type of the keystore.
+     */
+    public void setKeyStoreType(String keyStoreType) {
+        this.keyStoreType = keyStoreType;
+    }
 
-	/**
-	 * Indicates if we require client certificate authentication. The default value
-	 * is false.
-	 * 
-	 * @param needClientAuthentication True if we require client certificate
-	 *                                 authentication.
-	 */
-	public void setNeedClientAuthentication(boolean needClientAuthentication) {
-		this.needClientAuthentication = needClientAuthentication;
-	}
+    /**
+     * Indicates if we require client certificate authentication. The default value is false.
+     *
+     * @param needClientAuthentication True if we require client certificate authentication.
+     */
+    public void setNeedClientAuthentication(boolean needClientAuthentication) {
+        this.needClientAuthentication = needClientAuthentication;
+    }
 
-	/**
-	 * Sets the secure socket protocol name, "TLS" by default.
-	 * 
-	 * @param protocol Name of the secure socket protocol to use.
-	 */
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
+    /**
+     * Sets the secure socket protocol name, "TLS" by default.
+     *
+     * @param protocol Name of the secure socket protocol to use.
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 
-	/**
-	 * Sets the SecureRandom algorithm. The default value is <i>null</i>, in which
-	 * case the default SecureRandom would be used.
-	 * 
-	 * @param secureRandomAlgorithm The SecureRandom algorithm.
-	 */
-	public void setSecureRandomAlgorithm(String secureRandomAlgorithm) {
-		this.secureRandomAlgorithm = secureRandomAlgorithm;
-	}
+    /**
+     * Sets the SecureRandom algorithm. The default value is <i>null</i>, in which case the default
+     * SecureRandom would be used.
+     *
+     * @param secureRandomAlgorithm The SecureRandom algorithm.
+     */
+    public void setSecureRandomAlgorithm(String secureRandomAlgorithm) {
+        this.secureRandomAlgorithm = secureRandomAlgorithm;
+    }
 
-	/**
-	 * Sets the TrustManager algorithm. The default value is that of the
-	 * <i>ssl.TrustManagerFactory.algorithm</i> system property, or <i>"SunX509"</i>
-	 * if the system property has not been set up.
-	 * 
-	 * @param trustManagerAlgorithm The TrustManager algorithm.
-	 */
-	public void setTrustManagerAlgorithm(String trustManagerAlgorithm) {
-		this.trustManagerAlgorithm = trustManagerAlgorithm;
-	}
+    /**
+     * Sets the TrustManager algorithm. The default value is that of the
+     * <i>ssl.TrustManagerFactory.algorithm</i> system property, or <i>"SunX509"</i> if the system
+     * property has not been set up.
+     *
+     * @param trustManagerAlgorithm The TrustManager algorithm.
+     */
+    public void setTrustManagerAlgorithm(String trustManagerAlgorithm) {
+        this.trustManagerAlgorithm = trustManagerAlgorithm;
+    }
 
-	/**
-	 * Sets the password of the trust store KeyStore. The default value is that of
-	 * the <i>javax.net.ssl.trustStorePassword</i> system property.
-	 * 
-	 * @param trustStorePassword The password of the trust store KeyStore.
-	 */
-	public void setTrustStorePassword(char[] trustStorePassword) {
-		this.trustStorePassword = trustStorePassword;
-	}
+    /**
+     * Sets the password of the trust store KeyStore. The default value is that of the
+     * <i>javax.net.ssl.trustStorePassword</i> system property.
+     *
+     * @param trustStorePassword The password of the trust store KeyStore.
+     */
+    public void setTrustStorePassword(char[] trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
+    }
 
-	/**
-	 * Sets the password of the trust store KeyStore. The default value is that of
-	 * the <i>javax.net.ssl.trustStorePassword</i> system property.
-	 * 
-	 * @param trustStorePassword The password of the trust store KeyStore.
-	 */
-	public void setTrustStorePassword(String trustStorePassword) {
-		this.trustStorePassword = (trustStorePassword != null) ? trustStorePassword.toCharArray() : null;
-	}
+    /**
+     * Sets the password of the trust store KeyStore. The default value is that of the
+     * <i>javax.net.ssl.trustStorePassword</i> system property.
+     *
+     * @param trustStorePassword The password of the trust store KeyStore.
+     */
+    public void setTrustStorePassword(String trustStorePassword) {
+        this.trustStorePassword =
+                (trustStorePassword != null) ? trustStorePassword.toCharArray() : null;
+    }
 
-	/**
-	 * Sets the path to the trust store KeyStore. The default value is that of the
-	 * <i>javax.net.ssl.trustStore</i> system property.
-	 * 
-	 * @param trustStorePath The trustStorePath to set
-	 */
-	public void setTrustStorePath(String trustStorePath) {
-		this.trustStorePath = trustStorePath;
-	}
+    /**
+     * Sets the path to the trust store KeyStore. The default value is that of the
+     * <i>javax.net.ssl.trustStore</i> system property.
+     *
+     * @param trustStorePath The trustStorePath to set
+     */
+    public void setTrustStorePath(String trustStorePath) {
+        this.trustStorePath = trustStorePath;
+    }
 
-	/**
-	 * Sets the name of the trust store provider. The default value is that of the
-	 * <i>javax.net.ssl.trustStoreProvider</i> system property.
-	 * 
-	 * @param trustStoreProvider The name of the trust store provider.
-	 */
-	public void setTrustStoreProvider(String trustStoreProvider) {
-		this.trustStoreProvider = trustStoreProvider;
-	}
+    /**
+     * Sets the name of the trust store provider. The default value is that of the
+     * <i>javax.net.ssl.trustStoreProvider</i> system property.
+     *
+     * @param trustStoreProvider The name of the trust store provider.
+     */
+    public void setTrustStoreProvider(String trustStoreProvider) {
+        this.trustStoreProvider = trustStoreProvider;
+    }
 
-	/**
-	 * Sets the KeyStore type of the trust store. The default value is that of the
-	 * <i>javax.net.ssl.trustStoreType</i> system property.
-	 * 
-	 * @param trustStoreType The KeyStore type of the trust store.
-	 */
-	public void setTrustStoreType(String trustStoreType) {
-		this.trustStoreType = trustStoreType;
-	}
+    /**
+     * Sets the KeyStore type of the trust store. The default value is that of the
+     * <i>javax.net.ssl.trustStoreType</i> system property.
+     *
+     * @param trustStoreType The KeyStore type of the trust store.
+     */
+    public void setTrustStoreType(String trustStoreType) {
+        this.trustStoreType = trustStoreType;
+    }
 
-	/**
-	 * Indicates if we would like client certificate authentication. The default
-	 * value is false.
-	 * 
-	 * @param wantClientAuthentication True if we would like client certificate
-	 *                                 authentication.
-	 */
-	public void setWantClientAuthentication(boolean wantClientAuthentication) {
-		this.wantClientAuthentication = wantClientAuthentication;
-	}
+    /**
+     * Indicates if we would like client certificate authentication. The default value is false.
+     *
+     * @param wantClientAuthentication True if we would like client certificate authentication.
+     */
+    public void setWantClientAuthentication(boolean wantClientAuthentication) {
+        this.wantClientAuthentication = wantClientAuthentication;
+    }
 }

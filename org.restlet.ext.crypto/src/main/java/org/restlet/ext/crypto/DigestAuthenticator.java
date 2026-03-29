@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.crypto;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
@@ -23,9 +21,9 @@ import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
 
 /**
- * Authenticator supporting the digest challenge authentication schemes. By
- * default, it only knows about the {@link ChallengeScheme#HTTP_DIGEST} scheme.
- * 
+ * Authenticator supporting the digest challenge authentication schemes. By default, it only knows
+ * about the {@link ChallengeScheme#HTTP_DIGEST} scheme.
+ *
  * @see DigestVerifier
  * @see DigestAuthenticator
  * @author Jerome Louvel
@@ -45,41 +43,35 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     private volatile String serverKey;
 
     /**
-     * Constructor. Sets the challenge scheme to
-     * {@link ChallengeScheme#HTTP_DIGEST} and the nonce lifespan to 5 minutes
-     * by default.
-     * 
-     * @param context
-     *            The context.
-     * @param optional
-     *            Indicates if the authentication success is optional.
-     * @param realm
-     *            The authentication realm.
-     * @param domainRefs
-     *            The URI references that define the protection domains.
-     * @param serverKey
-     *            The secret key known only to server.
+     * Constructor. Sets the challenge scheme to {@link ChallengeScheme#HTTP_DIGEST} and the nonce
+     * lifespan to 5 minutes by default.
+     *
+     * @param context The context.
+     * @param optional Indicates if the authentication success is optional.
+     * @param realm The authentication realm.
+     * @param domainRefs The URI references that define the protection domains.
+     * @param serverKey The secret key known only to server.
      */
-    public DigestAuthenticator(Context context, boolean optional, String realm,
-            List<Reference> domainRefs, String serverKey) {
+    public DigestAuthenticator(
+            Context context,
+            boolean optional,
+            String realm,
+            List<Reference> domainRefs,
+            String serverKey) {
         super(context, optional, ChallengeScheme.HTTP_DIGEST, realm);
         this.domainRefs = domainRefs;
         this.maxServerNonceAge = DEFAULT_MAX_SERVER_NONCE_AGE;
         this.serverKey = serverKey;
-        setVerifier(new org.restlet.ext.crypto.internal.HttpDigestVerifier(
-                this, null, null));
+        setVerifier(new org.restlet.ext.crypto.internal.HttpDigestVerifier(this, null, null));
     }
 
     /**
-     * Constructor. By default, it set the "optional" property to 'false' and
-     * the "domainUris" property to a single '/' URI.
-     * 
-     * @param context
-     *            The context.
-     * @param realm
-     *            The authentication realm.
-     * @param serverKey
-     *            secret key known only to server
+     * Constructor. By default, it sets the "optional" property to 'false' and the "domainUris"
+     * property to a single '/' URI.
+     *
+     * @param context The context.
+     * @param realm The authentication realm.
+     * @param serverKey secret key known only to server
      */
     public DigestAuthenticator(Context context, String realm, String serverKey) {
         this(context, false, realm, null, serverKey);
@@ -95,19 +87,18 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Generates a server nonce.
-     * 
-     * @return A new server nonce.
+     * Generates server nonce.
+     *
+     * @return New server nonce.
      */
     public String generateServerNonce() {
         return CryptoUtils.makeNonce(getServerKey());
     }
 
     /**
-     * Returns the base URI references that collectively define the protected
-     * domains for the digest authentication. By default, it returns a list with a
-     * single "/" URI reference.
-     * 
+     * Returns the base URI references that collectively define the protected domains for the digest
+     * authentication. By default, it returns a list with a single "/" URI reference.
+     *
      * @return The base URI references.
      */
     public List<Reference> getDomainRefs() {
@@ -117,7 +108,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
             synchronized (this) {
                 r = this.domainRefs;
                 if (r == null) {
-                    this.domainRefs = r = new CopyOnWriteArrayList<Reference>();
+                    this.domainRefs = r = new CopyOnWriteArrayList<>();
                     this.domainRefs.add(new Reference("/"));
                 }
             }
@@ -126,15 +117,12 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Return the hashed secret. By default, it knows how to hash HTTP DIGEST
-     * secrets, specified as A1 in section 3.2.2.2 of RFC2617, or null if the
-     * identifier has no corresponding secret.
-     * 
-     * @param identifier
-     *            The user identifier to hash.
-     * @param secret
-     *            The user secret.
-     * @return A hash of the user name, realm, and password.
+     * Return the hashed secret. By default, it knows how to hash HTTP DIGEST secrets, specified as
+     * A1 in section 3.2.2.2 of RFC2617, or null if the identifier has no corresponding secret.
+     *
+     * @param identifier The user identifier to hash.
+     * @param secret The user secret.
+     * @return A hash of the username, realm, and password.
      */
     public String getHashedSecret(String identifier, char[] secret) {
         if (ChallengeScheme.HTTP_DIGEST.equals(getScheme())) {
@@ -146,7 +134,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the number of milliseconds between each mandatory nonce refresh.
-     * 
+     *
      * @return The server nonce lifespan.
      */
     public long getMaxServerNonceAge() {
@@ -155,7 +143,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the secret key known only by server.
-     * 
+     *
      * @return The server secret key.
      */
     public String getServerKey() {
@@ -169,11 +157,9 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Sets the URI references that define the protection domains for the digest
-     * authentication.
-     * 
-     * @param domainRefs
-     *            The base URI references.
+     * Sets the URI references that define the protection domains for the digest authentication.
+     *
+     * @param domainRefs The base URI references.
      */
     public void setDomainRefs(List<Reference> domainRefs) {
         this.domainRefs = domainRefs;
@@ -181,30 +167,27 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the number of milliseconds between each mandatory nonce refresh.
-     * 
-     * @param maxServerNonceAge
-     *            The nonce lifespan in milliseconds.
+     *
+     * @param maxServerNonceAge The nonce lifespan in milliseconds.
      */
     public void setMaxServerNonceAge(long maxServerNonceAge) {
         this.maxServerNonceAge = maxServerNonceAge;
     }
 
     /**
-     * Sets the secret key known only by server.
-     * 
-     * @param serverKey
-     *            The server secret key.
+     * Sets the secret key known only by the server.
+     *
+     * @param serverKey The server secret key.
      */
     public void setServerKey(String serverKey) {
         this.serverKey = serverKey;
     }
 
     /**
-     * Set the internal verifier. In general you shouldn't replace it and
-     * instead use the {@link #setWrappedVerifier(LocalVerifier)} method.
-     * 
-     * @param verifier
-     *            The internal verifier.
+     * Set the internal verifier. In general, you shouldn't replace it and instead use the {@link
+     * #setWrappedVerifier(LocalVerifier)} method.
+     *
+     * @param verifier The internal verifier.
      */
     @Override
     public void setVerifier(Verifier verifier) {
@@ -226,13 +209,11 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Sets the digest algorithm of secrets returned by the wrapped verifier.
-     * The secrets from the wrapped verifier are the ones used by the verifier
-     * to compare those sent by clients when attempting to authenticate.
-     * 
-     * @param wrappedAlgorithm
-     *            The digest algorithm of secrets returned by the wrapped
-     *            verifier.
+     * Sets the digest algorithm of secrets returned by the wrapped verifier. The secrets from the
+     * wrapped verifier are the ones used by the verifier to compare those sent by clients when
+     * attempting to authenticate.
+     *
+     * @param wrappedAlgorithm The digest algorithm of secrets returned by the wrapped verifier.
      * @see Digest
      */
     public void setWrappedAlgorithm(String wrappedAlgorithm) {
@@ -240,14 +221,12 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Sets the secret verifier that will be wrapped by real verifier supporting
-     * all the HTTP DIGEST verifications (nonce, domain URIs, etc.).
-     * 
-     * @param localVerifier
-     *            The local verifier to wrap.
+     * Sets the secret verifier that will be wrapped by real verifier supporting all the HTTP DIGEST
+     * verifications (nonce, domain URIs, etc.).
+     *
+     * @param localVerifier The local verifier to wrap.
      */
     public void setWrappedVerifier(LocalVerifier localVerifier) {
         getVerifier().setWrappedVerifier(localVerifier);
     }
-
 }

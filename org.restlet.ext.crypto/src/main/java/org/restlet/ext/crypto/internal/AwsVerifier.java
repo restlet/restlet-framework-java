@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.crypto.internal;
 
 import org.restlet.Request;
@@ -20,31 +19,23 @@ import org.restlet.security.User;
 import org.restlet.util.Series;
 
 /**
- * Wrapped verifier that can verify HTTP requests using the Amazon S3
- * authentication scheme. Verifies the user by computing the request signature
- * using the local secret and comparing it to the signature provided in the
- * request.
- * <p>
- * Per the Amazon S3 specification the {@code Date} header is required. If the
- * {@code Date} header is missing or the request is older than the allowed time
- * limit, specified by the {@code maxRequestAge} property, the request fails
- * verification.
- * 
+ * Wrapped verifier that can verify HTTP requests using the Amazon S3 authentication scheme.
+ * Verifies the user by computing the request signature using the local secret and comparing it to
+ * the signature provided in the request.
+ *
+ * <p>Per the Amazon S3 specification the {@code Date} header is required. If the {@code Date}
+ * header is missing or the request is older than the allowed time limit, specified by the {@code
+ * maxRequestAge} property, the request fails verification.
+ *
  * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
- * @see <a
- *      href="http://docs.amazonwebservices.com/AmazonS3/latest/RESTAuthentication.html">
- *      Authenticating REST Requests</a>
+ * @see <a href="http://docs.amazonwebservices.com/AmazonS3/latest/RESTAuthentication.html">
+ *     Authenticating REST Requests</a>
  */
 public class AwsVerifier extends SecretVerifier {
-    /**
-     * Default maximum request age (15 minutes)
-     */
+    /** Default maximum request age (15 minutes) */
     private static final long DEFAULT_MAX_REQUEST_AGE = 15 * 60 * 1000L;
 
-    /**
-     * The maximum age of a request, in milliseconds, before it is considered
-     * stale.
-     */
+    /** The maximum age of a request, in milliseconds, before it is considered stale. */
     private long maxRequestAge;
 
     /** The local secret verifier. */
@@ -52,10 +43,8 @@ public class AwsVerifier extends SecretVerifier {
 
     /**
      * Creates a new HttpAwsS3Verifier instance.
-     * 
-     * @param wrappedVerifier
-     *            The wrapped verifier containing local identifier/secret
-     *            couples
+     *
+     * @param wrappedVerifier The wrapped verifier containing local identifier/secret couples
      */
     public AwsVerifier(LocalVerifier wrappedVerifier) {
         this(wrappedVerifier, DEFAULT_MAX_REQUEST_AGE);
@@ -63,13 +52,10 @@ public class AwsVerifier extends SecretVerifier {
 
     /**
      * Creates a new HttpAwsS3Verifier instance.
-     * 
-     * @param wrappedVerifier
-     *            The wrapped verifier containing local identifier/secret
-     *            couples
-     * @param maxRequestAge
-     *            The maximum age of a request, in milliseconds, before it is
-     *            considered stale
+     *
+     * @param wrappedVerifier The wrapped verifier containing local identifier/secret couples
+     * @param maxRequestAge The maximum age of a request, in milliseconds, before it is considered
+     *     stale
      */
     public AwsVerifier(LocalVerifier wrappedVerifier, long maxRequestAge) {
         super();
@@ -78,78 +64,59 @@ public class AwsVerifier extends SecretVerifier {
     }
 
     /**
-     * Returns the user identifier portion of an Amazon S3 compatible
-     * {@code Authorization} header.
-     * <p>
-     * An Amazon S3 compatible {@code Authorization} header has the following
-     * pattern.<br/>
+     * Returns the user identifier portion of an Amazon S3 compatible {@code Authorization} header.
+     *
+     * <p>An Amazon S3 compatible {@code Authorization} header has the following pattern.<br>
      * {@code Authorization: AWS id:signature}
      */
     @Override
     protected String getIdentifier(Request request, Response response) {
         if (request.getChallengeResponse() == null
-                || request.getChallengeResponse().getRawValue() == null)
-            return null;
+                || request.getChallengeResponse().getRawValue() == null) return null;
 
-        String[] parts = request.getChallengeResponse().getRawValue()
-                .split(":");
+        String[] parts = request.getChallengeResponse().getRawValue().split(":");
 
-        if (parts != null && parts.length == 2)
-            return parts[0];
-        else
-            return null;
+        return (parts.length == 2) ? parts[0] : null;
     }
 
     /**
-     * Returns the local secret associated to a given identifier.
-     * 
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
+     * Returns the local secret associated with a given identifier.
+     *
+     * @param identifier The identifier to lookup.
+     * @return The secret associated with the identifier or null.
      */
     public char[] getLocalSecret(String identifier) {
-        char[] result = null;
-        result = getWrappedVerifier().getLocalSecret(identifier);
-        return result;
+        return getWrappedVerifier().getLocalSecret(identifier);
     }
 
     /**
-     * Returns the maximum age of a request, in milliseconds, before it is
-     * considered stale.
-     * <p>
-     * A negative or zero value indicates no age restriction. The default value
-     * is 15 minutes.
+     * Returns the maximum age of a request, in milliseconds, before it is considered stale.
+     *
+     * <p>A negative or zero value indicates no age restriction. The default value is 15 minutes.
      */
     public long getMaxRequestAge() {
         return this.maxRequestAge;
     }
 
     /**
-     * Returns the signature portion of an Amazon S3 compatible
-     * {@code Authorization} header.
-     * <p>
-     * An Amazon S3 compatible {@code Authorization} header has the following
-     * pattern.<br/>
+     * Returns the signature portion of an Amazon S3 compatible {@code Authorization} header.
+     *
+     * <p>An Amazon S3 compatible {@code Authorization} header has the following pattern.<br>
      * {@code Authorization: AWS id:signature}
      */
     @Override
     protected char[] getSecret(Request request, Response response) {
         if (request.getChallengeResponse() == null
-                || request.getChallengeResponse().getRawValue() == null)
-            return null;
+                || request.getChallengeResponse().getRawValue() == null) return null;
 
-        String[] parts = request.getChallengeResponse().getRawValue()
-                .split(":");
+        String[] parts = request.getChallengeResponse().getRawValue().split(":");
 
-        if (parts != null && parts.length == 2)
-            return parts[1].toCharArray();
-        else
-            return null;
+        return (parts.length == 2) ? parts[1].toCharArray() : null;
     }
 
     /**
      * Returns the wrapped local secret verifier.
-     * 
+     *
      * @return The local secret verifier.
      */
     public LocalVerifier getWrappedVerifier() {
@@ -157,23 +124,19 @@ public class AwsVerifier extends SecretVerifier {
     }
 
     /**
-     * Sets the maximum age of a request, in milliseconds, before it is
-     * considered stale.
-     * <p>
-     * A negative or zero value indicates no age restriction. The default value
-     * is 15 minutes.
+     * Sets the maximum age of a request, in milliseconds, before it is considered stale.
+     *
+     * <p>A negative or zero value indicates no age restriction. The default value is 15 minutes.
      */
     public void setMaxRequestAge(long value) {
-        if (value < 0)
-            value = 0;
+        if (value < 0) value = 0;
         this.maxRequestAge = value;
     }
 
     /**
      * Sets the wrapped local secret verifier.
-     * 
-     * @param wrappedVerifier
-     *            The local secret verifier.
+     *
+     * @param wrappedVerifier The local secret verifier.
      */
     public void setWrappedVerifier(LocalVerifier wrappedVerifier) {
         this.wrappedVerifier = wrappedVerifier;
@@ -181,37 +144,32 @@ public class AwsVerifier extends SecretVerifier {
 
     @Override
     public int verify(Request request, Response response) {
-        if (request.getChallengeResponse() == null)
-            return RESULT_MISSING;
+        if (request.getChallengeResponse() == null) return RESULT_MISSING;
 
         @SuppressWarnings("unchecked")
-        Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
+        Series<Header> headers =
+                (Series<Header>) request.getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         String userId = getIdentifier(request, response);
 
-        if (userId == null || (userId.length() == 0))
-            return RESULT_MISSING;
+        if (userId == null || (userId.isEmpty())) return RESULT_MISSING;
 
         // A date header is always required
-        if (headers.getFirstValue(HeaderConstants.HEADER_DATE, true) == null)
-            return RESULT_INVALID;
+        if (headers.getFirstValue(HeaderConstants.HEADER_DATE, true) == null) return RESULT_INVALID;
 
         // Make sure the date is not stale
         if (getMaxRequestAge() > 0) {
-            Long date = DateUtils.parse(
-                    headers.getFirstValue(HeaderConstants.HEADER_DATE, true))
-                    .getTime();
+            Long date =
+                    DateUtils.parse(headers.getFirstValue(HeaderConstants.HEADER_DATE, true))
+                            .getTime();
             Long now = System.currentTimeMillis();
-            if (now - date > getMaxRequestAge())
-                return RESULT_STALE;
+            if (now - date > getMaxRequestAge()) return RESULT_STALE;
         }
 
         char[] userSecret = getLocalSecret(userId);
         char[] signature = getSecret(request, response);
         String sigToCompare = AwsUtils.getS3Signature(request, userSecret);
 
-        if (!compare(signature, sigToCompare.toCharArray()))
-            return RESULT_INVALID;
+        if (!compare(signature, sigToCompare.toCharArray())) return RESULT_INVALID;
 
         request.getClientInfo().setUser(new User(userId));
 
@@ -219,13 +177,11 @@ public class AwsVerifier extends SecretVerifier {
     }
 
     /**
-     * This function is not implemented because the authorization scheme
-     * requires direct access to the request. See
-     * {@link #verify(Request, Response)}.
+     * This function is not implemented because the authorization scheme requires direct access to
+     * the request. See {@link #verify(Request, Response)}.
      */
     @Override
-    public int verify(String identifier, char[] secret)
-            throws IllegalArgumentException {
-        throw new RuntimeException("Method not implemented");
+    public int verify(String identifier, char[] secret) throws IllegalArgumentException {
+        throw new IllegalArgumentException("Method not implemented");
     }
 }

@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.security;
 
 import org.restlet.Component;
@@ -16,7 +15,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Sample SAAS component with declared organizations.
- * 
+ *
  * @author Jerome Louvel
  */
 public class SaasComponent extends Component {
@@ -34,12 +33,10 @@ public class SaasComponent extends Component {
         context.setDefaultVerifier(realm.getVerifier());
 
         // Add users
-        User stiger = new User("stiger", "pwd", "Scott", "Tiger",
-                "scott.tiger@foobar.com");
+        User stiger = new User("stiger", "pwd", "Scott", "Tiger", "scott.tiger@foobar.com");
         realm.getUsers().add(stiger);
 
-        User larmstrong = new User("larmstrong", "pwd", "Louis", "Armstrong",
-                "la@foobar.com");
+        User larmstrong = new User("larmstrong", "pwd", "Louis", "Armstrong", "la@foobar.com");
         realm.getUsers().add(larmstrong);
 
         // Add groups

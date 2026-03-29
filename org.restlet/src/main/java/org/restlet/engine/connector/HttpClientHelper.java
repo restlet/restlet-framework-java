@@ -1,15 +1,13 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.file.Path;
@@ -17,7 +15,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
-
 import org.eclipse.jetty.client.AuthenticationStore;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
@@ -53,8 +50,9 @@ import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 
 /**
- * HTTP client connector using the Jetty project. Here is the list of parameters that are supported. They should be set
- * in the Client's context before it is started:
+ * HTTP client connector using the Jetty project. Here is the list of parameters that are supported.
+ * They should be set in the Client's context before it is started:
+ *
  * <table>
  * <caption>list of supported parameters</caption>
  * <tr>
@@ -207,6 +205,7 @@ import org.restlet.engine.util.ReferenceUtils;
  * you configure a secured enough directory.</td>
  * </tr>
  * </table>
+ *
  * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
  *
  * @author Jerome Louvel
@@ -214,27 +213,21 @@ import org.restlet.engine.util.ReferenceUtils;
  */
 public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
 
-    /**
-     * The wrapped Jetty HTTP client.
-     */
+    /** The wrapped Jetty HTTP client. */
     private volatile HttpClient httpClient;
 
-    /**
-     * The wrapped Jetty authentication store.
-     */
+    /** The wrapped Jetty authentication store. */
     private volatile AuthenticationStore authenticationStore;
 
-    /**
-     * The wrapped Jetty cookie store.
-     */
+    /** The wrapped Jetty cookie store. */
     private volatile HttpCookieStore cookieStore;
 
     /** The wrapper Executor. */
     private volatile Executor executor;
 
     /**
-     * Constructor. Properties can still be set before the wrapped Jetty HTTP client is effectively created and
-     * configured via the {@link #createHttpClient()} method.
+     * Constructor. Properties can still be set before the wrapped Jetty HTTP client is effectively
+     * created and configured via the {@link #createHttpClient()} method.
      *
      * @param client The client connector to help.
      */
@@ -243,7 +236,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
         this.authenticationStore = null;
-        this.cookieStore = isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
+        this.cookieStore =
+                isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
         this.executor = null;
     }
 
@@ -256,12 +250,11 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     public ClientCall create(Request request) {
         ClientCall result = null;
 
-        try {
-            result = new JettyClientCall(this, request.getMethod().toString(),
-                    ReferenceUtils.update(request.getResourceRef(), request).toString());
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty HTTP/HTTPS client call", e);
-        }
+        result =
+                new JettyClientCall(
+                        this,
+                        request.getMethod().toString(),
+                        ReferenceUtils.update(request.getResourceRef(), request).toString());
 
         return result;
     }
@@ -275,72 +268,80 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         SslContextFactory.Client sslContextFactory = null;
 
         try {
-            sslContextFactory = new RestletSslContextFactoryClient(SslUtils.getSslContextFactory(this));
+            sslContextFactory =
+                    new RestletSslContextFactoryClient(SslUtils.getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
         }
 
-        HttpTransportProtocol httpTransportProtocol = HttpTransportProtocol.fromName(getHttpClientTransportMode());
-        final HttpClientTransport httpTransport = switch (httpTransportProtocol) {
-        case HTTP1_1 -> getHttpTransportForHttp1_1();
-        case HTTP2 -> getHttpClientTransportForHttp2();
-        case HTTP3 -> getHttpClientTransportForHttp3(sslContextFactory);
-        case DYNAMIC -> getHttpClientTransportForDynamicMode(sslContextFactory);
-        };
+        HttpTransportProtocol httpTransportProtocol =
+                HttpTransportProtocol.fromName(getHttpClientTransportMode());
+        final HttpClientTransport httpTransport =
+                switch (httpTransportProtocol) {
+                    case HTTP1_1 -> getHttpTransportForHttp11();
+                    case HTTP2 -> getHttpClientTransportForHttp2();
+                    case HTTP3 -> getHttpClientTransportForHttp3(sslContextFactory);
+                    case DYNAMIC -> getHttpClientTransportForDynamicMode(sslContextFactory);
+                };
 
-        final HttpClient httpClient = new HttpClient(httpTransport);
-        httpClient.setAddressResolutionTimeout(getAddressResolutionTimeout());
+        final HttpClient result = new HttpClient(httpTransport);
+        result.setAddressResolutionTimeout(getAddressResolutionTimeout());
         if (getAuthenticationStore() != null) {
-            httpClient.setAuthenticationStore(getAuthenticationStore());
+            result.setAuthenticationStore(getAuthenticationStore());
         }
-        httpClient.setBindAddress(getBindAddress());
-        httpClient.setConnectBlocking(isConnectBlocking());
-        httpClient.setConnectTimeout(getConnectTimeout());
-        httpClient.setDestinationIdleTimeout(getDestinationIdleTimeout());
-        httpClient.setExecutor(getExecutor());
-        httpClient.setFollowRedirects(isFollowRedirects());
+        result.setBindAddress(getBindAddress());
+        result.setConnectBlocking(isConnectBlocking());
+        result.setConnectTimeout(getConnectTimeout());
+        result.setDestinationIdleTimeout(getDestinationIdleTimeout());
+        result.setExecutor(getExecutor());
+        result.setFollowRedirects(isFollowRedirects());
 
         final String httpComplianceMode = getHttpComplianceMode();
-        final HttpCompliance httpCompliance = switch (httpComplianceMode) {
-        case "RFC7230" -> HttpCompliance.RFC7230;
-        case "RFC7230_LEGACY" -> HttpCompliance.RFC7230_LEGACY;
-        case "RFC2616" -> HttpCompliance.RFC2616;
-        case "RFC2616_LEGACY" -> HttpCompliance.RFC2616_LEGACY;
-        default -> {
-            getLogger().log(Level.WARNING, "Unknown HTTP compliance mode: {0}, default to RFC7230", httpComplianceMode);
-            yield HttpCompliance.RFC7230;
-        }
-        };
-        httpClient.setHttpCompliance(httpCompliance);
+        final HttpCompliance httpCompliance =
+                switch (httpComplianceMode) {
+                    case "RFC7230" -> HttpCompliance.RFC7230;
+                    case "RFC7230_LEGACY" -> HttpCompliance.RFC7230_LEGACY;
+                    case "RFC2616" -> HttpCompliance.RFC2616;
+                    case "RFC2616_LEGACY" -> HttpCompliance.RFC2616_LEGACY;
+                    default -> {
+                        getLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unknown HTTP compliance mode: {0}, default to RFC7230",
+                                        httpComplianceMode);
+                        yield HttpCompliance.RFC7230;
+                    }
+                };
+        result.setHttpCompliance(httpCompliance);
 
-        httpClient.setHttpCookieStore(getCookieStore());
-        httpClient.setIdleTimeout(getIdleTimeout());
-        httpClient.setMaxConnectionsPerDestination(getMaxConnectionsPerDestination());
-        httpClient.setMaxRedirects(getMaxRedirects());
-        httpClient.setMaxRequestsQueuedPerDestination(getMaxRequestsQueuedPerDestination());
-        httpClient.setMaxResponseHeadersSize(getMaxResponseHeadersSize());
+        result.setHttpCookieStore(getCookieStore());
+        result.setIdleTimeout(getIdleTimeout());
+        result.setMaxConnectionsPerDestination(getMaxConnectionsPerDestination());
+        result.setMaxRedirects(getMaxRedirects());
+        result.setMaxRequestsQueuedPerDestination(getMaxRequestsQueuedPerDestination());
+        result.setMaxResponseHeadersSize(getMaxResponseHeadersSize());
 
         final String httpProxyHost = getProxyHost();
         if (httpProxyHost != null) {
             HttpProxy proxy = new HttpProxy(httpProxyHost, getProxyPort());
-            httpClient.getProxyConfiguration().addProxy(proxy);
+            result.getProxyConfiguration().addProxy(proxy);
         }
 
-        httpClient.setRequestBufferSize(getRequestBufferSize());
-        httpClient.setResponseBufferSize(getResponseBufferSize());
-        httpClient.setScheduler(getScheduler());
-        httpClient.setSslContextFactory(sslContextFactory);
-        httpClient.setStrictEventOrdering(isStrictEventOrdering());
+        result.setRequestBufferSize(getRequestBufferSize());
+        result.setResponseBufferSize(getResponseBufferSize());
+        result.setScheduler(getScheduler());
+        result.setSslContextFactory(sslContextFactory);
+        result.setStrictEventOrdering(isStrictEventOrdering());
 
         final String userAgentField = getUserAgentField();
         if (userAgentField != null) {
-            httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, userAgentField));
+            result.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, userAgentField));
         }
 
-        return httpClient;
+        return result;
     }
 
-    private static HttpClientTransportOverHTTP getHttpTransportForHttp1_1() {
+    private static HttpClientTransportOverHTTP getHttpTransportForHttp11() {
         return new HttpClientTransportOverHTTP();
     }
 
@@ -352,37 +353,43 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         return http2Transport;
     }
 
-    private HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
+    private HttpClientTransport getHttpClientTransportForHttp3(
+            SslContextFactory.Client sslContextFactory) {
         Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, pemWorkDirectory);
+        ClientQuicConfiguration quicConfiguration =
+                new ClientQuicConfiguration(sslContextFactory, pemWorkDirectory);
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
 
         return new HttpClientTransportOverHTTP3(http3Client);
     }
 
-    private HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
+    private HttpClientTransport getHttpClientTransportForDynamicMode(
+            SslContextFactory.Client sslContextFactory) {
 
         ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
 
         HTTP2Client http2Client = new HTTP2Client();
-        ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
+        ClientConnectionFactoryOverHTTP2.HTTP2 http2 =
+                new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory,
-                getHttp3PemWorkDirectoryPath());
+        ClientQuicConfiguration quicConfiguration =
+                new ClientQuicConfiguration(sslContextFactory, getHttp3PemWorkDirectoryPath());
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
-        ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
+        ClientConnectionFactoryOverHTTP3.HTTP3 http3 =
+                new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
 
         return new HttpClientTransportDynamic(new ClientConnector(), http1, http2, http3);
     }
 
     /**
-     * The timeout in milliseconds for the DNS resolution of host addresses. Defaults to 15000.
+     * The timeout in milliseconds for the DNS resolution of host addresses. Defaults to 15_000.
      *
      * @return The address resolution timeout.
      */
     public long getAddressResolutionTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue("addressResolutionTimeout", "15000"));
+        return Long.parseLong(
+                getHelpedParameters().getFirstValue("addressResolutionTimeout", "15000"));
     }
 
     /**
@@ -420,7 +427,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * The max time in milliseconds a connection can take to connect to destinations. Defaults to 15000.
+     * The max time in milliseconds a connection can take to connect to destinations. Defaults to
+     * 15_000.
      *
      * @return The connect timeout.
      */
@@ -483,8 +491,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * Returns the HTTP compliance mode among the following options: "RFC7230", "RFC2616", "LEGACY", "RFC7230_LEGACY".
-     * See {@link HttpCompliance}. Default to "RFC7230".
+     * Returns the HTTP compliance mode among the following options: "RFC7230", "RFC2616", "LEGACY",
+     * "RFC7230_LEGACY". See {@link HttpCompliance}. Default to "RFC7230".
      *
      * @return The HTTP compliance mode.
      */
@@ -493,18 +501,19 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * Returns the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2", "HTTP3", "DYNAMIC. See
-     * {@link HttpClientTransport}. Default to "HTTP1_1".
+     * Returns the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2",
+     * "HTTP3", "DYNAMIC. See {@link HttpClientTransport}. Default to "HTTP1_1".
      *
      * @return The HTTP client transport mode.
      */
     public String getHttpClientTransportMode() {
-        return getHelpedParameters().getFirstValue("httpClientTransportMode", HttpTransportProtocol.HTTP1_1.name());
+        return getHelpedParameters()
+                .getFirstValue("httpClientTransportMode", HttpTransportProtocol.HTTP1_1.name());
     }
 
     /**
      * Directory where are extracted the supported certificates.
-     * 
+     *
      * @return Directory where are extracted the supported certificates.
      */
     public String getHttp3PemWorkDir() {
@@ -516,8 +525,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * The max time in milliseconds a connection can be idle (that is, without traffic of bytes in either direction).
-     * Defaults to 30000.
+     * The max time in milliseconds a connection can be idle (that is, without traffic of bytes in
+     * either direction). Defaults to 30_000.
      *
      * @return The idle timeout.
      */
@@ -527,16 +536,17 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
     /**
      * Sets the max number of connections to open to each destination. Defaults to 64.
-     * <p>
-     * RFC 2616 suggests that 2 connections should be opened per each destination, but browsers commonly open 6. If this
-     * client is used for load testing, it is common to have only one destination (the server to load test), and it is
-     * recommended to set this value to a high value (at least as much as the threads present in the
-     * {@link #getExecutor() executor}).
+     *
+     * <p>RFC 2616 suggests that 2 connections should be opened per each destination, but browsers
+     * commonly open 6. If this client is used for load testing, it is common to have only one
+     * destination (the server to load test), and it is recommended to set this value to a high
+     * value (at least as much as the threads present in the {@link #getExecutor() executor}).
      *
      * @return The maximum connections per destination.
      */
     public int getMaxConnectionsPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("maxConnectionsPerDestination", "64"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("maxConnectionsPerDestination", "64"));
     }
 
     /**
@@ -550,17 +560,19 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
     /**
      * Sets the max number of requests that may be queued to a destination. Defaults to 1024.
-     * <p>
-     * If this client performs a high rate of requests to a destination, and all the connections managed by that
-     * destination are busy with other requests, then new requests will be queued up in the destination. This parameter
-     * controls how many requests can be queued before starting to reject them. If this client is used for load testing,
-     * it is common to have this parameter set to a high value, although this may impact latency (requests sit in the
-     * queue for a long time before being sent).
+     *
+     * <p>If this client performs a high rate of requests to a destination, and all the connections
+     * managed by that destination are busy with other requests, then new requests will be queued up
+     * in the destination. This parameter controls how many requests can be queued before starting
+     * to reject them. If this client is used for load testing, it is common to have this parameter
+     * set to a high value, although this may impact latency (requests sit in the queue for a long
+     * time before being sent).
      *
      * @return The maximum requests queues per destination.
      */
     public int getMaxRequestsQueuedPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("maxRequestsQueuedPerDestination", "1024"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("maxRequestsQueuedPerDestination", "1024"));
     }
 
     /**
@@ -569,7 +581,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      * @return the max size in bytes of the response headers.
      */
     public int getMaxResponseHeadersSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("maxResponseHeadersSize", "-1"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("maxResponseHeadersSize", "-1"));
     }
 
     /**
@@ -578,7 +591,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("http.proxyHost"));
+        return getHelpedParameters()
+                .getFirstValue("proxyHost", System.getProperty("http.proxyHost"));
     }
 
     /**
@@ -588,7 +602,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      */
     public int getProxyPort() {
         return Integer.parseInt(
-                getHelpedParameters().getFirstValue("proxyPort", System.getProperty("http.proxyPort", "3128")));
+                getHelpedParameters()
+                        .getFirstValue("proxyPort", System.getProperty("http.proxyPort", "3128")));
     }
 
     /**
@@ -601,7 +616,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * The size in bytes of the buffer used to read responses. Defaults to 16384.
+     * The size in bytes of the buffer used to read responses. Defaults to 16_384.
      *
      * @return The response buffer size.
      */
@@ -610,7 +625,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * The scheduler. Defaults to null. When null, creates a new instance of {@link ScheduledExecutorScheduler}.
+     * The scheduler. Defaults to null. When null, creates a new instance of {@link
+     * ScheduledExecutorScheduler}.
      *
      * @return The scheduler.
      */
@@ -628,21 +644,22 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     /**
-     * Indicates whether the connect operation is blocking. See {@link HttpClient#isConnectBlocking()}.
+     * Indicates whether the connect operation is blocking. See {@link
+     * HttpClient#isConnectBlocking()}.
      *
      * @return True if the connect operation is blocking.
      */
     public boolean isConnectBlocking() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("connectBlocking", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("connectBlocking"));
     }
 
     /**
-     * Whether to support cookies, storing and automatically sending them back. Defaults to false.
+     * Whether to support cookies, storing, and automatically sending them back. Defaults to false.
      *
      * @return Whether to support cookies.
      */
     public boolean isCookieSupported() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("cookieSupported", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("cookieSupported"));
     }
 
     /**
@@ -656,25 +673,28 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
     /**
      * Whether request events must be strictly ordered. Defaults to false.
-     * <p>
-     * Client listeners may send a second request. If the second request is for the same destination, there is an
-     * inherent race condition for the use of the connection: the first request may still be associated with the
-     * connection, so the second request cannot use that connection and is forced to open another one.
-     * <p>
-     * From the point of view of connection usage, the connection is reusable just before the "complete" event, so it
-     * would be possible to reuse that connection from complete listeners; but in this case the second request's events
-     * will fire before the "complete" events of the first request.
-     * <p>
-     * This setting enforces strict event ordering so that a "begin" event of a second request can never fire before the
-     * "complete" event of a first request, but at the expense of an increased usage of connections.
-     * <p>
-     * When not enforced, a "begin" event of a second request may happen before the "complete" event of a first request
-     * and allow for better usage of connections.
+     *
+     * <p>Client listeners may send a second request. If the second request is for the same
+     * destination, there is an inherent race condition for the use of the connection: the first
+     * request may still be associated with the connection, so the second request cannot use that
+     * connection and is forced to open another one.
+     *
+     * <p>From the point of view of connection usage, the connection is reusable just before the
+     * "complete" event, so it would be possible to reuse that connection from complete listeners;
+     * but in this case the second request's events will fire before the "complete" events of the
+     * first request.
+     *
+     * <p>This setting enforces strict event ordering so that a "begin" event of a second request
+     * can never fire before the "complete" event of a first request, but at the expense of an
+     * increased usage of connections.
+     *
+     * <p>When not enforced, a "begin" event of a second request may happen before the "complete"
+     * event of a first request and allow for better usage of connections.
      *
      * @return Whether request events must be strictly ordered.
      */
     public boolean isStrictEventOrdering() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("strictEventOrdering", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("strictEventOrdering"));
     }
 
     @Override
@@ -685,7 +705,6 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
             this.httpClient = createHttpClient();
         }
 
-        final HttpClient httpClient = getHttpClient();
         if (httpClient != null) {
             getLogger().info("Starting a Jetty HTTP/HTTPS client");
             httpClient.start();
@@ -694,7 +713,6 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
     @Override
     public void stop() throws Exception {
-        final HttpClient httpClient = getHttpClient();
         if (httpClient != null) {
             getLogger().info("Stopping a Jetty HTTP/HTTPS client");
             httpClient.stop();
@@ -703,20 +721,24 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         super.stop();
     }
 
-    /**
-     * Supported HTTP transport protocols.
-     */
+    /** Supported HTTP transport protocols. */
     private enum HttpTransportProtocol {
-        HTTP1_1, HTTP2, HTTP3, DYNAMIC;
+        HTTP1_1,
+        HTTP2,
+        HTTP3,
+        DYNAMIC;
 
         static HttpTransportProtocol fromName(final String name) {
             try {
                 return HttpTransportProtocol.valueOf(name);
             } catch (final IllegalArgumentException iae) {
-                String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
+                String supportedHttpTransportProtocols =
+                        Arrays.toString(HttpTransportProtocol.values());
 
-                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
-                        supportedHttpTransportProtocols);
+                final String errorMessage =
+                        String.format(
+                                "'%s' is not one of the supported values: %s",
+                                name, supportedHttpTransportProtocols);
 
                 throw new IllegalArgumentException(errorMessage);
             }

@@ -1,78 +1,76 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.util;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 /**
  * Modifiable list of client connectors.
- * 
+ *
  * @author Jerome Louvel
  */
 public final class ClientList extends WrapperList<Client> {
 
-	/** The context. */
-	private volatile Context context;
+    /** The context. */
+    private volatile Context context;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context The context.
-	 */
-	public ClientList(Context context) {
-		super(new CopyOnWriteArrayList<Client>());
-		this.context = context;
-	}
+    /**
+     * Constructor.
+     *
+     * @param context The context.
+     */
+    public ClientList(Context context) {
+        super(new CopyOnWriteArrayList<>());
+        this.context = context;
+    }
 
-	@Override
-	public boolean add(Client client) {
-		// Set the client's context, if the client does not have already one.
-		if (client.getContext() == null) {
-			client.setContext(getContext().createChildContext());
-		}
+    @Override
+    public boolean add(Client client) {
+        // Set the client's context if the client does not already have one.
+        if (client.getContext() == null) {
+            client.setContext(getContext().createChildContext());
+        }
 
-		return super.add(client);
-	}
+        return super.add(client);
+    }
 
-	/**
-	 * Adds a new client connector in the map supporting the given protocol.
-	 * 
-	 * @param protocol The connector protocol.
-	 * @return The added client.
-	 */
-	public Client add(Protocol protocol) {
-		final Client result = new Client(protocol);
-		result.setContext(getContext().createChildContext());
-		add(result);
-		return result;
-	}
+    /**
+     * Adds a new client connector in the map supporting the given protocol.
+     *
+     * @param protocol The connector protocol.
+     * @return The added client.
+     */
+    public Client add(Protocol protocol) {
+        final Client result = new Client(protocol);
+        result.setContext(getContext().createChildContext());
+        add(result);
+        return result;
+    }
 
-	/**
-	 * Returns the context.
-	 * 
-	 * @return The context.
-	 */
-	public Context getContext() {
-		return this.context;
-	}
+    /**
+     * Returns the context.
+     *
+     * @return The context.
+     */
+    public Context getContext() {
+        return this.context;
+    }
 
-	/**
-	 * Sets the context.
-	 * 
-	 * @param context The context.
-	 */
-	public void setContext(Context context) {
-		this.context = context;
-	}
+    /**
+     * Sets the context.
+     *
+     * @param context The context.
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
 }
