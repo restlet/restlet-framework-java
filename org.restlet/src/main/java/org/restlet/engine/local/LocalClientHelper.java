@@ -8,6 +8,16 @@
  */
 package org.restlet.engine.local;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -49,6 +59,10 @@ import org.restlet.engine.connector.ClientHelper;
  * @author Thierry Boileau
  */
 public abstract class LocalClientHelper extends ClientHelper {
+
+    private static final FileAttribute<Set<PosixFilePermission>> OWNER_READ_WRITE_FILE_PERMISSIONS =
+            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+
     /**
      * Constructor. Note that the common list of metadata associations based on extensions is added,
      * see the addCommonExtensions() method.
@@ -105,6 +119,26 @@ public abstract class LocalClientHelper extends ClientHelper {
                             "Unable to get the path of this local URI: "
                                     + request.getResourceRef());
         }
+    }
+
+    protected static File createPrivateTempFile(String prefix, String suffix) throws IOException {
+        Path temporaryDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
+        FileStore fileStore = Files.getFileStore(temporaryDirectory);
+        Path temporaryFile;
+
+        if (fileStore.supportsFileAttributeView("posix")) {
+            temporaryFile = Files.createTempFile(prefix, suffix, OWNER_READ_WRITE_FILE_PERMISSIONS);
+        } else {
+            temporaryFile = Files.createTempFile(prefix, suffix);
+            File temporaryFileAsFile = temporaryFile.toFile();
+            temporaryFileAsFile.setReadable(false, false);
+            temporaryFileAsFile.setWritable(false, false);
+            temporaryFileAsFile.setExecutable(false, false);
+            temporaryFileAsFile.setReadable(true, true);
+            temporaryFileAsFile.setWritable(true, true);
+        }
+
+        return temporaryFile.toFile();
     }
 
     /**
