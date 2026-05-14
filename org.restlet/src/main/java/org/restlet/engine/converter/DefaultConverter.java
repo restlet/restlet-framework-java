@@ -119,6 +119,10 @@ public class DefaultConverter extends ConverterHelper {
             }
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 
@@ -237,9 +241,7 @@ public class DefaultConverter extends ConverterHelper {
         try {
             return new ObjectRepresentation<>(source).getObject();
         } catch (Exception e) {
-            IOException ioe = new IOException("Unable to create the Object representation");
-            ioe.initCause(e);
-            throw ioe;
+            throw new IOException("Unable to create the Object representation", e);
         }
     }
 

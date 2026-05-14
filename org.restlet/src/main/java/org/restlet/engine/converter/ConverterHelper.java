@@ -75,7 +75,7 @@ public abstract class ConverterHelper extends Helper {
             Class<?> sourceClass, Variant targetVariant, List<VariantInfo> variants)
             throws IOException {
         // List of variants that can be converted from the source class
-        List<VariantInfo> helperVariants = getVariants(sourceClass);
+        final List<VariantInfo> helperVariants = getVariants(sourceClass);
 
         if (helperVariants != null) {
             // Loop over the variants list

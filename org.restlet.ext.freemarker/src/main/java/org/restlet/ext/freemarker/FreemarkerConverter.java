@@ -33,7 +33,7 @@ public class FreemarkerConverter extends ConverterHelper {
 
     @Override
     public List<VariantInfo> getVariants(Class<?> source) {
-        return null;
+        return List.of();
     }
 
     @Override

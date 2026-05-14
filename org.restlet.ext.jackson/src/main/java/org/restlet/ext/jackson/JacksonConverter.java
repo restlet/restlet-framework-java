@@ -101,6 +101,10 @@ public class JacksonConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_TEXT_CSV);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 

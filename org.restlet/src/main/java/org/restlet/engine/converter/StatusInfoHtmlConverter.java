@@ -71,6 +71,10 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_APPLICATION_XHTML);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 

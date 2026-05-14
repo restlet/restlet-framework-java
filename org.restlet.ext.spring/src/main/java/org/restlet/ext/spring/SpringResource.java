@@ -78,6 +78,7 @@ public class SpringResource extends AbstractResource {
      *
      * @return The description.
      */
+    @Override
     public String getDescription() {
         return this.description;
     }
@@ -86,6 +87,7 @@ public class SpringResource extends AbstractResource {
      * This implementation throws IllegalStateException if attempting to read the underlying stream
      * multiple times.
      */
+    @Override
     public InputStream getInputStream() throws IOException, IllegalStateException {
         if (this.read && this.representation.isTransient()) {
             throw new IllegalStateException(

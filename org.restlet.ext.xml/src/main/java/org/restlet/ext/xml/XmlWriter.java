@@ -281,6 +281,10 @@ public final class XmlWriter extends XMLFilterImpl {
 
     private static final Object SEEN_NOTHING = new Object();
 
+    /**
+     * True to pretty-print XML documents with automatic indentation and new lines. Convenient for
+     * field-oriented XML documents, inconvenient when indentation and new lines are meaningful.
+     */
     private volatile boolean dataFormat = false;
 
     private final AtomicInteger depth = new AtomicInteger(0);
@@ -414,10 +418,6 @@ public final class XmlWriter extends XMLFilterImpl {
         writeEsc(ch, start, len, false);
         super.characters(ch, start, len);
     }
-
-    // //////////////////////////////////////////////////////////////////
-    // Public methods.
-    // //////////////////////////////////////////////////////////////////
 
     /**
      * Write a string of character data, with XML escaping.
@@ -921,6 +921,13 @@ public final class XmlWriter extends XMLFilterImpl {
         this.doneDeclTable = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Return true if the writer is in data format mode, false otherwise. In data format mode, the
+     * writer will pretty-print field-oriented XML without mixed content. All added indentation and
+     * newlines will be passed on down the filter chain (if any).
+     *
+     * @return true if the writer is in data format mode, false otherwise
+     */
     public boolean isDataFormat() {
         return this.dataFormat;
     }
@@ -975,13 +982,16 @@ public final class XmlWriter extends XMLFilterImpl {
         this.nsSupport.reset();
     }
 
+    /**
+     * Set whether to pretty-print XML documents with automatic indentation and new lines. This mode
+     * is convenient for field-oriented XML documents, but inconvenient when indentation and new
+     * lines are meaningful.
+     *
+     * @param dataFormat true for allowing data-mode.
+     */
     public void setDataFormat(boolean dataFormat) {
         this.dataFormat = dataFormat;
     }
-
-    // //////////////////////////////////////////////////////////////////
-    // Internal methods.
-    // //////////////////////////////////////////////////////////////////
 
     /**
      * Set the current indent step.

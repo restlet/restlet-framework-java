@@ -41,6 +41,10 @@ public class VelocityConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_ALL);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 

@@ -55,6 +55,10 @@ public class JsonConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_JSON);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 

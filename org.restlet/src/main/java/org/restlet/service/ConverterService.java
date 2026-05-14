@@ -329,7 +329,7 @@ public class ConverterService extends Service {
             Variant target, final ConverterHelper ch, final Object source, final Resource resource)
             throws IOException {
         if (target == null) {
-            List<VariantInfo> variants = ch.getVariants(source.getClass());
+            final List<VariantInfo> variants = ch.getVariants(source.getClass());
 
             if ((variants != null) && !variants.isEmpty()) {
                 if (resource != null) {

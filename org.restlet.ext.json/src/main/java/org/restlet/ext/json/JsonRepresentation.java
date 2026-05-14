@@ -147,7 +147,8 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONArray) this.jsonValue;
         }
 
-        return new JSONArray(getJsonText());
+        final String jsonText = getJsonText();
+        return (jsonText == null) ? null : new JSONArray(jsonText);
     }
 
     /**
@@ -161,7 +162,8 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONObject) this.jsonValue;
         }
 
-        return new JSONObject(getJsonText());
+        final String jsonText = getJsonText();
+        return (jsonText == null) ? null : new JSONObject(getJsonText());
     }
 
     /**
@@ -223,7 +225,8 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONTokener) this.jsonValue;
         }
 
-        return new JSONTokener(getJsonText());
+        final String jsonText = getJsonText();
+        return (jsonText == null) ? null : new JSONTokener(getJsonText());
     }
 
     @Override
@@ -274,11 +277,12 @@ public class JsonRepresentation extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            writer.write(getJsonText());
+            final String jsonText = getJsonText();
+            if (jsonText != null) {
+                writer.write(jsonText);
+            }
         } catch (JSONException e) {
-            IOException ioe = new IOException(e.getLocalizedMessage());
-            ioe.initCause(e.getCause());
-            throw ioe;
+            throw new IOException(e.getLocalizedMessage(), e);
         }
     }
 }

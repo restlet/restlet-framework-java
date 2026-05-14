@@ -61,6 +61,10 @@ public class XmlConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_TEXT_XML);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 
