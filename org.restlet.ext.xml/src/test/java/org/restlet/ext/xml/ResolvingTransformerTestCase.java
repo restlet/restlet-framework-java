@@ -47,16 +47,7 @@ import org.restlet.representation.StringRepresentation;
  */
 class ResolvingTransformerTestCase {
 
-    static class AssertResolvingHelper {
-
-        final String baseUri;
-
-        final URIResolver resolver;
-
-        AssertResolvingHelper(final String baseUri, final URIResolver resolver) {
-            this.baseUri = baseUri;
-            this.resolver = resolver;
-        }
+    record AssertResolvingHelper(String baseUri, URIResolver resolver) {
 
         /** Asserts that the testUri resolves into the expectedUri */
         void assertResolving(String message, String testUri, String testData)
@@ -175,8 +166,7 @@ class ResolvingTransformerTestCase {
         String absoluteUri = testBase + "/" + testCode;
         test.assertResolving("error in absolute resolving.", absoluteUri, testData);
 
-        String relUri = testCode;
-        test.assertResolving("error in relative resolving.", relUri, testData);
+        test.assertResolving("error in relative resolving.", testCode, testData);
 
         String relLocalUri = "./" + testCode;
         test.assertResolving("error in relative resolving to ./", relLocalUri, testData);

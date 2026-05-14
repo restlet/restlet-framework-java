@@ -39,7 +39,7 @@ class GsonTestCase {
         private final Date createAt;
 
         @Since(2.0)
-        private Date lastLogin;
+        private final Date lastLogin;
 
         private final String loginId;
 

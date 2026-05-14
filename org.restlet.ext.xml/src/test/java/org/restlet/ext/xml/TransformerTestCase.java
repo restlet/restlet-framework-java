@@ -40,7 +40,6 @@ class TransformerTestCase {
         }
 
         void trackFailure(String message, int index, Throwable e) {
-            e.printStackTrace();
             trackFailure(message + " " + index + ": " + e.getMessage());
         }
     }
@@ -82,19 +81,17 @@ class TransformerTestCase {
         for (int i = 0; i < parallelTransform.length; i++) {
             final int index = i;
             parallelTransform[i] =
-                    new Thread() {
-
-                        @Override
-                        public void run() {
-                            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                tr.write(out);
-                                final String result = out.toString();
-                                assertEquals(TransformerTestCase.this.output, result);
-                            } catch (IOException e) {
-                                tracker.trackFailure("Exception during write in thread ", index, e);
-                            }
-                        }
-                    };
+                    new Thread(
+                            () -> {
+                                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                                    tr.write(out);
+                                    final String result = out.toString();
+                                    assertEquals(TransformerTestCase.this.output, result);
+                                } catch (IOException e) {
+                                    tracker.trackFailure(
+                                            "Exception during write in thread ", index, e);
+                                }
+                            });
         }
 
         for (final Thread pt : parallelTransform) {
