@@ -291,8 +291,7 @@ class SpringBeanRouterTestCase {
         assertEquals(2, actualRoutes.size(), "Timber resource should have been skipped");
     }
 
-    @NonNull
-    private DefaultListableBeanFactory requiredBeanFactory() {
+    @NonNull private DefaultListableBeanFactory requiredBeanFactory() {
         DefaultListableBeanFactory currentFactory = this.factory;
         if (currentFactory == null) {
             throw new IllegalStateException("factory");
@@ -300,11 +299,11 @@ class SpringBeanRouterTestCase {
         return currentFactory;
     }
 
-    @NonNull
-    private String requiredString(String value) {
-        if (value == null) {
+    @NonNull private String requiredString(String value) {
+        String currentValue = value;
+        if (currentValue == null) {
             throw new IllegalStateException("value");
         }
-        return value;
+        return currentValue;
     }
 }

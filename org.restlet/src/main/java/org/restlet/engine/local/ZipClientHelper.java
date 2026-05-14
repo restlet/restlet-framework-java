@@ -210,7 +210,11 @@ public class ZipClientHelper extends LocalClientHelper {
             if (file.exists()) {
                 final File newZipFile =
                         copyZipFileWithUpdatedEntry(file, entryName, entity, isDirectory);
-                Files.move(newZipFile.toPath(), file.toPath(), REPLACE_EXISTING);
+                try {
+                    Files.move(newZipFile.toPath(), file.toPath(), REPLACE_EXISTING);
+                } finally {
+                    deleteParentDirectoryIfEmpty(newZipFile);
+                }
 
                 response.setStatus(Status.SUCCESS_OK);
             } else {
@@ -233,6 +237,7 @@ public class ZipClientHelper extends LocalClientHelper {
             throws IOException {
 
         final File writeTo = createPrivateTempFile();
+        boolean completed = false;
 
         try (final ZipFile zipFile = new ZipFile(file);
                 final ZipOutputStream zipOut =
@@ -257,13 +262,29 @@ public class ZipClientHelper extends LocalClientHelper {
             if (!replaced) {
                 writeEntityStream(entity, zipOut, entryName, isDirectory);
             }
+            completed = true;
+        } finally {
+            if (!completed) {
+                Files.deleteIfExists(writeTo.toPath());
+                deleteParentDirectoryIfEmpty(writeTo);
+            }
         }
         return writeTo;
     }
 
     /** Create a temporary file with private access rights. */
     private static File createPrivateTempFile() throws IOException {
-        Path temporaryFile = Files.createTempFile("restlet_zip_", "zip");
+        Path temporaryDirectory = Files.createTempDirectory("restlet_zip_");
+
+        if (Files.getFileStore(temporaryDirectory).supportsFileAttributeView("posix")) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions(temporaryDirectory, perms);
+        }
+
+        Path temporaryFile = Files.createTempFile(temporaryDirectory, "archive_", ".zip");
 
         if (Files.getFileStore(temporaryFile).supportsFileAttributeView("posix")) {
             Set<PosixFilePermission> perms = new HashSet<>();
@@ -273,6 +294,20 @@ public class ZipClientHelper extends LocalClientHelper {
         }
 
         return temporaryFile.toFile();
+    }
+
+    private static void deleteParentDirectoryIfEmpty(File file) {
+        Path parent = file.toPath().getParent();
+
+        if (parent == null) {
+            return;
+        }
+
+        try {
+            Files.deleteIfExists(parent);
+        } catch (IOException ignored) {
+            // Ignore cleanup failures for temporary directories.
+        }
     }
 
     /**
