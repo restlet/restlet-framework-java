@@ -60,6 +60,11 @@ import org.restlet.engine.connector.ClientHelper;
  */
 public abstract class LocalClientHelper extends ClientHelper {
 
+    private static final String PRIVATE_TEMP_DIRECTORY_NAME = ".restlet/tmp";
+
+    private static final FileAttribute<Set<PosixFilePermission>> OWNER_ALL_DIRECTORY_PERMISSIONS =
+            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+
     private static final FileAttribute<Set<PosixFilePermission>> OWNER_READ_WRITE_FILE_PERMISSIONS =
             PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
 
@@ -122,23 +127,67 @@ public abstract class LocalClientHelper extends ClientHelper {
     }
 
     protected static File createPrivateTempFile(String prefix, String suffix) throws IOException {
-        Path temporaryDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
+        Path temporaryDirectory = getPrivateTempDirectory();
         FileStore fileStore = Files.getFileStore(temporaryDirectory);
         Path temporaryFile;
 
         if (fileStore.supportsFileAttributeView("posix")) {
-            temporaryFile = Files.createTempFile(prefix, suffix, OWNER_READ_WRITE_FILE_PERMISSIONS);
+            temporaryFile =
+                    Files.createTempFile(
+                            temporaryDirectory, prefix, suffix, OWNER_READ_WRITE_FILE_PERMISSIONS);
         } else {
-            temporaryFile = Files.createTempFile(prefix, suffix);
+            temporaryFile = Files.createTempFile(temporaryDirectory, prefix, suffix);
             File temporaryFileAsFile = temporaryFile.toFile();
-            temporaryFileAsFile.setReadable(false, false);
-            temporaryFileAsFile.setWritable(false, false);
-            temporaryFileAsFile.setExecutable(false, false);
-            temporaryFileAsFile.setReadable(true, true);
-            temporaryFileAsFile.setWritable(true, true);
+            setOwnerOnlyAccess(temporaryFileAsFile, false);
         }
 
         return temporaryFile.toFile();
+    }
+
+    private static Path getPrivateTempDirectory() throws IOException {
+        Path homeDirectory = getPrivateTempHomeRoot();
+        Path privateTempDirectory = homeDirectory.resolve(PRIVATE_TEMP_DIRECTORY_NAME);
+
+        if (Files.exists(privateTempDirectory)) {
+            if (Files.getFileStore(privateTempDirectory).supportsFileAttributeView("posix")) {
+                Files.setPosixFilePermissions(
+                        privateTempDirectory, OWNER_ALL_DIRECTORY_PERMISSIONS.value());
+            }
+            return privateTempDirectory;
+        }
+
+        if (Files.getFileStore(homeDirectory).supportsFileAttributeView("posix")) {
+            return Files.createDirectories(privateTempDirectory, OWNER_ALL_DIRECTORY_PERMISSIONS);
+        }
+
+        return Files.createDirectories(privateTempDirectory);
+    }
+
+    private static Path getPrivateTempHomeRoot() {
+        String userHome = System.getProperty("user.home");
+
+        if (userHome != null && !userHome.isEmpty()) {
+            return Paths.get(userHome);
+        }
+
+        return Paths.get(".").toAbsolutePath().normalize();
+    }
+
+    private static void setOwnerOnlyAccess(File file, boolean executable) throws IOException {
+        ensurePermissionChange(file.setReadable(true, true), file, "enable owner read access");
+        ensurePermissionChange(file.setWritable(true, true), file, "enable owner write access");
+
+        if (executable) {
+            ensurePermissionChange(
+                    file.setExecutable(true, true), file, "enable owner execute access");
+        }
+    }
+
+    private static void ensurePermissionChange(boolean updated, File file, String action)
+            throws IOException {
+        if (!updated) {
+            throw new IOException("Unable to " + action + " for " + file.getAbsolutePath());
+        }
     }
 
     /**
