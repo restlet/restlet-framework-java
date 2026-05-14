@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static java.lang.String.format;
@@ -20,7 +19,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
@@ -34,14 +32,13 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
 
-/**
- * This tests the ability of the server to accept a fixed number of incoming connections.
- */
+/** This tests the ability of the server to accept a fixed number of incoming connections. */
 public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
-    private static final Logger LOGGER = Logger.getLogger(ServerMaxConnectionsTestCase.class.getCanonicalName());
-    private final static int CONNECTIONS_NUMBER = 1;
-    private final static int CONCURRENT_REQUESTS = 2;
-    private final static Duration SERVER_RESOURCE_FREEZE_DURATION = Duration.ofMillis(100);
+    private static final Logger LOGGER =
+            Logger.getLogger(ServerMaxConnectionsTestCase.class.getCanonicalName());
+    private static final int CONNECTIONS_NUMBER = 1;
+    private static final int CONCURRENT_REQUESTS = 2;
+    private static final Duration SERVER_RESOURCE_FREEZE_DURATION = Duration.ofMillis(100);
 
     @Override
     protected void configureServer(final Server server) {
@@ -49,7 +46,9 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
 
         final Series<Parameter> parameters = server.getContext().getParameters();
         parameters.add("server.maxConnections", Integer.toString(CONNECTIONS_NUMBER));
-        parameters.add("connector.acceptors", Integer.toString(CONCURRENT_REQUESTS)); // server can accept all requests
+        parameters.add(
+                "connector.acceptors",
+                Integer.toString(CONCURRENT_REQUESTS)); // server can accept all requests
     }
 
     @Override
@@ -61,11 +60,12 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
         final List<Boolean> testResults = new ArrayList<>();
 
         final Executor executor = Executors.newFixedThreadPool(CONCURRENT_REQUESTS);
-        final Runnable runnable = () -> {
-            testResults.add(sendGet(uri).isSuccess());
-            countDownLatch.countDown();
-            log("client countDownLatch.countDown done " + Thread.currentThread().getName());
-        };
+        final Runnable runnable =
+                () -> {
+                    testResults.add(sendGet(uri).isSuccess());
+                    countDownLatch.countDown();
+                    log("client countDownLatch.countDown done " + Thread.currentThread().getName());
+                };
 
         for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
             executor.execute(runnable);
@@ -89,7 +89,8 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
 
         log("client send get " + Thread.currentThread().getName());
         try {
-            final Request request = new Request(Method.GET, uri + "/" + Thread.currentThread().getName());
+            final Request request =
+                    new Request(Method.GET, uri + "/" + Thread.currentThread().getName());
             final Client client = new Client(new Context(), Protocol.HTTP);
             final Response response = client.handle(request);
             log("client get sent " + Thread.currentThread().getName());
@@ -125,5 +126,4 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
             }
         };
     }
-
 }

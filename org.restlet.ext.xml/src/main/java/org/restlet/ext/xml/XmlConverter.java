@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -23,19 +21,18 @@ import org.w3c.dom.Document;
 
 /**
  * Converter between the XML APIs and XML Representation classes.
- * 
+ *
  * @author Jerome Louvel
  */
 public class XmlConverter extends ConverterHelper {
 
-    private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
-            MediaType.APPLICATION_ALL_XML);
+    private static final VariantInfo VARIANT_APPLICATION_ALL_XML =
+            new VariantInfo(MediaType.APPLICATION_ALL_XML);
 
-    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+    private static final VariantInfo VARIANT_APPLICATION_XML =
+            new VariantInfo(MediaType.APPLICATION_XML);
 
-    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
-            MediaType.TEXT_XML);
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(MediaType.TEXT_XML);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
@@ -64,6 +61,10 @@ public class XmlConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_TEXT_XML);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 
@@ -74,11 +75,9 @@ public class XmlConverter extends ConverterHelper {
         if (source instanceof Document) {
             if (target == null) {
                 result = 0.5F;
-            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
-                    .getMediaType())) {
+            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target.getMediaType())) {
                 result = 0.8F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(target
-                    .getMediaType())) {
+            } else if (MediaType.APPLICATION_XML.isCompatible(target.getMediaType())) {
                 result = 0.9F;
             } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
                 result = 0.9F;
@@ -91,19 +90,16 @@ public class XmlConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
+    public <T> float score(Representation source, Class<T> target, Resource resource) {
         float result = -1.0F;
 
         if ((target != null)
                 && (Document.class.isAssignableFrom(target)
-                        || DomRepresentation.class.isAssignableFrom(target) || SaxRepresentation.class
-                            .isAssignableFrom(target))) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(source
-                    .getMediaType())) {
+                        || DomRepresentation.class.isAssignableFrom(target)
+                        || SaxRepresentation.class.isAssignableFrom(target))) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(source.getMediaType())) {
                 result = 0.8F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(source
-                    .getMediaType())) {
+            } else if (MediaType.APPLICATION_XML.isCompatible(source.getMediaType())) {
                 result = 0.9F;
             } else if (MediaType.TEXT_XML.isCompatible(source.getMediaType())) {
                 result = 0.9F;
@@ -117,53 +113,53 @@ public class XmlConverter extends ConverterHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation source, Class<T> target,
-            Resource resource) throws IOException {
+    public <T> T toObject(Representation source, Class<T> target, Resource resource)
+            throws IOException {
+        if (target == null) {
+            return null;
+        }
 
-        Object result = null;
-        if (target != null) {
-            if (Document.class.isAssignableFrom(target)) {
-                if (source instanceof DomRepresentation) {
-                    result = ((DomRepresentation) source).getDocument();
-                } else {
-                    result = new DomRepresentation(source).getDocument();
-                }
-            } else if (DomRepresentation.class.isAssignableFrom(target)) {
-                if (source instanceof DomRepresentation) {
-                    result = source;
-                } else {
-                    result = new DomRepresentation(source);
-                }
-            } else if (SaxRepresentation.class.isAssignableFrom(target)) {
-                if (source instanceof SaxRepresentation) {
-                    result = source;
-                } else {
-                    result = new SaxRepresentation(source);
-                }
+        final Object result;
+        if (Document.class.isAssignableFrom(target)) {
+            if (source instanceof DomRepresentation domRepresentation) {
+                result = domRepresentation.getDocument();
+            } else {
+                result = new DomRepresentation(source).getDocument();
             }
+        } else if (DomRepresentation.class.isAssignableFrom(target)) {
+            if (source instanceof DomRepresentation) {
+                result = source;
+            } else {
+                result = new DomRepresentation(source);
+            }
+        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
+            if (source instanceof SaxRepresentation) {
+                result = source;
+            } else {
+                result = new SaxRepresentation(source);
+            }
+        } else {
+            return null;
         }
 
         return (T) result;
     }
 
     @Override
-    public Representation toRepresentation(Object source, Variant target,
-            Resource resource) throws IOException {
+    public Representation toRepresentation(Object source, Variant target, Resource resource) {
         Representation result = null;
 
-        if (source instanceof Document) {
-            result = new DomRepresentation(target.getMediaType(),
-                    (Document) source);
-        } else if (source instanceof Representation) {
-            result = (Representation) source;
+        if (source instanceof Document document) {
+            result = new DomRepresentation(target.getMediaType(), document);
+        } else if (source instanceof Representation representation) {
+            result = representation;
         }
 
         return result;
     }
 
     @Override
-    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
-            Class<T> entity) {
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences, Class<T> entity) {
         if (Document.class.isAssignableFrom(entity)
                 || DomRepresentation.class.isAssignableFrom(entity)
                 || SaxRepresentation.class.isAssignableFrom(entity)) {

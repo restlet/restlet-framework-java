@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.jackson;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -21,71 +19,60 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
 /**
- * Converter between the JSON, JSON Smile, CSV, XML, YAML and Representation
- * classes based on Jackson.
- * 
+ * Converter between the JSON, JSON Smile, CSV, XML, YAML and Representation classes based on
+ * Jackson.
+ *
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class JacksonConverter extends ConverterHelper {
 
     /** Variant with media type application/xml. */
-    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+    private static final VariantInfo VARIANT_APPLICATION_XML =
+            new VariantInfo(MediaType.APPLICATION_XML);
 
     /** Variant with media type application/yaml. */
-    private static final VariantInfo VARIANT_APPLICATION_YAML = new VariantInfo(
-            MediaType.APPLICATION_YAML);
+    private static final VariantInfo VARIANT_APPLICATION_YAML =
+            new VariantInfo(MediaType.APPLICATION_YAML);
 
     /** Variant with media type application/json. */
-    private static final VariantInfo VARIANT_JSON = new VariantInfo(
-            MediaType.APPLICATION_JSON);
+    private static final VariantInfo VARIANT_JSON = new VariantInfo(MediaType.APPLICATION_JSON);
 
     /** Variant with media type application/x-json-smile. */
-    private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
-            MediaType.APPLICATION_JSON_SMILE);
+    private static final VariantInfo VARIANT_JSON_SMILE =
+            new VariantInfo(MediaType.APPLICATION_JSON_SMILE);
 
     /** Variant with media type text/csv. */
-    private static final VariantInfo VARIANT_TEXT_CSV = new VariantInfo(
-            MediaType.TEXT_CSV);
+    private static final VariantInfo VARIANT_TEXT_CSV = new VariantInfo(MediaType.TEXT_CSV);
 
     /** Variant with media type text/xml. */
-    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
-            MediaType.TEXT_XML);
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(MediaType.TEXT_XML);
 
     /** Variant with media type text/yaml. */
-    private static final VariantInfo VARIANT_TEXT_YAML = new VariantInfo(
-            MediaType.TEXT_YAML);
+    private static final VariantInfo VARIANT_TEXT_YAML = new VariantInfo(MediaType.TEXT_YAML);
 
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
-     * 
-     * @param <T>
-     *            The expected class of the representation Java object.
-     * @param mediaType
-     *            The target media type.
-     * @param source
-     *            The source object to marshal.
+     *
+     * @param <T> The expected class of the representation Java object.
+     * @param mediaType The target media type.
+     * @param source The source object to marshal.
      * @return The marshaling {@link JacksonRepresentation}.
      */
     protected <T> JacksonRepresentation<T> create(MediaType mediaType, T source) {
-        return new JacksonRepresentation<T>(mediaType, source);
+        return new JacksonRepresentation<>(mediaType, source);
     }
 
     /**
      * Creates the unmarshaling {@link JacksonRepresentation}.
-     * 
-     * @param <T>
-     *            The expected class of the representation Java object.
-     * @param source
-     *            The source representation to unmarshal.
-     * @param objectClass
-     *            The object class to instantiate.
+     *
+     * @param <T> The expected class of the representation Java object.
+     * @param source The source representation to unmarshal.
+     * @param objectClass The object class to instantiate.
      * @return The unmarshaling {@link JacksonRepresentation}.
      */
-    protected <T> JacksonRepresentation<T> create(Representation source,
-            Class<T> objectClass) {
-        return new JacksonRepresentation<T>(source, objectClass);
+    protected <T> JacksonRepresentation<T> create(Representation source, Class<T> objectClass) {
+        return new JacksonRepresentation<>(source, objectClass);
     }
 
     @Override
@@ -114,17 +101,20 @@ public class JacksonConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_TEXT_CSV);
         }
 
+        if (result == null) {
+            result = List.of();
+        }
+
         return result;
     }
 
     /**
-     * Indicates if the given variant is compatible with the media types
-     * supported by this converter.
-     * 
-     * @param variant
-     *            The variant.
-     * @return True if the given variant is compatible with the media types
-     *         supported by this converter.
+     * Indicates if the given variant is compatible with the media types supported by this
+     * converter.
+     *
+     * @param variant The variant.
+     * @return True if the given variant is compatible with the media types supported by this
+     *     converter.
      */
     protected boolean isCompatible(Variant variant) {
         return (variant != null)
@@ -133,41 +123,39 @@ public class JacksonConverter extends ConverterHelper {
                         || (VARIANT_APPLICATION_XML.isCompatible(variant))
                         || (VARIANT_TEXT_XML.isCompatible(variant))
                         || VARIANT_APPLICATION_YAML.isCompatible(variant)
-                        || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
-                            .isCompatible(variant));
+                        || VARIANT_TEXT_YAML.isCompatible(variant)
+                        || VARIANT_TEXT_CSV.isCompatible(variant));
     }
 
     @Override
     public float score(Object source, Variant target, Resource resource) {
-        float result = -1.0F;
+        final float result;
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
+        } else if (target == null) {
+            result = 0.5F;
+        } else if (isCompatible(target)) {
+            result = 0.8F;
         } else {
-            if (target == null) {
-                result = 0.5F;
-            } else if (isCompatible(target)) {
-                result = 0.8F;
-            } else {
-                result = 0.5F;
-            }
+            result = 0.5F;
         }
 
         return result;
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
-        float result = -1.0F;
+    public <T> float score(Representation source, Class<T> target, Resource resource) {
+        final float result;
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
-        } else if ((target != null)
-                && JacksonRepresentation.class.isAssignableFrom(target)) {
+        } else if ((target != null) && JacksonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
         } else if (isCompatible(source)) {
             result = 0.8F;
+        } else {
+            result = -1.0F;
         }
 
         return result;
@@ -175,9 +163,9 @@ public class JacksonConverter extends ConverterHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation source, Class<T> target,
-            Resource resource) throws IOException {
-        Object result = null;
+    public <T> T toObject(Representation source, Class<T> target, Resource resource)
+            throws IOException {
+        final Object result;
 
         // The source for the Jackson conversion
         JacksonRepresentation<?> jacksonSource = null;
@@ -187,26 +175,25 @@ public class JacksonConverter extends ConverterHelper {
             jacksonSource = create(source, target);
         }
 
-        if (jacksonSource != null) {
-            // Handle the conversion
-            if ((target != null)
-                    && JacksonRepresentation.class.isAssignableFrom(target)) {
+        if (jacksonSource != null) { // Handle the conversion
+            if ((target != null) && JacksonRepresentation.class.isAssignableFrom(target)) {
                 result = jacksonSource;
             } else {
                 result = jacksonSource.getObject();
             }
+        } else {
+            result = null;
         }
 
         return (T) result;
     }
 
     @Override
-    public Representation toRepresentation(Object source, Variant target,
-            Resource resource) {
+    public Representation toRepresentation(Object source, Variant target, Resource resource) {
         Representation result = null;
 
-        if (source instanceof JacksonRepresentation) {
-            result = (JacksonRepresentation<?>) source;
+        if (source instanceof JacksonRepresentation<?> jacksonRepresentation) {
+            result = jacksonRepresentation;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
@@ -220,8 +207,7 @@ public class JacksonConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
-            Class<T> entity) {
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences, Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
@@ -230,5 +216,4 @@ public class JacksonConverter extends ConverterHelper {
         updatePreferences(preferences, MediaType.TEXT_YAML, 1.0F);
         updatePreferences(preferences, MediaType.TEXT_CSV, 1.0F);
     }
-
 }

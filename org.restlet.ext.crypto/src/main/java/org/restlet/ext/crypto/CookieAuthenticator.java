@@ -1,18 +1,16 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.crypto;
 
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -28,33 +26,29 @@ import org.restlet.ext.crypto.internal.CryptoUtils;
 import org.restlet.security.ChallengeAuthenticator;
 
 /**
- * Challenge authenticator based on browser cookies. This is useful when the web
- * application requires a finer grained control on the login and logout process
- * and can't rely solely on standard schemes such as
- * {@link ChallengeScheme#HTTP_BASIC}.<br>
+ * Challenge authenticator based on browser cookies. This is useful when the web application
+ * requires a finer grained control on the login and logout process and can't rely solely on
+ * standard schemes such as {@link ChallengeScheme#HTTP_BASIC}.<br>
  * <br>
- * Login can be automatically handled by intercepting HTTP POST calls to the
- * {@link #getLoginPath()} URI. The request entity should contain an HTML form
- * with two fields, the first one named {@link #getIdentifierFormName()} and the
- * second one named {@link #getSecretFormName()}.<br>
+ * Login can be automatically handled by intercepting HTTP POST calls to the {@link #getLoginPath()}
+ * URI. The request entity should contain an HTML form with two fields, the first one named {@link
+ * #getIdentifierFormName()} and the second one named {@link #getSecretFormName()}.<br>
  * <br>
- * Logout can be automatically handled as well by intercepting HTTP GET or POST
- * calls to the {@link #getLogoutPath()} URI.<br>
+ * Logout can be automatically handled as well by intercepting HTTP GET or POST calls to the {@link
+ * #getLogoutPath()} URI.<br>
  * <br>
- * After login or logout, the user's browser can be redirected to the URI
- * provided in a query parameter named by {@link #getRedirectQueryName()}.<br>
+ * After login or logout, the user's browser can be redirected to the URI provided in a query
+ * parameter named by {@link #getRedirectQueryName()}.<br>
  * <br>
- * When the credentials are missing or stale, the
- * {@link #challenge(Response, boolean)} method is invoked by the parent class,
- * and its default behavior is to redirect the user's browser to the
- * {@link #getLoginFormPath()} URI, adding the URI of the target resource as a
- * query parameter of name {@link #getRedirectQueryName()}.<br>
+ * When the credentials are missing or stale, the {@link #challenge(Response, boolean)} method is
+ * invoked by the parent class, and its default behavior is to redirect the user's browser to the
+ * {@link #getLoginFormPath()} URI, adding the URI of the target resource as a query parameter of
+ * name {@link #getRedirectQueryName()}.<br>
  * <br>
- * Note that credentials, both identifier and secret, are stored in a cookie in
- * an encrypted manner. The default encryption algorithm is AES but can be
- * changed with {@link #setEncryptAlgorithm(String)}. It is also strongly
- * recommended to
- * 
+ * Note that credentials, both identifier and secret, are stored in a cookie in an encrypted manner.
+ * The default encryption algorithm is AES but can be changed with {@link
+ * #setEncryptAlgorithm(String)}. It is also strongly recommended to
+ *
  * @author Remi Dewitte
  * @author Jerome Louvel
  */
@@ -66,10 +60,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     /** The name of the algorithm used to encrypt the log info cookie value. */
     private volatile String encryptAlgorithm;
 
-    /**
-     * The secret key for the algorithm used to encrypt the log info cookie
-     * value.
-     */
+    /** The secret key for the algorithm used to encrypt the log info cookie value. */
     private volatile byte[] encryptSecretKey;
 
     /** The name of the HTML login form field containing the identifier. */
@@ -94,8 +85,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     private volatile int maxCookieAge;
 
     /**
-     * The name of the query parameter containing the URI to redirect the
-     * browser to after login or logout.
+     * The name of the query parameter containing the URI to redirect the browser to after login or
+     * logout.
      */
     private volatile String redirectQueryName;
 
@@ -104,19 +95,15 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Constructor. Use the {@link ChallengeScheme#HTTP_COOKIE} pseudo-scheme.
-     * 
-     * @param context
-     *            The parent context.
-     * @param optional
-     *            Indicates if this authenticator is optional so alternative
-     *            authenticators down the chain can be attempted.
-     * @param realm
-     *            The name of the security realm.
-     * @param encryptSecretKey
-     *            The secret key used to encrypt the cookie value.
+     *
+     * @param context The parent context.
+     * @param optional Indicates if this authenticator is optional, so alternative authenticators
+     *     down the chain can be attempted.
+     * @param realm The name of the security realm.
+     * @param encryptSecretKey The secret key used to encrypt the cookie value.
      */
-    public CookieAuthenticator(Context context, boolean optional, String realm,
-            byte[] encryptSecretKey) {
+    public CookieAuthenticator(
+            Context context, boolean optional, String realm, byte[] encryptSecretKey) {
         super(context, optional, ChallengeScheme.HTTP_COOKIE, realm);
         this.cookieName = "Credentials";
         this.interceptingLogin = true;
@@ -133,31 +120,25 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Constructor for mandatory cookie authenticators.
-     * 
-     * @param context
-     *            The parent context.
-     * @param realm
-     *            The name of the security realm.
-     * @param encryptSecretKey
-     *            The secret key used to encrypt the cookie value.
+     *
+     * @param context The parent context.
+     * @param realm The name of the security realm.
+     * @param encryptSecretKey The secret key used to encrypt the cookie value.
      */
-    public CookieAuthenticator(Context context, String realm,
-            byte[] encryptSecretKey) {
+    public CookieAuthenticator(Context context, String realm, byte[] encryptSecretKey) {
         this(context, false, realm, encryptSecretKey);
     }
 
     /**
-     * Attempts to redirect the user's browser to the URI provided in a query
-     * parameter named by {@link #getRedirectQueryName()}.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     * Attempts to redirect the user's browser to the URI provided in a query parameter named by
+     * {@link #getRedirectQueryName()}.
+     *
+     * @param request The current request.
+     * @param response The current response.
      */
     protected void attemptRedirect(Request request, Response response) {
-        String targetUri = request.getResourceRef().getQueryAsForm()
-                .getFirstValue(getRedirectQueryName());
+        String targetUri =
+                request.getResourceRef().getQueryAsForm().getFirstValue(getRedirectQueryName());
 
         if (targetUri != null) {
             response.redirectSeeOther(Reference.decode(targetUri));
@@ -165,45 +146,38 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Restores credentials from the cookie named {@link #getCookieName()} if
-     * available. The usual processing is the followed.
+     * Restores credentials from the cookie named {@link #getCookieName()} if available. The usual
+     * processing is the followed.
      */
     @Override
     protected boolean authenticate(Request request, Response response) {
         // Restore credentials from the cookie
-        Cookie credentialsCookie = request.getCookies().getFirst(
-                getCookieName());
+        Cookie credentialsCookie = request.getCookies().getFirst(getCookieName());
 
         if (credentialsCookie != null) {
-            request.setChallengeResponse(parseCredentials(credentialsCookie
-                    .getValue()));
+            request.setChallengeResponse(parseCredentials(credentialsCookie.getValue()));
         }
 
         return super.authenticate(request, response);
     }
 
-    /**
-     * Sets or updates the credentials cookie.
-     */
+    /** Sets or updates the credentials cookie. */
     @Override
     protected int authenticated(Request request, Response response) {
         try {
-            CookieSetting credentialsCookie = getCredentialsCookie(request,
-                    response);
-            credentialsCookie.setValue(formatCredentials(request
-                    .getChallengeResponse()));
+            CookieSetting credentialsCookie = getCredentialsCookie(request, response);
+            credentialsCookie.setValue(formatCredentials(request.getChallengeResponse()));
             credentialsCookie.setMaxAge(getMaxCookieAge());
         } catch (GeneralSecurityException e) {
-            getLogger().log(Level.SEVERE,
-                    "Could not format credentials cookie", e);
+            getLogger().log(Level.SEVERE, "Could not format credentials cookie", e);
         }
 
         return super.authenticated(request, response);
     }
 
     /**
-     * Optionally handles the login and logout actions by intercepting the HTTP
-     * calls to the {@link #getLoginPath()} and {@link #getLogoutPath()} URIs.
+     * Optionally handles the login and logout actions by intercepting the HTTP calls to the {@link
+     * #getLoginPath()} and {@link #getLogoutPath()} URIs.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
@@ -218,9 +192,9 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * This method should be overridden to return a login form representation.<br>
-     * By default, it redirects the user's browser to the
-     * {@link #getLoginFormPath()} URI, adding the URI of the target resource as
-     * a query parameter of name {@link #getRedirectQueryName()}.<br>
+     * By default, it redirects the user's browser to the {@link #getLoginFormPath()} URI, adding
+     * the URI of the target resource as a query parameter of name {@link #getRedirectQueryName()}.
+     * <br>
      * In case the getLoginFormPath() is not set, it calls the parent's method.
      */
     @Override
@@ -230,13 +204,13 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         } else {
             Reference ref = response.getRequest().getResourceRef();
             String redirectQueryName = getRedirectQueryName();
-            String redirectQueryValue = ref.getQueryAsForm().getFirstValue(
-                    redirectQueryName, "");
+            String redirectQueryValue = ref.getQueryAsForm().getFirstValue(redirectQueryName, "");
 
             if ("".equals(redirectQueryValue)) {
-                redirectQueryValue = new Reference(getLoginFormPath())
-                        .addQueryParameter(redirectQueryName, ref.toString())
-                        .toString();
+                redirectQueryValue =
+                        new Reference(getLoginFormPath())
+                                .addQueryParameter(redirectQueryName, ref.toString())
+                                .toString();
             }
 
             response.redirectSeeOther(redirectQueryValue);
@@ -245,19 +219,17 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Formats the raws credentials to store in the cookie.
-     * 
-     * @param challenge
-     *            The challenge response to format.
+     *
+     * @param challenge The challenge response to format.
      * @return The raw credentials.
      * @throws GeneralSecurityException
      */
-    public String formatCredentials(ChallengeResponse challenge)
-            throws GeneralSecurityException {
+    public String formatCredentials(ChallengeResponse challenge) throws GeneralSecurityException {
         // Data buffer
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         // Indexes buffer
-        StringBuffer isb = new StringBuffer();
+        StringBuilder isb = new StringBuilder();
         String timeIssued = Long.toString(System.currentTimeMillis());
         int i = timeIssued.length();
         sb.append(timeIssued);
@@ -278,14 +250,16 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         sb.append('/');
         sb.append(isb);
 
-        return Base64.getEncoder().encodeToString(CryptoUtils.encrypt(getEncryptAlgorithm(),
-                getEncryptSecretKey(), sb.toString()));
+        return Base64.getEncoder()
+                .encodeToString(
+                        CryptoUtils.encrypt(
+                                getEncryptAlgorithm(), getEncryptSecretKey(), sb.toString()));
     }
 
     /**
-     * Returns the cookie name to use for the authentication credentials. By
-     * default, it is is "Credentials".
-     * 
+     * Returns the cookie name to use for the authentication credentials. By default, it is is
+     * "Credentials".
+     *
      * @return The cookie name to use for the authentication credentials.
      */
     public String getCookieName() {
@@ -293,19 +267,15 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Returns the credentials cookie setting. It first try to find an existing
-     * cookie. If necessary, it creates a new one.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     * Returns the credentials cookie setting. It first try to find an existing cookie. If
+     * necessary, it creates a new one.
+     *
+     * @param request The current request.
+     * @param response The current response.
      * @return The credentials cookie setting.
      */
-    protected CookieSetting getCredentialsCookie(Request request,
-            Response response) {
-        CookieSetting credentialsCookie = response.getCookieSettings()
-                .getFirst(getCookieName());
+    protected CookieSetting getCredentialsCookie(Request request, Response response) {
+        CookieSetting credentialsCookie = response.getCookieSettings().getFirst(getCookieName());
 
         if (credentialsCookie == null) {
             credentialsCookie = new CookieSetting(getCookieName(), null);
@@ -326,31 +296,28 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Returns the name of the algorithm used to encrypt the log info cookie
-     * value. By default, it returns "AES".
-     * 
-     * @return The name of the algorithm used to encrypt the log info cookie
-     *         value.
+     * Returns the name of the algorithm used to encrypt the log info cookie value. By default, it
+     * returns "AES".
+     *
+     * @return The name of the algorithm used to encrypt the log info cookie value.
      */
     public String getEncryptAlgorithm() {
         return encryptAlgorithm;
     }
 
     /**
-     * Returns the secret key for the algorithm used to encrypt the log info
-     * cookie value.
-     * 
-     * @return The secret key for the algorithm used to encrypt the log info
-     *         cookie value.
+     * Returns the secret key for the algorithm used to encrypt the log info cookie value.
+     *
+     * @return The secret key for the algorithm used to encrypt the log info cookie value.
      */
     public byte[] getEncryptSecretKey() {
         return encryptSecretKey;
     }
 
     /**
-     * Returns the name of the HTML login form field containing the identifier.
-     * Returns "login" by default.
-     * 
+     * Returns the name of the HTML login form field containing the identifier. Returns "login" by
+     * default.
+     *
      * @return The name of the HTML login form field containing the identifier.
      */
     public String getIdentifierFormName() {
@@ -359,7 +326,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the URI path of the HTML login form to use to challenge the user.
-     * 
+     *
      * @return The URI path of the HTML login form to use to challenge the user.
      */
     public String getLoginFormPath() {
@@ -368,7 +335,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the login URI path to intercept.
-     * 
+     *
      * @return The login URI path to intercept.
      */
     public String getLoginPath() {
@@ -377,7 +344,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the logout URI path to intercept.
-     * 
+     *
      * @return The logout URI path to intercept.
      */
     public String getLogoutPath() {
@@ -385,9 +352,9 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Returns the maximum age of the log info cookie. By default, it uses -1 to
-     * make the cookie only last until the end of the current browser session.
-     * 
+     * Returns the maximum age of the log info cookie. By default, it uses -1 to make the cookie
+     * only last until the end of the current browser session.
+     *
      * @return The maximum age of the log info cookie.
      * @see CookieSetting#getMaxAge()
      */
@@ -396,20 +363,20 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Returns the name of the query parameter containing the URI to redirect
-     * the browser to after login or logout. By default, it uses "targetUri".
-     * 
-     * @return The name of the query parameter containing the URI to redirect
-     *         the browser to after login or logout.
+     * Returns the name of the query parameter containing the URI to redirect the browser to after
+     * login or logout. By default, it uses "targetUri".
+     *
+     * @return The name of the query parameter containing the URI to redirect the browser to after
+     *     login or logout.
      */
     public String getRedirectQueryName() {
         return redirectQueryName;
     }
 
     /**
-     * Returns the name of the HTML login form field containing the secret.
-     * Returns "password" by default.
-     * 
+     * Returns the name of the HTML login form field containing the secret. Returns "password" by
+     * default.
+     *
      * @return The name of the HTML login form field containing the secret.
      */
     public String getSecretFormName() {
@@ -418,7 +385,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Indicates if the login requests should be intercepted.
-     * 
+     *
      * @return True if the login requests should be intercepted.
      */
     public boolean isInterceptingLogin() {
@@ -427,7 +394,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Indicates if the logout requests should be intercepted.
-     * 
+     *
      * @return True if the logout requests should be intercepted.
      */
     public boolean isInterceptingLogout() {
@@ -435,51 +402,37 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Indicates if the request is an attempt to log in and should be
-     * intercepted.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
-     * @return True if the request is an attempt to log in and should be
-     *         intercepted.
+     * Indicates if the request is an attempt to log in and should be intercepted.
+     *
+     * @param request The current request.
+     * @param response The current response.
+     * @return True if the request is an attempt to log in and should be intercepted.
      */
     protected boolean isLoggingIn(Request request, Response response) {
         return isInterceptingLogin()
-                && getLoginPath()
-                        .equals(request.getResourceRef().getRemainingPart(
-                                false, false))
+                && getLoginPath().equals(request.getResourceRef().getRemainingPart(false, false))
                 && Method.POST.equals(request.getMethod());
     }
 
     /**
-     * Indicates if the request is an attempt to log out and should be
-     * intercepted.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
-     * @return True if the request is an attempt to log out and should be
-     *         intercepted.
+     * Indicates if the request is an attempt to log out and should be intercepted.
+     *
+     * @param request The current request.
+     * @param response The current response.
+     * @return True if the request is an attempt to log out and should be intercepted.
      */
     protected boolean isLoggingOut(Request request, Response response) {
         return isInterceptingLogout()
-                && getLogoutPath()
-                        .equals(request.getResourceRef().getRemainingPart(
-                                false, false))
-                && (Method.GET.equals(request.getMethod()) || Method.POST
-                        .equals(request.getMethod()));
+                && getLogoutPath().equals(request.getResourceRef().getRemainingPart(false, false))
+                && (Method.GET.equals(request.getMethod())
+                        || Method.POST.equals(request.getMethod()));
     }
 
     /**
      * Processes the login request.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     *
+     * @param request The current request.
+     * @param response The current response.
      */
     protected void login(Request request, Response response) {
         // Login detected
@@ -488,9 +441,11 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         Parameter secret = form.getFirst(getSecretFormName());
 
         // Set credentials
-        ChallengeResponse cr = new ChallengeResponse(getScheme(),
-                identifier != null ? identifier.getValue() : null,
-                secret != null ? secret.getValue() : null);
+        ChallengeResponse cr =
+                new ChallengeResponse(
+                        getScheme(),
+                        identifier != null ? identifier.getValue() : null,
+                        secret != null ? secret.getValue() : null);
         request.setChallengeResponse(cr);
 
         // Attempt to redirect
@@ -499,17 +454,14 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Processes the logout request.
-     * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     *
+     * @param request The current request.
+     * @param response The current response.
      */
     protected int logout(Request request, Response response) {
         // Clears the credentials
         request.setChallengeResponse(null);
-        CookieSetting credentialsCookie = getCredentialsCookie(request,
-                response);
+        CookieSetting credentialsCookie = getCredentialsCookie(request, response);
         credentialsCookie.setMaxAge(0);
 
         // Attempt to redirect
@@ -519,26 +471,23 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Decodes the credentials stored in a cookie into a proper
-     * {@link ChallengeResponse} object.
-     * 
-     * @param cookieValue
-     *            The credentials to decode from cookie value.
+     * Decodes the credentials stored in a cookie into a proper {@link ChallengeResponse} object.
+     *
+     * @param cookieValue The credentials to decode from cookie value.
      * @return The credentials as a proper challenge response.
      */
     protected ChallengeResponse parseCredentials(String cookieValue) {
+        if (cookieValue == null) {
+            return null;
+        }
+
         try {
             // 1) Decode Base64 string
             byte[] encrypted = Base64.getDecoder().decode(cookieValue);
-            
-            if (encrypted == null) {
-                getLogger().warning(
-                        "Cannot decode cookie credentials : " + cookieValue);
-            }
-            
+
             // 2) Decrypt the credentials
-            String decrypted = CryptoUtils.decrypt(getEncryptAlgorithm(),
-                    getEncryptSecretKey(), encrypted);
+            String decrypted =
+                    CryptoUtils.decrypt(getEncryptAlgorithm(), getEncryptSecretKey(), encrypted);
 
             // 3) Parse the decrypted cookie value
             int lastSlash = decrypted.lastIndexOf('/');
@@ -549,24 +498,20 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
             // 4) Create the challenge response
             ChallengeResponse cr = new ChallengeResponse(getScheme());
             cr.setRawValue(cookieValue);
-            cr.setTimeIssued(Long.parseLong(decrypted.substring(0,
-                    identifierIndex)));
-            cr.setIdentifier(decrypted.substring(identifierIndex + 1,
-                    secretIndex));
+            cr.setTimeIssued(Long.parseLong(decrypted.substring(0, identifierIndex)));
+            cr.setIdentifier(decrypted.substring(identifierIndex + 1, secretIndex));
             cr.setSecret(decrypted.substring(secretIndex + 1, lastSlash));
             return cr;
         } catch (Exception e) {
-            getLogger().log(Level.INFO, "Unable to decrypt cookie credentials",
-                    e);
+            getLogger().log(Level.INFO, "Unable to decrypt cookie credentials", e);
             return null;
         }
     }
 
     /**
      * Sets the cookie name to use for the authentication credentials.
-     * 
-     * @param cookieName
-     *            The cookie name to use for the authentication credentials.
+     *
+     * @param cookieName The cookie name to use for the authentication credentials.
      */
     public void setCookieName(String cookieName) {
         this.cookieName = cookieName;
@@ -574,22 +519,17 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the name of the algorithm used to encrypt the log info cookie value.
-     * 
-     * @param secretAlgorithm
-     *            The name of the algorithm used to encrypt the log info cookie
-     *            value.
+     *
+     * @param secretAlgorithm The name of the algorithm used to encrypt the log info cookie value.
      */
     public void setEncryptAlgorithm(String secretAlgorithm) {
         this.encryptAlgorithm = secretAlgorithm;
     }
 
     /**
-     * Sets the secret key for the algorithm used to encrypt the log info cookie
-     * value.
-     * 
-     * @param secretKey
-     *            The secret key for the algorithm used to encrypt the log info
-     *            cookie value.
+     * Sets the secret key for the algorithm used to encrypt the log info cookie value.
+     *
+     * @param secretKey The secret key for the algorithm used to encrypt the log info cookie value.
      */
     public void setEncryptSecretKey(byte[] secretKey) {
         this.encryptSecretKey = secretKey;
@@ -597,10 +537,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the name of the HTML login form field containing the identifier.
-     * 
-     * @param loginInputName
-     *            The name of the HTML login form field containing the
-     *            identifier.
+     *
+     * @param loginInputName The name of the HTML login form field containing the identifier.
      */
     public void setIdentifierFormName(String loginInputName) {
         this.identifierFormName = loginInputName;
@@ -608,9 +546,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Indicates if the login requests should be intercepted.
-     * 
-     * @param intercepting
-     *            True if the login requests should be intercepted.
+     *
+     * @param intercepting True if the login requests should be intercepted.
      */
     public void setInterceptingLogin(boolean intercepting) {
         this.interceptingLogin = intercepting;
@@ -618,9 +555,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Indicates if the logout requests should be intercepted.
-     * 
-     * @param intercepting
-     *            True if the logout requests should be intercepted.
+     *
+     * @param intercepting True if the logout requests should be intercepted.
      */
     public void setInterceptingLogout(boolean intercepting) {
         this.interceptingLogout = intercepting;
@@ -628,10 +564,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the URI path of the HTML login form to use to challenge the user.
-     * 
-     * @param loginFormPath
-     *            The URI path of the HTML login form to use to challenge the
-     *            user.
+     *
+     * @param loginFormPath The URI path of the HTML login form to use to challenge the user.
      */
     public void setLoginFormPath(String loginFormPath) {
         this.loginFormPath = loginFormPath;
@@ -639,9 +573,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the login URI path to intercept.
-     * 
-     * @param loginPath
-     *            The login URI path to intercept.
+     *
+     * @param loginPath The login URI path to intercept.
      */
     public void setLoginPath(String loginPath) {
         this.loginPath = loginPath;
@@ -649,9 +582,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the logout URI path to intercept.
-     * 
-     * @param logoutPath
-     *            The logout URI path to intercept.
+     *
+     * @param logoutPath The logout URI path to intercept.
      */
     public void setLogoutPath(String logoutPath) {
         this.logoutPath = logoutPath;
@@ -659,9 +591,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the maximum age of the log info cookie.
-     * 
-     * @param timeout
-     *            The maximum age of the log info cookie.
+     *
+     * @param timeout The maximum age of the log info cookie.
      * @see CookieSetting#setMaxAge(int)
      */
     public void setMaxCookieAge(int timeout) {
@@ -669,12 +600,11 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Sets the name of the query parameter containing the URI to redirect the
-     * browser to after login or logout.
-     * 
-     * @param redirectQueryName
-     *            The name of the query parameter containing the URI to redirect
-     *            the browser to after login or logout.
+     * Sets the name of the query parameter containing the URI to redirect the browser to after
+     * login or logout.
+     *
+     * @param redirectQueryName The name of the query parameter containing the URI to redirect the
+     *     browser to after login or logout.
      */
     public void setRedirectQueryName(String redirectQueryName) {
         this.redirectQueryName = redirectQueryName;
@@ -682,12 +612,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the name of the HTML login form field containing the secret.
-     * 
-     * @param passwordInputName
-     *            The name of the HTML login form field containing the secret.
+     *
+     * @param passwordInputName The name of the HTML login form field containing the secret.
      */
     public void setSecretFormName(String passwordInputName) {
         this.secretFormName = passwordInputName;
     }
-
 }

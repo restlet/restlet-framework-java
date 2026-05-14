@@ -1,31 +1,29 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
-
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.util.FormReader;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.io.IOException;
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.util.FormReader;
+
 /**
  * Unit tests for the {@link Form} class.
- * 
+ *
  * @author Jerome Louvel
  */
-public class FormTestCase {
+class FormTestCase {
 
     @Test
-    public void testParsing() throws IOException {
+    void testParsing() throws IOException {
         Form form = new Form();
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
@@ -39,7 +37,7 @@ public class FormTestCase {
     }
 
     @Test
-    public void testEmptyParameter() {
+    void testEmptyParameter() {
         // Manual construction of form
         Form form = new Form();
         form.add("normalParam", "abcd");
@@ -60,5 +58,4 @@ public class FormTestCase {
         assertNull(form.getFirstValue("nullParam"));
         assertNull(form.getFirstValue("unknownParam"));
     }
-
 }

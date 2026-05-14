@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import java.io.File;
@@ -16,7 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.List;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.restlet.Client;
@@ -29,9 +27,9 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
 
 /**
- * Base test case that will call an abstract method for several client/server
- * connectors configurations. (Modified for SSL support.)
- * 
+ * Base test case that will call an abstract method for several client/server connectors
+ * configurations. (Modified for SSL support.)
+ *
  * @author Kevin Conaway
  * @author Bruno Harbulot
  * @author Jerome Louvel
@@ -48,13 +46,12 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
     public static void globalSetUp() throws IOException {
         Engine.clearThreadLocalVariables();
         Engine.register();
-        testKeystoreFile = Files
-                .createTempFile("sslBaseConnectorsTest", KEYSTORE_FILE_NAME)
-                .toFile();
+        testKeystoreFile =
+                Files.createTempFile("sslBaseConnectorsTest", KEYSTORE_FILE_NAME).toFile();
         testKeystoreFile.delete();
 
-        InputStream resourceAsStream = SslBaseConnectorsTestCase.class
-                .getResourceAsStream(KEYSTORE_FILE_NAME);
+        InputStream resourceAsStream =
+                SslBaseConnectorsTestCase.class.getResourceAsStream(KEYSTORE_FILE_NAME);
         if (resourceAsStream != null) {
             OutputStream outputStream = new FileOutputStream(testKeystoreFile);
             IoUtils.copy(resourceAsStream, outputStream);
@@ -63,13 +60,11 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
         } else {
             throw new RuntimeException("Can't find the key store");
         }
-
     }
 
     @Override
     protected List<ConnectorsPair> listTestCases() {
-        return List.of(new ConnectorsPair(HttpServer.JETTY_HTTPS,
-                HttpClient.JETTY));
+        return List.of(new ConnectorsPair(HttpServer.JETTY_HTTPS, HttpClient.JETTY));
     }
 
     @Override
@@ -120,5 +115,4 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
         Engine.clearThreadLocalVariables();
         org.restlet.engine.Engine.register();
     }
-
 }

@@ -1,16 +1,33 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
-import org.junit.jupiter.api.*;
-import org.restlet.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.local.FileClientHelper;
@@ -18,27 +35,16 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Test {@link org.restlet.data.Range}.
- * 
+ *
  * @author Jerome Louvel
  */
-public class RangeTestCase {
+class RangeTestCase {
 
     private static final Tag ENTITY_TAG = new Tag("TestRangeGetRestlet");
 
-    /**
-     * Internal class used for test purpose.
-     * 
-     */
+    /** Internal class used for test purpose. */
     private static class TestRangeApplication extends Application {
 
         public TestRangeApplication() {
@@ -53,18 +59,16 @@ public class RangeTestCase {
             Router router = new Router();
             router.attach("/testGet", new TestRangeGetRestlet());
 
-            Directory directory = new Directory(getContext(), LocalReference.createFileReference(testDirPath.toFile()));
+            Directory directory =
+                    new Directory(
+                            getContext(), LocalReference.createFileReference(testDirPath.toFile()));
             directory.setModifiable(true);
             router.attach("/testPut/", directory);
             return router;
         }
     }
 
-    /**
-     * Internal class used for test purpose. It simply returns a string 10
-     * characters long.
-     * 
-     */
+    /** Internal class used for test purpose. It simply returns a string 10 characters long. */
     private static class TestRangeGetRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
@@ -107,8 +111,9 @@ public class RangeTestCase {
             assertEquals(10, response.getEntity().getAvailableSize());
             assertNull(response.getEntity().getRange());
         }
+
         @Test
-        public void fullRange() throws IOException {
+        void fullRange() throws IOException {
             request.setRanges(List.of(new Range(0, 10)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -118,8 +123,9 @@ public class RangeTestCase {
             assertEquals(0, response.getEntity().getRange().getIndex());
             assertEquals(10, response.getEntity().getRange().getSize());
         }
+
         @Test
-        public void rangeFirst2Bytes() throws Exception {
+        void rangeFirst2Bytes() throws Exception {
             request.setRanges(List.of(new Range(Range.INDEX_FIRST, 2)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -131,7 +137,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void range2To4Bytes() throws Exception {
+        void range2To4Bytes() throws Exception {
             request.setRanges(List.of(new Range(2, 2)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -143,7 +149,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void range2To9Bytes() throws Exception {
+        void range2To9Bytes() throws Exception {
             request.setRanges(List.of(new Range(2, 7)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -153,8 +159,9 @@ public class RangeTestCase {
             assertEquals(2, response.getEntity().getRange().getIndex());
             assertEquals(7, response.getEntity().getRange().getSize());
         }
+
         @Test
-        public void rangeLast7Bytes() throws Exception {
+        void rangeLast7Bytes() throws Exception {
             request.setRanges(List.of(new Range(Range.INDEX_LAST, 7)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -166,7 +173,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void range2toMaxBytes() throws Exception {
+        void range2toMaxBytes() throws Exception {
             request.setRanges(List.of(new Range(2, Range.SIZE_MAX)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -177,7 +184,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void range2To1000Bytes() throws Exception {
+        void range2To1000Bytes() throws Exception {
             request.setRanges(List.of(new Range(2, 1000)));
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -199,7 +206,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void rangeShouldApply() throws Exception {
+        void rangeShouldApply() throws Exception {
             request.getConditions().setRangeTag(ENTITY_TAG);
 
             Response response = testRangeApplication.handle(request);
@@ -212,7 +219,7 @@ public class RangeTestCase {
         }
 
         @Test
-        public void rangeShouldNotApply() throws Exception {
+        void rangeShouldNotApply() throws Exception {
             Tag entityTag = new Tag(UUID.randomUUID().toString());
             request.getConditions().setRangeTag(entityTag);
             Response response = testRangeApplication.handle(request);
@@ -226,7 +233,7 @@ public class RangeTestCase {
     class TestPut {
 
         @Test
-        public void testPut() throws IOException {
+        void testPut() throws IOException {
             Path testFilePath = testDirPath.resolve("essai.txt");
 
             testFilePath.toFile().delete();
@@ -283,7 +290,6 @@ public class RangeTestCase {
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
             assertEquals("20000998", response.getEntity().getText());
 
-
             // Partial PUT on a file, with a non-bytes range, not taken into account
             request = new Request(Method.PUT, "/testPut/essai.txt");
             request.setEntity(new StringRepresentation("1234567890"));
@@ -321,14 +327,12 @@ public class RangeTestCase {
         }
     }
 
-
     @Test
-    public void testMultipleRanges() {
+    void testMultipleRanges() {
         Request request = new Request(Method.GET, "/testGet");
         request.setRanges(List.of(new Range(1), new Range(2)));
 
         Response response = testRangeApplication.handle(request);
         assertEquals(Status.SERVER_ERROR_NOT_IMPLEMENTED, response.getStatus());
     }
-
 }

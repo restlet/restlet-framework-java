@@ -1,28 +1,26 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.resource;
-
-import org.junit.jupiter.api.Test;
-
-import java.io.Serializable;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.Serializable;
+import java.util.Date;
+import org.junit.jupiter.api.Test;
+
 /**
  * Test the annotated resources, client and server sides.
- * 
+ *
  * @author Jerome Louvel
  */
-public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
+class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
 
     private MyResource13 myResource;
 
@@ -43,12 +41,12 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
     }
 
     @Test
-    public void testQuery() {
+    void testQuery() {
         Contact contact = myResource.retrieve();
         assertNotNull(contact);
 
         LightContact lightContact = myResource.retrieveLight();
-        assertNotEquals(lightContact.getClass(), Contact.class);
+        assertNotEquals(Contact.class, lightContact.getClass());
         assertNotNull(lightContact);
 
         FullContact fullContact = myResource.retrieveFull();
@@ -67,14 +65,21 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
         }
 
         public Contact retrieve() {
-            return new Contact("test@domain.com", "Scott", "Tiger", new Date(),
-                    "test@perso.fr");
+            return new Contact("test@domain.com", "Scott", "Tiger", new Date(), "test@perso.fr");
         }
 
         public FullContact retrieveFull() {
-            return new FullContact("test@domain.com", "Scott", "Tiger", new Date(),
-                    "test@perso.fr", "1 Main Street", "Restlet city, 0102",
-                    "RESTland", "+123.456", "+789012");
+            return new FullContact(
+                    "test@domain.com",
+                    "Scott",
+                    "Tiger",
+                    new Date(),
+                    "test@perso.fr",
+                    "1 Main Street",
+                    "Restlet city, 0102",
+                    "RESTland",
+                    "+123.456",
+                    "+789012");
         }
     }
 
@@ -84,8 +89,8 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
 
         private String email2;
 
-        public Contact(String email, String firstName, String lastName,
-                       Date birthDate, String email2) {
+        public Contact(
+                String email, String firstName, String lastName, Date birthDate, String email2) {
             super(email, firstName, lastName);
             this.birthDate = birthDate;
             email = email2;
@@ -106,7 +111,6 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
         public void setEmail2(String email) {
             this.email2 = email;
         }
-
     }
 
     public static class FullContact extends Contact implements Serializable {
@@ -117,9 +121,17 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
 
         private String address3;
 
-        public FullContact(String email, String firstName, String lastName,
-                           Date birthDate, String email2, String address1, String address2,
-                           String address3, String fax, String phone) {
+        public FullContact(
+                String email,
+                String firstName,
+                String lastName,
+                Date birthDate,
+                String email2,
+                String address1,
+                String address2,
+                String address3,
+                String fax,
+                String phone) {
             super(email, firstName, lastName, birthDate, email2);
             this.address1 = address1;
             this.address2 = address2;
@@ -171,7 +183,6 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
         public void setPhone(String phone) {
             this.phone = phone;
         }
-
     }
 
     public static class LightContact implements Serializable {
@@ -212,7 +223,6 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
         public void setLastName(String lastName) {
             this.lastName = lastName;
         }
-
     }
 
     public interface MyResource13 {
@@ -225,7 +235,5 @@ public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFi
 
         @Get("?deep")
         FullContact retrieveFull();
-
     }
-
 }

@@ -1,24 +1,12 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.gson;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,11 +19,20 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.util.Date;
+import org.joda.time.DateTime;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
- * Representation based on a JSON document. JSON stands for JavaScript Object
- * Notation and is a lightweight data-interchange format.
- * 
+ * Representation based on a JSON document. JSON stands for JavaScript Object Notation and is a
+ * lightweight data-interchange format.
+ *
  * @author Neal Mi
  * @see <a href="http://code.google.com/p/google-gson/">Gson project</a>
  */
@@ -43,25 +40,23 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Custom deserializer for {@link Date} instances.
-     * 
+     *
      * @author Neal Mi.
      */
     private static class ISODateDeserializer implements JsonDeserializer<Date> {
-        public Date deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
-            return new DateTime(json.getAsJsonPrimitive().getAsString())
-                    .toDate();
+        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            return new DateTime(json.getAsJsonPrimitive().getAsString()).toDate();
         }
     }
 
     /**
      * Custom serializer for {@link Date} instances.
-     * 
+     *
      * @author Neal Mi.
      */
     private static class ISODateSerializer implements JsonSerializer<Date> {
-        public JsonElement serialize(Date src, Type typeOfSrc,
-                JsonSerializationContext context) {
+        public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
             DateTime dt = new DateTime(src);
             // DateTime dtz = dt.withZone(DateTimeZone.forOffsetHours(-8));
             return new JsonPrimitive(dt.toString());
@@ -72,7 +67,7 @@ public class GsonRepresentation<T> extends WriterRepresentation {
     private GsonBuilder builder;
 
     /** The JSON representation to parse. */
-    private Representation jsonRepresentation;
+    private final Representation jsonRepresentation;
 
     /** The (parsed) object to format. */
     private T object;
@@ -82,14 +77,11 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param representation
-     *            The representation to parse.
-     * @param objectClass
-     *            The object class to instantiate.
+     *
+     * @param representation The representation to parse.
+     * @param objectClass The object class to instantiate.
      */
-    public GsonRepresentation(Representation representation,
-            Class<T> objectClass) {
+    public GsonRepresentation(Representation representation, Class<T> objectClass) {
         super(representation.getMediaType());
         this.object = null;
         this.objectClass = objectClass;
@@ -99,23 +91,21 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Constructor for the JSON media type.
-     * 
-     * @param object
-     *            The object to format.
+     *
+     * @param object The object to format.
      */
     @SuppressWarnings("unchecked")
     public GsonRepresentation(T object) {
         super(MediaType.APPLICATION_JSON);
         this.object = object;
-        this.objectClass = ((Class<T>) ((object == null) ? null : object
-                .getClass()));
+        this.objectClass = ((Class<T>) ((object == null) ? null : object.getClass()));
         this.jsonRepresentation = null;
         this.builder = null;
     }
 
     /**
      * Returns a new instance of the builder for Gson instances.
-     * 
+     *
      * @return a new instance of builder for Gson instances.
      */
     protected GsonBuilder createBuilder() {
@@ -126,22 +116,22 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Returns the builder for Gson instances.
-     * 
+     *
      * @return The builder for Gson instances.
      */
     public GsonBuilder getBuilder() {
         if (builder == null) {
-            builder = createBuilder().registerTypeAdapter(Date.class,
-                    new ISODateSerializer()).registerTypeAdapter(Date.class,
-                    new ISODateDeserializer());
+            builder =
+                    createBuilder()
+                            .registerTypeAdapter(Date.class, new ISODateSerializer())
+                            .registerTypeAdapter(Date.class, new ISODateDeserializer());
         }
         return builder;
     }
 
     /**
-     * Returns the wrapped object, deserializing the representation with Gson if
-     * necessary.
-     * 
+     * Returns the wrapped object, deserializing the representation with Gson if necessary.
+     *
      * @return The wrapped object.
      * @throws IOException
      */
@@ -152,9 +142,8 @@ public class GsonRepresentation<T> extends WriterRepresentation {
             result = this.object;
         } else if (this.jsonRepresentation != null) {
             Gson gson = getBuilder().create();
-            result = gson.fromJson(
-                    new JsonReader(jsonRepresentation.getReader()),
-                    this.objectClass);
+            result =
+                    gson.fromJson(new JsonReader(jsonRepresentation.getReader()), this.objectClass);
         }
 
         return result;
@@ -162,7 +151,7 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Returns the object class to instantiate.
-     * 
+     *
      * @return The object class to instantiate.
      */
     public Class<T> getObjectClass() {
@@ -171,9 +160,8 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Sets the Gson builder.
-     * 
-     * @param builder
-     *            The Gson builder.
+     *
+     * @param builder The Gson builder.
      */
     public void setBuilder(GsonBuilder builder) {
         this.builder = builder;
@@ -181,9 +169,8 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Sets the object to format.
-     * 
-     * @param object
-     *            The object to format.
+     *
+     * @param object The object to format.
      */
     public void setObject(T object) {
         this.object = object;
@@ -191,9 +178,8 @@ public class GsonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Sets the object class to instantiate.
-     * 
-     * @param objectClass
-     *            The object class to instantiate.
+     *
+     * @param objectClass The object class to instantiate.
      */
     public void setObjectClass(Class<T> objectClass) {
         this.objectClass = objectClass;
@@ -208,5 +194,4 @@ public class GsonRepresentation<T> extends WriterRepresentation {
             gson.toJson(object, objectClass, new JsonWriter(writer));
         }
     }
-
 }

@@ -1,13 +1,14 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +22,11 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
- * Tests that when issuing internal calls, the application context is kept intact in the caller server resource.
+ * Tests that when issuing internal calls, the application context is kept intact in the caller
+ * server resource.
  */
-public class ApplicationContextTestCase {
+class ApplicationContextTestCase {
 
     public static class InternalApplication extends Application {
 
@@ -82,15 +82,16 @@ public class ApplicationContextTestCase {
     @AfterEach
     protected void tearDownEach() throws Exception {
         Engine.clearThreadLocalVariables();
-    	this.component.stop();
+        this.component.stop();
     }
 
     @Test
-    public void testApplicationContext() throws Exception {
+    void testApplicationContext() throws Exception {
         ClientResource res = new ClientResource("http://localhost:" + testPort + "/api/test");
         Representation rep = res.get(MediaType.TEXT_PLAIN);
         // following https://github.com/restlet/restlet-framework-java/issues/1317 fix,
-        // should return "InternalApplication" since the current Application thread variable has not been cleared
+        // should return "InternalApplication" since the current Application thread variable has not
+        // been cleared
         assertEquals("InternalApplication", rep.getText());
     }
 }

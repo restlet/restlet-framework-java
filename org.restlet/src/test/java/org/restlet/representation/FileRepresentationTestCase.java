@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.representation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,7 @@ import org.restlet.engine.Engine;
  *
  * @author Kevin Conaway
  */
-public class FileRepresentationTestCase {
+class FileRepresentationTestCase {
 
     private Component component;
 
@@ -69,7 +67,7 @@ public class FileRepresentationTestCase {
     }
 
     @Test
-    public void testConstructors() {
+    void testConstructors() {
         final File file = new File("test.txt");
 
         final FileRepresentation r = new FileRepresentation(file, MediaType.TEXT_PLAIN);
@@ -80,20 +78,24 @@ public class FileRepresentationTestCase {
     }
 
     @Test
-    public void testFileName() throws Exception {
-        Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                return new Restlet() {
+    void testFileName() throws Exception {
+        Application application =
+                new Application() {
                     @Override
-                    public void handle(Request request, Response response) {
-                        response.setEntity(new FileRepresentation(filePath.toFile(), MediaType.TEXT_PLAIN));
-                        response.getEntity().getDisposition()
-                                .setType(Disposition.TYPE_ATTACHMENT);
+                    public Restlet createInboundRoot() {
+                        return new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                response.setEntity(
+                                        new FileRepresentation(
+                                                filePath.toFile(), MediaType.TEXT_PLAIN));
+                                response.getEntity()
+                                        .getDisposition()
+                                        .setType(Disposition.TYPE_ATTACHMENT);
+                            }
+                        };
                     }
                 };
-            }
-        };
 
         component.getDefaultHost().attach(application);
 
@@ -107,5 +109,4 @@ public class FileRepresentationTestCase {
         assertEquals(filePath.toFile().getName(), entity.getDisposition().getFilename());
         client.stop();
     }
-
 }

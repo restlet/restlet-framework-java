@@ -1,34 +1,32 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * Unit test case for the File client connector.
- * 
+ *
  * @author Jerome Louvel
  */
-public class FileClientTestCase {
+class FileClientTestCase {
 
     @Test
-    public void testFileClient() throws IOException {
+    void testFileClient() throws IOException {
         Engine.register();
         Engine.clearThreadLocalVariables();
 

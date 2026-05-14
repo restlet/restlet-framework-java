@@ -1,14 +1,24 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.adapter;
 
+import static org.restlet.data.Encoding.IDENTITY;
+import static org.restlet.data.Status.CONNECTOR_ERROR_COMMUNICATION;
+import static org.restlet.data.Status.REDIRECTION_NOT_MODIFIED;
+import static org.restlet.data.Status.SUCCESS_NO_CONTENT;
+import static org.restlet.data.Status.SUCCESS_RESET_CONTENT;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -21,25 +31,16 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.logging.Level;
-
-import static org.restlet.data.Encoding.IDENTITY;
-import static org.restlet.data.Status.*;
-import static org.restlet.representation.Representation.UNKNOWN_SIZE;
-
 /**
  * Low-level HTTP client call.
- * 
+ *
  * @author Jerome Louvel
  */
 public abstract class ClientCall extends Call {
 
     /**
      * Returns the local IP address or 127.0.0.1 if the resolution fails.
-     * 
+     *
      * @return The local IP address or 127.0.0.1 if the resolution fails.
      */
     public static String getLocalAddress() {
@@ -55,13 +56,12 @@ public abstract class ClientCall extends Call {
 
     /**
      * Constructor setting the request address to the local host.
-     * 
-     * @param helper     The parent HTTP client helper.
-     * @param method     The method name.
+     *
+     * @param helper The parent HTTP client helper.
+     * @param method The method name.
      * @param requestUri The request URI.
      */
-    public ClientCall(HttpClientHelper helper, String method,
-            String requestUri) {
+    protected ClientCall(HttpClientHelper helper, String method, String requestUri) {
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);
@@ -69,9 +69,9 @@ public abstract class ClientCall extends Call {
     }
 
     /**
-     * Returns the content length of the request entity if know,
-     * {@link Representation#UNKNOWN_SIZE} otherwise.
-     * 
+     * Returns the content length of the request entity if know, {@link Representation#UNKNOWN_SIZE}
+     * otherwise.
+     *
      * @return The request content length.
      */
     protected long getContentLength() {
@@ -80,7 +80,7 @@ public abstract class ClientCall extends Call {
 
     /**
      * Returns the HTTP client helper.
-     * 
+     *
      * @return The HTTP client helper.
      */
     public HttpClientHelper getHelper() {
@@ -89,35 +89,34 @@ public abstract class ClientCall extends Call {
 
     /**
      * Returns the request entity stream if it exists.
-     * 
+     *
      * @return The request entity stream if it exists.
      */
     public abstract OutputStream getRequestEntityStream();
 
     /**
      * Returns the request head stream if it exists.
-     * 
+     *
      * @return The request head stream if it exists.
      */
     public abstract OutputStream getRequestHeadStream();
 
     /**
-     * Returns the response entity if available. Note that no metadata is
-     * associated by default, you have to manually set them from your headers.
-     * 
+     * Returns the response entity if available. Note that no metadata is associated by default, you
+     * have to manually set them from your headers.
+     *
      * @param response the Response to get the entity from
      * @return The response entity if available.
      */
     public Representation getResponseEntity(Response response) {
         Representation result = null;
-        long size = UNKNOWN_SIZE;
+        final long size;
 
         // Compute the content length
         Series<Header> responseHeaders = getResponseHeaders();
-        String transferEncoding = responseHeaders
-                .getFirstValue(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
-        if ((transferEncoding != null)
-                && !IDENTITY.getName().equalsIgnoreCase(transferEncoding)) {
+        String transferEncoding =
+                responseHeaders.getFirstValue(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        if ((transferEncoding != null) && !IDENTITY.getName().equalsIgnoreCase(transferEncoding)) {
             size = UNKNOWN_SIZE;
         } else {
             size = getContentLength();
@@ -130,8 +129,7 @@ public abstract class ClientCall extends Call {
                 && !response.getStatus().equals(SUCCESS_RESET_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
-            InputStream stream = getUnClosedResponseEntityStream(
-                    getResponseEntityStream(size));
+            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
 
             if (stream != null) {
                 result = getRepresentation(stream);
@@ -143,8 +141,9 @@ public abstract class ClientCall extends Call {
 
             // Informs that the size has not been specified in the header.
             if (size == UNKNOWN_SIZE) {
-                getLogger().fine(
-                        "The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
+                getLogger()
+                        .fine(
+                                "The length of the message body is unknown. The entity must be handled carefully and consumed entirely to surely release the connection.");
             }
         }
         result = HeaderUtils.extractEntityHeaders(responseHeaders, result);
@@ -154,22 +153,20 @@ public abstract class ClientCall extends Call {
 
     /**
      * Returns the response entity stream if it exists.
-     * 
+     *
      * @param size The expected entity size or -1 if unknown.
      * @return The response entity stream if it exists.
      */
     public abstract InputStream getResponseEntityStream(long size);
 
     /**
-     * Checks if the given input stream really contains bytes to be read. If so,
-     * returns the inputStream otherwise returns null.
-     * 
+     * Checks if the given input stream really contains bytes to be read. If so, returns the
+     * inputStream otherwise returns null.
+     *
      * @param inputStream the inputStream to check.
-     * @return null if the given inputStream does not contain any byte, an
-     *         inputStream otherwise.
+     * @return null if the given inputStream does not contain any byte, an inputStream otherwise.
      */
-    private InputStream getUnClosedResponseEntityStream(
-            InputStream inputStream) {
+    private InputStream getUnClosedResponseEntityStream(InputStream inputStream) {
         InputStream result = null;
 
         if (inputStream != null) {
@@ -177,8 +174,7 @@ public abstract class ClientCall extends Call {
                 if (inputStream.available() > 0) {
                     result = inputStream;
                 } else {
-                    java.io.PushbackInputStream is = new java.io.PushbackInputStream(
-                            inputStream);
+                    java.io.PushbackInputStream is = new java.io.PushbackInputStream(inputStream);
                     int i = is.read();
 
                     if (i >= 0) {
@@ -187,10 +183,8 @@ public abstract class ClientCall extends Call {
                     }
                 }
             } catch (IOException ioe) {
-                getLogger().log(Level.FINER, "End of response entity stream.",
-                        ioe);
+                getLogger().log(Level.FINER, "End of response entity stream.", ioe);
             }
-
         }
 
         return result;
@@ -207,21 +201,19 @@ public abstract class ClientCall extends Call {
     }
 
     /**
-     * Sends the request to the client. Commits the request line, headers and
-     * optional entity and send them over the network.
-     * 
+     * Sends the request to the client. Commits the request line, headers and optional entity and
+     * send them over the network.
+     *
      * @param request The high-level request.
      * @return the status of the communication
      */
     public Status sendRequest(Request request) {
         Status result = null;
-        Representation entity = request.isEntityAvailable()
-                ? request.getEntity()
-                : null;
+        Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
 
         // Get the connector service to callback
-        org.restlet.service.ConnectorService connectorService = ConnectorHelper
-                .getConnectorService();
+        org.restlet.service.ConnectorService connectorService =
+                ConnectorHelper.getConnectorService();
         if (connectorService != null) {
             connectorService.beforeSend(entity);
         }
@@ -229,7 +221,7 @@ public abstract class ClientCall extends Call {
         try {
             if (entity != null) {
 
-                // In order to workaround bug #6472250
+                // To work around bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
                 // it is very important to reuse that exact same "requestStream"
                 // reference when manipulating the request stream, otherwise
@@ -248,9 +240,12 @@ public abstract class ClientCall extends Call {
             // any open request stream.
             result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException ioe) {
-            getHelper().getLogger().log(Level.FINE,
-                    "An error occurred during the communication with the remote HTTP server.",
-                    ioe);
+            getHelper()
+                    .getLogger()
+                    .log(
+                            Level.FINE,
+                            "An error occurred during the communication with the remote HTTP server.",
+                            ioe);
             result = new Status(CONNECTOR_ERROR_COMMUNICATION, ioe);
         } finally {
             if (entity != null) {
@@ -267,26 +262,26 @@ public abstract class ClientCall extends Call {
     }
 
     /**
-     * Sends the request to the client. Commits the request line, headers and
-     * optional entity and send them over the network.
-     * 
-     * @param request  The high-level request.
+     * Sends the request to the client. Commits the request line, headers, and optional entity and
+     * send them over the network.
+     *
+     * @param request The high-level request.
      * @param response The high-level response.
      * @param callback The callback invoked upon request completion.
      */
-    public void sendRequest(Request request, Response response,
-            org.restlet.Uniform callback) throws Exception {
-        Context.getCurrentLogger().warning(
-                "Currently callbacks are not available for this connector.");
+    public void sendRequest(Request request, Response response, org.restlet.Uniform callback) {
+        Context.getCurrentLogger()
+                .warning("Currently callbacks are not available for this connector.");
     }
 
     /**
      * Indicates if the request entity should be chunked.
-     * 
+     *
      * @return True if the request should be chunked
      */
     protected boolean shouldRequestBeChunked(Request request) {
-        return request.isEntityAvailable() && (request.getEntity() != null)
+        return request.isEntityAvailable()
+                && (request.getEntity() != null)
                 && !request.getEntity().hasKnownSize();
     }
 }

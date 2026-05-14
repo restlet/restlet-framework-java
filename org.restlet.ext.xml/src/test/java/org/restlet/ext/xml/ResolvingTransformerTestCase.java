@@ -1,39 +1,51 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * ResolvingTransformerTestCase tests the resolving aspects of the
- * Transformer/TransformerRepresentation to guarantee proper functioning of the
- * xsl :import, :include and document() features.
- * 
+ * Transformer/TransformerRepresentation to guarantee proper functioning of the xsl :import,
+ * :include and document() features.
+ *
  * @author Marc Portier
  */
-public class ResolvingTransformerTestCase {
+class ResolvingTransformerTestCase {
 
     static class AssertResolvingHelper {
 
@@ -46,9 +58,7 @@ public class ResolvingTransformerTestCase {
             this.resolver = resolver;
         }
 
-        /**
-         * Asserts that the testUri resolves into the expectedUri
-         */
+        /** Asserts that the testUri resolves into the expectedUri */
         void assertResolving(String message, String testUri, String testData)
                 throws TransformerException, IOException {
             StringBuilder data = new StringBuilder();
@@ -75,7 +85,8 @@ public class ResolvingTransformerTestCase {
                 dataReader.close();
             } else {
                 // TODO support other source implementations (namely sax-source implementations)
-                fail("test implementation currently doesn't handle other source (e.g. sax) implementations");
+                fail(
+                        "test implementation currently doesn't handle other source (e.g., sax) implementations");
             }
             assertEquals(testData, data.toString(), message);
         }
@@ -99,8 +110,7 @@ public class ResolvingTransformerTestCase {
                 @Override
                 public void handle(Request request, Response response) {
                     String remainder = request.getResourceRef().getRemainingPart();
-                    Representation answer = SimpleUriMapApplication.this.uriMap
-                            .get(remainder);
+                    Representation answer = SimpleUriMapApplication.this.uriMap.get(remainder);
 
                     if (answer != null) {
                         response.setEntity(answer);
@@ -110,15 +120,14 @@ public class ResolvingTransformerTestCase {
         }
     }
 
-    private final static String MY_BASEPATH;
+    private static final String MY_BASEPATH;
 
-    private final static String MY_NAME;
+    private static final String MY_NAME;
 
-    private final static String MY_PATH;
+    private static final String MY_PATH;
 
     static {
-        MY_PATH = ResolvingTransformerTestCase.class.getName()
-                .replace('.', '/');
+        MY_PATH = ResolvingTransformerTestCase.class.getName().replace('.', '/');
         final int lastPos = MY_PATH.lastIndexOf('/');
         MY_NAME = MY_PATH.substring(lastPos);
         MY_BASEPATH = MY_PATH.substring(0, lastPos);
@@ -126,22 +135,23 @@ public class ResolvingTransformerTestCase {
 
     // testing purely the resolver, no active transforming context (i.e., xslt engine) in this test
     @Test
-    public void testResolving() throws Exception {
+    void testResolving() throws Exception {
         Component comp = new Component();
 
         // create an xml input representation
-        Representation xml = new StringRepresentation(
-                "<?xml version='1.0'><simpleroot/>", MediaType.TEXT_XML);
+        Representation xml =
+                new StringRepresentation("<?xml version='1.0'><simpleroot/>", MediaType.TEXT_XML);
 
         // create a xsl template representation
-        Representation xslt = new StringRepresentation(
-                "<?xml version=\"1.0\"?>"
-                        + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
-                        + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
-                MediaType.TEXT_XML);
+        Representation xslt =
+                new StringRepresentation(
+                        "<?xml version=\"1.0\"?>"
+                                + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
+                                + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
+                        MediaType.TEXT_XML);
 
-        TransformRepresentation transRep = new TransformRepresentation(
-                comp.getContext(), xml, xslt);
+        TransformRepresentation transRep =
+                new TransformRepresentation(comp.getContext(), xml, xslt);
 
         // create a test-stream representation to be returned when the correct
         // code is presented
@@ -177,7 +187,7 @@ public class ResolvingTransformerTestCase {
 
     // functional test in the actual xslt engine context
     @Test
-    public void testTransform() throws Exception {
+    void testTransform() throws Exception {
 
         Component comp = new Component();
         comp.getClients().add(Protocol.CLAP);
@@ -194,41 +204,46 @@ public class ResolvingTransformerTestCase {
         // external documents
 
         String thirdDocData = "<data3>" + ("rnd." + (new Random()).nextInt()) + "</data3>";
-        // Note below doesn't work,:
-        // final String xsl2xmlLink = "riap://application/3rd.xml";
-        // cause: the application-context one refers to with above is the one
-        // that is creating the xslt sheet
-        // (and the associated uri-resolver) Since that isn't an actual
-        // application-context, so it doesn't support
+        String xsl2xmlLink = "./3rd.xml"; // and "/three/3rd.xml" would too...
+        // Note: setting xsl2xmlLink to "riap://application/3rd.xml" does not work.
+        // Cause: the application-context one refers to with above is the one
+        // that is creating the xslt sheet (and the associated uri-resolver).
+        // Since that isn't an actual application-context, so it doesn't support
         // the riap-authority 'application'
-        // This does work though:
-        String xsl2xmlLink = "./3rd.xml"; // and "/three/3rd.xml" would
-        // too...
 
-        Representation xml3 = new StringRepresentation("<?xml version='1.0' ?>" + thirdDocData, MediaType.TEXT_XML);
-        Representation xslt3 = new StringRepresentation(
-                "<?xml version=\"1.0\"?>"
-                        + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
-                        + "  <xsl:template match ='el3'>"
-                        + "    <xsl:variable name='external' select=\"document('"
-                        + xsl2xmlLink + "')\" />"
-                        + "    <xsl:copy-of select='$external/data3' />"
-                        + "  </xsl:template>" + "</xsl:transform>",
-                MediaType.TEXT_XML);
+        Representation xml3 =
+                new StringRepresentation(
+                        "<?xml version='1.0' ?>" + thirdDocData, MediaType.TEXT_XML);
+        Representation xslt3 =
+                new StringRepresentation(
+                        "<?xml version=\"1.0\"?>"
+                                + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
+                                + "  <xsl:template match ='el3'>"
+                                + "    <xsl:variable name='external' select=\"document('"
+                                + xsl2xmlLink
+                                + "')\" />"
+                                + "    <xsl:copy-of select='$external/data3' />"
+                                + "  </xsl:template>"
+                                + "</xsl:transform>",
+                        MediaType.TEXT_XML);
         SimpleUriMapApplication thirdLevel = new SimpleUriMapApplication();
         thirdLevel.add("3rd.xsl", xslt3);
         thirdLevel.add("3rd.xml", xml3);
         comp.getInternalRouter().attach("/three/", thirdLevel);
 
         // xml In
-        Representation xmlIn = new StringRepresentation(
-                "<?xml version='1.0' ?><input><one/><any attTwo='2'/><el3>drie</el3></input>");
+        Representation xmlIn =
+                new StringRepresentation(
+                        "<?xml version='1.0' ?><input><one/><any attTwo='2'/><el3>drie</el3></input>");
         // xslOne
-        Reference xsltOneRef = new LocalReference("clap://thread/" + MY_BASEPATH + "/xslt/one/1st.xsl");
-        Representation xsltOne = comp.getContext().getClientDispatcher()
-                .handle(new Request(Method.GET, xsltOneRef)).getEntity();
-        TransformRepresentation tr = new TransformRepresentation(
-                comp.getContext(), xmlIn, xsltOne);
+        Reference xsltOneRef =
+                new LocalReference("clap://thread/" + MY_BASEPATH + "/xslt/one/1st.xsl");
+        Representation xsltOne =
+                comp.getContext()
+                        .getClientDispatcher()
+                        .handle(new Request(Method.GET, xsltOneRef))
+                        .getEntity();
+        TransformRepresentation tr = new TransformRepresentation(comp.getContext(), xmlIn, xsltOne);
 
         // TODO transformer output should go to SAX! The sax-event-stream should
         // then be fed into a DOMBuilder
@@ -239,9 +254,10 @@ public class ResolvingTransformerTestCase {
         tr.write(out);
         String xmlOut = out.toString();
 
-        String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
-                + thirdDocData + "</output>";
-        assertEquals(expectedResult,
-                xmlOut, "xslt result doesn't match expectations");
+        String expectedResult =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
+                        + thirdDocData
+                        + "</output>";
+        assertEquals(expectedResult, xmlOut, "xslt result doesn't match expectations");
     }
 }

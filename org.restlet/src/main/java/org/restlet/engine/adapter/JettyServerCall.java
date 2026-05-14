@@ -1,14 +1,19 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.adapter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.io.EndPoint;
@@ -19,19 +24,11 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 import org.restlet.Server;
 import org.restlet.data.Header;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.Certificate;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Call that is used by the Jetty HTTP server connectors.
- * 
+ *
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -51,14 +48,13 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Constructor.
-     * 
-     * @param server  The parent server.
+     *
+     * @param server The parent server.
      * @param request The wrapped Jetty HTTP request.
      * @param response The wrapped Jetty HTTP response.
      * @param callback The wrapped Jetty HTTP callback.
      */
-    public JettyServerCall(Server server, Request request, Response response,
-            Callback callback) {
+    public JettyServerCall(Server server, Request request, Response response, Callback callback) {
         super(server);
         this.request = request;
         this.response = response;
@@ -84,7 +80,7 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Returns the wrapped Jetty HTTP callback.
-     * 
+     *
      * @return The wrapped Jetty HTTP callback.
      */
     public Callback getCallback() {
@@ -100,10 +96,10 @@ public class JettyServerCall extends ServerCall {
                     && sslEndPoint.getSslSessionData().peerCertificates() != null) {
                 result = Arrays.asList(sslEndPoint.getSslSessionData().peerCertificates());
             } else {
-                result = null;
+                result = List.of();
             }
-       } else {
-            result = null;
+        } else {
+            result = List.of();
         }
 
         return result;
@@ -111,7 +107,7 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Returns the wrapped Jetty HTTP request.
-     * 
+     *
      * @return The wrapped Jetty HTTP request.
      */
     public Request getRequest() {
@@ -120,7 +116,7 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Returns the wrapped Jetty HTTP response.
-     * 
+     *
      * @return The wrapped Jetty HTTP response.
      */
     public Response getResponse() {
@@ -148,7 +144,7 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Returns the underlying Jetty's connection.
-     * 
+     *
      * @return The underlying Jetty's connection.
      */
     protected Connection getConnection() {
@@ -157,7 +153,7 @@ public class JettyServerCall extends ServerCall {
 
     /**
      * Returns the underlying Jetty's endpoint.
-     * 
+     *
      * @return The underlying Jetty's endpoint.
      */
     protected EndPoint getEndPoint() {
@@ -245,8 +241,7 @@ public class JettyServerCall extends ServerCall {
 
     @Override
     public boolean isConnectionBroken(Throwable exception) {
-        return (exception instanceof EofException)
-                || super.isConnectionBroken(exception);
+        return (exception instanceof EofException) || super.isConnectionBroken(exception);
     }
 
     @Override

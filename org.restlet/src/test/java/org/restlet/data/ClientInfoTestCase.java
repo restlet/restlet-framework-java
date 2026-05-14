@@ -1,14 +1,23 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.restlet.data.Language.ENGLISH;
+import static org.restlet.data.Language.ENGLISH_US;
+import static org.restlet.data.Language.FRENCH;
+import static org.restlet.data.Language.FRENCH_FRANCE;
+import static org.restlet.data.MediaType.APPLICATION_XML;
+import static org.restlet.data.MediaType.TEXT_PLAIN;
+import static org.restlet.data.MediaType.TEXT_XML;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,18 +26,12 @@ import org.restlet.representation.Variant;
 import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.restlet.data.Language.*;
-import static org.restlet.data.MediaType.*;
-
 /**
  * Test {@link org.restlet.data.ClientInfo} for content negotiation.
  *
  * @author Jerome Louvel
  */
-public class ClientInfoTestCase {
+class ClientInfoTestCase {
 
     @Nested
     class MixLanguageMediaTypeContentNegotiationTextCase {
@@ -46,69 +49,68 @@ public class ClientInfoTestCase {
         }
 
         @Test
-        public void shouldReturnEnUsAndTextXml() {
-            List<Variant> variants = List.of(
-                    new Variant(TEXT_XML, ENGLISH_US),
-                    new Variant(TEXT_XML, FRENCH_FRANCE));
+        void shouldReturnEnUsAndTextXml() {
+            List<Variant> variants =
+                    List.of(
+                            new Variant(TEXT_XML, ENGLISH_US),
+                            new Variant(TEXT_XML, FRENCH_FRANCE));
             Variant pv = connegService.getPreferredVariant(variants, request, ms);
 
             assertEquals(TEXT_XML, pv.getMediaType());
-            assertEquals(ENGLISH_US, pv.getLanguages().get(0));
+            assertEquals(ENGLISH_US, pv.getLanguages().getFirst());
         }
 
         @Test
-        public void shouldReturnEnAndTextXml() {
-            List<Variant> variants = List.of(
-                    new Variant(TEXT_XML, ENGLISH),
-                    new Variant(TEXT_XML, FRENCH));
+        void shouldReturnEnAndTextXml() {
+            List<Variant> variants =
+                    List.of(new Variant(TEXT_XML, ENGLISH), new Variant(TEXT_XML, FRENCH));
             Variant pv = connegService.getPreferredVariant(variants, request, ms);
 
             assertEquals(TEXT_XML, pv.getMediaType());
-            assertEquals(ENGLISH, pv.getLanguages().get(0));
-        }
-
-        // Testing quality priority over parent metadata
-        @Test
-        public void shouldReturnFrFrAndText() {
-            List<Variant> variants = List.of(
-                    new Variant(TEXT_PLAIN, ENGLISH),
-                    new Variant(TEXT_XML, FRENCH_FRANCE));
-            Variant pv = connegService.getPreferredVariant(variants, request, ms);
-
-            assertEquals(TEXT_XML, pv.getMediaType());
-            assertEquals(FRENCH_FRANCE, pv.getLanguages().get(0));
+            assertEquals(ENGLISH, pv.getLanguages().getFirst());
         }
 
         // Testing quality priority over parent metadata
         @Test
-        public void shouldReturnFrFrAndXml() {
-            List<Variant> variants = List.of(
-                    new Variant(APPLICATION_XML, ENGLISH_US),
-                    new Variant(TEXT_XML, FRENCH_FRANCE));
+        void shouldReturnFrFrAndText() {
+            List<Variant> variants =
+                    List.of(new Variant(TEXT_PLAIN, ENGLISH), new Variant(TEXT_XML, FRENCH_FRANCE));
             Variant pv = connegService.getPreferredVariant(variants, request, ms);
 
             assertEquals(TEXT_XML, pv.getMediaType());
-            assertEquals(FRENCH_FRANCE, pv.getLanguages().get(0));
+            assertEquals(FRENCH_FRANCE, pv.getLanguages().getFirst());
+        }
+
+        // Testing quality priority over parent metadata
+        @Test
+        void shouldReturnFrFrAndXml() {
+            List<Variant> variants =
+                    List.of(
+                            new Variant(APPLICATION_XML, ENGLISH_US),
+                            new Variant(TEXT_XML, FRENCH_FRANCE));
+            Variant pv = connegService.getPreferredVariant(variants, request, ms);
+
+            assertEquals(TEXT_XML, pv.getMediaType());
+            assertEquals(FRENCH_FRANCE, pv.getLanguages().getFirst());
         }
 
         // Leveraging parent media types
         @Test
-        public void shouldPreferEnUsAndApplicationXml() {
-            List<Variant> variants = List.of(
-                    new Variant(APPLICATION_XML, ENGLISH_US),
-                    new Variant(APPLICATION_XML, FRENCH_FRANCE));
+        void shouldPreferEnUsAndApplicationXml() {
+            List<Variant> variants =
+                    List.of(
+                            new Variant(APPLICATION_XML, ENGLISH_US),
+                            new Variant(APPLICATION_XML, FRENCH_FRANCE));
             Variant pv = connegService.getPreferredVariant(variants, request, ms);
 
             assertEquals(APPLICATION_XML, pv.getMediaType());
-            assertEquals(ENGLISH_US, pv.getLanguages().get(0));
+            assertEquals(ENGLISH_US, pv.getLanguages().getFirst());
         }
     }
 
-    /**
-     * Conneg tests for IE which accepts all media types.
-     */
+    /** Conneg tests for IE which accepts all media types. */
     @Test
-    public void testConnegIe() {
+    void testConnegIe() {
         ClientInfo ci = new ClientInfo();
         Preference<MediaType> allMediaTypesPreference = new Preference<>(MediaType.ALL, 1.0F);
         ci.getAcceptedMediaTypes().add(allMediaTypesPreference);
@@ -118,5 +120,4 @@ public class ClientInfoTestCase {
 
         assertEquals(TEXT_XML, pmt);
     }
-
 }

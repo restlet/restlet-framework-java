@@ -1,12 +1,11 @@
-/*
- *  Copyright 2005-2026 Qlik
- *
- *  The contents of this file is subject to the terms of the Apache 2.0 open
- *  source license available at http://www.opensource.org/licenses/apache-2.0
- *
- *  Restlet is a registered trademark of QlikTech International AB.
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.openapi.internal;
 
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -27,26 +26,23 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
-import org.restlet.Context;
-import org.restlet.engine.resource.AnnotationInfo;
-import org.restlet.engine.resource.AnnotationUtils;
-import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
-import org.restlet.routing.Route;
-import org.restlet.routing.Router;
-import org.restlet.routing.TemplateRoute;
-import org.restlet.service.MetadataService;
-
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.restlet.Context;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
+import org.restlet.service.MetadataService;
 
 public class RestletOpenApiReader implements OpenApiReader {
 
@@ -74,24 +70,26 @@ public class RestletOpenApiReader implements OpenApiReader {
     @Override
     public OpenAPI read(Set<Class<?>> classes, Map<String, Object> resources) {
         if (config == null) {
-            throw new IllegalStateException("configuration must be set before processing OpenAPI definition");
+            throw new IllegalStateException(
+                    "configuration must be set before processing OpenAPI definition");
         }
 
         if (router == null) {
-            throw new IllegalStateException("router must be set before processing OpenAPI definition");
+            throw new IllegalStateException(
+                    "router must be set before processing OpenAPI definition");
         }
 
         return processRouter(router);
     }
 
     private OpenAPI processRouter(Router router) {
-        OpenAPIDefinition openAPIDefinitionAnnotation = ReflectionUtils.getAnnotation(
-            router.getApplication().getClass(),
-            OpenAPIDefinition.class
-        );
+        OpenAPIDefinition openAPIDefinitionAnnotation =
+                ReflectionUtils.getAnnotation(
+                        router.getApplication().getClass(), OpenAPIDefinition.class);
 
         if (openAPIDefinitionAnnotation != null) {
-            OpenApiAnnotationProcessor.documentOpenApiDefinition(openApi, openAPIDefinitionAnnotation);
+            OpenApiAnnotationProcessor.documentOpenApiDefinition(
+                    openApi, openAPIDefinitionAnnotation);
         }
 
         completeOpenApiInfo(router);
@@ -131,13 +129,11 @@ public class RestletOpenApiReader implements OpenApiReader {
     }
 
     private void processServerResource(
-        ServerResource serverResource,
-        String operationPath,
-        List<String> pathVariableNames
-    ) {
-        List<AnnotationInfo> annotations = serverResource.isAnnotated()
-            ? AnnotationUtils.getInstance().getAnnotations(serverResource.getClass())
-            : null;
+            ServerResource serverResource, String operationPath, List<String> pathVariableNames) {
+        List<AnnotationInfo> annotations =
+                serverResource.isAnnotated()
+                        ? AnnotationUtils.getInstance().getAnnotations(serverResource.getClass())
+                        : null;
 
         if (annotations == null) {
             return;
@@ -151,11 +147,13 @@ public class RestletOpenApiReader implements OpenApiReader {
                 completePathParameters(operation, pathVariableNames);
                 completeOperation(serverResource, operation, methodAnnotationInfo);
 
-                PathItem pathItem = Optional.ofNullable(openApi.getPaths())
-                        .map(openApiPaths -> openApiPaths.get(operationPath))
-                        .orElseGet(PathItem::new);
+                PathItem pathItem =
+                        Optional.ofNullable(openApi.getPaths())
+                                .map(openApiPaths -> openApiPaths.get(operationPath))
+                                .orElseGet(PathItem::new);
 
-                PathItems.setOperation(pathItem, methodAnnotationInfo.getRestletMethod(), operation);
+                PathItems.setOperation(
+                        pathItem, methodAnnotationInfo.getRestletMethod(), operation);
 
                 paths.addPathItem(operationPath, pathItem);
                 if (openApi.getPaths() != null) {
@@ -170,17 +168,16 @@ public class RestletOpenApiReader implements OpenApiReader {
     private void completeOpenApiInfo(Router router) {
         var applicationClassName = router.getApplication().getClass().getSimpleName();
 
-        var applicationName = applicationClassName.endsWith("Application")
-            ? applicationClassName.substring(0, applicationClassName.length() - "Application".length())
-            : applicationClassName;
+        var applicationName =
+                applicationClassName.endsWith("Application")
+                        ? applicationClassName.substring(
+                                0, applicationClassName.length() - "Application".length())
+                        : applicationClassName;
 
         var defaultTitle = applicationName + " REST API";
 
         if (openApi.getInfo() == null) {
-            openApi.setInfo(new Info()
-                .title(defaultTitle)
-                .version("1.0.0")
-            );
+            openApi.setInfo(new Info().title(defaultTitle).version("1.0.0"));
         } else if (openApi.getInfo().getTitle() == null) {
             openApi.getInfo().setTitle(defaultTitle);
         } else if (openApi.getInfo().getVersion() == null) {
@@ -188,59 +185,47 @@ public class RestletOpenApiReader implements OpenApiReader {
         }
     }
 
-    private void completePathParameters(
-        Operation operation,
-        List<String> pathVariableNames
-    ) {
+    private void completePathParameters(Operation operation, List<String> pathVariableNames) {
         if (pathVariableNames != null) {
             for (String pathVariableName : pathVariableNames) {
                 operation.addParametersItem(
-                    new io.swagger.v3.oas.models.parameters.Parameter()
-                        .name(pathVariableName)
-                        .in("path")
-                        .required(true)
-                        .schema(new Schema<>().type("string"))
-                );
+                        new io.swagger.v3.oas.models.parameters.Parameter()
+                                .name(pathVariableName)
+                                .in("path")
+                                .required(true)
+                                .schema(new Schema<>().type("string")));
             }
         }
     }
 
     private Operation buildOperationFromRestletMethod(
-        final MethodAnnotationInfo methodAnnotationInfo
-    ) {
+            final MethodAnnotationInfo methodAnnotationInfo) {
         Operation operation = new Operation();
         operation.setOperationId(methodAnnotationInfo.getJavaMethod().getName());
         return operation;
     }
 
     private void completeOperation(
-        final ServerResource serverResource,
-        final Operation operation,
-        MethodAnnotationInfo methodAnnotationInfo
-    ) {
-        try {
-            var methodOperationAnnotation = ReflectionUtils.getAnnotation(
-                methodAnnotationInfo.getJavaMethod(),
-                io.swagger.v3.oas.annotations.Operation.class
-            );
+            final ServerResource serverResource,
+            final Operation operation,
+            MethodAnnotationInfo methodAnnotationInfo) {
+        var methodOperationAnnotation =
+                ReflectionUtils.getAnnotation(
+                        methodAnnotationInfo.getJavaMethod(),
+                        io.swagger.v3.oas.annotations.Operation.class);
 
-            if (methodOperationAnnotation != null) {
-                OpenApiAnnotationProcessor.documentOperation(operation, methodOperationAnnotation);
-            }
-
-            completeOperationInput(serverResource, operation, methodAnnotationInfo);
-            completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
-
-        } catch (IOException e) {
-            throw new ResourceException(e);
+        if (methodOperationAnnotation != null) {
+            OpenApiAnnotationProcessor.documentOperation(operation, methodOperationAnnotation);
         }
+
+        completeOperationInput(serverResource, operation, methodAnnotationInfo);
+        completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
     }
 
     private void completeOperationInput(
-        ServerResource serverResource,
-        Operation operation,
-        MethodAnnotationInfo methodAnnotationInfo
-    ) throws IOException {
+            ServerResource serverResource,
+            Operation operation,
+            MethodAnnotationInfo methodAnnotationInfo) {
         Type[] parameterTypes = methodAnnotationInfo.getJavaMethod().getGenericParameterTypes();
         if (parameterTypes.length == 0) {
             return;
@@ -248,10 +233,9 @@ public class RestletOpenApiReader implements OpenApiReader {
 
         Type firstParameterType = parameterTypes[0];
 
-        List<Variant> requestVariants = methodAnnotationInfo.getRequestVariants(
-            metadataService,
-            serverResource.getConverterService()
-        );
+        List<Variant> requestVariants =
+                methodAnnotationInfo.getRequestVariants(
+                        metadataService, serverResource.getConverterService());
 
         if (requestVariants == null || requestVariants.isEmpty()) {
             return;
@@ -260,29 +244,30 @@ public class RestletOpenApiReader implements OpenApiReader {
         Variant firstVariant = requestVariants.getFirst();
 
         processTypeToContent(firstParameterType, List.of(firstVariant))
-            .ifPresent(content -> operation.requestBody(
-                new io.swagger.v3.oas.models.parameters.RequestBody()
-                    .content(content)
-            ));
+                .ifPresent(
+                        content ->
+                                operation.requestBody(
+                                        new io.swagger.v3.oas.models.parameters.RequestBody()
+                                                .content(content)));
     }
 
     private void completeOperationSuccessfulOutput(
-        ServerResource serverResource,
-        Operation operation,
-        MethodAnnotationInfo methodAnnotationInfo
-    ) throws IOException {
-        List<Variant> responseVariants = methodAnnotationInfo.getResponseVariants(
-            metadataService,
-            serverResource.getConverterService()
-        );
+            ServerResource serverResource,
+            Operation operation,
+            MethodAnnotationInfo methodAnnotationInfo) {
+        List<Variant> responseVariants =
+                methodAnnotationInfo.getResponseVariants(
+                        metadataService, serverResource.getConverterService());
 
         Type javaMethodReturnType = methodAnnotationInfo.getJavaMethod().getGenericReturnType();
 
         if (responseVariants == null || responseVariants.isEmpty()) {
-            var hasResponsesDefined = operation.getResponses() != null && !operation.getResponses().isEmpty();
+            var hasResponsesDefined =
+                    operation.getResponses() != null && !operation.getResponses().isEmpty();
 
             if (!hasResponsesDefined) {
-                Operations.addApiResponse(operation, "200", new ApiResponse().description("Success"));
+                Operations.addApiResponse(
+                        operation, "200", new ApiResponse().description("Success"));
             }
         } else {
             processMethodReturnType(operation, javaMethodReturnType, responseVariants);
@@ -290,29 +275,23 @@ public class RestletOpenApiReader implements OpenApiReader {
     }
 
     private void processMethodReturnType(
-        Operation operation,
-        Type returnType,
-        List<Variant> responseVariants
-    ) {
+            Operation operation, Type returnType, List<Variant> responseVariants) {
         Variant firstVariant = responseVariants.getFirst();
 
         processTypeToContent(returnType, List.of(firstVariant))
-            .ifPresent(content -> Operations.addApiResponse(
-                operation,
-                "200",
-                new ApiResponse()
-                    .content(content)
-                    .description("Success")
-            ));
+                .ifPresent(
+                        content ->
+                                Operations.addApiResponse(
+                                        operation,
+                                        "200",
+                                        new ApiResponse().content(content).description("Success")));
     }
 
     private Optional<Content> processTypeToContent(Type type, List<Variant> variants) {
-        ResolvedSchema resolvedSchema = ModelConverters.getInstance(config.toConfiguration())
-            .resolveAsResolvedSchema(
-                new AnnotatedType(type)
-                    .resolveAsRef(true)
-                    .components(components)
-            );
+        ResolvedSchema resolvedSchema =
+                ModelConverters.getInstance(config.toConfiguration())
+                        .resolveAsResolvedSchema(
+                                new AnnotatedType(type).resolveAsRef(true).components(components));
 
         if (resolvedSchema.schema == null) {
             return Optional.empty();

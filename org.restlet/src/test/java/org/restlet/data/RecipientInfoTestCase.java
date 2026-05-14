@@ -1,42 +1,46 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.RecipientInfoWriter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 /**
  * Test {@link org.restlet.data.RecipientInfo}.
- * 
+ *
  * @author Jerome Louvel
  */
-public class RecipientInfoTestCase {
+class RecipientInfoTestCase {
 
     @Test
-    public void testVia() {
-        Header via1a = new Header(HeaderConstants.HEADER_VIA,
-                "1.0 fred, 1.1 nowhere.com (Apache/1.1)");
-        Header via1b = new Header(HeaderConstants.HEADER_VIA,
-                "HTTP/1.0 fred, HTTP/1.1 nowhere.com (Apache/1.1)");
-        Header via1c = new Header(HeaderConstants.HEADER_VIA,
-                "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com");
-        Header via1d = new Header(HeaderConstants.HEADER_VIA,
-                "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com:8111");
+    void testVia() {
+        Header via1a =
+                new Header(HeaderConstants.HEADER_VIA, "1.0 fred, 1.1 nowhere.com (Apache/1.1)");
+        Header via1b =
+                new Header(
+                        HeaderConstants.HEADER_VIA,
+                        "HTTP/1.0 fred, HTTP/1.1 nowhere.com (Apache/1.1)");
+        Header via1c =
+                new Header(
+                        HeaderConstants.HEADER_VIA,
+                        "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com");
+        Header via1d =
+                new Header(
+                        HeaderConstants.HEADER_VIA,
+                        "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com:8111");
 
         List<RecipientInfo> recipients = new ArrayList<>();
         RecipientInfoReader.addValues(via1a, recipients);

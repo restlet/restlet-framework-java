@@ -1,136 +1,141 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.data;
 
+import java.util.Objects;
+
 /**
- * Representations metadata for content negotiation. "Metadata is in the form of
- * name-value pairs, where the name corresponds to a standard that defines the
- * value's structure and semantics. Response messages may include both
- * representation metadata and resource metadata: information about the resource
- * that is not specific to the supplied representation." Roy T. Fielding
- * 
+ * Representations metadata for content negotiation. "Metadata is in the form of name-value pairs,
+ * where the name corresponds to a standard that defines the value's structure and semantics.
+ * Response messages may include both representation metadata and resource metadata: information
+ * about the resource that is not specific to the supplied representation." Roy T. Fielding
+ *
  * @see Preference
- * @see <a href=
- *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
- *      >Source dissertation</a>
+ * @see <a href= "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2" >Source
+ *     dissertation</a>
  * @author Jerome Louvel
  */
 public abstract class Metadata {
 
-	/** The description of this metadata. */
-	private final String description;
+    /** The description of this metadata. */
+    private final String description;
 
-	/** The metadata name like "text/html" or "compress" or "iso-8851-1". */
-	private final String name;
+    /** The metadata name like "text/html" or "compress" or "iso-8851-1". */
+    private final String name;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param name The unique name.
-	 */
-	public Metadata(String name) {
-		this(name, null);
-	}
+    /**
+     * Constructor.
+     *
+     * @param name The unique name.
+     */
+    protected Metadata(String name) {
+        this(name, null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param name        The unique name.
-	 * @param description The description.
-	 */
-	public Metadata(String name, String description) {
-		this.name = name;
-		this.description = description;
-	}
+    /**
+     * Constructor.
+     *
+     * @param name The unique name.
+     * @param description The description.
+     */
+    protected Metadata(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object) {
-		return (object instanceof Metadata) && ((Metadata) object).getName().equals(getName());
-	}
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Metadata that)) {
+            return false;
+        }
+        return Objects.equals(getName(), that.getName());
+    }
 
-	/**
-	 * Returns the description.
-	 * 
-	 * @return The description.
-	 */
-	public String getDescription() {
-		return this.description;
-	}
+    /**
+     * Returns the description.
+     *
+     * @return The description.
+     */
+    public String getDescription() {
+        return this.description;
+    }
 
-	/**
-	 * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
-	 * 
-	 * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
-	 */
-	public String getName() {
-		return this.name;
-	}
+    /**
+     * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
+     *
+     * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	/**
-	 * Returns the parent metadata if available or null.
-	 * 
-	 * @return The parent metadata.
-	 */
-	public abstract Metadata getParent();
+    /**
+     * Returns the parent metadata if available or null.
+     *
+     * @return The parent metadata.
+     */
+    public abstract Metadata getParent();
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode() {
-		return (getName() == null) ? 0 : getName().hashCode();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return (getName() == null) ? 0 : getName().hashCode();
+    }
 
-	/**
-	 * Indicates if a given metadata is included in the current one. The test is
-	 * true if both metadata are equal or if the given metadata is within the range
-	 * of the current one. For example, {@link MediaType#ALL} includes all media
-	 * types.
-	 * <p>
-	 * Examples:
-	 * <ul>
-	 * <li>TEXT_ALL.includes(TEXT_PLAIN) returns true</li>
-	 * <li>TEXT_PLAIN.includes(TEXT_ALL) returns false</li>
-	 * </ul>
-	 * 
-	 * @param included The metadata to test for inclusion.
-	 * @return True if the given metadata is included in the current one.
-	 * @see #isCompatible(Metadata)
-	 */
-	public abstract boolean includes(Metadata included);
+    /**
+     * Indicates if a given metadata is included in the current one. The test is true if both
+     * metadata is equal or if the given metadata is within the range of the current one. For
+     * example, {@link MediaType#ALL} includes all media types.
+     *
+     * <p>Examples:
+     *
+     * <ul>
+     *   <li>TEXT_ALL.includes(TEXT_PLAIN) returns true
+     *   <li>TEXT_PLAIN.includes(TEXT_ALL) returns false
+     * </ul>
+     *
+     * @param included The metadata to test for inclusion.
+     * @return True if the given metadata is included in the current one.
+     * @see #isCompatible(Metadata)
+     */
+    public abstract boolean includes(Metadata included);
 
-	/**
-	 * Checks if this metadata is compatible with the given metadata.
-	 * <p>
-	 * Examples:
-	 * <ul>
-	 * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) returns true</li>
-	 * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) returns true</li>
-	 * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) returns false</li>
-	 * </ul>
-	 * 
-	 * @param otherMetadata The other metadata to compare.
-	 * @return True if the metadata are compatible.
-	 * @see #includes(Metadata)
-	 */
-	public boolean isCompatible(Metadata otherMetadata) {
-        return (otherMetadata != null)
-				&& (includes(otherMetadata) || otherMetadata.includes(this));
-	}
+    /**
+     * Checks if this metadata is compatible with the given metadata.
+     *
+     * <p>Examples:
+     *
+     * <ul>
+     *   <li>TEXT_ALL.isCompatible(TEXT_PLAIN) returns true
+     *   <li>TEXT_PLAIN.isCompatible(TEXT_ALL) returns true
+     *   <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) returns false
+     * </ul>
+     *
+     * @param otherMetadata The other metadata to compare.
+     * @return True if the metadata is compatible.
+     * @see #includes(Metadata)
+     */
+    public boolean isCompatible(Metadata otherMetadata) {
+        return (otherMetadata != null) && (includes(otherMetadata) || otherMetadata.includes(this));
+    }
 
-	/**
-	 * Returns the metadata name.
-	 * 
-	 * @return The metadata name.
-	 */
-	@Override
-	public String toString() {
-		return getName();
-	}
+    /**
+     * Returns the metadata name.
+     *
+     * @return The metadata name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

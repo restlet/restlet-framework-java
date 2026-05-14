@@ -1,29 +1,26 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.crypto;
 
+import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.Digest;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.SecretVerifier;
 
-import java.util.logging.Level;
-
 /**
- * Wrapper verifier that can verify digested secrets. If the provided secret is
- * a digest, then the local secret must either be a digest of the same algorithm
- * or the wrapped verifier must be a {@link LocalVerifier} returning secrets in
- * clear.<br>
+ * Wrapper verifier that can verify digested secrets. If the provided secret is a digest, then the
+ * local secret must either be a digest of the same algorithm or the wrapped verifier must be a
+ * {@link LocalVerifier} returning secrets in clear.<br>
  * <br>
- * If the provided secret is a regular secret, then the local secret can be in
- * any digest algorithm or a regular secret.
+ * If the provided secret is a regular secret, then the local secret can be in any digest algorithm
+ * or a regular secret.
  *
  * @see Digest
  * @see DigestAuthenticator
@@ -31,7 +28,7 @@ import java.util.logging.Level;
  */
 public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
 
-    /** The digest algorithm of provided secrets. */
+    /** The digest algorithm. */
     private String algorithm;
 
     /** The digest algorithm of secrets returned by the wrapped verifier. */
@@ -43,34 +40,25 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     /**
      * Constructor.
      *
-     * @param algorithm
-     *            The digest algorithm of provided secrets.
-     * @param wrappedVerifier
-     *            The wrapped secret verifier.
-     * @param wrappedAlgorithm
-     *            The digest algorithm of secrets provided by the wrapped
-     *            verifier.
+     * @param algorithm The digest algorithm.
+     * @param wrappedVerifier The wrapped secret verifier.
+     * @param wrappedAlgorithm The digest algorithm of secrets provided by the wrapped verifier.
      * @see Digest
      */
-    public DigestVerifier(String algorithm, T wrappedVerifier,
-                          String wrappedAlgorithm) {
+    public DigestVerifier(String algorithm, T wrappedVerifier, String wrappedAlgorithm) {
         this.algorithm = algorithm;
         this.wrappedAlgorithm = wrappedAlgorithm;
         this.wrappedVerifier = wrappedVerifier;
     }
 
     /**
-     * Computes the digest of a secret according to a specified algorithm. By
-     * default, MD5 hashes (represented as a sequence of 32 hexadecimal digits)
-     * and SHA-1 hashes are supported. For additional algorithm, override this
-     * method.
+     * Computes the digest of a secret according to a specified algorithm. By default, MD5 hashes
+     * (represented as a sequence of 32 hexadecimal digits) and SHA-1 hashes are supported. For an
+     * additional algorithm, override this method.
      *
-     * @param identifier
-     *            The user identifier.
-     * @param secret
-     *            The regular secret to digest.
-     * @param algorithm
-     *            The digest algorithm to use.
+     * @param identifier The user identifier.
+     * @param secret The regular secret to digest.
+     * @param algorithm The digest algorithm to use.
      * @return The digested secret.
      * @see Digest
      */
@@ -79,8 +67,8 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Returns the digest algorithm of provided secrets. Provided secrets are
-     * the ones sent by clients when attempting to authenticate.
+     * Returns the digest algorithm of provided secrets. Provided secrets are the ones sent by
+     * clients when attempting to authenticate.
      *
      * @return The digest algorithm of input secrets.
      */
@@ -89,11 +77,10 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Sets the digest algorithm of provided secrets. Provided secrets are the
-     * ones sent by clients when attempting to authenticate.
+     * Sets the digest algorithm of provided secrets. Provided secrets are the ones sent by clients
+     * when attempting to authenticate.
      *
-     * @param algorithm
-     *            The digest algorithm of secrets provided by the user.
+     * @param algorithm The digest algorithm of secrets provided by the user.
      * @see Digest
      */
     public void setAlgorithm(String algorithm) {
@@ -101,9 +88,9 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Returns the digest algorithm of secrets returned by the wrapped verifier.
-     * The secrets from the wrapped verifier are the ones used by the verifier
-     * to compare those sent by clients when attempting to authenticate.
+     * Returns the digest algorithm of secrets returned by the wrapped verifier. The secrets from
+     * the wrapped verifier are the ones used by the verifier to compare those sent by clients when
+     * attempting to authenticate.
      *
      * @return The digest algorithm of secrets returned by the wrapped verifier.
      */
@@ -112,13 +99,11 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Sets the digest algorithm of secrets returned by the wrapped verifier.
-     * The secrets from the wrapped verifier are the ones used by the verifier
-     * to compare those sent by clients when attempting to authenticate.
+     * Sets the digest algorithm of secrets returned by the wrapped verifier. The secrets from the
+     * wrapped verifier are the ones used by the verifier to compare those sent by clients when
+     * attempting to authenticate.
      *
-     * @param wrappedAlgorithm
-     *            The digest algorithm of secrets returned by the wrapped
-     *            verifier.
+     * @param wrappedAlgorithm The digest algorithm of secrets returned by the wrapped verifier.
      * @see Digest
      */
     public void setWrappedAlgorithm(String wrappedAlgorithm) {
@@ -126,12 +111,11 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Returns the wrapped secret associated to a given identifier. This method
-     * can only be called if the wrapped verifier is a {@link LocalVerifier}.
+     * Returns the wrapped secret associated with a given identifier. This method can only be called
+     * if the wrapped verifier is a {@link LocalVerifier}.
      *
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
+     * @param identifier The identifier to lookup.
+     * @return The secret associated with the identifier or null.
      */
     public char[] getWrappedSecret(String identifier) {
         char[] result = null;
@@ -140,7 +124,8 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
             result = localVerifier.getLocalSecret(identifier);
         } else {
             Context.getCurrentLogger()
-                    .log(Level.WARNING,
+                    .log(
+                            Level.WARNING,
                             "The wrapped verifier must be a LocalVerifier to allow digesting of wrapped secrets.");
         }
 
@@ -148,26 +133,24 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     /**
-     * Returns the digest of the wrapped secret associated to a given
-     * identifier. If the wrapped algorithm is null it returns the digest of the
-     * wrapped secret, otherwise the algorithms must be identical. This method
-     * can only be called if the wrapped verifier is a {@link LocalVerifier}.
+     * Returns the digest of the wrapped secret associated with a given identifier. If the wrapped
+     * algorithm is null, it returns the digest of the wrapped secret; otherwise the algorithms must
+     * be identical. This method can only be called if the wrapped verifier is a {@link
+     * LocalVerifier}.
      *
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
+     * @param identifier The identifier to lookup.
+     * @return The secret associated with the identifier or null.
      */
     public char[] getWrappedSecretDigest(String identifier) {
         char[] result = null;
 
         if (getWrappedAlgorithm() == null) {
-            result = digest(identifier, getWrappedSecret(identifier),
-                    getAlgorithm());
+            result = digest(identifier, getWrappedSecret(identifier), getAlgorithm());
         } else if (getAlgorithm().equals(getWrappedAlgorithm())) {
             result = getWrappedSecret(identifier);
         } else {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "The digest algorithms can't be different.");
+            Context.getCurrentLogger()
+                    .log(Level.WARNING, "The digest algorithms can't be different.");
         }
 
         return result;
@@ -185,8 +168,7 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     /**
      * Sets the wrapped secret verifier.
      *
-     * @param wrappedVerifier
-     *            The wrapped secret verifier.
+     * @param wrappedVerifier The wrapped secret verifier.
      */
     public void setWrappedVerifier(T wrappedVerifier) {
         this.wrappedVerifier = wrappedVerifier;
@@ -194,28 +176,29 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
 
     @Override
     public int verify(String identifier, char[] secret) {
-        int result = RESULT_INVALID;
+        final int result;
         char[] secretDigest = secret;
 
         if (getAlgorithm() == null) {
             if (getWrappedAlgorithm() != null) {
                 secretDigest = digest(identifier, secret, getWrappedAlgorithm());
             } else {
-                // Both secrets should be in clear
+                // Both secrets should be clear
             }
 
             result = getWrappedVerifier().verify(identifier, secretDigest);
         } else {
             if (getWrappedAlgorithm() == null) {
-                result = compare(secretDigest, getWrappedSecretDigest(identifier))
-                        ? RESULT_VALID
-                        : RESULT_INVALID;
+                result =
+                        compare(secretDigest, getWrappedSecretDigest(identifier))
+                                ? RESULT_VALID
+                                : RESULT_INVALID;
             } else if (getAlgorithm().equals(getWrappedAlgorithm())) {
                 result = getWrappedVerifier().verify(identifier, secretDigest);
             } else {
                 result = RESULT_UNSUPPORTED;
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "The input and output algorithms can't be different.");
+                Context.getCurrentLogger()
+                        .log(Level.WARNING, "The input and output algorithms can't be different.");
             }
         }
 

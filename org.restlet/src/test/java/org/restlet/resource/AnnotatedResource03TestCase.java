@@ -1,25 +1,24 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.resource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Status;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test the annotated resources, client and server sides.
  *
  * @author Jerome Louvel
  */
-public class AnnotatedResource03TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
+class AnnotatedResource03TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
 
     @Override
     void configureFinder(Finder finder) {
@@ -27,7 +26,7 @@ public class AnnotatedResource03TestCase extends AbstractAnnotatedResourceWithFi
     }
 
     @Test
-    public void testGet() throws ResourceException {
+    void testGet() throws ResourceException {
         Status status = null;
         try {
             clientResource.get();
@@ -37,5 +36,4 @@ public class AnnotatedResource03TestCase extends AbstractAnnotatedResourceWithFi
         }
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, status);
     }
-
 }

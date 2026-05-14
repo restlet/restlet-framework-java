@@ -1,13 +1,14 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.thymeleaf;
+
+import static org.restlet.Context.getCurrent;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Form;
@@ -32,16 +32,15 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
 
 /**
- * Thymeleaf template representation. Useful for dynamic string-based
- * representations.
- * 
+ * Thymeleaf template representation. Useful for dynamic string-based representations.
+ *
  * @author Grzegorz Godlewski
  */
 public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Context that leverages an instance of {@link Resolver}.
-     * 
+     *
      * @author Grzegorz Godlewski
      */
     private static class ResolverContext implements IContext {
@@ -53,11 +52,9 @@ public class TemplateRepresentation extends WriterRepresentation {
 
         /**
          * Constructor.
-         * 
-         * @param locale
-         *            The Locale.
-         * @param resolver
-         *            The Resolver instance.
+         *
+         * @param locale The Locale.
+         * @param resolver The Resolver instance.
          */
         public ResolverContext(Locale locale, Resolver<Object> resolver) {
             this.locale = locale;
@@ -65,8 +62,7 @@ public class TemplateRepresentation extends WriterRepresentation {
         }
 
         public final void addContextExecutionInfo(final String templateName) {
-            Validate.notEmpty(templateName,
-                    "Template name cannot be null or empty");
+            Validate.notEmpty(templateName, "Template name cannot be null or empty");
         }
 
         public Locale getLocale() {
@@ -87,14 +83,12 @@ public class TemplateRepresentation extends WriterRepresentation {
         public Object getVariable(final String key) {
             return resolver.resolve(key);
         }
-
     }
 
     /**
-     * Returns a new instance of {@link TemplateEngine} based by default on a
-     * {@link ITemplateResolver} returned by calling
-     * {@link #createTemplateResolver()}.
-     * 
+     * Returns a new instance of {@link TemplateEngine} based by default on a {@link
+     * ITemplateResolver} returned by calling {@link #createTemplateResolver()}.
+     *
      * @return A new instance of {@link TemplateEngine}
      */
     public static TemplateEngine createTemplateEngine() {
@@ -102,10 +96,9 @@ public class TemplateRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Returns a new instance of {@link TemplateEngine} based by default on a
-     * {@link ITemplateResolver} returned by calling
-     * {@link #createTemplateResolver()}.
-     * 
+     * Returns a new instance of {@link TemplateEngine} based by default on a {@link
+     * ITemplateResolver} returned by calling {@link #createTemplateResolver()}.
+     *
      * @return A new instance of {@link TemplateEngine}
      */
     public static TemplateEngine createTemplateEngine(ITemplateResolver resolver) {
@@ -115,10 +108,9 @@ public class TemplateRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Returns a new instance of {@link ITemplateResolver} with default
-     * configuration (XHTML template model, templates located inside
-     * "/WEB-INF/templates/", suffixed by ".html".
-     * 
+     * Returns a new instance of {@link ITemplateResolver} with default configuration (XHTML
+     * template model, templates located inside "/WEB-INF/templates/", suffixed by ".html".
+     *
      * @return A new instance of {@link ITemplateResolver}.
      */
     public static ITemplateResolver createTemplateResolver() {
@@ -150,56 +142,49 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Thymeleaf template's name. The actual template is
-     *            retrieved using the Thymeleaf configuration.
-     * @param locale
-     *            The locale of the template.
-     * @param dataModel
-     *            The Thymeleaf template's data model.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Thymeleaf template's name. The actual template is retrieved using the
+     *     Thymeleaf configuration.
+     * @param locale The locale of the template.
+     * @param dataModel The Thymeleaf template's data model.
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(String templateName, Locale locale,
-            Map<String, Object> dataModel, MediaType mediaType) {
+    public TemplateRepresentation(
+            String templateName,
+            Locale locale,
+            Map<String, Object> dataModel,
+            MediaType mediaType) {
         this(templateName, createTemplateEngine(), locale, dataModel, mediaType);
     }
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Thymeleaf template's name. The full path is resolved by
-     *            the configuration.
-     * @param locale
-     *            The locale of the template.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Thymeleaf template's name. The full path is resolved by the
+     *     configuration.
+     * @param locale The locale of the template.
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(String templateName, Locale locale,
-            MediaType mediaType) {
-        this(templateName, locale, new ConcurrentHashMap<String, Object>(),
-                mediaType);
+    public TemplateRepresentation(String templateName, Locale locale, MediaType mediaType) {
+        this(templateName, locale, new ConcurrentHashMap<>(), mediaType);
     }
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Thymeleaf template's name. The actual template is
-     *            retrieved using the Thymeleaf configuration.
-     * @param engine
-     *            The template engine.
-     * @param locale
-     *            The locale of the template.
-     * @param dataModel
-     *            The Thymeleaf template's data model.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Thymeleaf template's name. The actual template is retrieved using the
+     *     Thymeleaf configuration.
+     * @param engine The template engine.
+     * @param locale The locale of the template.
+     * @param dataModel The Thymeleaf template's data model.
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(String templateName, TemplateEngine engine,
-            Locale locale, Map<String, Object> dataModel, MediaType mediaType) {
+    public TemplateRepresentation(
+            String templateName,
+            TemplateEngine engine,
+            Locale locale,
+            Map<String, Object> dataModel,
+            MediaType mediaType) {
         super(mediaType);
         this.locale = locale;
         this.engine = engine;
@@ -209,52 +194,42 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param templateName
-     *            The Thymeleaf template's name. The full path is resolved by
-     *            the configuration.
-     * @param locale
-     *            The locale of the template
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateName The Thymeleaf template's name. The full path is resolved by the
+     *     configuration.
+     * @param locale The locale of the template
+     * @param mediaType The representation's media-type.
      */
-    public TemplateRepresentation(String templateName, TemplateEngine engine,
-            Locale locale, MediaType mediaType) {
-        this(templateName, engine, locale,
-                new ConcurrentHashMap<String, Object>(), mediaType);
+    public TemplateRepresentation(
+            String templateName, TemplateEngine engine, Locale locale, MediaType mediaType) {
+        this(templateName, engine, locale, new ConcurrentHashMap<>(), mediaType);
     }
 
     /**
      * Constructor based on a Thymeleaf 'encoded' representation.
-     * 
-     * @param templateRepresentation
-     *            The representation to 'decode'.
-     * @param locale
-     *            The locale of the template.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateRepresentation The representation to 'decode'.
+     * @param locale The locale of the template.
+     * @param mediaType The representation's media-type.
      */
     public TemplateRepresentation(
-            TemplateRepresentation templateRepresentation, Locale locale,
-            MediaType mediaType) {
+            TemplateRepresentation templateRepresentation, Locale locale, MediaType mediaType) {
         this(templateRepresentation, createTemplateEngine(), locale, mediaType);
     }
 
     /**
      * Constructor based on a Thymeleaf 'encoded' representation.
-     * 
-     * @param templateRepresentation
-     *            The representation to 'decode'.
-     * @param engine
-     *            The template engine.
-     * @param locale
-     *            The locale of the template.
-     * @param mediaType
-     *            The representation's media type.
+     *
+     * @param templateRepresentation The representation to 'decode'.
+     * @param engine The template engine.
+     * @param locale The locale of the template.
+     * @param mediaType The representation's media-type.
      */
     public TemplateRepresentation(
             TemplateRepresentation templateRepresentation,
-            TemplateEngine engine, Locale locale, MediaType mediaType) {
+            TemplateEngine engine,
+            Locale locale,
+            MediaType mediaType) {
         super(mediaType);
         this.locale = locale;
         this.engine = engine;
@@ -263,7 +238,7 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns the representation's locale.
-     * 
+     *
      * @return The representation's locale.
      */
     public Locale getLocale() {
@@ -272,7 +247,7 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns the template's name.
-     * 
+     *
      * @return The template's name.
      */
     public String getTemplateName() {
@@ -281,9 +256,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the Thymeleaf context.
-     * 
-     * @param context
-     *            The Thymeleaf context
+     *
+     * @param context The Thymeleaf context
      */
     protected void setContext(IContext context) {
         this.context = context;
@@ -291,9 +265,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the template's data model.
-     * 
-     * @param dataModel
-     *            The template's data model.
+     *
+     * @param dataModel The template's data model.
      */
     public void setDataModel(Map<String, Object> dataModel) {
         Context ctx = new Context(locale);
@@ -302,16 +275,13 @@ public class TemplateRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Sets the template's data model from a request/response pair. This default
-     * implementation uses a Resolver.
-     * 
+     * Sets the template's data model from a request/response pair. This default implementation uses
+     * a Resolver.
+     *
      * @see Resolver
      * @see Resolver#createResolver(Request, Response)
-     * 
-     * @param request
-     *            The request where data are located.
-     * @param response
-     *            The response where data are located.
+     * @param request The request where data are located.
+     * @param response The response where data are located.
      */
     public void setDataModel(Request request, Response response) {
         Form form = new Form(request.getEntity());
@@ -322,9 +292,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the template's data model from a resolver.
-     * 
-     * @param resolver
-     *            The resolver.
+     *
+     * @param resolver The resolver.
      */
     public void setDataModel(Resolver<Object> resolver) {
         setContext(new ResolverContext(locale, resolver));
@@ -332,9 +301,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Sets the template's name.
-     * 
-     * @param templateName
-     *            The template's name.
+     *
+     * @param templateName The template's name.
      */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
@@ -342,9 +310,8 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Writes the datum as a stream of characters.
-     * 
-     * @param writer
-     *            The writer to use when writing.
+     *
+     * @param writer The writer to use when writing.
      */
     @Override
     public void write(Writer writer) throws IOException {
@@ -354,18 +321,13 @@ public class TemplateRepresentation extends WriterRepresentation {
             engine.process(templateName, context, writer);
 
         } catch (Exception e) {
-            final org.restlet.Context context = org.restlet.Context
-                    .getCurrent();
+            final var currentContext = getCurrent();
 
-            if (context != null) {
-                context.getLogger().log(Level.WARNING,
-                        "Unable to process the template", e);
+            if (currentContext != null) {
+                currentContext.getLogger().log(Level.WARNING, "Unable to process the template", e);
             }
 
-            e.printStackTrace();
-
-            throw new IOException("Template processing error. "
-                    + e.getMessage());
+            throw new IOException("Template processing error. " + e.getMessage());
         }
     }
 }

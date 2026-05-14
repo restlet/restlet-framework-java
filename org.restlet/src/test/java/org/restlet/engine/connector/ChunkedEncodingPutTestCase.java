@@ -1,15 +1,22 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
-import org.restlet.*;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -19,15 +26,11 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /**
  * This tests the ability of the connectors to handle chunked encoding.
  *
- * The test uses each connector to PUT an entity that will be sent chunked and
- * also to receive a chunked response.
+ * <p>The test uses each connector to PUT an entity that will be sent chunked and also to receive a
+ * chunked response.
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 20;
@@ -55,10 +58,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         };
     }
 
-    /**
-     * Test resource that answers to PUT requests by sending back the received
-     * entity.
-     */
+    /** Test resource that answers to PUT requests by sending back the received entity. */
     public static class PutTestResource extends ServerResource {
         public PutTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
@@ -81,12 +81,26 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                 System.out.println(response.getStatus());
             }
 
-            assertNotNull(response.getEntity(), format("test #%d - size %d: response's entity is null", testIndex, size));
+            assertNotNull(
+                    response.getEntity(),
+                    format("test #%d - size %d: response's entity is null", testIndex, size));
             final String responseEntity = response.getEntity().getText();
-            assertNotNull(responseEntity, format("test #%d - size %d: response's entity content is null", testIndex, size));
-            assertEquals(size, responseEntity.length(), format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
+            assertNotNull(
+                    responseEntity,
+                    format(
+                            "test #%d - size %d: response's entity content is null",
+                            testIndex, size));
+            assertEquals(
+                    size,
+                    responseEntity.length(),
+                    format(
+                            "test #%d - size %d: length of response's entity is wrong",
+                            testIndex, size));
             final String expectedResponseEntity = createChunkedRepresentation(size).getText();
-            assertEquals(expectedResponseEntity, responseEntity, format("test #%d - size %d: response's entity is wrong", testIndex, size));
+            assertEquals(
+                    expectedResponseEntity,
+                    responseEntity,
+                    format("test #%d - size %d: response's entity is wrong", testIndex, size));
         } finally {
             response.release();
             client.stop();
@@ -96,8 +110,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     /**
      * Returns a StringRepresentation which size depends on the given argument.
      *
-     * @param size
-     *         the size of the representation
+     * @param size the size of the representation
      * @return A DomRepresentation.
      */
     private Representation createChunkedRepresentation(int size) {
@@ -105,5 +118,4 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
         return rep;
     }
-
 }

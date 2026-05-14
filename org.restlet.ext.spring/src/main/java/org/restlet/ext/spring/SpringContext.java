@@ -1,17 +1,15 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.spring;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.data.Method;
@@ -21,9 +19,9 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
- * Spring application context based on a Restlet context. Here is an example
- * illustrating the various ways to use this class:
- * 
+ * Spring application context based on a Restlet context. Here is an example illustrating the
+ * various ways to use this class:
+ *
  * <pre>
  * SpringContext springContext = new SpringContext(getContext());
  * springContext.getPropertyConfigRefs().add(&quot;war://config/database.properties&quot;);
@@ -33,7 +31,7 @@ import org.springframework.context.support.GenericApplicationContext;
  * springContext.getXmlConfigRefs().add(
  *         &quot;clap://thread/config/applicationContext.xml&quot;);
  * </pre>
- * 
+ *
  * @author Jerome Louvel</a>
  */
 public class SpringContext extends GenericApplicationContext {
@@ -41,25 +39,20 @@ public class SpringContext extends GenericApplicationContext {
     private volatile boolean loaded;
 
     /**
-     * The modifiable list of configuration URIs for beans definitions via
-     * property representations.
+     * The modifiable list of configuration URIs for beans definitions via property representations.
      */
     private volatile List<String> propertyConfigRefs;
 
     /** The parent Restlet context. */
     private volatile Context restletContext;
 
-    /**
-     * The modifiable list of configuration URIs for beans definitions via XML
-     * representations.
-     */
+    /** The modifiable list of configuration URIs for beans definitions via XML representations. */
     private volatile List<String> xmlConfigRefs;
 
     /**
      * Constructor.
-     * 
-     * @param restletContext
-     *            The parent Restlet context.
+     *
+     * @param restletContext The parent Restlet context.
      */
     public SpringContext(Context restletContext) {
         this.restletContext = restletContext;
@@ -69,9 +62,9 @@ public class SpringContext extends GenericApplicationContext {
     }
 
     /**
-     * Returns the modifiable list of configuration URIs for beans definitions
-     * via property representations.
-     * 
+     * Returns the modifiable list of configuration URIs for beans definitions via property
+     * representations.
+     *
      * @return The modifiable list of configuration URIs.
      */
     public List<String> getPropertyConfigRefs() {
@@ -81,7 +74,7 @@ public class SpringContext extends GenericApplicationContext {
             synchronized (this) {
                 p = this.propertyConfigRefs;
                 if (p == null) {
-                    this.propertyConfigRefs = p = new ArrayList<String>();
+                    this.propertyConfigRefs = p = new ArrayList<>();
                 }
             }
         }
@@ -90,7 +83,7 @@ public class SpringContext extends GenericApplicationContext {
 
     /**
      * Returns the parent Restlet context.
-     * 
+     *
      * @return The parent Restlet context.
      */
     public Context getRestletContext() {
@@ -98,9 +91,9 @@ public class SpringContext extends GenericApplicationContext {
     }
 
     /**
-     * Returns the modifiable list of configuration URIs for beans definitions
-     * via XML representations.
-     * 
+     * Returns the modifiable list of configuration URIs for beans definitions via XML
+     * representations.
+     *
      * @return The modifiable list of configuration URIs.
      */
     public List<String> getXmlConfigRefs() {
@@ -110,7 +103,7 @@ public class SpringContext extends GenericApplicationContext {
             synchronized (this) {
                 x = this.xmlConfigRefs;
                 if (x == null) {
-                    this.xmlConfigRefs = x = new ArrayList<String>();
+                    this.xmlConfigRefs = x = new ArrayList<>();
                 }
             }
         }
@@ -127,8 +120,11 @@ public class SpringContext extends GenericApplicationContext {
             // First, read the bean definitions from properties representations
             PropertiesBeanDefinitionReader propReader = null;
             for (final String ref : getPropertyConfigRefs()) {
-                config = getRestletContext().getClientDispatcher()
-                        .handle(new Request(Method.GET, ref)).getEntity();
+                config =
+                        getRestletContext()
+                                .getClientDispatcher()
+                                .handle(new Request(Method.GET, ref))
+                                .getEntity();
 
                 if (config != null) {
                     propReader = new PropertiesBeanDefinitionReader(this);
@@ -139,13 +135,15 @@ public class SpringContext extends GenericApplicationContext {
             // Then, read the bean definitions from XML representations
             XmlBeanDefinitionReader xmlReader = null;
             for (final String ref : getXmlConfigRefs()) {
-                config = getRestletContext().getClientDispatcher()
-                        .handle(new Request(Method.GET, ref)).getEntity();
+                config =
+                        getRestletContext()
+                                .getClientDispatcher()
+                                .handle(new Request(Method.GET, ref))
+                                .getEntity();
 
                 if (config != null) {
                     xmlReader = new XmlBeanDefinitionReader(this);
-                    xmlReader
-                            .setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
+                    xmlReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
                     xmlReader.loadBeanDefinitions(new SpringResource(config));
                 }
             }
@@ -154,5 +152,4 @@ public class SpringContext extends GenericApplicationContext {
         // Now load or refresh
         super.refresh();
     }
-
 }

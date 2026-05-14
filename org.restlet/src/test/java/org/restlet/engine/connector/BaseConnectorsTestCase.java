@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * <p>
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * <p>
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -14,7 +13,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.restlet.Application;
@@ -25,8 +23,8 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.HttpServerHelper;
 
 /**
- * Base test case that will call an abstract method for several client/server
- * connectors configurations.
+ * Base test case that will call an abstract method for several client/server connectors
+ * configurations.
  *
  * @author Kevin Conaway
  * @author Jerome Louvel
@@ -64,19 +62,20 @@ public abstract class BaseConnectorsTestCase {
     protected abstract Application createApplication();
 
     protected List<ConnectorsPair> listTestCases() {
-        return List.of(
-                new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.JETTY));
+        return List.of(new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.JETTY));
     }
 
     @TestFactory
     Stream<DynamicTest> testsFactory() {
-        return listTestCases().stream().map(testCase -> dynamicTest(
-                testCase.getTestLabel(),
-                () -> runTest(testCase.httpServer, testCase.httpClient)));
+        return listTestCases().stream()
+                .map(
+                        testCase ->
+                                dynamicTest(
+                                        testCase.getTestLabel(),
+                                        () -> runTest(testCase.httpServer, testCase.httpClient)));
     }
 
-    private void runTest(final HttpServer server, final HttpClient client)
-            throws Exception {
+    private void runTest(final HttpServer server, final HttpClient client) throws Exception {
         if (shouldDebug()) {
             System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
         }
@@ -147,5 +146,4 @@ public abstract class BaseConnectorsTestCase {
             this.clientHelper = clientHelper;
         }
     }
-
 }

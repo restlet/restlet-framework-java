@@ -1,28 +1,24 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.xml;
 
 import java.io.IOException;
 import java.io.Writer;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
-
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
@@ -31,32 +27,28 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 /**
- * XML representation for SAX events processing. The purpose is to create a
- * streamable content based on a custom Java object model instead of a neutral
- * DOM tree. This domain object can then be directly modified and efficiently
- * serialized at a later time.<br>
+ * XML representation for SAX events processing. The purpose is to create a streamable content based
+ * on a custom Java object model instead of a neutral DOM tree. This domain object can then be
+ * directly modified and efficiently serialized at a later time.<br>
  * <br>
- * Subclasses only need to override the ContentHandler methods required for the
- * reading and also the write(XmlWriter writer) method when serialization is
- * requested. <br>
+ * Subclasses only need to override the ContentHandler methods required for the reading and also the
+ * write(XmlWriter writer) method when serialization is requested. <br>
  * <br>
- * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
- * document type definition (DTD) entity resolution can expose the parser to an
- * XML Entity Expansion injection attack, see
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit document type definition
+ * (DTD) entity resolution can expose the parser to an XML Entity Expansion injection attack, see
  * https://github.com/restlet/restlet-framework-java/wiki/XEE-security-enhancements.
- * 
+ *
  * @author Jerome Louvel
  */
 public class SaxRepresentation extends XmlRepresentation {
 
     /**
-     * True for turning on secure parsing XML representations; default value
-     * provided by system property "org.restlet.ext.xml.secureProcessing", true
-     * by default.
+     * True for turning on secure parsing XML representations; the default value provided by system
+     * property "org.restlet.ext.xml.secureProcessing", true by default.
      */
-    public static final boolean XML_SECURE_PROCESSING = (System
-            .getProperty("org.restlet.ext.xml.secureProcessing") == null) ? true
-            : Boolean.getBoolean("org.restlet.ext.xml.secureProcessing");
+    public static final boolean XML_SECURE_PROCESSING =
+            (System.getProperty("org.restlet.ext.xml.secureProcessing") == null)
+                    || Boolean.getBoolean("org.restlet.ext.xml.secureProcessing");
 
     /** Limits potential XML overflow attacks. */
     private boolean secureProcessing;
@@ -67,18 +59,15 @@ public class SaxRepresentation extends XmlRepresentation {
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
 
-    /**
-     * Default constructor. Uses the {@link MediaType#TEXT_XML} media type.
-     */
+    /** Default constructor. Uses the {@link MediaType#TEXT_XML} media type. */
     public SaxRepresentation() {
         this(MediaType.TEXT_XML);
     }
 
     /**
      * Constructor.
-     * 
-     * @param mediaType
-     *            The representation media type.
+     *
+     * @param mediaType The representation media type.
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -87,26 +76,21 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's media type.
-     * @param xmlDocument
-     *            A DOM document to parse.
+     *
+     * @param mediaType The representation's media-type.
+     * @param xmlDocument A DOM document to parse.
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
         this.secureProcessing = XML_SECURE_PROCESSING;
-        this.source = new SAXSource(
-                SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
+        this.source = new SAXSource(SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
     }
 
     /**
      * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's media type.
-     * @param xmlSource
-     *            A SAX input source to parse.
+     *
+     * @param mediaType The representation's media-type.
+     * @param xmlSource A SAX input source to parse.
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
         super(mediaType);
@@ -116,11 +100,9 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's media type.
-     * @param xmlSource
-     *            A JAXP source to parse.
+     *
+     * @param mediaType The representation's media-type.
+     * @param xmlSource A JAXP source to parse.
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
         super(mediaType);
@@ -130,33 +112,29 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Constructor.
-     * 
-     * @param xmlRepresentation
-     *            A source XML representation to parse.
+     *
+     * @param xmlRepresentation A source XML representation to parse.
      */
     public SaxRepresentation(Representation xmlRepresentation) {
-        super((xmlRepresentation == null) ? null : xmlRepresentation
-                .getMediaType());
+        super((xmlRepresentation == null) ? null : xmlRepresentation.getMediaType());
         this.secureProcessing = XML_SECURE_PROCESSING;
         this.xmlRepresentation = xmlRepresentation;
     }
 
     @Override
     public InputSource getInputSource() throws IOException {
-        return (getSaxSource() == null) ? null : getSaxSource()
-                .getInputSource();
+        return (getSaxSource() == null) ? null : getSaxSource().getInputSource();
     }
 
     /**
-     * Returns the SAX source that can be parsed by the
-     * {@link #parse(ContentHandler)} method or used for an XSLT transformation.
+     * Returns the SAX source that can be parsed by the {@link #parse(ContentHandler)} method or
+     * used for an XSLT transformation.
      */
     @Override
     public SAXSource getSaxSource() throws IOException {
         if (this.source == null && this.xmlRepresentation != null) {
-            if (xmlRepresentation instanceof XmlRepresentation) {
-                this.source = ((XmlRepresentation) xmlRepresentation)
-                        .getSaxSource();
+            if (xmlRepresentation instanceof XmlRepresentation xmlRepresentationCast) {
+                this.source = xmlRepresentationCast.getSaxSource();
             } else {
                 try {
                     SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -172,8 +150,7 @@ public class SaxRepresentation extends XmlRepresentation {
                     }
 
                     spf.setXIncludeAware(isXIncludeAware());
-                    spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
-                            isSecureProcessing());
+                    spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, isSecureProcessing());
                     spf.setFeature(
                             "http://xml.org/sax/features/external-general-entities",
                             isExpandingEntityRefs());
@@ -181,17 +158,17 @@ public class SaxRepresentation extends XmlRepresentation {
                             "http://xml.org/sax/features/external-parameter-entities",
                             isExpandingEntityRefs());
                     XMLReader xmlReader = spf.newSAXParser().getXMLReader();
-                    this.source = new SAXSource(xmlReader, new InputSource(
-                            xmlRepresentation.getReader()));
+                    this.source =
+                            new SAXSource(
+                                    xmlReader, new InputSource(xmlRepresentation.getReader()));
                 } catch (Exception e) {
-                    throw new IOException(
-                            "Unable to create customized SAX source", e);
+                    throw new IOException("Unable to create customized SAX source", e);
                 }
             }
 
             if (xmlRepresentation.getLocationRef() != null) {
-                this.source.setSystemId(xmlRepresentation.getLocationRef()
-                        .getTargetRef().toString());
+                this.source.setSystemId(
+                        xmlRepresentation.getLocationRef().getTargetRef().toString());
             }
         }
 
@@ -200,7 +177,7 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Indicates if it limits potential XML overflow attacks.
-     * 
+     *
      * @return True if it limits potential XML overflow attacks.
      */
     public boolean isSecureProcessing() {
@@ -209,28 +186,17 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Parses the source and sends SAX events to a content handler.
-     * 
-     * @param contentHandler
-     *            The SAX content handler to use for parsing.
+     *
+     * @param contentHandler The SAX content handler to use for parsing.
      */
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
             try {
                 Result result = new SAXResult(contentHandler);
-                TransformerFactory.newInstance().newTransformer()
-                        .transform(getSaxSource(), result);
-            } catch (TransformerConfigurationException tce) {
+                TransformerFactory.newInstance().newTransformer().transform(getSaxSource(), result);
+            } catch (TransformerException | TransformerFactoryConfigurationError te) {
                 throw new IOException(
-                        "Couldn't parse the source representation: "
-                                + tce.getMessage(), tce);
-            } catch (TransformerException te) {
-                throw new IOException(
-                        "Couldn't parse the source representation: "
-                                + te.getMessage(), te);
-            } catch (TransformerFactoryConfigurationError tfce) {
-                throw new IOException(
-                        "Couldn't parse the source representation: "
-                                + tfce.getMessage(), tfce);
+                        "Couldn't parse the source representation: " + te.getMessage(), te);
             }
         } else {
             throw new IOException(
@@ -238,9 +204,7 @@ public class SaxRepresentation extends XmlRepresentation {
         }
     }
 
-    /**
-     * Releases the namespaces map.
-     */
+    /** Releases the namespaces map. */
     @Override
     public void release() {
         if (this.source != null) {
@@ -254,11 +218,9 @@ public class SaxRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Sets a SAX source that can be parsed by the
-     * {@link #parse(ContentHandler)} method.
-     * 
-     * @param source
-     *            A SAX source.
+     * Sets a SAX source that can be parsed by the {@link #parse(ContentHandler)} method.
+     *
+     * @param source A SAX source.
      */
     public void setSaxSource(SAXSource source) {
         this.source = source;
@@ -266,9 +228,8 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Indicates if it limits potential XML overflow attacks.
-     * 
-     * @param secureProcessing
-     *            True if it limits potential XML overflow attacks.
+     *
+     * @param secureProcessing True if it limits potential XML overflow attacks.
      */
     public void setSecureProcessing(boolean secureProcessing) {
         this.secureProcessing = secureProcessing;
@@ -281,13 +242,11 @@ public class SaxRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Writes the representation to a XML writer. The default implementation
-     * calls {@link #parse(ContentHandler)} using the {@link XmlWriter}
-     * parameter as the content handler. This behavior is intended to be
-     * overridden.
-     * 
-     * @param writer
-     *            The XML writer to write to.
+     * Writes the representation to an XML writer. The default implementation calls {@link
+     * #parse(ContentHandler)} using the {@link XmlWriter} parameter as the content handler. This
+     * behavior is intended to be overridden.
+     *
+     * @param writer The XML writer to write to.
      * @throws IOException
      */
     public void write(XmlWriter writer) throws IOException {

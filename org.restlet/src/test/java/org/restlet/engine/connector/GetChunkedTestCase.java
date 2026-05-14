@@ -1,12 +1,11 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
 
 import static java.lang.String.format;
@@ -38,7 +37,7 @@ import org.restlet.routing.Router;
  */
 public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
-    private static final String text = "<?xml version='1.0'?><mail>" + "a".repeat(1000) + "</mail>";
+    private static final String TEXT = "<?xml version='1.0'?><mail>" + "a".repeat(1000) + "</mail>";
 
     @Override
     protected void doTest(final int serverPort) throws Exception {
@@ -49,9 +48,10 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
         final Response response = client.handle(request);
 
         try {
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
+            assertEquals(
+                    Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
             assertChunkedHeader(response);
-            assertEquals(text, response.getEntity().getText());
+            assertEquals(TEXT, response.getEntity().getText());
         } finally {
             response.release();
             client.stop();
@@ -78,17 +78,16 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
         @Override
         public Representation get(Variant variant) {
-            final Representation rep = new StringRepresentation( text, MediaType.APPLICATION_XML);
+            final Representation rep = new StringRepresentation(TEXT, MediaType.APPLICATION_XML);
             rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
             return rep;
         }
     }
 
     private static void assertChunkedHeader(Message message) {
-        final Header transferEncoding = message.getHeaders()
-                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        final Header transferEncoding =
+                message.getHeaders().getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         assertNotNull(transferEncoding);
         assertEquals("chunked", transferEncoding.getValue());
     }
-
 }

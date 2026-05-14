@@ -1,21 +1,20 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.connector;
-
-import org.restlet.Connector;
-import org.restlet.Context;
-import org.restlet.data.Protocol;
-import org.restlet.engine.RestletHelper;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.Application;
+import org.restlet.Connector;
+import org.restlet.data.Protocol;
+import org.restlet.engine.RestletHelper;
+import org.restlet.service.ConnectorService;
 
 /**
  * Base connector helper.
@@ -24,64 +23,48 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class ConnectorHelper<T extends Connector> extends RestletHelper<T> {
 
-	/**
-	 * Returns the connector service associated to a request.
-	 *
-	 * @return The connector service associated to a request.
-	 */
-	public static org.restlet.service.ConnectorService getConnectorService() {
-		org.restlet.service.ConnectorService result = null;
-		org.restlet.Application application = org.restlet.Application.getCurrent();
+    /**
+     * Returns the connector service associated with a request.
+     *
+     * @return The connector service associated with a request.
+     */
+    public static ConnectorService getConnectorService() {
+        final ConnectorService result;
+        Application application = Application.getCurrent();
 
-		if (application != null) {
-			result = application.getConnectorService();
-		} else {
-			result = new org.restlet.service.ConnectorService();
-		}
+        if (application != null) {
+            result = application.getConnectorService();
+        } else {
+            result = new ConnectorService();
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/** The protocols simultaneously supported. */
-	private final List<Protocol> protocols;
+    /** The protocols simultaneously supported. */
+    private final List<Protocol> protocols;
 
-	/**
-	 * Constructor.
-	 */
-	public ConnectorHelper(T connector) {
-		super(connector);
-		this.protocols = new CopyOnWriteArrayList<Protocol>();
-	}
+    /** Constructor. */
+    protected ConnectorHelper(T connector) {
+        super(connector);
+        this.protocols = new CopyOnWriteArrayList<>();
+    }
 
-	/**
-	 * Returns the helped Restlet context.
-	 *
-	 * @return The helped Restlet context.
-	 */
-	@Override
-	public Context getContext() {
-		return super.getContext();
-	}
+    /**
+     * Returns the protocols simultaneously supported.
+     *
+     * @return The protocols simultaneously supported.
+     */
+    public List<Protocol> getProtocols() {
+        return this.protocols;
+    }
 
-	/**
-	 * Returns the protocols simultaneously supported.
-	 *
-	 * @return The protocols simultaneously supported.
-	 */
-	public List<Protocol> getProtocols() {
-		return this.protocols;
-	}
+    @Override
+    public void start() throws Exception {}
 
-	@Override
-	public void start() throws Exception {
-	}
+    @Override
+    public void stop() throws Exception {}
 
-	@Override
-	public void stop() throws Exception {
-	}
-
-	@Override
-	public void update() throws Exception {
-	}
-
+    @Override
+    public void update() throws Exception {}
 }

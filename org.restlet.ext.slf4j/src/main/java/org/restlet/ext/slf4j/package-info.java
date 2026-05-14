@@ -1,0 +1,10 @@
+/**
+ * Integration with SLF4J 1.7. This extension provides a log facade for SLF4J for the Restlet
+ * engine, allowing bridges to alternate logging mechanisms such as Log4J or LogBack.
+ *
+ * @since Restlet 2.0
+ * @see <a href="https://www.slf4j.org/">SLF4J home</a>
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/slf4j">User
+ *     Guide - SLF4J extension</a>
+ */
+package org.restlet.ext.slf4j;

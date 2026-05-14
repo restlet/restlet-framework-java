@@ -1,41 +1,45 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.ext.velocity;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.restlet.*;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.resource.Directory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Test case for template filters.
  *
  * @author Thierry Boileau
  */
-public class TemplateFilterTestCase {
+class TemplateFilterTestCase {
 
     @Test
-    public void representationShouldBeUsedAsTemplate() throws Exception {
-        Request request = new Request(Method.GET,"/template.txt.vm");
+    void representationShouldBeUsedAsTemplate() throws Exception {
+        Request request = new Request(Method.GET, "/template.txt.vm");
         Response response = testApplication.handle(request);
         assertEquals("Method=GET/Path=/template.txt.vm", response.getEntity().getText());
     }
 
     @Test
-    public void representationShouldNotBeUsedAsTemplate() throws Exception {
+    void representationShouldNotBeUsedAsTemplate() throws Exception {
         Request request = new Request(Method.GET, "/notATemplate.txt");
         Response response = testApplication.handle(request);
 
@@ -56,7 +60,11 @@ public class TemplateFilterTestCase {
 
         @Override
         public Restlet createInboundRoot() {
-            final Directory directory = new Directory(getContext(), LocalReference.createClapReference(TemplateFilterTestCase.class.getPackage()));
+            final Directory directory =
+                    new Directory(
+                            getContext(),
+                            LocalReference.createClapReference(
+                                    TemplateFilterTestCase.class.getPackage()));
 
             // Create a Directory that manages a local directory
             return new TemplateFilter(getContext(), directory);

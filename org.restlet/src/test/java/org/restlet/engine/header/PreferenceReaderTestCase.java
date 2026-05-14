@@ -1,38 +1,35 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.header;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Unit tests for the Preference related classes.
- * 
+ *
  * @author Jerome Louvel
  */
-public class PreferenceReaderTestCase {
+class PreferenceReaderTestCase {
     /**
      * Tests the parsing of a single preference header.
-     * 
-     * @param headerValue
-     *            The preference header.
+     *
+     * @param headerValue The preference header.
      */
     private void testMediaType(String headerValue, boolean testEquals) {
-        PreferenceReader<MediaType> pr = new PreferenceReader<>(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        PreferenceReader<MediaType> pr =
+                new PreferenceReader<>(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
         List<Preference<MediaType>> prefs = new ArrayList<>();
         pr.addValues(prefs);
 
@@ -40,8 +37,7 @@ public class PreferenceReaderTestCase {
         String newHeaderValue = PreferenceWriter.write(prefs);
 
         // Reread and rewrite the header (prevent formatting issues)
-        pr = new PreferenceReader<>(PreferenceReader.TYPE_MEDIA_TYPE,
-                headerValue);
+        pr = new PreferenceReader<>(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
         prefs = new ArrayList<>();
         pr.addValues(prefs);
         String newHeaderValue2 = PreferenceWriter.write(prefs);
@@ -52,11 +48,9 @@ public class PreferenceReaderTestCase {
         }
     }
 
-    /**
-     * Tests the preferences parsing.
-     */
+    /** Tests the preferences parsing. */
     @Test
-    public void testParsing() {
+    void testParsing() {
         testMediaType(
                 "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5",
                 true);
