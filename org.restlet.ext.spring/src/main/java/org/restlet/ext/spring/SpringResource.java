@@ -14,6 +14,8 @@ import java.util.Objects;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.springframework.core.io.AbstractResource;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Spring Resource based on a Restlet Representation. DON'T GET CONFUSED, Spring's notion of
@@ -23,7 +25,7 @@ import org.springframework.core.io.AbstractResource;
  */
 public class SpringResource extends AbstractResource {
     /** The description. */
-    private final String description;
+    @NonNull private final String description;
 
     /** Indicates if the representation has already been read. */
     private volatile boolean read = false;
@@ -46,7 +48,7 @@ public class SpringResource extends AbstractResource {
      * @param representation The description.
      * @param description The description.
      */
-    public SpringResource(Representation representation, String description) {
+    public SpringResource(Representation representation, @Nullable String description) {
         if (representation == null) {
             throw new IllegalArgumentException("Representation must not be null");
         }
@@ -57,7 +59,7 @@ public class SpringResource extends AbstractResource {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         }
@@ -79,6 +81,7 @@ public class SpringResource extends AbstractResource {
      * @return The description.
      */
     @Override
+    @NonNull
     public String getDescription() {
         return this.description;
     }
@@ -88,6 +91,7 @@ public class SpringResource extends AbstractResource {
      * multiple times.
      */
     @Override
+    @NonNull
     public InputStream getInputStream() throws IOException, IllegalStateException {
         if (this.read && this.representation.isTransient()) {
             throw new IllegalStateException(
@@ -95,7 +99,11 @@ public class SpringResource extends AbstractResource {
         }
 
         this.read = true;
-        return this.representation.getStream();
+        InputStream stream = this.representation.getStream();
+        if (stream == null) {
+            throw new IllegalStateException("representation stream");
+        }
+        return stream;
     }
 
     /** This implementation returns the hash code of the underlying InputStream. */

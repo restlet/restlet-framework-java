@@ -83,7 +83,7 @@ class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTes
         }
     }
 
-    public static class Contact extends LightContact implements Serializable {
+    public static class Contact extends LightContact {
 
         private Date birthDate;
 
@@ -113,7 +113,7 @@ class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTes
         }
     }
 
-    public static class FullContact extends Contact implements Serializable {
+    public static class FullContact extends Contact {
 
         private String address1;
 

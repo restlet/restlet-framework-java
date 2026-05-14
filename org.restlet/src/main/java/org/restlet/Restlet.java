@@ -138,6 +138,7 @@ public abstract class Restlet implements Uniform {
 
     /** Attempts to {@link #stop()} the Restlet if it is still started. */
     @Override
+    @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         if (isStarted()) {
             stop();

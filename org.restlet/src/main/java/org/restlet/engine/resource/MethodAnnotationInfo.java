@@ -301,7 +301,13 @@ public class MethodAnnotationInfo extends AnnotationInfo {
             final CharacterSet characterSet) {
         Variant variant;
         for (MediaType mediaType : mediaTypes) {
-            if ((result == null) || (!result.contains(mediaType))) {
+            boolean containsMediaType =
+                    result != null
+                            && result.stream()
+                                    .map(Variant::getMediaType)
+                                    .anyMatch(mediaType::equals);
+
+            if ((result == null) || !containsMediaType) {
                 if (result == null) {
                     result = new ArrayList<>();
                 }

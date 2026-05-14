@@ -15,6 +15,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 
 /**
  * An alternative to {@link SpringFinder} which uses Spring's BeanFactory mechanism to load a
@@ -54,7 +55,7 @@ public class SpringBeanFinder extends SpringFinder
      * @param beanFactory The Spring bean factory.
      * @param beanName The bean name.
      */
-    public SpringBeanFinder(Router router, BeanFactory beanFactory, String beanName) {
+    public SpringBeanFinder(Router router, @NonNull BeanFactory beanFactory, String beanName) {
         this.router = router;
         setBeanFactory(beanFactory);
         setBeanName(beanName);
@@ -63,10 +64,11 @@ public class SpringBeanFinder extends SpringFinder
     @Override
     public ServerResource create() {
         final Object resource = findBean();
+        String requiredBeanName = getRequiredBeanName();
 
         if (!(resource instanceof ServerResource)) {
             throw new ClassCastException(
-                    getBeanName()
+                    requiredBeanName
                             + " does not resolve to an instance of "
                             + org.restlet.resource.ServerResource.class.getName());
         }
@@ -75,18 +77,28 @@ public class SpringBeanFinder extends SpringFinder
     }
 
     private Object findBean() {
+        String requiredBeanName = getRequiredBeanName();
         if (getBeanFactory() == null && getApplicationContext() == null) {
             throw new IllegalStateException(
                     "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
         } else if (getApplicationContext() != null
-                && getApplicationContext().containsBean(getBeanName())) {
-            return getApplicationContext().getBean(getBeanName());
-        } else if (getBeanFactory() != null && getBeanFactory().containsBean(getBeanName())) {
-            return getBeanFactory().getBean(getBeanName());
+                && getApplicationContext().containsBean(requiredBeanName)) {
+            return getApplicationContext().getBean(requiredBeanName);
+        } else if (getBeanFactory() != null && getBeanFactory().containsBean(requiredBeanName)) {
+            return getBeanFactory().getBean(requiredBeanName);
         } else {
             throw new IllegalStateException(
-                    String.format("No bean named %s present.", getBeanName()));
+                    String.format("No bean named %s present.", requiredBeanName));
         }
+    }
+
+    @NonNull
+    private String getRequiredBeanName() {
+        String currentBeanName = getBeanName();
+        if (currentBeanName == null) {
+            throw new IllegalStateException("beanName");
+        }
+        return currentBeanName;
     }
 
     /**
@@ -135,7 +147,7 @@ public class SpringBeanFinder extends SpringFinder
      *
      * @param applicationContext The parent context.
      */
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
@@ -144,7 +156,7 @@ public class SpringBeanFinder extends SpringFinder
      *
      * @param beanFactory The parent bean factory.
      */
-    public void setBeanFactory(BeanFactory beanFactory) {
+    public void setBeanFactory(@NonNull BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
