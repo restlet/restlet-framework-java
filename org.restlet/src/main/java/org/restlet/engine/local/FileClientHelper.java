@@ -92,6 +92,8 @@ public class FileClientHelper extends EntityClientHelper {
     private static final String ERROR_MESSAGE_UNABLE_FILE_CREATION =
             "Unable to create the new file";
 
+    private static final String UPLOAD_TEMP_DIRECTORY_PREFIX = "restlet-upload-";
+
     /**
      * Constructor.
      *
@@ -534,7 +536,17 @@ public class FileClientHelper extends EntityClientHelper {
 
     /** Create a temporary file with private access rights. */
     private static File createPrivateTempFile() throws IOException {
-        Path temporaryFile = Files.createTempFile("restlet-upload", "bin");
+        Path temporaryDirectory = Files.createTempDirectory(UPLOAD_TEMP_DIRECTORY_PREFIX);
+
+        if (Files.getFileStore(temporaryDirectory).supportsFileAttributeView("posix")) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions(temporaryDirectory, perms);
+        }
+
+        Path temporaryFile = Files.createTempFile(temporaryDirectory, "restlet-upload", "bin");
 
         if (Files.getFileStore(temporaryFile).supportsFileAttributeView("posix")) {
             Set<PosixFilePermission> perms = new HashSet<>();
@@ -560,6 +572,7 @@ public class FileClientHelper extends EntityClientHelper {
 
         // Finally, move the temporary file to the existing file location
         if (tmp.renameTo(file)) {
+            cleanTemporaryDirectory(tmp);
             if (request.isEntityAvailable()) {
                 return SUCCESS_NO_CONTENT;
             }
@@ -575,6 +588,7 @@ public class FileClientHelper extends EntityClientHelper {
         }
         try {
             Files.move(tmp.toPath(), file.toPath(), REPLACE_EXISTING);
+            cleanTemporaryDirectory(tmp);
         } catch (IOException e) {
             return new Status(
                     SERVER_ERROR_INTERNAL,
@@ -631,6 +645,23 @@ public class FileClientHelper extends EntityClientHelper {
     private void cleanTemporaryFileIfUploadNotResumed(File tmp) {
         if (tmp != null && tmp.exists() && !isResumeUpload()) {
             IoUtils.delete(tmp);
+            cleanTemporaryDirectory(tmp);
+        }
+    }
+
+    private static void cleanTemporaryDirectory(File tmp) {
+        if (tmp == null) {
+            return;
+        }
+
+        File parent = tmp.getParentFile();
+        if (parent == null || !parent.getName().startsWith(UPLOAD_TEMP_DIRECTORY_PREFIX)) {
+            return;
+        }
+
+        String[] remainingEntries = parent.list();
+        if (remainingEntries != null && remainingEntries.length == 0) {
+            IoUtils.delete(parent);
         }
     }
 
