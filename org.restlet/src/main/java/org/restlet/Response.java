@@ -710,7 +710,6 @@ public class Response extends Message {
      * @param accessControlAllowOrigin The origin allowed by the requested resource.
      */
     public void setAccessControlAllowOrigin(String accessControlAllowOrigin) {
-        // TODO Add some input validation here.
         this.accessControlAllowOrigin = accessControlAllowOrigin;
     }
 

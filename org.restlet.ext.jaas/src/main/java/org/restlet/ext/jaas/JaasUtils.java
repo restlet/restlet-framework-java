@@ -74,6 +74,7 @@ public final class JaasUtils {
      * @param acc the AccessControlContext to be tied to the specified subject and action.
      * @return the value returned by the action.
      */
+    @SuppressWarnings("removal")
     public static <T> T doAsPriviledged(
             ClientInfo clientInfo, PrivilegedAction<T> action, AccessControlContext acc) {
         Subject subject = JaasUtils.createSubject(clientInfo);

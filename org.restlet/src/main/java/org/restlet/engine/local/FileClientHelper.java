@@ -33,9 +33,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -415,9 +413,8 @@ public class FileClientHelper extends EntityClientHelper {
 
         if (files != null && files.length > 0) {
             // Set the list of extensions, due to the file name and the default metadata.
-            // TODO It seems we could handle more clearly the equivalence
-            // between the file name space and the target resource (URI completed by default
-            // metadata)
+            // This compares the file-name metadata space with the target resource after
+            // default metadata has been applied to the URI.
             Variant variant = new Variant();
             Entity.updateMetadata(file.getName(), variant, false, getMetadataService());
             Collection<String> extensions = Entity.getExtensions(variant, getMetadataService());
@@ -537,9 +534,16 @@ public class FileClientHelper extends EntityClientHelper {
 
     /** Create a temporary file with private access rights. */
     private static File createPrivateTempFile() throws IOException {
-        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
-        FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-        return Files.createTempFile("restlet-upload", "bin", attr).toFile();
+        Path temporaryFile = Files.createTempFile("restlet-upload", "bin");
+
+        if (Files.getFileStore(temporaryFile).supportsFileAttributeView("posix")) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            Files.setPosixFilePermissions(temporaryFile, perms);
+        }
+
+        return temporaryFile.toFile();
     }
 
     private Status replaceFileByTemporaryFile(Request request, File file, File tmp) {

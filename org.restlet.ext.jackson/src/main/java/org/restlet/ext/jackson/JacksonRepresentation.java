@@ -232,7 +232,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             CsvSchema csvSchema = createCsvSchema(csvMapper);
             result = csvMapper.writer(csvSchema);
         } else {
-            result = getObjectMapper().writerWithType(getObjectClass());
+            result = getObjectMapper().writerFor(getObjectClass());
         }
 
         return result;

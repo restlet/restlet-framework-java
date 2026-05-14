@@ -19,6 +19,7 @@ import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.MultiPart;
 import org.eclipse.jetty.http.MultiPart.Part;
+import org.eclipse.jetty.io.ByteBufferPool;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.representation.MultiPartRepresentation;
@@ -37,7 +38,12 @@ class MultiPartRepresentationTestCase {
         Files.write(
                 textFilePath, "this is the content of the file".getBytes(StandardCharsets.UTF_8));
         MultiPart.PathPart filePart =
-                new MultiPart.PathPart("icon", "text.txt", HttpFields.EMPTY, textFilePath);
+                new MultiPart.PathPart(
+                        ByteBufferPool.SIZED_NON_POOLING,
+                        "icon",
+                        "text.txt",
+                        HttpFields.EMPTY,
+                        textFilePath);
 
         MultiPart.ContentSourcePart contentSourcePart =
                 new MultiPart.ContentSourcePart(

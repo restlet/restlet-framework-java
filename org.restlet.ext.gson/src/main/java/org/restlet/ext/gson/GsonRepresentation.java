@@ -110,7 +110,7 @@ public class GsonRepresentation<T> extends WriterRepresentation {
      */
     protected GsonBuilder createBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat(DateFormat.FULL);
+        gsonBuilder.setDateFormat(DateFormat.FULL, DateFormat.FULL);
         return gsonBuilder;
     }
 

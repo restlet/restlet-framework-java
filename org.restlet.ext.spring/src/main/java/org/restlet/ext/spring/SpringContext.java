@@ -111,6 +111,7 @@ public class SpringContext extends GenericApplicationContext {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void refresh() {
         // If this context hasn't been loaded yet, read all the configurations
         // registered

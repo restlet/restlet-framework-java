@@ -194,6 +194,7 @@ public abstract class ServerCall extends Call {
                     pbi.unread(next);
                     requestStream = pbi;
                 } else {
+                    pbi.close();
                     requestStream = null;
                 }
             } catch (IOException e) {
@@ -204,6 +205,8 @@ public abstract class ServerCall extends Call {
                 } catch (IOException e1) {
                     getLogger().fine("Unable to close request entity");
                 }
+
+                requestStream = null;
             }
         }
         return requestStream;

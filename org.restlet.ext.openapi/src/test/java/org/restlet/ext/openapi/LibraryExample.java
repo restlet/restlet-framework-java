@@ -24,7 +24,6 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
-@SuppressWarnings("unused")
 public class LibraryExample {
     private static final List<Book> BOOKS =
             List.of(
