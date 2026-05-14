@@ -147,21 +147,21 @@ class Slf4jLoggerTestCase {
 
     @Test
     void testLogRecord_withThrowable() {
-        LogRecord record = new LogRecord(Level.SEVERE, "test");
-        record.setThrown(new RuntimeException("test"));
-        assertDoesNotThrow(() -> logger.log(record));
+        LogRecord logRecord = new LogRecord(Level.SEVERE, "test");
+        logRecord.setThrown(new RuntimeException("test"));
+        assertDoesNotThrow(() -> logger.log(logRecord));
     }
 
     @Test
     void testLogRecord_withParams() {
-        LogRecord record = new LogRecord(Level.INFO, "test {} {}");
-        record.setParameters(new Object[] {"p1", "p2"});
-        assertDoesNotThrow(() -> logger.log(record));
+        LogRecord logRecord = new LogRecord(Level.INFO, "test {} {}");
+        logRecord.setParameters(new Object[] {"p1", "p2"});
+        assertDoesNotThrow(() -> logger.log(logRecord));
     }
 
     @Test
     void testLogRecord_simple() {
-        LogRecord record = new LogRecord(Level.WARNING, "simple message");
-        assertDoesNotThrow(() -> logger.log(record));
+        LogRecord logRecord = new LogRecord(Level.WARNING, "simple message");
+        assertDoesNotThrow(() -> logger.log(logRecord));
     }
 }
