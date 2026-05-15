@@ -2961,51 +2961,61 @@ public class Reference {
             throw new IllegalArgumentException("Invalid IPv6 address");
         }
 
-        // Only one "::" compression marker allowed.
-        int doubleColonCount = 0;
-        int idx = ipV6.indexOf("::");
-        while (idx != -1) {
-            doubleColonCount++;
-            idx = ipV6.indexOf("::", idx + 2);
-        }
+        int doubleColonCount = countDoubleColons(ipV6);
         if (doubleColonCount > 1) {
             throw new IllegalArgumentException("Invalid IPv6 address format");
         }
 
         String[] parts = ipV6.split(":", -1);
-        String lastPart = parts[parts.length - 1];
+        boolean hasIpV4Tail = parts[parts.length - 1].contains(".");
 
-        if (lastPart.contains(".")) {
-            // Mixed notation: last group is an embedded IPv4 address (RFC 4291 §2.2).
-            // The IPv4 part occupies 32 bits (= 2 hex group slots), so at most 6 hex groups remain.
-            validateIpV4(lastPart);
-            if (parts.length - 1 > 6) {
+        if (hasIpV4Tail) {
+            // Mixed notation (RFC 4291 §2.2): validate the IPv4 tail separately.
+            validateIpV4(parts[parts.length - 1]);
+        }
+
+        validateIpV6GroupCount(parts, doubleColonCount, hasIpV4Tail);
+
+        int hexPartCount = hasIpV4Tail ? parts.length - 1 : parts.length;
+        for (int i = 0; i < hexPartCount; i++) {
+            validateIpV6Part(parts[i], doubleColonCount);
+        }
+    }
+
+    /** Returns the number of "::" occurrences in the given IPv6 string. */
+    private int countDoubleColons(String ipV6) {
+        int count = 0;
+        int idx = ipV6.indexOf("::");
+        while (idx != -1) {
+            count++;
+            idx = ipV6.indexOf("::", idx + 2);
+        }
+        return count;
+    }
+
+    /**
+     * Validates the number of hex groups in an IPv6 address.
+     * Without "::" compression, exactly {@code maxHexGroups} groups are required.
+     * With "::", at most {@code maxHexGroups - 1} explicit groups are allowed.
+     */
+    private void validateIpV6GroupCount(
+            String[] parts, int doubleColonCount, boolean hasIpV4Tail) {
+        int maxHexGroups = hasIpV4Tail ? 6 : 8;
+        int hexPartCount = hasIpV4Tail ? parts.length - 1 : parts.length;
+
+        if (doubleColonCount == 0) {
+            if (hexPartCount != maxHexGroups) {
                 throw new IllegalArgumentException("Invalid IPv6 address format");
             }
-            for (int i = 0; i < parts.length - 1; i++) {
-                validateIpV6Part(parts[i], doubleColonCount);
-            }
         } else {
-            if (doubleColonCount == 0) {
-                // Without compression exactly 8 groups are required.
-                if (parts.length != 8) {
-                    throw new IllegalArgumentException("Invalid IPv6 address format");
-                }
-            } else {
-                // With ::, count non-empty parts (explicit groups).
-                // :: must expand to at least one slot, so at most 7 explicit groups are allowed.
-                int explicitGroups = 0;
-                for (String part : parts) {
-                    if (!part.isEmpty()) {
-                        explicitGroups++;
-                    }
-                }
-                if (explicitGroups > 7) {
-                    throw new IllegalArgumentException("Invalid IPv6 address format");
+            int explicitGroups = 0;
+            for (int i = 0; i < hexPartCount; i++) {
+                if (!parts[i].isEmpty()) {
+                    explicitGroups++;
                 }
             }
-            for (String part : parts) {
-                validateIpV6Part(part, doubleColonCount);
+            if (explicitGroups > maxHexGroups - 1) {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
             }
         }
     }
