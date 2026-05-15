@@ -11,15 +11,14 @@ package org.restlet.data;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import org.restlet.Context;
-import org.restlet.engine.util.StringUtils;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the java.net.URI class, this
  * interface represents mutable references. It strictly conforms to the RFC 3986 specifying URIs and
- * follow its naming conventions.<br>
+ * follows its naming conventions.<br>
  *
  * <pre>
  * URI reference        = absolute-reference | relative-reference
@@ -47,7 +46,7 @@ import org.restlet.engine.util.StringUtils;
  *
  * <p>The fundamental point to underline is the difference between a URI "reference" and a URI.
  * Contrary to a URI (the target identifier of a REST resource), a URI reference can be relative
- * (with or without query and fragment part). This relative URI reference can then be resolved
+ * (with or without a query and fragment part). This relative URI reference can then be resolved
  * against a base reference via the getTargetRef() method which will return a new resolved Reference
  * instance, an absolute URI reference with no base reference and with no dot-segments (the path
  * segments "." and "..").
@@ -84,6 +83,8 @@ public class Reference {
 
     /** Helps to map characters and their validity as URI characters. */
     private static final boolean[] charValidityMap = new boolean[127];
+
+    private static final Pattern SCHEME_REGEXP = Pattern.compile("[a-zA-Z][a-zA-Z0-9+-.]*");
 
     static {
         // Initialize the map of valid characters.
@@ -129,8 +130,11 @@ public class Reference {
             Context.getCurrentLogger()
                     .log(
                             Level.WARNING,
-                            "Unable to decode the string with the UTF-8 character set.",
-                            uee);
+                            uee,
+                            () ->
+                                    "Unable to decode the string with the "
+                                            + characterSet.getName()
+                                            + " character set.");
         }
 
         return result;
@@ -149,10 +153,10 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism and the UTF-8 character set.
      * Useful to prevent the usage of '+' to encode spaces (%20 instead). The '*' characters are
-     * encoded as %2A and %7E are replaced by '~'.
+     * encoded as '%2A', and '%7E' are replaced by '~'.
      *
      * @param toEncode The string to encode.
-     * @param queryString True if the string to encode is part of a query string instead of a HTML
+     * @param queryString True if the string to encode is part of a query string instead of an HTML
      *     form post.
      * @return The encoded string.
      */
@@ -163,10 +167,10 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism and the UTF-8 character set.
      * Useful to prevent the usage of '+' to encode spaces (%20 instead). The '*' characters are
-     * encoded as %2A and %7E are replaced by '~'.
+     * encoded as '%2A', and '%7E' are replaced by '~'.
      *
      * @param toEncode The string to encode.
-     * @param queryString True if the string to encode is part of a query string instead of a HTML
+     * @param queryString True if the string to encode is part of a query string instead of an HTML
      *     form post.
      * @param characterSet The supported character encoding.
      * @return The encoded string.
@@ -230,6 +234,18 @@ public class Reference {
      */
     private static boolean isDigit(int character) {
         return (character >= '0') && (character <= '9');
+    }
+
+    /**
+     * Indicates if the given character is a hexadecimal digit (0-9, a-f, A-F).
+     *
+     * @param character The character to test.
+     * @return True if the given character is a hexadecimal digit.
+     */
+    private static boolean isHexDigit(int character) {
+        return isDigit(character)
+                || (character >= 'a' && character <= 'f')
+                || (character >= 'A' && character <= 'F');
     }
 
     /**
@@ -652,6 +668,15 @@ public class Reference {
         return this;
     }
 
+    /**
+     * @deprecated Use the {@code copy} method instead.
+     */
+    @Override
+    @Deprecated(since = "2.7", forRemoval = true)
+    public Reference clone() {
+        return copy();
+    }
+
     public Reference copy() {
         final Reference newRef = new Reference();
 
@@ -677,93 +702,109 @@ public class Reference {
      * @return The original reference, eventually with invalid URI characters encoded.
      */
     private String encodeInvalidCharacters(String uriRef) throws IllegalArgumentException {
-        if (uriRef == null) {
-            return null;
-        }
+        String result = uriRef;
 
-        if (containsOnlyValidCharacters(uriRef)) {
-            return uriRef;
-        }
+        if (uriRef != null) {
+            boolean valid = true;
 
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < uriRef.length(); i++) {
-            final char character = uriRef.charAt(i);
-            if (isValid(character)) {
-                if ((character == '%') && (i > uriRef.length() - 2)) {
-                    sb.append("%25");
-                } else {
-                    sb.append(character);
+            // Ensure that all characters are valid, otherwise encode them
+            for (int i = 0; valid && (i < uriRef.length()); i++) {
+                char character = uriRef.charAt(i);
+                if (!isValid(character)) {
+                    valid = false;
+                    Context.getCurrentLogger()
+                            .log(
+                                    Level.FINE,
+                                    "Invalid character detected in URI reference at index \"{0}\": \"{1}\". It will be automatically encoded.",
+                                    new Object[] {i, character});
+                } else if ((character == '%') && (i > uriRef.length() - 2)) {
+                    // A percent encoding character has been detected but
+                    // without the necessary two hexadecimal digits following
+                    valid = false;
+                    Context.getCurrentLogger()
+                            .log(
+                                    Level.FINE,
+                                    "Invalid percent encoding detected in URI reference at index \"{0}\": \"{1}\". It will be automatically encoded.",
+                                    new Object[] {i, character});
                 }
-            } else {
-                sb.append(encode(String.valueOf(character)));
+            }
+
+            if (!valid) {
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; (i < uriRef.length()); i++) {
+                    if (isValid(uriRef.charAt(i))) {
+                        if ((uriRef.charAt(i) == '%') && (i > uriRef.length() - 2)) {
+                            sb.append("%25");
+                        } else {
+                            sb.append(uriRef.charAt(i));
+                        }
+                    } else {
+                        sb.append(encode(String.valueOf(uriRef.charAt(i))));
+                    }
+                }
+
+                result = sb.toString();
             }
         }
 
-        return sb.toString();
+        return result;
     }
 
-    private static boolean containsOnlyValidCharacters(final String uriRef) {
-        boolean valid = true;
-
-        // Ensure that all characters are valid, otherwise encode them
-        for (int i = 0; valid && (i < uriRef.length()); i++) {
-            final char character = uriRef.charAt(i);
-
-            if (!isValid(character)
-                    || ((character == '%')
-                            && (i
-                                    > uriRef.length()
-                                            - 2))) { // missing the 2 necessary trailing characters
-                valid = false;
-                Context.getCurrentLogger()
-                        .log(
-                                Level.FINE,
-                                "Invalid character \"{0}\" detected in URI at index {1} will be encoded.",
-                                new Object[] {character, i});
-            }
-        }
-        return valid;
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     *
+     * @param object The object to compare to.
+     * @return True if this object is the same as the obj argument.
+     */
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
+    public boolean equals(Object object) {
+        if (object instanceof Reference ref) {
+            if (this.internalRef == null) {
+                return ref.internalRef == null;
+            }
+            return this.internalRef.equals(ref.internalRef);
         }
-        if (!(obj instanceof Reference that)) {
-            return false;
-        }
-        return Objects.equals(this.internalRef, that.internalRef);
+
+        return false;
     }
 
     /**
      * Returns the authority component for hierarchical identifiers. Includes the user info, host
-     * name, and the host port number.<br>
-     * Note that this method does no URI decoding.
+     * name and the host port number.<br>
+     * Note that no URI decoding is done by this method.
      *
      * @return The authority component for hierarchical identifiers.
      */
     public String getAuthority() {
+        final String result;
+
         final String part = isRelative() ? getRelativePart() : getSchemeSpecificPart();
 
         if ((part != null) && part.startsWith("//")) {
-            int index = part.indexOf('/', 2);
+            // At this point, no fragment, but a query string may come from
+            // getSchemeSpecificPart()
+            int indexSlash = part.indexOf('/', 2);
+            int indexQuery = part.indexOf('?', 2);
 
-            if (index != -1) {
-                return part.substring(2, index);
+            if (indexSlash != -1) {
+                if (indexQuery != -1) {
+                    result = part.substring(2, Math.min(indexSlash, indexQuery));
+                } else {
+                    result = part.substring(2, indexSlash);
+                }
+            } else if (indexQuery != -1) {
+                result = part.substring(2, indexQuery);
+            } else {
+                result = part.substring(2);
             }
-
-            index = part.indexOf('?');
-            if (index != -1) {
-                return part.substring(2, index);
-            }
-
-            return part.substring(2);
+        } else {
+            result = null;
         }
 
-        return null;
+        validateAuthority(result);
+
+        return result;
     }
 
     /**
@@ -792,7 +833,7 @@ public class Reference {
      * the first '.' character of the last path segment and ends with either the end of the segment
      * of with the first ';' character (matrix start). It is a token similar to file extensions
      * separated by '.' characters. The value can be omitted.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The extensions or null.
      * @see #getExtensionsAsArray()
@@ -839,7 +880,7 @@ public class Reference {
 
     /**
      * Returns the fragment identifier.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The fragment identifier.
      */
@@ -866,7 +907,7 @@ public class Reference {
     /**
      * Returns the hierarchical part which is equivalent to the scheme-specific part less the query
      * component.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The hierarchical part.
      */
@@ -917,7 +958,7 @@ public class Reference {
     /**
      * Returns the host domain name component for server-based hierarchical identifiers. It can also
      * be replaced by an IP address when no domain name was registered.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The host domain name component for server-based hierarchical identifiers.
      */
@@ -969,9 +1010,8 @@ public class Reference {
     }
 
     /**
-     * Returns the host identifier. Includes the scheme, the host name, and the host port number.
-     * <br>
-     * Note that this method does no URI decoding.
+     * Returns the host identifier. Includes the scheme, the host name and the host port number.<br>
+     * Note that no URI decoding is done by this method.
      *
      * @return The host identifier.
      */
@@ -1009,15 +1049,7 @@ public class Reference {
             int index = authority.indexOf(':', (indexIPV6 == -1) ? indexUI : indexIPV6);
 
             if (index != -1) {
-                try {
-                    result = Integer.parseInt(authority.substring(index + 1));
-                } catch (NumberFormatException nfe) {
-                    Context.getCurrentLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "Can''t parse hostPort : [hostRef,requestUri]=[{0},{1}]",
-                                    new Object[] {getBaseRef(), this.internalRef});
-                }
+                result = Integer.parseInt(authority.substring(index + 1));
             }
         }
 
@@ -1026,7 +1058,7 @@ public class Reference {
 
     /**
      * Returns the absolute resource identifier, without the fragment.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The absolute resource identifier, without the fragment.
      */
@@ -1055,7 +1087,7 @@ public class Reference {
     /**
      * Returns the last segment of a hierarchical path.<br>
      * For example, the "/a/b/c" and "/a/b/c/" paths have the same segments: "a", "b", "c.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The last segment of a hierarchical path.
      */
@@ -1117,7 +1149,7 @@ public class Reference {
      * Returns the optional matrix for hierarchical identifiers. A matrix part starts after the
      * first ';' character of the last path segment. It is a sequence of 'name=value' parameters
      * separated by ';' characters. The value can be omitted.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The matrix or null.
      */
@@ -1203,45 +1235,53 @@ public class Reference {
     /**
      * Returns the path component for hierarchical identifiers. If no path is available, it returns
      * null.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The path component for hierarchical identifiers.
      */
     public String getPath() {
-        String result = null;
-        String part = isRelative() ? getRelativePart() : getSchemeSpecificPart();
+        final String result;
+        final String part = isRelative() ? getRelativePart() : getSchemeSpecificPart();
 
         if (part != null) {
             if (part.startsWith("//")) {
                 // Authority found
-                int index1 = part.indexOf('/', 2);
+                int indexSlash = part.indexOf('/', 2);
 
-                if (index1 != -1) {
+                if (indexSlash != -1) {
                     // Path found
-                    int index2 = part.indexOf('?');
+                    int indexQuery = part.indexOf('?', 2);
 
-                    if (index2 != -1) {
+                    if (indexQuery != -1) {
                         // Query found
-                        result = part.substring(Math.min(index1, index2), index2);
+                        if (indexSlash < indexQuery) {
+                            result = part.substring(indexSlash, indexQuery);
+                        } else {
+                            // '/' inside the query: No path found
+                            result = null;
+                        }
                     } else {
                         // No query found
-                        result = part.substring(index1);
+                        result = part.substring(indexSlash);
                     }
                 } else {
-                    // Path must be empty in this case
+                    // Path must be null in this case
+                    result = null;
                 }
             } else {
                 // No authority found
-                int index = part.indexOf('?');
+                int indexQuery = part.indexOf('?');
 
-                if (index != -1) {
+                if (indexQuery != -1) {
                     // Query found
-                    result = part.substring(0, index);
+                    result = part.substring(0, indexQuery);
                 } else {
                     // No query found
                     result = part;
                 }
             }
+        } else {
+            result = null;
         }
 
         return result;
@@ -1261,7 +1301,7 @@ public class Reference {
 
     /**
      * Returns the optional query component for hierarchical identifiers.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The query component or null.
      */
@@ -1270,7 +1310,7 @@ public class Reference {
             // Query found
             if (hasFragment()) {
                 if (this.queryIndex < this.fragmentIndex) {
-                    // Fragment found and query sign not inside fragment
+                    // Fragment found and query sign not inside the fragment
                     return this.internalRef.substring(this.queryIndex + 1, this.fragmentIndex);
                 }
 
@@ -1329,7 +1369,7 @@ public class Reference {
     /**
      * Returns the relative part of relative references, without the query and fragment. If the
      * reference is absolute, then null is returned.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The relative part.
      */
@@ -1366,9 +1406,9 @@ public class Reference {
      * invoked for absolute references, otherwise an IllegalArgumentException will be raised.
      *
      * @param base The base reference to use.
-     * @return The current reference relatively to a base reference.
      * @throws IllegalArgumentException If the relative reference is computed, although the
      *     reference or the base reference are not absolute or not hierarchical.
+     * @return The current reference relatively to a base reference.
      */
     public Reference getRelativeRef(Reference base) {
         Reference result = null;
@@ -1414,7 +1454,7 @@ public class Reference {
                         // Both paths are strictly equivalent
                         relativePath = ".";
                     } else if (i == localPath.length()) {
-                        // End of local path reached
+                        // End of a local path reached
                         if (basePath.charAt(i) == '/') {
                             if ((i + 1) == basePath.length()) {
                                 // Both paths are strictly equivalent
@@ -1433,7 +1473,7 @@ public class Reference {
                                         j = basePath.indexOf('/', j + 1)) segments++;
 
                                 // Build relative path
-                                sb.repeat("../", Math.max(0, segments));
+                                for (int j = 0; j < segments; j++) sb.append("../");
 
                                 int lastLocalSlash = localPath.lastIndexOf('/');
                                 sb.append(localPath.substring(lastLocalSlash + 1));
@@ -1441,8 +1481,9 @@ public class Reference {
                                 relativePath = sb.toString();
                             }
                         } else {
-                            // The base path has a segment that starts like the last local path
-                            // segment, but that is longer. Situation similar to a junction
+                            // The base path has a segment that starts like
+                            // the last local path segment, but that is longer.
+                            // Situation similar to a junction
                             final StringBuilder sb = new StringBuilder();
 
                             // Count segments
@@ -1495,7 +1536,7 @@ public class Reference {
                             j = basePath.indexOf('/', j + 1)) segments++;
 
                     // Build relative path
-                    sb.repeat("../", Math.max(0, segments));
+                    for (int j = 0; j < segments; j++) sb.append("../");
 
                     sb.append(localPath.substring(lastSlashIndex + 1));
 
@@ -1528,8 +1569,8 @@ public class Reference {
     }
 
     /**
-     * Returns the part of the resource identifier remaining after the base reference. Note that
-     * this method does not return the optional fragment. Must be used with the following
+     * Returns the part of the resource identifier remaining after the base reference. Note that the
+     * optional fragment is not returned by this method. Must be used with the following
      * prerequisites:
      *
      * <ul>
@@ -1538,9 +1579,9 @@ public class Reference {
      * </ul>
      *
      * <br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
-     * @return The remaining resource parts or null if the prerequisites are not satisfied.
+     * @return The remaining resource part or null if the prerequisites are not satisfied.
      * @see #getRemainingPart(boolean)
      */
     public String getRemainingPart() {
@@ -1588,14 +1629,16 @@ public class Reference {
 
     /**
      * Returns the scheme component.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The scheme component.
      */
     public String getScheme() {
         if (hasScheme()) {
             // Scheme found
-            return this.internalRef.substring(0, this.schemeIndex);
+            final String scheme = this.internalRef.substring(0, this.schemeIndex);
+            validateScheme(scheme);
+            return scheme;
         }
 
         // No scheme found
@@ -1661,46 +1704,44 @@ public class Reference {
     /**
      * Returns the list of segments in a hierarchical path.<br>
      * A new list is created for each call.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The segments of a hierarchical path.
      */
     public List<String> getSegments() {
-        final String path = getPath();
-        if (StringUtils.isNullOrEmpty(path)) {
-            return new ArrayList<>();
-        }
-
         final List<String> result = new ArrayList<>();
+        final String path = getPath();
         int start = -2; // The index of the slash starting the segment
         char current;
 
-        for (int i = 0; i < path.length(); i++) {
-            current = path.charAt(i);
+        if (path != null) {
+            for (int i = 0; i < path.length(); i++) {
+                current = path.charAt(i);
 
-            if (current == '/') {
-                if (start == -2) {
-                    // Beginning of an absolute path or sequence of two
-                    // separators
-                    start = i;
+                if (current == '/') {
+                    if (start == -2) {
+                        // Beginning of an absolute path or sequence of two
+                        // separators
+                        start = i;
+                    } else {
+                        // End of a segment
+                        result.add(path.substring(start + 1, i));
+                        start = i;
+                    }
                 } else {
-                    // End of a segment
-                    result.add(path.substring(start + 1, i));
-                    start = i;
-                }
-            } else {
-                if (start == -2) {
-                    // Starting a new segment for a relative path
-                    start = -1;
-                } else {
-                    // Looking for the next character
+                    if (start == -2) {
+                        // Starting a new segment for a relative path
+                        start = -1;
+                    } else {
+                        // Looking for the next character
+                    }
                 }
             }
-        }
 
-        if (start != -2) {
-            // Add the last segment
-            result.add(path.substring(start + 1));
+            if (start != -2) {
+                // Add the last segment
+                result.add(path.substring(start + 1));
+            }
         }
 
         return result;
@@ -1718,9 +1759,7 @@ public class Reference {
         final List<String> result = getSegments();
 
         if (decode) {
-            for (int i = 0; i < result.size(); i++) {
-                result.set(i, decode(result.get(i)));
-            }
+            result.replaceAll(Reference::decode);
         }
 
         return result;
@@ -1730,17 +1769,17 @@ public class Reference {
      * Returns the target reference. This method resolves relative references against the base
      * reference, then normalizes them.
      *
-     * @return The target reference.
      * @throws IllegalArgumentException If the base reference (after resolution) is not absolute.
      * @throws IllegalArgumentException If the reference is relative and not base reference has been
      *     provided.
+     * @return The target reference.
      */
     public Reference getTargetRef() {
-        Reference result = null;
+        final Reference result;
 
         // Step 1 - Resolve relative reference against their base reference
         if (isRelative() && (this.baseRef != null)) {
-            final Reference baseReference;
+            Reference baseReference = null;
 
             if (this.baseRef.isAbsolute()) {
                 baseReference = this.baseRef;
@@ -1824,7 +1863,7 @@ public class Reference {
 
     /**
      * Returns the user info component for server-based hierarchical identifiers.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @return The user info component for server-based hierarchical identifiers.
      */
@@ -1858,13 +1897,13 @@ public class Reference {
     /**
      * Indicates if this reference has file-like extensions on its last path segment.
      *
-     * @return True if there is are extensions.
+     * @return True if there are extensions.
      * @see #getExtensions()
      */
     public boolean hasExtensions() {
         boolean result = false;
 
-        // If this reference ends with a "/", it cannot be a file.
+        // If these references end with a "/", it cannot be a file.
         final String path = getPath();
         if (!((path != null) && path.endsWith("/"))) {
             final String lastSegment = getLastSegment();
@@ -1993,7 +2032,7 @@ public class Reference {
 
     /**
      * Normalizes the reference. Useful before comparison between references or when building a
-     * target reference from a base and a relative reference.
+     * target reference from a base reference and a relative reference.
      *
      * @return The current reference.
      */
@@ -2011,7 +2050,7 @@ public class Reference {
         // 2. While the input buffer is not empty, the loop is as follows:
         while (!input.isEmpty()) {
             // A. If the input buffer begins with a prefix of "../" or "./",
-            // then remove that prefix from the input buffer.
+            // then remove that prefix from the input buffer; otherwise.
             if ((input.length() >= 3) && input.substring(0, 3).equals("../")) {
                 input.delete(0, 3);
             } else if ((input.length() >= 2) && input.substring(0, 2).equals("./")) {
@@ -2049,7 +2088,7 @@ public class Reference {
 
             // E. move the first path segment in the input buffer to the end of
             // the output buffer, including the initial "/" character (if any)
-            // and any later characters up to, but not including, the next
+            // and any subsequent characters up to, but not including, the next
             // "/" character or the end of the input buffer.
             else {
                 int max = -1;
@@ -2074,7 +2113,7 @@ public class Reference {
         // Finally, the output buffer is returned as the result
         setPath(output.toString());
 
-        // Ensure that the scheme and host names are reset in lower case
+        // Ensure that the scheme and host names are reset in the lower case
         setScheme(getScheme());
         setHostDomain(getHostDomain());
 
@@ -2120,23 +2159,25 @@ public class Reference {
      */
     public void setAuthority(String authority) {
         final String oldPart = isRelative() ? getRelativePart() : getSchemeSpecificPart();
-        String newPart;
+        final String newPart;
         final String newAuthority = (authority == null) ? "" : "//" + authority;
 
         if (oldPart == null) {
             newPart = newAuthority;
         } else if (oldPart.startsWith("//")) {
-            int index = oldPart.indexOf('/', 2);
+            int indexSlash = oldPart.indexOf('/', 2);
+            int indexQuery = oldPart.indexOf('?', 2);
 
-            if (index != -1) {
-                newPart = newAuthority + oldPart.substring(index);
-            } else {
-                index = oldPart.indexOf('?');
-                if (index != -1) {
-                    newPart = newAuthority + oldPart.substring(index);
+            if (indexSlash != -1) {
+                if (indexQuery != -1) {
+                    newPart = newAuthority + oldPart.substring(Math.min(indexSlash, indexQuery));
                 } else {
-                    newPart = newAuthority;
+                    newPart = newAuthority + oldPart.substring(indexSlash);
                 }
+            } else if (indexQuery != -1) {
+                newPart = newAuthority + oldPart.substring(indexQuery);
+            } else {
+                newPart = newAuthority;
             }
         } else {
             newPart = newAuthority + oldPart;
@@ -2172,7 +2213,7 @@ public class Reference {
      * '.' character of the last path segment and ends with either the end of the segment of with
      * the first ';' character (matrix start). It is a token similar to file extensions separated by
      * '.' characters. The value can be omitted.<br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @param extensions The extensions to set or null (without leading or trailing dots).
      * @see #getExtensions()
@@ -2182,9 +2223,7 @@ public class Reference {
     public void setExtensions(String extensions) {
         final String lastSegment = getLastSegment();
 
-        if (lastSegment == null) {
-            setLastSegment('.' + extensions);
-        } else {
+        if (lastSegment != null) {
             final int extensionIndex = lastSegment.indexOf('.');
             final int matrixIndex = lastSegment.indexOf(';');
             final StringBuilder sb = new StringBuilder();
@@ -2220,8 +2259,10 @@ public class Reference {
                 }
             }
 
-            // Finally update the last segment
+            // Finally, update the last segment
             setLastSegment(sb.toString());
+        } else {
+            setLastSegment('.' + extensions);
         }
     }
 
@@ -2270,17 +2311,17 @@ public class Reference {
         if (hasFragment()) {
             // Existing fragment
             if (fragment != null) {
-                this.internalRef = this.internalRef.substring(0, this.fragmentIndex + 1) + fragment;
+                setInternalRef(this.internalRef.substring(0, this.fragmentIndex + 1) + fragment);
             } else {
-                this.internalRef = this.internalRef.substring(0, this.fragmentIndex);
+                setInternalRef(this.internalRef.substring(0, this.fragmentIndex));
             }
         } else {
             // No existing fragment
             if (fragment != null) {
                 if (this.internalRef != null) {
-                    this.internalRef = this.internalRef + '#' + fragment;
+                    setInternalRef(this.internalRef + '#' + fragment);
                 } else {
-                    this.internalRef = '#' + fragment;
+                    setInternalRef('#' + fragment);
                 }
             } else {
                 // Do nothing
@@ -2305,7 +2346,7 @@ public class Reference {
                 domain = "";
             } else {
                 // URI specification indicates that host names should be
-                // produced in lower case
+                // produced in the lower case
                 domain = domain.toLowerCase();
             }
 
@@ -2400,7 +2441,7 @@ public class Reference {
     /**
      * Sets the last segment of the path. If no path is available, then it creates one and adds a
      * slash in front of the given last segment. <br>
-     * Note that this method does no URI decoding.
+     * Note that no URI decoding is done by this method.
      *
      * @param lastSegment The last segment of a hierarchical path.
      */
@@ -2426,7 +2467,7 @@ public class Reference {
      */
     public void setPath(String path) {
         final String oldPart = isRelative() ? getRelativePart() : getSchemeSpecificPart();
-        String newPart = null;
+        final String newPart;
 
         if (oldPart != null) {
             if (path == null) {
@@ -2435,26 +2476,36 @@ public class Reference {
 
             if (oldPart.startsWith("//")) {
                 // Authority found
-                final int index1 = oldPart.indexOf('/', 2);
+                final int indexSlash = oldPart.indexOf('/', 2);
+                final int indexQuery = oldPart.indexOf('?', 2);
 
-                if (index1 != -1) {
-                    // Path found
-                    final int index2 = oldPart.indexOf('?');
-
-                    if (index2 != -1) {
+                if (indexSlash != -1) {
+                    if (indexQuery != -1) {
                         // Query found
-                        newPart = oldPart.substring(0, index1) + path + oldPart.substring(index2);
+                        if (indexSlash < indexQuery) {
+                            newPart =
+                                    oldPart.substring(0, indexSlash)
+                                            + path
+                                            + oldPart.substring(indexQuery);
+                        } else {
+                            // '/' inside the query string: no path found
+                            newPart =
+                                    oldPart.substring(0, indexQuery)
+                                            + path
+                                            + oldPart.substring(indexQuery);
+                        }
                     } else {
                         // No query found
-                        newPart = oldPart.substring(0, index1) + path;
+                        newPart = oldPart.substring(0, indexSlash) + path;
                     }
                 } else {
                     // No path found
-                    final int index2 = oldPart.indexOf('?');
-
-                    if (index2 != -1) {
+                    if (indexQuery != -1) {
                         // Query found
-                        newPart = oldPart.substring(0, index2) + path + oldPart.substring(index2);
+                        newPart =
+                                oldPart.substring(0, indexQuery)
+                                        + path
+                                        + oldPart.substring(indexQuery);
                     } else {
                         // No query found
                         newPart = oldPart + path;
@@ -2462,11 +2513,11 @@ public class Reference {
                 }
             } else {
                 // No authority found
-                final int index = oldPart.indexOf('?');
+                final int indexQuery = oldPart.indexOf('?');
 
-                if (index != -1) {
+                if (indexQuery != -1) {
                     // Query found
-                    newPart = path + oldPart.substring(index);
+                    newPart = path + oldPart.substring(indexQuery);
                 } else {
                     // No query found
                     newPart = path;
@@ -2506,21 +2557,21 @@ public class Reference {
             if (hasFragment()) {
                 // Fragment found
                 if (!emptyQueryString) {
-                    this.internalRef =
+                    setInternalRef(
                             this.internalRef.substring(0, this.queryIndex + 1)
                                     + query
-                                    + this.internalRef.substring(this.fragmentIndex);
+                                    + this.internalRef.substring(this.fragmentIndex));
                 } else {
-                    this.internalRef =
+                    setInternalRef(
                             this.internalRef.substring(0, this.queryIndex)
-                                    + this.internalRef.substring(this.fragmentIndex);
+                                    + this.internalRef.substring(this.fragmentIndex));
                 }
             } else {
                 // No fragment found
                 if (!emptyQueryString) {
-                    this.internalRef = this.internalRef.substring(0, this.queryIndex + 1) + query;
+                    setInternalRef(this.internalRef.substring(0, this.queryIndex + 1) + query);
                 } else {
-                    this.internalRef = this.internalRef.substring(0, this.queryIndex);
+                    setInternalRef(this.internalRef.substring(0, this.queryIndex));
                 }
             }
         } else {
@@ -2528,24 +2579,24 @@ public class Reference {
             if (hasFragment()) {
                 // Fragment found
                 if (!emptyQueryString) {
-                    this.internalRef =
+                    setInternalRef(
                             this.internalRef.substring(0, this.fragmentIndex)
                                     + '?'
                                     + query
-                                    + this.internalRef.substring(this.fragmentIndex);
+                                    + this.internalRef.substring(this.fragmentIndex));
                 } else {
-                    // Do nothing;
+                    // Do nothing
                 }
             } else {
                 // No fragment found
                 if (!emptyQueryString) {
                     if (this.internalRef != null) {
-                        this.internalRef = this.internalRef + '?' + query;
+                        setInternalRef(this.internalRef + '?' + query);
                     } else {
-                        this.internalRef = '?' + query;
+                        setInternalRef('?' + query);
                     }
                 } else {
-                    // Do nothing;
+                    // Do nothing
                 }
             }
         }
@@ -2569,13 +2620,13 @@ public class Reference {
             // This is a relative reference, no scheme found
             if (hasQuery()) {
                 // Query found
-                this.internalRef = relativePart + this.internalRef.substring(this.queryIndex);
+                setInternalRef(relativePart + this.internalRef.substring(this.queryIndex));
             } else if (hasFragment()) {
                 // Fragment found
-                this.internalRef = relativePart + this.internalRef.substring(this.fragmentIndex);
+                setInternalRef(relativePart + this.internalRef.substring(this.fragmentIndex));
             } else {
                 // No fragment found
-                this.internalRef = relativePart;
+                setInternalRef(relativePart);
             }
         }
 
@@ -2599,17 +2650,17 @@ public class Reference {
         if (hasScheme()) {
             // Scheme found
             if (scheme != null) {
-                this.internalRef = scheme + this.internalRef.substring(this.schemeIndex);
+                setInternalRef(scheme + this.internalRef.substring(this.schemeIndex));
             } else {
-                this.internalRef = this.internalRef.substring(this.schemeIndex + 1);
+                setInternalRef(this.internalRef.substring(this.schemeIndex + 1));
             }
         } else {
             // No scheme found
             if (scheme != null) {
                 if (this.internalRef == null) {
-                    this.internalRef = scheme + ':';
+                    setInternalRef(scheme + ':');
                 } else {
-                    this.internalRef = scheme + ':' + this.internalRef;
+                    setInternalRef(scheme + ':' + this.internalRef);
                 }
             }
         }
@@ -2633,24 +2684,23 @@ public class Reference {
             // Scheme found
             if (hasFragment()) {
                 // Fragment found
-                this.internalRef =
+                setInternalRef(
                         this.internalRef.substring(0, this.schemeIndex + 1)
                                 + schemeSpecificPart
-                                + this.internalRef.substring(this.fragmentIndex);
+                                + this.internalRef.substring(this.fragmentIndex));
             } else {
                 // No fragment found
-                this.internalRef =
-                        this.internalRef.substring(0, this.schemeIndex + 1) + schemeSpecificPart;
+                setInternalRef(
+                        this.internalRef.substring(0, this.schemeIndex + 1) + schemeSpecificPart);
             }
         } else {
             // No scheme found
             if (hasFragment()) {
                 // Fragment found
-                this.internalRef =
-                        schemeSpecificPart + this.internalRef.substring(this.fragmentIndex);
+                setInternalRef(schemeSpecificPart + this.internalRef.substring(this.fragmentIndex));
             } else {
                 // No fragment found
-                this.internalRef = schemeSpecificPart;
+                setInternalRef(schemeSpecificPart);
             }
         }
 
@@ -2773,15 +2823,11 @@ public class Reference {
      * @return A {@link java.net.URL} instance.
      */
     public java.net.URL toUrl() {
-        java.net.URL result = null;
-
         try {
-            result = toUri().toURL();
+            return toUri().toURL();
         } catch (java.net.MalformedURLException e) {
             throw new IllegalArgumentException("Malformed URL exception", e);
         }
-
-        return result;
     }
 
     /** Updates internal indexes. */
@@ -2789,27 +2835,29 @@ public class Reference {
         if (this.internalRef != null) {
             // Compute the indexes
             final int firstSlashIndex = this.internalRef.indexOf('/');
-            this.schemeIndex = this.internalRef.indexOf(':');
+            final int firstColonIndex = this.internalRef.indexOf(':');
 
-            if ((firstSlashIndex != -1) && (this.schemeIndex > firstSlashIndex)) {
+            if ((firstSlashIndex != -1) && (firstColonIndex > firstSlashIndex)) {
                 // We are in the rare case of a relative reference where one of
                 // the path segments contains a colon character. In this case,
                 // we ignore the colon as a valid scheme index.
                 // Note that this colon can't be in the first segment as it is
                 // forbidden by the URI RFC.
                 this.schemeIndex = -1;
+            } else {
+                this.schemeIndex = firstColonIndex;
             }
 
             this.queryIndex = this.internalRef.indexOf('?');
             this.fragmentIndex = this.internalRef.indexOf('#');
 
             if (hasQuery() && hasFragment() && (this.queryIndex > this.fragmentIndex)) {
-                // Query sign inside the fragment
+                // Query sign inside a fragment
                 this.queryIndex = -1;
             }
 
             if (hasQuery() && this.schemeIndex > this.queryIndex) {
-                // Colon sign inside the query
+                // Colon sign inside a query
                 this.schemeIndex = -1;
             }
 
@@ -2822,5 +2870,210 @@ public class Reference {
             this.queryIndex = -1;
             this.fragmentIndex = -1;
         }
+    }
+
+    /**
+     * Validate an authority according to RFC 3986.
+     *
+     * @param authority The authority to validate.
+     */
+    private void validateAuthority(String authority) {
+        if (authority == null) {
+            return;
+        }
+
+        authority = validateUserInfoAndReturnRemaining(authority);
+        authority = validateIpV6AndReturnRemaining(authority);
+
+        int portIndex = authority.indexOf(':');
+        if (portIndex != -1) {
+            validateHostPort(authority.substring(portIndex + 1));
+        }
+    }
+
+    /**
+     * Validate the user info part of the authority, and return the remaining part of the authority.
+     */
+    private String validateUserInfoAndReturnRemaining(final String authority) {
+        int atIndex = authority.indexOf('@');
+
+        if (atIndex != -1) {
+            if (authority.indexOf('@', atIndex + 1) != -1) {
+                throw new IllegalArgumentException(
+                        "Invalid authority format: multiple '@' signs in userinfo");
+            }
+
+            final int ipV6StartIndex = authority.indexOf('[');
+
+            if (ipV6StartIndex != -1 && ipV6StartIndex < atIndex) {
+                throw new IllegalArgumentException("Invalid authority format");
+            }
+
+            return authority.substring(atIndex + 1);
+        }
+
+        return authority;
+    }
+
+    /**
+     * Validate an host port.
+     *
+     * @param hostPort The port to validate.
+     */
+    private void validateHostPort(final String hostPort) {
+        if (hostPort != null) {
+            try {
+                Integer.parseInt(hostPort);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid port number format");
+            }
+        }
+    }
+
+    private String validateIpV6AndReturnRemaining(String authority) {
+        int ipV6StartIndex = authority.indexOf('[');
+        int ipV6EndIndex = authority.indexOf(']');
+
+        if (ipV6StartIndex > 0) {
+            throw new IllegalArgumentException(
+                    "Invalid IPv6 address format: unexpected character before opening bracket");
+        }
+        if (ipV6StartIndex == -1) {
+            return authority;
+        }
+
+        if (ipV6EndIndex == -1) {
+            throw new IllegalArgumentException("Invalid IPv6 address format: no closing bracket");
+        }
+        validateIpV6(authority.substring(1, ipV6EndIndex)); // trim brackets
+
+        if (ipV6EndIndex + 1 < authority.length() && (authority.charAt(ipV6EndIndex + 1) != ':')) {
+            throw new IllegalArgumentException(
+                    "Invalid authority format: unexpected character after closing bracket");
+        }
+
+        return authority.substring(ipV6EndIndex + 1);
+    }
+
+    /** Validate an IPv6 address according to RFC 4291, including mixed IPv4 tail notation. */
+    private void validateIpV6(String ipV6) {
+        if (ipV6 == null || ipV6.isEmpty()) {
+            throw new IllegalArgumentException("Invalid IPv6 address");
+        }
+
+        // Only one "::" compression marker allowed.
+        int doubleColonCount = 0;
+        int idx = ipV6.indexOf("::");
+        while (idx != -1) {
+            doubleColonCount++;
+            idx = ipV6.indexOf("::", idx + 2);
+        }
+        if (doubleColonCount > 1) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        }
+
+        String[] parts = ipV6.split(":", -1);
+        String lastPart = parts[parts.length - 1];
+
+        if (lastPart.contains(".")) {
+            // Mixed notation: last group is an embedded IPv4 address (RFC 4291 §2.2).
+            // The IPv4 part occupies 32 bits (= 2 hex group slots), so at most 6 hex groups remain.
+            validateIpV4(lastPart);
+            if (parts.length - 1 > 6) {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
+            }
+            for (int i = 0; i < parts.length - 1; i++) {
+                validateIpV6Part(parts[i], doubleColonCount);
+            }
+        } else {
+            if (doubleColonCount == 0) {
+                // Without compression exactly 8 groups are required.
+                if (parts.length != 8) {
+                    throw new IllegalArgumentException("Invalid IPv6 address format");
+                }
+            } else {
+                // With ::, count non-empty parts (explicit groups).
+                // :: must expand to at least one slot, so at most 7 explicit groups are allowed.
+                int explicitGroups = 0;
+                for (String part : parts) {
+                    if (!part.isEmpty()) {
+                        explicitGroups++;
+                    }
+                }
+                if (explicitGroups > 7) {
+                    throw new IllegalArgumentException("Invalid IPv6 address format");
+                }
+            }
+            for (String part : parts) {
+                validateIpV6Part(part, doubleColonCount);
+            }
+        }
+    }
+
+    /** Validate a single hex group of an IPv6 address. */
+    private void validateIpV6Part(final String part, final int doubleColonCount) {
+        if (part.isEmpty() && doubleColonCount == 0) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        }
+        if (!part.isEmpty()) {
+            if (part.length() > 4) {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
+            }
+            for (char c : part.toCharArray()) {
+                if (!isHexDigit(c)) {
+                    throw new IllegalArgumentException("Invalid IPv6 address format");
+                }
+            }
+        }
+    }
+
+    /** Validate an embedded IPv4 address: four decimal octets each in [0, 255]. */
+    private void validateIpV4(final String ipV4) {
+        String[] octets = ipV4.split("\\.", -1);
+        if (octets.length != 4) {
+            throw new IllegalArgumentException("Invalid embedded IPv4 address format");
+        }
+        for (String octet : octets) {
+            if (octet.isEmpty()) {
+                throw new IllegalArgumentException("Invalid embedded IPv4 address format");
+            }
+            if (octet.length() > 1 && octet.charAt(0) == '0') {
+                throw new IllegalArgumentException(
+                        "Invalid embedded IPv4 address format: leading zero in octet");
+            }
+            try {
+                int value = Integer.parseInt(octet);
+                if (value < 0 || value > 255) {
+                    throw new IllegalArgumentException(
+                            "Invalid embedded IPv4 address format: octet out of range");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid embedded IPv4 address format");
+            }
+        }
+    }
+
+    /**
+     * Validate a scheme according to RFC 3986.
+     *
+     * @param scheme The scheme to validate.
+     */
+    private void validateScheme(final String scheme) {
+        if (scheme == null || scheme.isEmpty()) {
+            return;
+        }
+
+        if (!SCHEME_REGEXP.matcher(scheme).matches()) {
+            throw new IllegalArgumentException("Invalid scheme format");
+        }
+    }
+
+    /**
+     * Tackle non-atomic operation on volatile field 'internalRef'.
+     *
+     * @param internalRef The new value of field 'internalRef'.
+     */
+    private void setInternalRef(final String internalRef) {
+        this.internalRef = internalRef;
     }
 }

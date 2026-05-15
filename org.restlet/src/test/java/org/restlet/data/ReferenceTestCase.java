@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ class ReferenceTestCase {
 
     protected static final String DEFAULT_SCHEME = "http";
 
-    protected static final String DEFAULT_SCHEME_PART = "//";
+    protected static final String DEFAULT_SCHEMEPART = "//";
 
     /**
      * Returns a reference initialized with http://restlet.org.
@@ -50,7 +51,7 @@ class ReferenceTestCase {
     protected Reference getReference() {
         final Reference ref = new Reference();
         ref.setScheme(DEFAULT_SCHEME);
-        ref.setSchemeSpecificPart(DEFAULT_SCHEME_PART);
+        ref.setSchemeSpecificPart(DEFAULT_SCHEMEPART);
         return ref;
     }
 
@@ -124,7 +125,8 @@ class ReferenceTestCase {
         "http://localhost/abc#fragment,/def",
         "http://localhost/abc?query#fragment,/def",
         "http://localhost/abc#fragment?query,/def",
-        "http://localhost#fragment/abc?query,/def"
+        "http://localhost#fragment/abc?query,/def",
+        "http://localhost?query/abc,/def"
     })
     void testSetPath(String reference, String path) {
         final Reference ref = new Reference(reference);
@@ -227,215 +229,6 @@ class ReferenceTestCase {
         baseRef = new Reference("/foo/bar");
         parentRef = baseRef.getParentRef();
         assertEquals("/foo/", parentRef.toString());
-    }
-
-    /** Test port getting/setting. */
-    @ParameterizedTest
-    @ValueSource(ints = {8080, 9090})
-    void testPort(int port) {
-        Reference ref = getDefaultReference();
-        ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort());
-    }
-
-    @Test
-    void testPortIPv6() {
-        Reference ref = new Reference("http://[::1]:8182");
-        assertEquals(8182, ref.getHostPort());
-    }
-
-    @Test
-    void testProtocolConstructors() {
-        assertEquals("http://restlet.org", new Reference(Protocol.HTTP, "restlet.org").toString());
-        assertEquals(
-                "https://restlet.org:8443",
-                new Reference(Protocol.HTTPS, "restlet.org", 8443).toString());
-
-        final Reference ref = new Reference(Protocol.HTTP, "restlet.org");
-        ref.addQueryParameter("abc", "123");
-        assertEquals("http://restlet.org?abc=123", ref.toString());
-    }
-
-    @Test
-    void testQuery() {
-
-        Reference ref1 = new Reference("http://localhost/search?q=anythingelse%");
-        String query = ref1.getQuery();
-        assertEquals("q=anythingelse%25", query);
-
-        Form queryForm = ref1.getQueryAsForm();
-        assertEquals("anythingelse%", queryForm.getFirstValue("q"));
-
-        Form extJsQuery = new Form("&_dc=1244741620627&callback=stcCallback1001");
-        assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
-        assertEquals("stcCallback1001", extJsQuery.getFirstValue("callback"));
-
-        Reference ref = new Reference("http://localhost/v1/projects/13404");
-        ref.addQueryParameter("dyn", "true");
-        assertEquals("http://localhost/v1/projects/13404?dyn=true", ref.toString());
-    }
-
-    @Test
-    void testQueryWithUri() {
-        Reference ref =
-                new Reference(
-                        new Reference("http://localhost:8111/"),
-                        "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
-        assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef().toString());
-    }
-
-    @Test
-    void testRiap() {
-        Reference baseRef = new Reference("riap://component/exist/db/");
-        Reference ref = new Reference(baseRef, "something.xq");
-        assertEquals("riap://component/exist/db/something.xq", ref.getTargetRef().toString());
-    }
-
-    /** Test scheme getting/setting. */
-    @Test
-    void testScheme() {
-        final Reference ref = getDefaultReference();
-        assertEquals(DEFAULT_SCHEME, ref.getScheme());
-        final String scheme = "https";
-        ref.setScheme(scheme);
-        assertEquals(scheme, ref.getScheme());
-        ref.setScheme(DEFAULT_SCHEME);
-        assertEquals(DEFAULT_SCHEME, ref.getScheme());
-    }
-
-    /** Test scheme specific part getting/setting. */
-    @Test
-    void testSchemeSpecificPart() {
-        final Reference ref = getDefaultReference();
-        String part = "//restlet.org";
-        assertEquals(part, ref.getSchemeSpecificPart());
-        part = "//restlet.net";
-        ref.setSchemeSpecificPart(part);
-        assertEquals(part, ref.getSchemeSpecificPart());
-    }
-
-    /** Test setting of the last segment. */
-    @Test
-    void testSetLastSegment() {
-        Reference ref = new Reference("http://localhost:1234");
-        ref.addSegment("test");
-        assertEquals("http://localhost:1234/test", ref.toString());
-
-        ref.setLastSegment("last");
-        assertEquals("http://localhost:1234/last", ref.toString());
-
-        ref = new Reference("http://localhost:1234");
-        ref.setLastSegment("last");
-        assertEquals("http://localhost:1234/last", ref.toString());
-
-        ref.setLastSegment("test");
-        assertEquals("http://localhost:1234/test", ref.toString());
-
-        ref.addSegment("last");
-        assertEquals("http://localhost:1234/test/last", ref.toString());
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "http://localhost:81,//localhost:81",
-        "http://localhost:81?query,//localhost:81?query",
-        "http://localhost:81?query#fragment,//localhost:81?query",
-        "http://localhost:81#fragment,//localhost:81",
-        "http://localhost:81/#fragment,//localhost:81/",
-        "http://localhost:81/?query,//localhost:81/?query",
-        "http://localhost:81/?query=https://perdu.com,//localhost:81/?query=https://perdu.com",
-    })
-    void testSchemeSpecificPart(final String uri, final String expected) {
-        Reference ref = new Reference(uri);
-        assertEquals(expected, ref.getSchemeSpecificPart());
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "http://localhost:81,localhost:81",
-        "http://localhost:81?query,localhost:81",
-        "http://localhost:81?query#fragment,localhost:81",
-        "http://localhost:81#fragment,localhost:81",
-        "http://localhost:81/#fragment,localhost:81",
-        "http://localhost:81/?query,localhost:81",
-        "http://localhost:81/?query=https://perdu.com,localhost:81"
-    })
-    void testAuthority(final String uri, final String expected) {
-        Reference ref = new Reference(uri);
-        assertEquals(expected, ref.getAuthority());
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "http://localhost:81,",
-        "http://localhost:81/a,/a",
-        "http://localhost:81?query,",
-        "http://localhost:81/a?query,/a",
-        "http://localhost:81?query#fragment,",
-        "http://localhost:81#fragment/1234,",
-        "http://localhost:81/a#fragment/1234,/a",
-        "http://localhost:81/?query,/",
-        "http://localhost:81/?query=https://perdu.com/1234,/"
-    })
-    void testPath(final String uri, final String expected) {
-        Reference ref = new Reference(uri);
-        assertEquals(expected, ref.getPath());
-    }
-
-    /** Test references that are unequal. */
-    @Test
-    void testUnEquals() {
-        final String uri1 = "http://restlet.org/";
-        final String uri2 = "http://restlet.net/";
-        final Reference ref1 = new Reference(uri1);
-        final Reference ref2 = new Reference(uri2);
-        assertNotEquals(ref1, ref2);
-    }
-
-    @Test
-    void testUserinfo() {
-        final Reference reference = new Reference("http://localhost:81");
-        // This format is deprecated; however, we may prevent failures.
-        reference.setUserInfo("login:password");
-        assertEquals("login:password@localhost:81", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
-        assertEquals(81, reference.getHostPort());
-        assertEquals("login:password", reference.getUserInfo());
-
-        reference.setHostDomain("[::1]");
-        assertEquals("login:password@[::1]:81", reference.getAuthority());
-        assertEquals("[::1]", reference.getHostDomain());
-        assertEquals(81, reference.getHostPort());
-        assertEquals("login:password", reference.getUserInfo());
-
-        reference.setHostDomain("www.example.com");
-        assertEquals("login:password@www.example.com:81", reference.getAuthority());
-        assertEquals("www.example.com", reference.getHostDomain());
-        assertEquals(81, reference.getHostPort());
-        assertEquals("login:password", reference.getUserInfo());
-
-        reference.setHostPort(82);
-        assertEquals("login:password@www.example.com:82", reference.getAuthority());
-        assertEquals("www.example.com", reference.getHostDomain());
-        assertEquals(82, reference.getHostPort());
-        assertEquals("login:password", reference.getUserInfo());
-
-        reference.setUserInfo("login");
-        assertEquals("login@www.example.com:82", reference.getAuthority());
-        assertEquals("www.example.com", reference.getHostDomain());
-        assertEquals(82, reference.getHostPort());
-        assertEquals("login", reference.getUserInfo());
-    }
-
-    @Test
-    void testValidity() {
-        String uri = "http ://domain.tld/whatever/";
-        Reference ref = new Reference(uri);
-        assertEquals("http%20://domain.tld/whatever/", ref.toString());
-
-        uri = "file:///C|/wherever\\whatever.swf";
-        ref = new Reference(uri);
-        assertEquals("file:///C%7C/wherever%5Cwhatever.swf", ref.toString());
     }
 
     @Nested
@@ -709,5 +502,352 @@ class ReferenceTestCase {
             final Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
             assertEquals(expectedRelativeUri, relativeRef.toString());
         }
+    }
+
+    /** Test port getting/setting. */
+    @ParameterizedTest
+    @ValueSource(ints = {8080, 9090})
+    void testPort(int port) {
+        Reference ref = getDefaultReference();
+        ref.setHostPort(port);
+        assertEquals(port, ref.getHostPort());
+    }
+
+    @Test
+    void testPortIPv6() {
+        Reference ref = new Reference("http://[::1]:8182");
+        assertEquals(8182, ref.getHostPort());
+    }
+
+    @Test
+    void testProtocolConstructors() {
+        assertEquals("http://restlet.org", new Reference(Protocol.HTTP, "restlet.org").toString());
+        assertEquals(
+                "https://restlet.org:8443",
+                new Reference(Protocol.HTTPS, "restlet.org", 8443).toString());
+
+        final Reference ref = new Reference(Protocol.HTTP, "restlet.org");
+        ref.addQueryParameter("abc", "123");
+        assertEquals("http://restlet.org?abc=123", ref.toString());
+    }
+
+    @Test
+    void testQuery() {
+
+        Reference ref1 = new Reference("http://localhost/search?q=anythingelse%");
+        String query = ref1.getQuery();
+        assertEquals("q=anythingelse%25", query);
+
+        Form queryForm = ref1.getQueryAsForm();
+        assertEquals("anythingelse%", queryForm.getFirstValue("q"));
+
+        Form extJsQuery = new Form("&_dc=1244741620627&callback=stcCallback1001");
+        assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
+        assertEquals("stcCallback1001", extJsQuery.getFirstValue("callback"));
+
+        Reference ref = new Reference("http://localhost/v1/projects/13404");
+        ref.addQueryParameter("dyn", "true");
+        assertEquals("http://localhost/v1/projects/13404?dyn=true", ref.toString());
+    }
+
+    @Test
+    void testQueryWithUri() {
+        Reference ref =
+                new Reference(
+                        new Reference("http://localhost:8111/"),
+                        "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
+        assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef().toString());
+    }
+
+    @Test
+    void testRiap() {
+        Reference baseRef = new Reference("riap://component/exist/db/");
+        Reference ref = new Reference(baseRef, "something.xq");
+        assertEquals("riap://component/exist/db/something.xq", ref.getTargetRef().toString());
+    }
+
+    /** Test scheme getting/setting. */
+    @Test
+    void testScheme() {
+        final Reference ref = getDefaultReference();
+        assertEquals(DEFAULT_SCHEME, ref.getScheme());
+        final String scheme = "https";
+        ref.setScheme(scheme);
+        assertEquals(scheme, ref.getScheme());
+        ref.setScheme(DEFAULT_SCHEME);
+        assertEquals(DEFAULT_SCHEME, ref.getScheme());
+    }
+
+    /** Test scheme specific part getting/setting. */
+    @Test
+    void testSchemeSpecificPart() {
+        final Reference ref = getDefaultReference();
+        String part = "//restlet.org";
+        assertEquals(part, ref.getSchemeSpecificPart());
+        part = "//restlet.net";
+        ref.setSchemeSpecificPart(part);
+        assertEquals(part, ref.getSchemeSpecificPart());
+    }
+
+    /** Test setting of the last segment. */
+    @Test
+    void testSetLastSegment() {
+        Reference ref = new Reference("http://localhost:1234");
+        ref.addSegment("test");
+        assertEquals("http://localhost:1234/test", ref.toString());
+
+        ref.setLastSegment("last");
+        assertEquals("http://localhost:1234/last", ref.toString());
+
+        ref = new Reference("http://localhost:1234");
+        ref.setLastSegment("last");
+        assertEquals("http://localhost:1234/last", ref.toString());
+
+        ref.setLastSegment("test");
+        assertEquals("http://localhost:1234/test", ref.toString());
+
+        ref.addSegment("last");
+        assertEquals("http://localhost:1234/test/last", ref.toString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "http://localhost:81,//localhost:81",
+        "http://localhost:81?query,//localhost:81?query",
+        "http://localhost:81?query#fragment,//localhost:81?query",
+        "http://localhost:81#fragment,//localhost:81",
+        "http://localhost:81/#fragment,//localhost:81/",
+        "http://localhost:81/?query,//localhost:81/?query",
+        "http://localhost:81/?query=https://perdu.com,//localhost:81/?query=https://perdu.com",
+    })
+    void testSchemeSpecificPart(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getSchemeSpecificPart());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "http://localhost:81,localhost:81",
+        "http://localhost:81?query,localhost:81",
+        "http://localhost:81?query#fragment,localhost:81",
+        "http://localhost:81#fragment,localhost:81",
+        "http://localhost:81/#fragment,localhost:81",
+        "http://localhost:81/?query,localhost:81",
+        "http://localhost:81/?query=https://perdu.com,localhost:81",
+        "http://localhost:81?query=https://perdu.com,localhost:81",
+    })
+    void testAuthority(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getAuthority());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "http://localhost:81,",
+        "http://localhost:81/a,/a",
+        "http://localhost:81?query,",
+        "http://localhost:81/a?query,/a",
+        "http://localhost:81?query#fragment,",
+        "http://localhost:81#fragment/1234,",
+        "http://localhost:81/a#fragment/1234,/a",
+        "http://localhost:81/?query,/",
+        "http://localhost:81/?query=https://perdu.com/1234,/",
+        "http://localhost:81?query=https://perdu.com/1234,"
+    })
+    void testPath(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getPath());
+    }
+
+    @Test
+    void testTargetRef() {
+        Reference ref =
+                new Reference(
+                        "http://twitter.com?status=RT @gamasutra:  Devil May Cry : Born Again http://www.gamasutra.com/view/feature/177267/");
+        Reference targetRef =
+                new Reference(
+                                new Reference(
+                                        "http://www.gamasutra.com/view/feature/177267/devil_may_cry_born_again.php"),
+                                ref)
+                        .getTargetRef();
+        assertEquals(
+                "http://twitter.com?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http://www.gamasutra.com/view/feature/177267/",
+                targetRef.toString());
+    }
+
+    /** Test references that are unequal. */
+    @Test
+    void testUnEquals() {
+        final String uri1 = "http://restlet.org/";
+        final String uri2 = "http://restlet.net/";
+        final Reference ref1 = new Reference(uri1);
+        final Reference ref2 = new Reference(uri2);
+        assertNotEquals(ref1, ref2);
+    }
+
+    @Test
+    void testUserinfo() {
+        final Reference reference = new Reference("http://localhost:81");
+        // This format is deprecated; however, we may prevent failures.
+        reference.setUserInfo("login:password");
+        assertEquals("login:password@localhost:81", reference.getAuthority());
+        assertEquals("localhost", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setHostDomain("[::1]");
+        assertEquals("login:password@[::1]:81", reference.getAuthority());
+        assertEquals("[::1]", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setHostDomain("www.example.com");
+        assertEquals("login:password@www.example.com:81", reference.getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setHostPort(82);
+        assertEquals("login:password@www.example.com:82", reference.getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(82, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setUserInfo("login");
+        assertEquals("login@www.example.com:82", reference.getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(82, reference.getHostPort());
+        assertEquals("login", reference.getUserInfo());
+    }
+
+    @Test
+    void testValidity() {
+        String uri = "http ://domain.tld/whatever/";
+        Reference ref = new Reference(uri);
+        assertEquals("http%20://domain.tld/whatever/", ref.toString());
+
+        uri = "file:///C|/wherever\\whatever.swf";
+        ref = new Reference(uri);
+        assertEquals("file:///C%7C/wherever%5Cwhatever.swf", ref.toString());
+    }
+
+    @Nested
+    class TestFailures {
+        @ParameterizedTest
+        @ValueSource(
+                strings = {
+                    "https://[192.168.0.1]127.0.0.1/",
+                    "https://[192.168.0.1]vulndetector.com/",
+                    "https://[normal.com@]vulndetector.com/",
+                    "https://normal.com[user@vulndetector].com/",
+                    "https://normal.com[@]vulndetector.com/",
+                    "https://user:pwd@a[1:2:3:4]/",
+                    "https://[1:2:3:4:5:6:7:8:9]",
+                    "https://[1::1::1]",
+                    "https://[1:2:3:]",
+                    "https://[ffff::127.0.0.4000]",
+                    "https://[0:0::vulndetector.com]:80",
+                    "https://[2001:db8::vulndetector.com]",
+                    "http://localhost:18:19",
+                    "http://localhost:18ab"
+                })
+        void shouldFailWhenParsingIncorrectHosts(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getAuthority);
+        }
+
+        @ParameterizedTest
+        @ValueSource(
+                strings = {"https>://vulndetector.com/path", "https%25://vulndetector.com/path"})
+        void shouldFailWhenParsingIncorrectScheme(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getScheme);
+        }
+
+        // Issue: isAlpha accepts g-z / G-Z which are not valid hex digits in IPv6 groups.
+        @ParameterizedTest
+        @ValueSource(
+                strings = {
+                    "https://[g:0:0:0:0:0:0:1]",
+                    "https://[0:0:0:0:0:0:0:z]",
+                    "https://[1:2:3:4:5:6:7:g]",
+                    "https://[::g]",
+                    "https://[G:0::1]",
+                })
+        void shouldFailWhenIpV6GroupContainsNonHexChar(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getAuthority);
+        }
+
+        // Issue: IPv4-embedded tail validation is missing; invalid octets must be rejected.
+        @ParameterizedTest
+        @ValueSource(
+                strings = {
+                    "https://[::ffff:256.0.0.1]",
+                    "https://[::ffff:192.168.1.1000]",
+                    "https://[::ffff:192.168.1]",
+                    "https://[::ffff:192.168.1.1.1]",
+                    "https://[::ffff:-1.0.0.1]",
+                })
+        void shouldFailWhenEmbeddedIpV4TailIsInvalid(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getAuthority);
+        }
+
+        // Issue: multiple '@' in the userinfo section must be rejected.
+        @ParameterizedTest
+        @ValueSource(
+                strings = {
+                    "https://user@evil.com@real.com/",
+                    "https://user@attacker.com@legitimate.com/path",
+                    "https://a@b@c/",
+                })
+        void shouldFailWhenUserInfoContainsMultipleAtSigns(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getAuthority);
+        }
+    }
+
+    // Issue: valid IPv4-embedded IPv6 addresses (RFC 4291 mixed notation) must be accepted.
+    @ParameterizedTest
+    @CsvSource({
+        "https://[::ffff:192.168.1.1]/,  [::ffff:192.168.1.1]",
+        "https://[::192.168.1.1]/,        [::192.168.1.1]",
+        "https://[2001:db8::192.0.2.1]/, [2001:db8::192.0.2.1]",
+        "https://[::ffff:10.0.0.1]:8080/,[::ffff:10.0.0.1]:8080",
+    })
+    void shouldAcceptValidEmbeddedIpV4(String url, String expectedAuthority) {
+        final Reference reference = new Reference(url);
+        assertEquals(expectedAuthority.strip(), reference.getAuthority());
+    }
+
+    // Issue: compressed IPv6 addresses with 7 explicit groups and :: must be accepted.
+    // split(":",−1) on e.g. "::1:2:3:4:5:6:7" produces 9 tokens; the group−count check
+    // must account for the extra empty token introduced by ::.
+    @ParameterizedTest
+    @CsvSource({
+        "https://[::1:2:3:4:5:6:7]/,   [::1:2:3:4:5:6:7]",
+        "https://[1:2:3:4:5:6:7::]/,   [1:2:3:4:5:6:7::]",
+        "https://[1:2:3::4:5:6:7]/,    [1:2:3::4:5:6:7]",
+        "https://[fe80::1:2:3:4:5:6]/, [fe80::1:2:3:4:5:6]",
+    })
+    void shouldAcceptCompressedIpV6With7ExplicitGroups(String url, String expectedAuthority) {
+        final Reference reference = new Reference(url);
+        assertEquals(expectedAuthority.strip(), reference.getAuthority());
+    }
+
+    // Issue: leading zeros in IPv4 octets are historically interpreted as octal by some parsers
+    // and must be rejected to avoid address confusion.
+    @ParameterizedTest
+    @ValueSource(
+            strings = {
+                "https://[::ffff:192.168.01.1]",
+                "https://[::ffff:192.168.1.01]",
+                "https://[::01.0.0.1]",
+                "https://[::ffff:010.0.0.1]",
+            })
+    void shouldFailWhenIpV4OctetHasLeadingZero(String url) {
+        final Reference reference = new Reference(url);
+        assertThrows(IllegalArgumentException.class, reference::getAuthority);
     }
 }

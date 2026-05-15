@@ -43,7 +43,8 @@ class FreeMarkerTestCase {
         fw.write("Value=${value}");
         fw.close();
 
-        final Configuration fmc = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        final Configuration fmc =
+                new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         fmc.setDirectoryForTemplateLoading(testDir);
         final Map<String, Object> map = Map.of("value", "myValue");
 
