@@ -24,7 +24,7 @@ import java.util.Vector;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class WrapperList<E> implements List<E>, Iterable<E> {
+public class WrapperList<E> implements List<E> {
     /** The delegate list. */
     private final List<E> delegate;
 

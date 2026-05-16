@@ -406,7 +406,7 @@ class ShutdownHookTestCase {
      * org.eclipse.jetty.util.thread.QueuedThreadPool}.
      */
     private Duration toJettyEffectiveTimeout(final Duration timeout) {
-        return timeout.plusMillis(500); // FIXME: needs improvements
+        return timeout.plusMillis(500); // Accounts for Jetty's extra half-timeout behavior.
     }
 
     private static void log(final String message) {

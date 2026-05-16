@@ -147,7 +147,8 @@ class JacksonTestCase {
                 Undeclared general entity "lol10"
                  at [row,col {unknown-source}]: [14,31]
                  at [Source: (BufferedInputStream); line: 14, column: 32]""";
-        Assertions.assertEquals(expected, exception.getMessage());
+        Assertions.assertEquals(
+                normalizeLineEndings(expected), normalizeLineEndings(exception.getMessage()));
     }
 
     @Test
@@ -203,4 +204,8 @@ class JacksonTestCase {
         Assertions.assertEquals(me1.getErrorCode(), me2.getErrorCode());
         assertEquals(me1.getCustomer(), me2.getCustomer());
     }
+
+        private String normalizeLineEndings(String text) {
+                return text.replace("\r\n", "\n").replace('\r', '\n');
+        }
 }

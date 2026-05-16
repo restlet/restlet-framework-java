@@ -29,7 +29,6 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.util.Validate;
 
 /**
  * Thymeleaf template representation. Useful for dynamic string-based representations.
@@ -59,10 +58,6 @@ public class TemplateRepresentation extends WriterRepresentation {
         public ResolverContext(Locale locale, Resolver<Object> resolver) {
             this.locale = locale;
             this.resolver = resolver;
-        }
-
-        public final void addContextExecutionInfo(final String templateName) {
-            Validate.notEmpty(templateName, "Template name cannot be null or empty");
         }
 
         public Locale getLocale() {

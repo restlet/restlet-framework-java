@@ -8,6 +8,16 @@
  */
 package org.restlet.engine.local;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -49,6 +59,15 @@ import org.restlet.engine.connector.ClientHelper;
  * @author Thierry Boileau
  */
 public abstract class LocalClientHelper extends ClientHelper {
+
+    private static final String PRIVATE_TEMP_DIRECTORY_NAME = ".restlet/tmp";
+
+    private static final FileAttribute<Set<PosixFilePermission>> OWNER_ALL_DIRECTORY_PERMISSIONS =
+            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+
+    private static final FileAttribute<Set<PosixFilePermission>> OWNER_READ_WRITE_FILE_PERMISSIONS =
+            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+
     /**
      * Constructor. Note that the common list of metadata associations based on extensions is added,
      * see the addCommonExtensions() method.
@@ -104,6 +123,70 @@ public abstract class LocalClientHelper extends ClientHelper {
                     .warning(
                             "Unable to get the path of this local URI: "
                                     + request.getResourceRef());
+        }
+    }
+
+    protected static File createPrivateTempFile(String prefix, String suffix) throws IOException {
+        Path temporaryDirectory = getPrivateTempDirectory();
+        FileStore fileStore = Files.getFileStore(temporaryDirectory);
+        Path temporaryFile;
+
+        if (fileStore.supportsFileAttributeView("posix")) {
+            temporaryFile =
+                    Files.createTempFile(
+                            temporaryDirectory, prefix, suffix, OWNER_READ_WRITE_FILE_PERMISSIONS);
+        } else {
+            temporaryFile = Files.createTempFile(temporaryDirectory, prefix, suffix);
+            File temporaryFileAsFile = temporaryFile.toFile();
+            setOwnerOnlyAccess(temporaryFileAsFile, false);
+        }
+
+        return temporaryFile.toFile();
+    }
+
+    private static Path getPrivateTempDirectory() throws IOException {
+        Path homeDirectory = getPrivateTempHomeRoot();
+        Path privateTempDirectory = homeDirectory.resolve(PRIVATE_TEMP_DIRECTORY_NAME);
+
+        if (Files.exists(privateTempDirectory)) {
+            if (Files.getFileStore(privateTempDirectory).supportsFileAttributeView("posix")) {
+                Files.setPosixFilePermissions(
+                        privateTempDirectory, OWNER_ALL_DIRECTORY_PERMISSIONS.value());
+            }
+            return privateTempDirectory;
+        }
+
+        if (Files.getFileStore(homeDirectory).supportsFileAttributeView("posix")) {
+            return Files.createDirectories(privateTempDirectory, OWNER_ALL_DIRECTORY_PERMISSIONS);
+        }
+
+        return Files.createDirectories(privateTempDirectory);
+    }
+
+    private static Path getPrivateTempHomeRoot() {
+        String userHome = System.getProperty("user.home");
+
+        if (userHome != null && !userHome.isEmpty()) {
+            return Paths.get(userHome);
+        }
+
+        return Paths.get(".").toAbsolutePath().normalize();
+    }
+
+    private static void setOwnerOnlyAccess(File file, boolean executable) throws IOException {
+        ensurePermissionChange(file.setReadable(true, true), file, "enable owner read access");
+        ensurePermissionChange(file.setWritable(true, true), file, "enable owner write access");
+
+        if (executable) {
+            ensurePermissionChange(
+                    file.setExecutable(true, true), file, "enable owner execute access");
+        }
+    }
+
+    private static void ensurePermissionChange(boolean updated, File file, String action)
+            throws IOException {
+        if (!updated) {
+            throw new IOException("Unable to " + action + " for " + file.getAbsolutePath());
         }
     }
 

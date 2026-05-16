@@ -36,6 +36,7 @@ import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.lang.NonNull;
 
 /**
  * @author Rhett Sutphin
@@ -84,7 +85,7 @@ class SpringBeanRouterTestCase {
     }
 
     private void doPostProcess() {
-        this.router.postProcessBeanFactory(this.factory);
+        this.router.postProcessBeanFactory(requiredBeanFactory());
     }
 
     private TemplateRoute matchRouteFor(String uri) {
@@ -105,10 +106,10 @@ class SpringBeanRouterTestCase {
     private void registerBeanDefinition(String id, String alias, Class<?> beanClass, String scope) {
         BeanDefinition bd = new RootBeanDefinition(beanClass);
         bd.setScope(scope == null ? BeanDefinition.SCOPE_SINGLETON : scope);
-        this.factory.registerBeanDefinition(id, bd);
+        requiredBeanFactory().registerBeanDefinition(requiredString(id), bd);
 
         if (alias != null) {
-            this.factory.registerAlias(id, alias);
+            requiredBeanFactory().registerAlias(requiredString(id), requiredString(alias));
         }
     }
 
@@ -146,7 +147,8 @@ class SpringBeanRouterTestCase {
     @Test
     void testExplicitAttachmentsMayBeRestlets() {
         String expected = "/protected/timber";
-        this.router.setAttachments(Collections.singletonMap(expected, "timber"));
+        this.router.setAttachments(
+            Collections.singletonMap(requiredString(expected), requiredString("timber")));
         registerBeanDefinition("timber", null, TestAuthenticator.class, null);
 
         doPostProcess();
@@ -158,7 +160,8 @@ class SpringBeanRouterTestCase {
 
     @Test
     void testExplicitAttachmentsTrumpBeanNames() {
-        this.router.setAttachments(Collections.singletonMap(ORE_URI, "fish"));
+        this.router.setAttachments(
+            Collections.singletonMap(requiredString(ORE_URI), requiredString("fish")));
         RouteList actualRoutes = actualRoutes();
         assertEquals(2, actualRoutes.size(), "Wrong number of routes");
 
@@ -169,7 +172,9 @@ class SpringBeanRouterTestCase {
 
     @Test
     void testExplicitRoutingForNonResourceNonRestletBeansFails() {
-        this.router.setAttachments(Collections.singletonMap("/fail", "someOtherBean"));
+        this.router.setAttachments(
+            Collections.singletonMap(
+                requiredString("/fail"), requiredString("someOtherBean")));
 
         IllegalStateException ise = assertThrows(IllegalStateException.class, this::doPostProcess);
         assertEquals(
@@ -264,7 +269,9 @@ class SpringBeanRouterTestCase {
         this.factory.registerAlias("timber", "no-slash");
 
         String expectedTemplate = "/renewable/timber/{farm_type}";
-        router.setAttachments(Collections.singletonMap(expectedTemplate, "timber"));
+        router.setAttachments(
+            Collections.singletonMap(
+                requiredString(expectedTemplate), requiredString("timber")));
         final RouteList actualRoutes = actualRoutes();
 
         assertEquals(3, actualRoutes.size(), "Wrong number of routes");
@@ -282,5 +289,21 @@ class SpringBeanRouterTestCase {
 
         final RouteList actualRoutes = actualRoutes();
         assertEquals(2, actualRoutes.size(), "Timber resource should have been skipped");
+    }
+
+    @NonNull private DefaultListableBeanFactory requiredBeanFactory() {
+        DefaultListableBeanFactory currentFactory = this.factory;
+        if (currentFactory == null) {
+            throw new IllegalStateException("factory");
+        }
+        return currentFactory;
+    }
+
+    @NonNull private String requiredString(String value) {
+        String currentValue = value;
+        if (currentValue == null) {
+            throw new IllegalStateException("value");
+        }
+        return currentValue;
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.lang.NonNull;
 
 /**
  * @author Rhett Sutphin
@@ -64,8 +65,10 @@ class SpringBeanFinderTestCase {
 
     private void registerApplicationContextBean(
             String beanName, Class<SomeResource> resourceClass) {
-        this.applicationContext.registerPrototype(beanName, resourceClass);
-        this.applicationContext.refresh();
+        requiredApplicationContext()
+                .registerPrototype(
+                        requiredBeanName(beanName), requiredResourceClass(resourceClass));
+        requiredApplicationContext().refresh();
     }
 
     private void registerBeanFactoryBean(String beanName, Class<?> resourceClass) {
@@ -74,9 +77,13 @@ class SpringBeanFinderTestCase {
 
     private void registerBeanFactoryBean(
             String beanName, Class<?> resourceClass, MutablePropertyValues values) {
-        this.beanFactory.registerBeanDefinition(
-                beanName,
-                new RootBeanDefinition(resourceClass, new ConstructorArgumentValues(), values));
+        requiredBeanFactory()
+                .registerBeanDefinition(
+                        requiredBeanName(beanName),
+                        new RootBeanDefinition(
+                                requiredAnyClass(resourceClass),
+                                new ConstructorArgumentValues(),
+                                values));
     }
 
     @BeforeEach
@@ -105,7 +112,7 @@ class SpringBeanFinderTestCase {
 
     @Test
     void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory() {
-        this.finder.setBeanFactory(beanFactory);
+        this.finder.setBeanFactory(requiredBeanFactory());
 
         IllegalStateException iae =
                 assertThrows(IllegalStateException.class, () -> this.finder.create());
@@ -114,7 +121,7 @@ class SpringBeanFinderTestCase {
 
     @Test
     void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext() {
-        this.finder.setApplicationContext(applicationContext);
+        this.finder.setApplicationContext(requiredApplicationContext());
         IllegalStateException iae =
                 assertThrows(IllegalStateException.class, () -> this.finder.create());
         assertEquals("No bean named " + BEAN_NAME + " present.", iae.getMessage());
@@ -124,7 +131,7 @@ class SpringBeanFinderTestCase {
     void testExceptionWhenResourceBeanIsWrongType() {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
-        this.finder.setBeanFactory(beanFactory);
+        this.finder.setBeanFactory(requiredBeanFactory());
 
         ClassCastException classCastException =
                 assertThrows(ClassCastException.class, () -> this.finder.create());
@@ -138,7 +145,7 @@ class SpringBeanFinderTestCase {
         registerApplicationContextBean(BEAN_NAME, SomeResource.class);
         registerBeanFactoryBean(BEAN_NAME, AnotherResource.class);
 
-        this.finder.setApplicationContext(applicationContext);
+        this.finder.setApplicationContext(requiredApplicationContext());
 
         ServerResource actual = this.finder.create();
 
@@ -152,7 +159,7 @@ class SpringBeanFinderTestCase {
     void testReturnsResourceBeanWhenExists() {
         registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
 
-        this.finder.setBeanFactory(beanFactory);
+        this.finder.setBeanFactory(requiredBeanFactory());
 
         final ServerResource actual = this.finder.create();
 
@@ -164,7 +171,7 @@ class SpringBeanFinderTestCase {
         registerBeanFactoryBean(
                 BEAN_NAME, SomeServerResource.class, createServerResourcePropertyValues());
 
-        this.finder.setBeanFactory(beanFactory);
+        this.finder.setBeanFactory(requiredBeanFactory());
 
         final ServerResource actual = this.finder.create(SomeServerResource.class, null, null);
 
@@ -180,7 +187,7 @@ class SpringBeanFinderTestCase {
         registerBeanFactoryBean(
                 BEAN_NAME, SomeServerResource.class, createServerResourcePropertyValues());
 
-        this.finder.setBeanFactory(beanFactory);
+        this.finder.setBeanFactory(requiredBeanFactory());
 
         final ServerResource actual = this.finder.create();
 
@@ -191,10 +198,52 @@ class SpringBeanFinderTestCase {
     void testUsesApplicationContextIfPresent() {
         registerApplicationContextBean(BEAN_NAME, SomeResource.class);
 
-        this.finder.setApplicationContext(applicationContext);
+        this.finder.setApplicationContext(requiredApplicationContext());
 
         ServerResource actual = this.finder.create();
 
         assertInstanceOf(SomeResource.class, actual, "Resource not the correct type");
+    }
+
+    @NonNull
+    private StaticApplicationContext requiredApplicationContext() {
+        StaticApplicationContext currentApplicationContext = this.applicationContext;
+        if (currentApplicationContext == null) {
+            throw new IllegalStateException("applicationContext");
+        }
+        return currentApplicationContext;
+    }
+
+    @NonNull
+    private DefaultListableBeanFactory requiredBeanFactory() {
+        DefaultListableBeanFactory currentBeanFactory = this.beanFactory;
+        if (currentBeanFactory == null) {
+            throw new IllegalStateException("beanFactory");
+        }
+        return currentBeanFactory;
+    }
+
+    @NonNull
+    private String requiredBeanName(String beanName) {
+        if (beanName == null) {
+            throw new IllegalStateException("beanName");
+        }
+        return beanName;
+    }
+
+    @NonNull
+    private Class<SomeResource> requiredResourceClass(Class<SomeResource> resourceClass) {
+        if (resourceClass == null) {
+            throw new IllegalStateException("resourceClass");
+        }
+        return resourceClass;
+    }
+
+    @NonNull
+    private Class<?> requiredAnyClass(Class<?> resourceClass) {
+        if (resourceClass == null) {
+            throw new IllegalStateException("resourceClass");
+        }
+        return resourceClass;
     }
 }

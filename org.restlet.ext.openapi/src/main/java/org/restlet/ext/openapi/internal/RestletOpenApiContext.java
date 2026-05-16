@@ -10,13 +10,11 @@ package org.restlet.ext.openapi.internal;
 
 import io.swagger.v3.oas.integration.GenericOpenApiContext;
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
-import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.integration.api.OpenApiReader;
 import org.apache.commons.lang3.StringUtils;
 import org.restlet.routing.Router;
 
-public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiContext>
-        implements OpenApiContext {
+public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiContext> {
     private final Router router;
 
     public RestletOpenApiContext(Router router) {

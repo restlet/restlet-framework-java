@@ -16,12 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -233,6 +229,7 @@ public class ZipClientHelper extends LocalClientHelper {
             throws IOException {
 
         final File writeTo = createPrivateTempFile();
+        boolean completed = false;
 
         try (final ZipFile zipFile = new ZipFile(file);
                 final ZipOutputStream zipOut =
@@ -257,15 +254,18 @@ public class ZipClientHelper extends LocalClientHelper {
             if (!replaced) {
                 writeEntityStream(entity, zipOut, entryName, isDirectory);
             }
+            completed = true;
+        } finally {
+            if (!completed) {
+                Files.deleteIfExists(writeTo.toPath());
+            }
         }
         return writeTo;
     }
 
     /** Create a temporary file with private access rights. */
     private static File createPrivateTempFile() throws IOException {
-        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
-        FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-        return Files.createTempFile("restlet_zip_", "zip", attr).toFile();
+        return LocalClientHelper.createPrivateTempFile("restlet_zip_", ".zip");
     }
 
     /**

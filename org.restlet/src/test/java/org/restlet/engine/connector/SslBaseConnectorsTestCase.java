@@ -34,7 +34,6 @@ import org.restlet.util.Series;
  * @author Bruno Harbulot
  * @author Jerome Louvel
  */
-@SuppressWarnings("unused")
 public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
 
     protected static final String KEYSTORE_FILE_NAME = "dummy.p12";

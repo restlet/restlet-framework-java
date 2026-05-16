@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.local;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,7 +63,16 @@ public class ZipEntryRepresentation extends StreamRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return zipFile.getInputStream(entry);
+        return new FilterInputStream(zipFile.getInputStream(entry)) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                } finally {
+                    release();
+                }
+            }
+        };
     }
 
     @Override
@@ -75,6 +85,8 @@ public class ZipEntryRepresentation extends StreamRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        IoUtils.copy(getStream(), outputStream);
+        try (InputStream inputStream = getStream()) {
+            IoUtils.copy(inputStream, outputStream);
+        }
     }
 }

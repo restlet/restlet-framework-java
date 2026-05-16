@@ -230,6 +230,7 @@ public class DefaultConverter extends ConverterHelper {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T toFile(final Representation source) {
         return (source instanceof FileRepresentation fileRepresentation)
                 ? (T) fileRepresentation.getFile()

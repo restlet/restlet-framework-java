@@ -75,7 +75,8 @@ class ResolvingTransformerTestCase {
 
                 dataReader.close();
             } else {
-                // TODO support other source implementations (namely sax-source implementations)
+                // This test helper currently supports stream-based sources only.
+                // SAX-based sources would need a dedicated reader path here.
                 fail(
                         "test implementation currently doesn't handle other source (e.g., sax) implementations");
             }
@@ -235,9 +236,8 @@ class ResolvingTransformerTestCase {
                         .getEntity();
         TransformRepresentation tr = new TransformRepresentation(comp.getContext(), xmlIn, xsltOne);
 
-        // TODO transformer output should go to SAX! The sax-event-stream should
-        // then be fed into a DOMBuilder
-        // and then the assertions should be written as DOM tests...
+        // A SAX-based assertion path would be more robust here: feed the
+        // transformer event stream into a DOMBuilder and assert on the DOM.
         // (NOTE: current string-compare assertion might fail on lexical aspects
         // as ignorable whitespace, encoding settings etc etc)
         ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -100,7 +100,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * @see org.json.JSONObject#JSONObject(Object)
      */
     public JsonRepresentation(Object bean) {
-        this(new JSONObject(bean)); // TODO Should be called if Android edition
+        this(new JSONObject(bean));
     }
 
     /**

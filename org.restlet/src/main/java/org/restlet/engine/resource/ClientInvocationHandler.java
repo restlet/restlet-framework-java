@@ -263,10 +263,9 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
             if (t != null) {
                 throw t;
             }
-            // TODO cf issues 1004 and 1018.
-            // this code has been commented as the automatic
-            // deserialization is problematic. We may rethink a
-            // way to recover the status info.
+            // This branch stays disabled because automatic deserialization of
+            // StatusInfo has been problematic in past issue reports.
+            // If status recovery is revisited, it needs a safer approach.
             // } else if (response.isEntityAvailable()) {
             // StatusInfo si = getClientResource().toObject(
             // response.getEntity(), StatusInfo.class);

@@ -560,6 +560,7 @@ public class ClientResource extends Resource {
 
     /** Attempts to {@link #release()} the resource. */
     @Override
+    @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         release();
         super.finalize();

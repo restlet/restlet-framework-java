@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 
 /**
  * Restlet {@link Router} which behaves like Spring's {@link
@@ -136,7 +137,7 @@ public class SpringBeanRouter extends Router
      * @param beanFactory The Spring bean factory.
      */
     protected void attachRestlet(String uri, String beanName, BeanFactory beanFactory) {
-        attach(uri, (Restlet) beanFactory.getBean(beanName));
+        attach(uri, (Restlet) requiredBeanFactory(beanFactory).getBean(requiredBeanName(beanName)));
     }
 
     /**
@@ -147,7 +148,8 @@ public class SpringBeanRouter extends Router
      * @see #attachResource
      */
     protected Finder createFinder(BeanFactory beanFactory, String beanName) {
-        return new SpringBeanFinder(this, beanFactory, beanName);
+        return new SpringBeanFinder(
+                this, requiredBeanFactory(beanFactory), requiredBeanName(beanName));
     }
 
     /**
@@ -169,8 +171,12 @@ public class SpringBeanRouter extends Router
     private String[] getBeanNamesByType(Class<?> beanClass, ListableBeanFactory beanFactory) {
         return isFindingInAncestors()
                 ? BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-                        beanFactory, beanClass, true, true)
-                : beanFactory.getBeanNamesForType(beanClass, true, true);
+                        requiredListableBeanFactory(beanFactory),
+                        requiredBeanClass(beanClass),
+                        true,
+                        true)
+                : requiredListableBeanFactory(beanFactory)
+                        .getBeanNamesForType(requiredBeanClass(beanClass), true, true);
     }
 
     /**
@@ -202,19 +208,19 @@ public class SpringBeanRouter extends Router
      * @param beanFactory The Spring bean factory.
      * @see #setAttachments
      */
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
             throws BeansException {
 
         ListableBeanFactory source =
-                this.applicationContext == null ? beanFactory : this.applicationContext;
+                this.applicationContext == null ? beanFactory : requiredApplicationContext();
         attachAllResources(source);
         attachAllRestlets(source);
 
         if (getAttachments() != null) {
             for (Map.Entry<String, String> attachment : getAttachments().entrySet()) {
                 String uri = attachment.getKey();
-                String beanName = attachment.getValue();
-                Class<?> beanType = source.getType(beanName);
+                String beanName = requiredBeanName(attachment.getValue());
+                Class<?> beanType = requiredBeanClass(source.getType(beanName));
 
                 if (org.restlet.resource.ServerResource.class.isAssignableFrom(beanType)) {
                     attachResource(uri, beanName, source);
@@ -239,11 +245,13 @@ public class SpringBeanRouter extends Router
      * @return The alias URI.
      */
     protected String resolveUri(String beanName, ListableBeanFactory beanFactory) {
-        if (isAvailableUri(beanName)) {
-            return beanName;
+        String requiredBeanName = requiredBeanName(beanName);
+        if (isAvailableUri(requiredBeanName)) {
+            return requiredBeanName;
         }
 
-        for (final String alias : beanFactory.getAliases(beanName)) {
+        for (final String alias :
+                requiredListableBeanFactory(beanFactory).getAliases(requiredBeanName)) {
             if (isAvailableUri(alias)) {
                 return alias;
             }
@@ -257,8 +265,50 @@ public class SpringBeanRouter extends Router
      *
      * @param applicationContext The context.
      */
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext)
+            throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @NonNull
+    private String requiredBeanName(String beanName) {
+        if (beanName == null) {
+            throw new IllegalStateException("beanName");
+        }
+        return beanName;
+    }
+
+    @NonNull
+    private BeanFactory requiredBeanFactory(BeanFactory beanFactory) {
+        if (beanFactory == null) {
+            throw new IllegalStateException("beanFactory");
+        }
+        return beanFactory;
+    }
+
+    @NonNull
+    private ListableBeanFactory requiredListableBeanFactory(ListableBeanFactory beanFactory) {
+        if (beanFactory == null) {
+            throw new IllegalStateException("beanFactory");
+        }
+        return beanFactory;
+    }
+
+    @NonNull
+    private Class<?> requiredBeanClass(Class<?> beanClass) {
+        if (beanClass == null) {
+            throw new IllegalStateException("beanClass");
+        }
+        return beanClass;
+    }
+
+    @NonNull
+    private ApplicationContext requiredApplicationContext() {
+        ApplicationContext currentApplicationContext = this.applicationContext;
+        if (currentApplicationContext == null) {
+            throw new IllegalStateException("applicationContext");
+        }
+        return currentApplicationContext;
     }
 
     /**
