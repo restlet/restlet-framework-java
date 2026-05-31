@@ -46,7 +46,7 @@ class ZipClientTestCase {
         zipFile.delete();
     }
 
-    //@Test
+    @Test
     void testFileClient() throws IOException {
         String text = "Test content\r\nLine 2\r\nLine2";
         String text2 = "Test content\nLine 2";
