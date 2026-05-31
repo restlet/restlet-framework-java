@@ -3083,7 +3083,7 @@ public class Reference {
     }
 
     /**
-     * Tackle non-atomic operation on volatile field 'internalRef'.
+     * Set the value of the field 'internalRef'.
      *
      * @param internalRef The new value of field 'internalRef'.
      */
