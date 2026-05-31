@@ -717,8 +717,8 @@ public class Reference {
                                     Level.FINE,
                                     "Invalid character detected in URI reference at index \"{0}\": \"{1}\". It will be automatically encoded.",
                                     new Object[] {i, character});
-                } else if ((character == '%') && (i > uriRef.length() - 2)) {
-                    // A percent encoding character has been detected but
+                } else if ((character == '%') && (i >= uriRef.length() - 2)) {
+                    // A percent-encoding character has been detected but
                     // without the necessary two hexadecimal digits following
                     valid = false;
                     Context.getCurrentLogger()
@@ -734,7 +734,7 @@ public class Reference {
 
                 for (int i = 0; (i < uriRef.length()); i++) {
                     if (isValid(uriRef.charAt(i))) {
-                        if ((uriRef.charAt(i) == '%') && (i > uriRef.length() - 2)) {
+                        if ((uriRef.charAt(i) == '%') && (i >= uriRef.length() - 2)) {
                             sb.append("%25");
                         } else {
                             sb.append(uriRef.charAt(i));
@@ -2961,6 +2961,11 @@ public class Reference {
             throw new IllegalArgumentException("Invalid IPv6 address");
         }
 
+        // Three or more consecutive colons are never valid.
+        if (ipV6.contains(":::")) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        }
+
         int doubleColonCount = countDoubleColons(ipV6);
         if (doubleColonCount > 1) {
             throw new IllegalArgumentException("Invalid IPv6 address format");
@@ -2994,12 +2999,11 @@ public class Reference {
     }
 
     /**
-     * Validates the number of hex groups in an IPv6 address.
-     * Without "::" compression, exactly {@code maxHexGroups} groups are required.
-     * With "::", at most {@code maxHexGroups - 1} explicit groups are allowed.
+     * Validates the number of hex groups in an IPv6 address. Without "::" compression, exactly
+     * {@code maxHexGroups} groups are required. With "::", at most {@code maxHexGroups - 1}
+     * explicit groups are allowed.
      */
-    private void validateIpV6GroupCount(
-            String[] parts, int doubleColonCount, boolean hasIpV4Tail) {
+    private void validateIpV6GroupCount(String[] parts, int doubleColonCount, boolean hasIpV4Tail) {
         int maxHexGroups = hasIpV4Tail ? 6 : 8;
         int hexPartCount = hasIpV4Tail ? parts.length - 1 : parts.length;
 
@@ -3069,11 +3073,11 @@ public class Reference {
      * @param scheme The scheme to validate.
      */
     private void validateScheme(final String scheme) {
-        if (scheme == null || scheme.isEmpty()) {
+        if (scheme == null) {
             return;
         }
 
-        if (!SCHEME_REGEXP.matcher(scheme).matches()) {
+        if (scheme.isEmpty() || !SCHEME_REGEXP.matcher(scheme).matches()) {
             throw new IllegalArgumentException("Invalid scheme format");
         }
     }

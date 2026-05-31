@@ -270,40 +270,35 @@ public class SpringBeanRouter extends Router
         this.applicationContext = applicationContext;
     }
 
-    @NonNull
-    private String requiredBeanName(String beanName) {
+    @NonNull private String requiredBeanName(String beanName) {
         if (beanName == null) {
             throw new IllegalStateException("beanName");
         }
         return beanName;
     }
 
-    @NonNull
-    private BeanFactory requiredBeanFactory(BeanFactory beanFactory) {
+    @NonNull private BeanFactory requiredBeanFactory(BeanFactory beanFactory) {
         if (beanFactory == null) {
             throw new IllegalStateException("beanFactory");
         }
         return beanFactory;
     }
 
-    @NonNull
-    private ListableBeanFactory requiredListableBeanFactory(ListableBeanFactory beanFactory) {
+    @NonNull private ListableBeanFactory requiredListableBeanFactory(ListableBeanFactory beanFactory) {
         if (beanFactory == null) {
             throw new IllegalStateException("beanFactory");
         }
         return beanFactory;
     }
 
-    @NonNull
-    private Class<?> requiredBeanClass(Class<?> beanClass) {
+    @NonNull private Class<?> requiredBeanClass(Class<?> beanClass) {
         if (beanClass == null) {
             throw new IllegalStateException("beanClass");
         }
         return beanClass;
     }
 
-    @NonNull
-    private ApplicationContext requiredApplicationContext() {
+    @NonNull private ApplicationContext requiredApplicationContext() {
         ApplicationContext currentApplicationContext = this.applicationContext;
         if (currentApplicationContext == null) {
             throw new IllegalStateException("applicationContext");

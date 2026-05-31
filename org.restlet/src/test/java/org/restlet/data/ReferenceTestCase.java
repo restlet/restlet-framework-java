@@ -30,7 +30,7 @@ class ReferenceTestCase {
 
     protected static final String DEFAULT_SCHEME = "http";
 
-    protected static final String DEFAULT_SCHEMEPART = "//";
+    protected static final String DEFAULT_SCHEME_PART = "//";
 
     /**
      * Returns a reference initialized with http://restlet.org.
@@ -51,7 +51,7 @@ class ReferenceTestCase {
     protected Reference getReference() {
         final Reference ref = new Reference();
         ref.setScheme(DEFAULT_SCHEME);
-        ref.setSchemeSpecificPart(DEFAULT_SCHEMEPART);
+        ref.setSchemeSpecificPart(DEFAULT_SCHEME_PART);
         return ref;
     }
 
@@ -535,11 +535,12 @@ class ReferenceTestCase {
     void testQuery() {
 
         Reference ref1 = new Reference("http://localhost/search?q=anythingelse%");
-        String query = ref1.getQuery();
-        assertEquals("q=anythingelse%25", query);
+        assertEquals("q=anythingelse%25", ref1.getQuery());
+        assertEquals("anythingelse%", ref1.getQueryAsForm().getFirstValue("q"));
 
-        Form queryForm = ref1.getQueryAsForm();
-        assertEquals("anythingelse%", queryForm.getFirstValue("q"));
+        Reference ref2 = new Reference("http://localhost/search?q=anythingelse%a");
+        assertEquals("q=anythingelse%25a", ref2.getQuery());
+        assertEquals("anythingelse%a", ref2.getQueryAsForm().getFirstValue("q"));
 
         Form extJsQuery = new Form("&_dc=1244741620627&callback=stcCallback1001");
         assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
@@ -745,6 +746,8 @@ class ReferenceTestCase {
                     "https://[1:2:3:4:5:6:7:8:9]",
                     "https://[1::1::1]",
                     "https://[1:2:3:]",
+                    "https://[1:::]",
+                    "https://[:::1]",
                     "https://[ffff::127.0.0.4000]",
                     "https://[0:0::vulndetector.com]:80",
                     "https://[2001:db8::vulndetector.com]",
@@ -758,7 +761,11 @@ class ReferenceTestCase {
 
         @ParameterizedTest
         @ValueSource(
-                strings = {"https>://vulndetector.com/path", "https%25://vulndetector.com/path"})
+                strings = {
+                    "https>://vulndetector.com/path",
+                    "https%25://vulndetector.com/path",
+                    "://vulndetector.com/path",
+                })
         void shouldFailWhenParsingIncorrectScheme(String url) {
             final Reference reference = new Reference(url);
             assertThrows(IllegalArgumentException.class, reference::getScheme);

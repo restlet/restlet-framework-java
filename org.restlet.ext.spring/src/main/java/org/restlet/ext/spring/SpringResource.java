@@ -81,8 +81,7 @@ public class SpringResource extends AbstractResource {
      * @return The description.
      */
     @Override
-    @NonNull
-    public String getDescription() {
+    @NonNull public String getDescription() {
         return this.description;
     }
 
@@ -91,8 +90,7 @@ public class SpringResource extends AbstractResource {
      * multiple times.
      */
     @Override
-    @NonNull
-    public InputStream getInputStream() throws IOException, IllegalStateException {
+    @NonNull public InputStream getInputStream() throws IOException, IllegalStateException {
         if (this.read && this.representation.isTransient()) {
             throw new IllegalStateException(
                     "Representation has already been read and is transient.");
