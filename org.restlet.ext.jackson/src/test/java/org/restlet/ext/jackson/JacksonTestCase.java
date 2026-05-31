@@ -205,7 +205,7 @@ class JacksonTestCase {
         assertEquals(me1.getCustomer(), me2.getCustomer());
     }
 
-        private String normalizeLineEndings(String text) {
-                return text.replace("\r\n", "\n").replace('\r', '\n');
-        }
+    private String normalizeLineEndings(String text) {
+        return text.replace("\r\n", "\n").replace('\r', '\n');
+    }
 }

@@ -148,7 +148,7 @@ class SpringBeanRouterTestCase {
     void testExplicitAttachmentsMayBeRestlets() {
         String expected = "/protected/timber";
         this.router.setAttachments(
-            Collections.singletonMap(requiredString(expected), requiredString("timber")));
+                Collections.singletonMap(requiredString(expected), requiredString("timber")));
         registerBeanDefinition("timber", null, TestAuthenticator.class, null);
 
         doPostProcess();
@@ -161,7 +161,7 @@ class SpringBeanRouterTestCase {
     @Test
     void testExplicitAttachmentsTrumpBeanNames() {
         this.router.setAttachments(
-            Collections.singletonMap(requiredString(ORE_URI), requiredString("fish")));
+                Collections.singletonMap(requiredString(ORE_URI), requiredString("fish")));
         RouteList actualRoutes = actualRoutes();
         assertEquals(2, actualRoutes.size(), "Wrong number of routes");
 
@@ -173,8 +173,7 @@ class SpringBeanRouterTestCase {
     @Test
     void testExplicitRoutingForNonResourceNonRestletBeansFails() {
         this.router.setAttachments(
-            Collections.singletonMap(
-                requiredString("/fail"), requiredString("someOtherBean")));
+                Collections.singletonMap(requiredString("/fail"), requiredString("someOtherBean")));
 
         IllegalStateException ise = assertThrows(IllegalStateException.class, this::doPostProcess);
         assertEquals(
@@ -270,8 +269,8 @@ class SpringBeanRouterTestCase {
 
         String expectedTemplate = "/renewable/timber/{farm_type}";
         router.setAttachments(
-            Collections.singletonMap(
-                requiredString(expectedTemplate), requiredString("timber")));
+                Collections.singletonMap(
+                        requiredString(expectedTemplate), requiredString("timber")));
         final RouteList actualRoutes = actualRoutes();
 
         assertEquals(3, actualRoutes.size(), "Wrong number of routes");

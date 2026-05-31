@@ -8,7 +8,6 @@
  */
 package org.restlet.ext.freemarker;
 
-import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -44,7 +43,8 @@ class FreeMarkerTestCase {
         fw.write("Value=${value}");
         fw.close();
 
-        final Configuration fmc = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        final Configuration fmc =
+                new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         fmc.setDirectoryForTemplateLoading(testDir);
         final Map<String, Object> map = Map.of("value", "myValue");
 

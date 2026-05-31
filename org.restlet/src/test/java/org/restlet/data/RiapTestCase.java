@@ -16,6 +16,7 @@ import static org.restlet.data.LocalReference.RIAP_APPLICATION;
 import static org.restlet.data.LocalReference.createRiapReference;
 
 import java.io.Serializable;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
@@ -23,6 +24,7 @@ import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.engine.Engine;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -54,7 +56,8 @@ class RiapTestCase {
     static String localBase;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
+        Engine.clearThreadLocalVariables();
         final Component comp = new Component();
         final Application localOnly =
                 new Application() {
@@ -101,6 +104,11 @@ class RiapTestCase {
 
         localBase = createRiapReference(LocalReference.RIAP_COMPONENT, "/local").toString();
         dispatcher = comp.getContext().getClientDispatcher();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        Engine.clearThreadLocalVariables();
     }
 
     @Test

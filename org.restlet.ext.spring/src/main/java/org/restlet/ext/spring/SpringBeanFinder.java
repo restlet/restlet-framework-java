@@ -92,8 +92,7 @@ public class SpringBeanFinder extends SpringFinder
         }
     }
 
-    @NonNull
-    private String getRequiredBeanName() {
+    @NonNull private String getRequiredBeanName() {
         String currentBeanName = getBeanName();
         if (currentBeanName == null) {
             throw new IllegalStateException("beanName");

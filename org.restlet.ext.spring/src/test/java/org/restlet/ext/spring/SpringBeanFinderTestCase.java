@@ -205,8 +205,7 @@ class SpringBeanFinderTestCase {
         assertInstanceOf(SomeResource.class, actual, "Resource not the correct type");
     }
 
-    @NonNull
-    private StaticApplicationContext requiredApplicationContext() {
+    @NonNull private StaticApplicationContext requiredApplicationContext() {
         StaticApplicationContext currentApplicationContext = this.applicationContext;
         if (currentApplicationContext == null) {
             throw new IllegalStateException("applicationContext");
@@ -214,8 +213,7 @@ class SpringBeanFinderTestCase {
         return currentApplicationContext;
     }
 
-    @NonNull
-    private DefaultListableBeanFactory requiredBeanFactory() {
+    @NonNull private DefaultListableBeanFactory requiredBeanFactory() {
         DefaultListableBeanFactory currentBeanFactory = this.beanFactory;
         if (currentBeanFactory == null) {
             throw new IllegalStateException("beanFactory");
@@ -223,24 +221,21 @@ class SpringBeanFinderTestCase {
         return currentBeanFactory;
     }
 
-    @NonNull
-    private String requiredBeanName(String beanName) {
+    @NonNull private String requiredBeanName(String beanName) {
         if (beanName == null) {
             throw new IllegalStateException("beanName");
         }
         return beanName;
     }
 
-    @NonNull
-    private Class<SomeResource> requiredResourceClass(Class<SomeResource> resourceClass) {
+    @NonNull private Class<SomeResource> requiredResourceClass(Class<SomeResource> resourceClass) {
         if (resourceClass == null) {
             throw new IllegalStateException("resourceClass");
         }
         return resourceClass;
     }
 
-    @NonNull
-    private Class<?> requiredAnyClass(Class<?> resourceClass) {
+    @NonNull private Class<?> requiredAnyClass(Class<?> resourceClass) {
         if (resourceClass == null) {
             throw new IllegalStateException("resourceClass");
         }

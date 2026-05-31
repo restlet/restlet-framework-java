@@ -36,6 +36,7 @@ class ZipClientTestCase {
 
     @BeforeEach
     void setUpEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         Path testCaseDirectoryPath = Files.createTempDirectory("ZipClientTestCase");
         zipFile = testCaseDirectoryPath.resolve("test.zip").toFile();
         Engine.getInstance().getRegisteredClients().add(new ZipClientHelper(null));
@@ -44,6 +45,7 @@ class ZipClientTestCase {
     @AfterEach
     void tearDownEach() {
         zipFile.delete();
+        Engine.clearThreadLocalVariables();
     }
 
     @Test
