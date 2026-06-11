@@ -1,6 +1,8 @@
 Changes log
 ===========
 
+- 2.7 Release Candidate 1 (??-06-2026)
+
 - 2.7 Milestone 3 (10-06-2026)
   - Enhancements
     - New OpenApi extension (OAS 3.1 only). Contributed by Antoine Nicolas.
