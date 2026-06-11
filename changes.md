@@ -7,6 +7,17 @@ Changes log
         - Complete test classes. Issue #1490.
         - Deprecate the implementations of the clone method. Issue #1498.
         - Avoid non-short-circuit logic in FileClientHelper. Issue #1495. 
+    - Misc
+        - Upgraded Gson library to 2.14.0.
+        - Upgraded GWT library to 2.13.0.
+        - Upgraded Jackson library to 2.19.4.
+        - Upgraded JaxB runtime library to 4.0.9.
+        - Upgraded JaxB API library to 4.0.5.
+        - Upgraded Jetty library to version 12.1.10.
+        - Upgraded Joda-Time library to 2.14.2.
+        - Upgraded Slf4j library to 2.0.28.
+        - Upgraded Spring library to 6.2.19.
+        - Upgraded Thymeleaf library to 3.1.5.RELEASE.
 
 - 2.6.0 (29-06-2025)
 
@@ -14,7 +25,7 @@ Changes log
     - Misc
         - Upgraded to Jakarta EE 10
           - JAXB to 4.0.0
-          - Servlet API to 6.0.0 
+          - Servlet API to 6.0.0
         - Upgraded Gson library to 2.13.1.
         - Upgraded Jackson library to 2.19.1.
         - Upgraded Jetty library to version 12.0.22.
