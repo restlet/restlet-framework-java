@@ -2,6 +2,16 @@ Changes log
 ===========
 
 - 2.7 Release Candidate 1 (??-06-2026)
+  - Misc
+    - Upgraded Gson library to version 2.14.0.
+    - Upgraded Jackson library to version 2.21 (LTS).
+    - Upgraded Jetty library to version 2.0.36.
+    - Upgraded JSON library to version 20260522.
+    - Upgraded Slf4j library to version 2.0.18.
+    - Upgraded Springframework library to version 7.0.8.
+    - Upgraded Swagger library to version 2.2.50.
+    - Upgraded Swagger parser library to version 2.1.43.
+    - Upgraded Thymeleaf library to version 3.1.5.RELEASE.
 
 - 2.7 Milestone 3 (10-06-2026)
   - Enhancements
