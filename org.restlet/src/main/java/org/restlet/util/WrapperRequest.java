@@ -472,7 +472,7 @@ public class WrapperRequest extends Request {
      */
     @Override
     public void setAccessControlRequestHeaders(Set<String> accessControlRequestHeaders) {
-        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
+        getWrappedRequest().setAccessControlRequestHeaders(accessControlRequestHeaders);
     }
 
     /**
@@ -482,7 +482,7 @@ public class WrapperRequest extends Request {
      */
     @Override
     public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
-        super.setAccessControlRequestMethod(accessControlRequestMethod);
+        getWrappedRequest().setAccessControlRequestMethod(accessControlRequestMethod);
     }
 
     @Override
