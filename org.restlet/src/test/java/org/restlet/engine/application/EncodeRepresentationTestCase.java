@@ -10,6 +10,7 @@ package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -166,7 +167,7 @@ class EncodeRepresentationTestCase {
     void getReader_whenCanEncode_returnsDecompressibleReader() throws Exception {
         EncodeRepresentation representation =
                 new EncodeRepresentation(Encoding.GZIP, new StringRepresentation("hello"));
-        assertTrue(representation.getReader() != null);
+        assertNotNull(representation.getReader());
     }
 
     @Test
@@ -196,7 +197,7 @@ class EncodeRepresentationTestCase {
                 new EncodeRepresentation(Encoding.GZIP, new StringRepresentation("hello"));
         StringWriter writer = new StringWriter();
         representation.write(writer);
-        assertTrue(writer.toString().length() > 0);
+        assertFalse(writer.toString().isEmpty());
     }
 
     @Test

@@ -99,10 +99,14 @@ class CertificateAuthenticatorTestCase {
                     }
 
                     @Override
-                    public void verify(java.security.PublicKey key) {}
+                    public void verify(java.security.PublicKey key) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
-                    public void verify(java.security.PublicKey key, String sigProvider) {}
+                    public void verify(java.security.PublicKey key, String sigProvider) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
                     public String toString() {

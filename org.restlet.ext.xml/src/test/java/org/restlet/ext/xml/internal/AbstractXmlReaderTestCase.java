@@ -26,10 +26,14 @@ class AbstractXmlReaderTestCase {
 
     private static class TestXmlReader extends AbstractXmlReader {
         @Override
-        public void parse(InputSource input) {}
+        public void parse(InputSource input) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
-        public void parse(String systemId) {}
+        public void parse(String systemId) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test

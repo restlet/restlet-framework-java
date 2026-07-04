@@ -43,15 +43,19 @@ class LoggingThreadFactoryTestCase {
         Handler captor =
                 new Handler() {
                     @Override
-                    public void publish(LogRecord record) {
+                    public void publish(LogRecord rec) {
                         latch.countDown();
                     }
 
                     @Override
-                    public void flush() {}
+                    public void flush() {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
-                    public void close() {}
+                    public void close() {
+                        throw new UnsupportedOperationException();
+                    }
                 };
         logger.addHandler(captor);
 

@@ -19,10 +19,10 @@ class SimplerFormatterTestCase {
 
     @Test
     void format_withoutThrowable_includesLevelLoggerAndMessage() {
-        LogRecord record = new LogRecord(Level.INFO, "hello");
-        record.setLoggerName("my.logger");
+        LogRecord rec = new LogRecord(Level.INFO, "hello");
+        rec.setLoggerName("my.logger");
 
-        String result = new SimplerFormatter().format(record);
+        String result = new SimplerFormatter().format(rec);
 
         assertTrue(result.contains(Level.INFO.getLocalizedName()));
         assertTrue(result.contains("my.logger"));
@@ -31,11 +31,11 @@ class SimplerFormatterTestCase {
 
     @Test
     void format_withThrowable_appendsStackTrace() {
-        LogRecord record = new LogRecord(Level.SEVERE, "boom");
-        record.setLoggerName("my.logger");
-        record.setThrown(new RuntimeException("failure"));
+        LogRecord rec = new LogRecord(Level.SEVERE, "boom");
+        rec.setLoggerName("my.logger");
+        rec.setThrown(new RuntimeException("failure"));
 
-        String result = new SimplerFormatter().format(record);
+        String result = new SimplerFormatter().format(rec);
 
         assertTrue(result.contains("boom"));
         assertTrue(result.contains("RuntimeException"));
