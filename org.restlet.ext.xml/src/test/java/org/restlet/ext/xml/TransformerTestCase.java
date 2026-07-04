@@ -9,15 +9,25 @@
 package org.restlet.ext.xml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.routing.Filter;
 
 /**
  * Test case for the Transformer class.
@@ -107,5 +117,112 @@ class TransformerTestCase {
         final String result = transformer.transform(this.source).getText();
 
         assertEquals(this.output, result);
+    }
+
+    @Test
+    void constructor_setsDefaults() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+        assertEquals(Transformer.MODE_REQUEST, transformer.getMode());
+        assertSame(this.xslt, transformer.getTransformSheet());
+        assertEquals(MediaType.APPLICATION_XML, transformer.getResultMediaType());
+        assertNull(transformer.getResultCharacterSet());
+    }
+
+    @Test
+    void gettersAndSetters_roundTrip() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+
+        transformer.setMode(Transformer.MODE_RESPONSE);
+        assertEquals(Transformer.MODE_RESPONSE, transformer.getMode());
+
+        transformer.setResultCharacterSet(CharacterSet.UTF_8);
+        assertEquals(CharacterSet.UTF_8, transformer.getResultCharacterSet());
+
+        transformer.setResultMediaType(MediaType.TEXT_XML);
+        assertEquals(MediaType.TEXT_XML, transformer.getResultMediaType());
+
+        Representation otherSheet = new StringRepresentation("sheet");
+        transformer.setTransformSheet(otherSheet);
+        assertSame(otherSheet, transformer.getTransformSheet());
+
+        assertTrue(transformer.getResultEncodings().isEmpty());
+        transformer.setResultEncodings(List.of(Encoding.GZIP));
+        assertEquals(List.of(Encoding.GZIP), transformer.getResultEncodings());
+
+        assertTrue(transformer.getResultLanguages().isEmpty());
+        transformer.setResultLanguages(List.of(Language.ENGLISH));
+        assertEquals(List.of(Language.ENGLISH), transformer.getResultLanguages());
+    }
+
+    @Test
+    void canTransform_alwaysReturnsTrue() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+        assertTrue(transformer.canTransform(null));
+        assertTrue(transformer.canTransform(this.source));
+    }
+
+    @Test
+    void beforeHandle_requestMode_transformsRequestEntity() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+        Request request = new Request();
+        request.setEntity(this.source);
+        Response response = new Response(request);
+
+        int result = transformer.beforeHandle(request, response);
+
+        assertEquals(Filter.CONTINUE, result);
+        assertTrue(request.getEntity() instanceof TransformRepresentation);
+    }
+
+    @Test
+    void beforeHandle_responseMode_doesNotTransformRequestEntity() {
+        Transformer transformer = new Transformer(Transformer.MODE_RESPONSE, this.xslt);
+        Request request = new Request();
+        request.setEntity(this.source);
+        Response response = new Response(request);
+
+        transformer.beforeHandle(request, response);
+
+        assertSame(this.source, request.getEntity());
+    }
+
+    @Test
+    void afterHandle_responseMode_transformsResponseEntity() {
+        Transformer transformer = new Transformer(Transformer.MODE_RESPONSE, this.xslt);
+        Request request = new Request();
+        Response response = new Response(request);
+        response.setEntity(this.source);
+
+        transformer.afterHandle(request, response);
+
+        assertTrue(response.getEntity() instanceof TransformRepresentation);
+    }
+
+    @Test
+    void afterHandle_requestMode_doesNotTransformResponseEntity() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+        Request request = new Request();
+        Response response = new Response(request);
+        response.setEntity(this.source);
+
+        transformer.afterHandle(request, response);
+
+        assertSame(this.source, response.getEntity());
+    }
+
+    @Test
+    void transform_withResultLanguagesAndEncodings_appliesThemToResult() {
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST, this.xslt);
+        transformer.setResultLanguages(List.of(Language.FRENCH));
+        transformer.setResultEncodings(List.of(Encoding.GZIP));
+        transformer.setResultCharacterSet(CharacterSet.UTF_8);
+        transformer.setResultMediaType(MediaType.TEXT_XML);
+
+        Representation result = transformer.transform(this.source);
+
+        assertTrue(result.getLanguages().contains(Language.FRENCH));
+        assertTrue(result.getEncodings().contains(Encoding.GZIP));
+        assertEquals(CharacterSet.UTF_8, result.getCharacterSet());
+        assertEquals(MediaType.TEXT_XML, result.getMediaType());
     }
 }
