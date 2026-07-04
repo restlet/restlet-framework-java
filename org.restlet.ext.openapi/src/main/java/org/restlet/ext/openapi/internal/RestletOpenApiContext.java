@@ -11,7 +11,7 @@ package org.restlet.ext.openapi.internal;
 import io.swagger.v3.oas.integration.GenericOpenApiContext;
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
 import io.swagger.v3.oas.integration.api.OpenApiReader;
-import org.apache.commons.lang3.StringUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.routing.Router;
 
 public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiContext> {
@@ -24,14 +24,14 @@ public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiC
     @Override
     protected OpenApiReader buildReader(OpenAPIConfiguration openApiConfiguration)
             throws Exception {
-        OpenApiReader reader;
+        final OpenApiReader reader;
 
-        if (StringUtils.isNotBlank(openApiConfiguration.getReaderClass())) {
+        if (StringUtils.isNullOrEmpty(openApiConfiguration.getReaderClass())) {
+            reader = new RestletOpenApiReader();
+        } else {
             Class<?> cls =
                     getClass().getClassLoader().loadClass(openApiConfiguration.getReaderClass());
             reader = (OpenApiReader) cls.getDeclaredConstructor().newInstance();
-        } else {
-            reader = new RestletOpenApiReader();
         }
 
         if (reader instanceof RestletOpenApiReader restletOpenApiReader) {

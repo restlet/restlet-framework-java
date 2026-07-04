@@ -15,72 +15,99 @@
     <description>Restlet API and Engine</description>
 
     <dependencies>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http2</groupId>
-			<artifactId>jetty-http2-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-alpn-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-alpn-java-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http3</groupId>
-			<artifactId>jetty-http3-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.quic</groupId>
-			<artifactId>jetty-quic-server</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-client</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http2</groupId>
-			<artifactId>jetty-http2-client</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http2</groupId>
-			<artifactId>jetty-http2-client-transport</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http3</groupId>
-			<artifactId>jetty-http3-client</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.http3</groupId>
-			<artifactId>jetty-http3-client-transport</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-slf4j-impl</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http2</groupId>
+            <artifactId>jetty-http2-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-alpn-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-alpn-java-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http3</groupId>
+            <artifactId>jetty-http3-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.quic</groupId>
+            <artifactId>jetty-quic-server</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http2</groupId>
+            <artifactId>jetty-http2-client</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http2</groupId>
+            <artifactId>jetty-http2-client-transport</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http3</groupId>
+            <artifactId>jetty-http3-client</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http3</groupId>
+            <artifactId>jetty-http3-client-transport</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-slf4j-impl</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.quic</groupId>
+            <artifactId>jetty-quic-client</artifactId>
+            <version>${lib-jetty-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${lib-osgi-version}</version>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.14.4</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -110,7 +137,9 @@
                     <groups>
                         <group>
                             <title>Restlet API</title>
-                            <packages>org.restlet:org.restlet.data*:org.restlet.representation*:org.restlet.resource*:org.restlet.routing*:org.restlet.security*:org.restlet.service*:org.restlet.util*</packages>
+                            <packages>
+                                org.restlet:org.restlet.data*:org.restlet.representation*:org.restlet.resource*:org.restlet.routing*:org.restlet.security*:org.restlet.service*:org.restlet.util*
+                            </packages>
                         </group>
                         <group>
                             <title>Restlet Engine</title>

@@ -12,7 +12,7 @@ import io.swagger.v3.oas.integration.GenericOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.OpenApiContextLocator;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
-import org.apache.commons.lang3.StringUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.routing.Router;
 
 public class RestletOpenApiContextBuilder
@@ -26,7 +26,7 @@ public class RestletOpenApiContextBuilder
 
     @Override
     public OpenApiContext buildContext(boolean init) throws OpenApiConfigurationException {
-        if (StringUtils.isBlank(ctxId)) {
+        if (StringUtils.isNullOrEmpty(ctxId)) {
             ctxId = OpenApiContext.OPENAPI_CONTEXT_ID_DEFAULT;
         }
 
