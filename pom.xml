@@ -53,8 +53,8 @@
         <!-- dependencies -->
         <lib-freemarker-version>2.3.34</lib-freemarker-version>
         <lib-gson-version>2.14.0</lib-gson-version>
-        <lib-jackson-version>2.21.4</lib-jackson-version>
-        <lib-jackson-annotations-version>2.21</lib-jackson-annotations-version>
+        <lib-jackson-version>2.22.0</lib-jackson-version>
+        <lib-jackson-annotations-version>2.22</lib-jackson-annotations-version>
         <lib-joda-time-version>2.14.2</lib-joda-time-version>
         <lib-jetty-version>12.0.36</lib-jetty-version>
         <lib-json-version>20260522</lib-json-version>
@@ -63,8 +63,8 @@
         <lib-osgi-version>4.3.1</lib-osgi-version>
         <lib-slf4j-version>2.0.18</lib-slf4j-version>
         <lib-spring-version>7.0.8</lib-spring-version>
-        <lib-swagger-core-version>2.2.50</lib-swagger-core-version>
-        <lib-swagger-parser-version>2.1.43</lib-swagger-parser-version>
+        <lib-swagger-core-version>2.2.52</lib-swagger-core-version>
+        <lib-swagger-parser-version>2.1.45</lib-swagger-parser-version>
         <lib-thymeleaf-version>3.1.5.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
         <!-- tests -->
