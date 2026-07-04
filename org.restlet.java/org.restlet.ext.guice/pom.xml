@@ -19,6 +19,22 @@
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>${lib-guice-version}</version>
+			<exclusions>
+				<exclusion><!-- fix CVEs CVE-2023-2976 CVE-2020-8908 -->
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency><!-- fix CVEs CVE-2023-2976 CVE-2020-8908 -->
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${lib-cves-guava-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>

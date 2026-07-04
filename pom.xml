@@ -53,8 +53,8 @@
         <lib-freemarker-version>2.3.34</lib-freemarker-version>
         <lib-gson-version>2.14.0</lib-gson-version>
         <lib-guice-version>7.0.0</lib-guice-version>
-        <lib-gwt-version>2.13.0</lib-gwt-version>
-        <lib-gwt-server-version>2.13.0</lib-gwt-server-version>
+        <lib-gwt-version>2.13.1</lib-gwt-version>
+        <lib-gwt-server-version>2.13.1</lib-gwt-server-version>
         <lib-istack-version>3.0.12</lib-istack-version>
         <lib-jackson-version>2.19.4</lib-jackson-version>
         <lib-jaxb-ri-version>4.0.9</lib-jaxb-ri-version>
@@ -70,6 +70,9 @@
         <lib-spring-version>6.2.19</lib-spring-version>
         <lib-thymeleaf-version>3.1.5.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
+        <!-- fix CVEs -->
+        <lib-cves-guava-version>33.6.0-jre</lib-cves-guava-version>
+        <lib-cves-commons-lang3-version>3.20.0</lib-cves-commons-lang3-version>
         <!-- tests -->
         <lib-junit-version>5.14.4</lib-junit-version>
     </properties>

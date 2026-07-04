@@ -19,6 +19,17 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 			<version>${lib-velocity-version}</version>
+			<exclusions>
+				<exclusion><!-- fix CVEs: CVE-2025-48924-->
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency><!-- fix CVEs: CVE-2025-48924-->
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${lib-cves-commons-lang3-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
