@@ -72,6 +72,26 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.quic</groupId>
+			<artifactId>jetty-quic-client</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-slf4j-impl</artifactId>
 			<version>${lib-jetty-version}</version>
 		</dependency>
