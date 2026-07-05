@@ -9,7 +9,11 @@
 package org.restlet.ext.freemarker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
+import freemarker.template.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
@@ -23,6 +27,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.resource.Directory;
+import org.restlet.util.Resolver;
 
 /**
  * Test case for template filters.
@@ -44,6 +49,85 @@ class TemplateFilterTestCase {
         Response response = testApplication.handle(request);
 
         assertEquals("Method=${m}/Path=${rp}", response.getEntity().getText());
+    }
+
+    @Test
+    void defaultConstructor_setsDefaultConfiguration() {
+        TemplateFilter filter = new TemplateFilter();
+        assertNotNull(filter.getConfiguration());
+    }
+
+    @Test
+    void contextConstructor_setsDefaultConfiguration() {
+        TemplateFilter filter = new TemplateFilter(new Context());
+        assertNotNull(filter.getConfiguration());
+    }
+
+    @Test
+    void contextAndNextConstructor_setsDefaultConfiguration() {
+        Directory directory =
+                new Directory(
+                        new Context(),
+                        LocalReference.createClapReference(
+                                TemplateFilterTestCase.class.getPackage()));
+        TemplateFilter filter = new TemplateFilter(new Context(), directory);
+        assertNotNull(filter.getConfiguration());
+    }
+
+    @Test
+    void constructorWithObjectDataModel_setsDataModel() {
+        Object dataModel = "myDataModel";
+        TemplateFilter filter = new TemplateFilter(new Context(), null, dataModel);
+        assertSame(dataModel, filter.getDataModel());
+    }
+
+    @Test
+    void constructorWithResolverDataModel_setsDataModel() {
+        Resolver<Object> resolver =
+                new Resolver<>() {
+                    @Override
+                    public Object resolve(String name) {
+                        return "resolved-" + name;
+                    }
+                };
+        TemplateFilter filter = new TemplateFilter(new Context(), null, resolver);
+        assertSame(resolver, filter.getDataModel());
+    }
+
+    @Test
+    void setConfiguration_replacesConfiguration() {
+        TemplateFilter filter = new TemplateFilter();
+        Configuration original = filter.getConfiguration();
+        Configuration replacement =
+                new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        filter.setConfiguration(replacement);
+        assertNotSame(original, filter.getConfiguration());
+        assertSame(replacement, filter.getConfiguration());
+    }
+
+    @Test
+    void setDataModel_replacesDataModel() {
+        TemplateFilter filter = new TemplateFilter();
+        filter.setDataModel("myModel");
+        assertEquals("myModel", filter.getDataModel());
+    }
+
+    @Test
+    void createDataModel_withNoConfiguredDataModel_createsResolverHashModel() {
+        TemplateFilter filter = new TemplateFilter();
+        Request request = new Request(Method.GET, "/test");
+        Response response = new Response(request);
+        Object dataModel = filter.createDataModel(request, response);
+        assertNotNull(dataModel);
+    }
+
+    @Test
+    void createDataModel_withConfiguredDataModel_returnsConfiguredDataModel() {
+        TemplateFilter filter = new TemplateFilter();
+        filter.setDataModel("myModel");
+        Request request = new Request(Method.GET, "/test");
+        Response response = new Response(request);
+        assertEquals("myModel", filter.createDataModel(request, response));
     }
 
     @BeforeAll

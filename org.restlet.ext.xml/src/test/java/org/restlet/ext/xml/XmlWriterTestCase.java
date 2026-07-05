@@ -15,7 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.SAXParserFactory;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
 /** Unit tests for {@link XmlWriter}. */
@@ -244,5 +248,226 @@ class XmlWriterTestCase {
         String result = out.toString();
         assertTrue(result.contains("\n"));
         assertTrue(result.contains("  "));
+    }
+
+    @Test
+    void constructor_noArgs_usesStandardOutByDefault() {
+        XmlWriter w = new XmlWriter();
+        assertNotNull(w.getWriter());
+    }
+
+    @Test
+    void constructor_nullWriter_fallsBackToStandardOut() {
+        XmlWriter w = new XmlWriter((Writer) null);
+        assertNotNull(w.getWriter());
+    }
+
+    @Test
+    void setOutput_null_fallsBackToStandardOut() {
+        XmlWriter w = new XmlWriter(sw());
+        w.setOutput(null);
+        assertNotNull(w.getWriter());
+    }
+
+    @Test
+    void constructor_outputStreamAndCharset_writesDocument() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XmlWriter w = new XmlWriter(baos, StandardCharsets.UTF_8);
+        w.startDocument();
+        w.dataElement("root", "ok");
+        w.endDocument();
+        assertTrue(baos.toString(StandardCharsets.UTF_8).contains("<root>ok</root>"));
+    }
+
+    @Test
+    void constructor_outputStreamAndCharsetEncoder_writesDocument() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XmlWriter w = new XmlWriter(baos, StandardCharsets.UTF_8.newEncoder());
+        w.startDocument();
+        w.dataElement("root", "ok");
+        w.endDocument();
+        assertTrue(baos.toString(StandardCharsets.UTF_8).contains("<root>ok</root>"));
+    }
+
+    @Test
+    void constructor_outputStreamAndCharsetName_writesDocument() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XmlWriter w = new XmlWriter(baos, "UTF-8");
+        w.startDocument();
+        w.dataElement("root", "ok");
+        w.endDocument();
+        assertTrue(baos.toString("UTF-8").contains("<root>ok</root>"));
+    }
+
+    @Test
+    void constructor_withXmlReaderParent_canBeUsedAsFilter() throws Exception {
+        XMLReader parent = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+        XmlWriter w = new XmlWriter(parent);
+        StringWriter out = sw();
+        w.setOutput(out);
+        w.startDocument();
+        w.startElement("root");
+        w.endElement("root");
+        w.endDocument();
+        assertTrue(out.toString().contains("<root>"));
+    }
+
+    @Test
+    void constructor_withXmlReaderParentAndWriter_writesDocument() throws Exception {
+        XMLReader parent = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(parent, out);
+        w.startDocument();
+        w.dataElement("root", "value");
+        w.endDocument();
+        assertTrue(out.toString().contains("<root>value</root>"));
+    }
+
+    @Test
+    void startElement_uriAndLocalName_writesStartTag() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.startDocument();
+        w.startElement("", "root");
+        w.endElement("", "root");
+        w.endDocument();
+        assertTrue(out.toString().contains("<root>"));
+        assertTrue(out.toString().contains("</root>"));
+    }
+
+    @Test
+    void emptyElement_asRootElement_forcesNamespaceDeclarationOnRoot() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.forceNSDecl("http://example.com/root-ns", "r");
+        w.startDocument();
+        w.emptyElement("http://example.com/root-ns", "root", "r:root", new AttributesImpl());
+        w.endDocument();
+        String result = out.toString();
+        assertTrue(result.contains("xmlns:r=\"http://example.com/root-ns\""));
+        assertTrue(result.contains("<r:root"));
+    }
+
+    @Test
+    void dataFormat_emptyElement_nestedInsideElement_addsNewlineAndIndent() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.setDataFormat(true);
+        w.setIndentStep(2);
+        w.startDocument();
+        w.startElement("root");
+        w.emptyElement("leaf");
+        w.endElement("root");
+        w.endDocument();
+        assertTrue(out.toString().contains("<leaf/>"));
+    }
+
+    @Test
+    void writeAttributes_withXmlnsAttribute_forcesDefaultNamespaceDecl() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.setPrefix("http://example.com/default-ns", "");
+        AttributesImpl atts = new AttributesImpl();
+        atts.addAttribute("", "", "xmlns", "CDATA", "http://example.com/default-ns");
+        w.startDocument();
+        w.startElement("", "root", "root", atts);
+        w.endElement("root");
+        w.endDocument();
+        assertTrue(out.toString().contains("xmlns=\"http://example.com/default-ns\""));
+    }
+
+    @Test
+    void writeAttributes_withXmlnsPrefixAttribute_forcesPrefixedNamespaceDecl() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        AttributesImpl atts = new AttributesImpl();
+        atts.addAttribute("", "foo", "xmlns:foo", "CDATA", "http://example.com/foo-ns");
+        w.startDocument();
+        w.startElement("", "root", "root", atts);
+        w.endElement("root");
+        w.endDocument();
+        assertTrue(out.toString().contains("xmlns:foo=\"http://example.com/foo-ns\""));
+    }
+
+    @Test
+    void characters_withQuoteChar_notEscaped() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.startDocument();
+        w.startElement("root");
+        w.characters("say \"hi\"");
+        w.endElement("root");
+        w.endDocument();
+        assertTrue(out.toString().contains("say \"hi\""));
+    }
+
+    @Test
+    void startElement_withQNameNoColon_usesDefaultNamespace() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        AttributesImpl atts = new AttributesImpl();
+        w.startDocument();
+        w.startElement("http://example.com/newns", "root", "root", atts);
+        w.endElement("http://example.com/newns", "root", "root");
+        w.endDocument();
+        assertTrue(out.toString().contains("xmlns=\"http://example.com/newns\""));
+    }
+
+    @Test
+    void startElement_withQNameColon_usesQNamePrefix() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        AttributesImpl atts = new AttributesImpl();
+        w.startDocument();
+        w.startElement("http://example.com/newns2", "root", "ns:root", atts);
+        w.endElement("http://example.com/newns2", "root", "ns:root");
+        w.endDocument();
+        String result = out.toString();
+        assertTrue(result.contains("xmlns:ns=\"http://example.com/newns2\""));
+        assertTrue(result.contains("<ns:root"));
+    }
+
+    @Test
+    void nestedElement_withEmptyUriInsideDefaultNamespace_resetsDefaultNamespace()
+            throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.setPrefix("http://example.com/ns3", "");
+        w.startDocument();
+        w.startElement("http://example.com/ns3", "root");
+        w.startElement("", "child");
+        w.endElement("", "child");
+        w.endElement("http://example.com/ns3", "root");
+        w.endDocument();
+        String result = out.toString();
+        assertTrue(result.contains("<root"));
+        assertTrue(result.contains("<child"));
+    }
+
+    @Test
+    void emptyElement_withUnknownNamespaceNoQName_generatesPrefix() throws Exception {
+        StringWriter out = sw();
+        XmlWriter w = new XmlWriter(out);
+        w.startDocument();
+        w.emptyElement("http://www.foo.com/ns/", "foo");
+        w.endDocument();
+        assertTrue(out.toString().contains("NS"));
+    }
+
+    @Test
+    void reusingWriter_acrossDocuments_reusesNamespacePrefix() throws Exception {
+        StringWriter out1 = sw();
+        XmlWriter w = new XmlWriter(out1);
+        w.startDocument();
+        w.emptyElement("http://example.com/reused-ns", "a");
+        w.endDocument();
+
+        StringWriter out2 = sw();
+        w.setOutput(out2);
+        w.startDocument();
+        w.emptyElement("http://example.com/reused-ns", "a");
+        w.endDocument();
+
+        assertTrue(out2.toString().contains("http://example.com/reused-ns"));
     }
 }

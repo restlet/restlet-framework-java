@@ -116,4 +116,15 @@ class ContextTemplateLoaderTestCase {
         StringRepresentation rep = new StringRepresentation("content");
         assertEquals(-1L, loader.getLastModified(rep));
     }
+
+    @Test
+    void getReader_returnsReaderWithGivenCharacterSet() throws IOException {
+        ContextTemplateLoader loader = new ContextTemplateLoader(null, "clap://test");
+        StringRepresentation rep = new StringRepresentation("template content");
+        try (java.io.Reader reader = loader.getReader(rep, "UTF-8")) {
+            char[] buffer = new char[64];
+            int read = reader.read(buffer);
+            assertEquals("template content", new String(buffer, 0, read));
+        }
+    }
 }

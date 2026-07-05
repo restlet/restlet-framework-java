@@ -11,19 +11,29 @@ package org.restlet.ext.freemarker;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ServerResource;
 
 /**
  * Unit test for the FreeMarker extension.
@@ -127,5 +137,106 @@ class FreeMarkerTestCase {
         assertNull(
                 converter.toRepresentation(
                         "notATemplate", new Variant(MediaType.TEXT_PLAIN), null));
+    }
+
+    @Test
+    void testFreemarkerConverterWithTemplate() throws Exception {
+        FreemarkerConverter converter = new FreemarkerConverter();
+
+        Configuration fmc = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        StringRepresentation templateSource = new StringRepresentation("Hello ${m}");
+        templateSource.setCharacterSet(CharacterSet.UTF_8);
+        Template template = TemplateRepresentation.getTemplate(fmc, templateSource);
+        assertNotNull(template);
+
+        assertEquals(1.0f, converter.score(template, new Variant(MediaType.TEXT_HTML), null));
+
+        Request request = new Request(Method.GET, "/test");
+        Response response = new Response(request);
+        ServerResource resource = new ServerResource() {};
+        resource.setRequest(request);
+        resource.setResponse(response);
+
+        Representation representation =
+                converter.toRepresentation(template, new Variant(MediaType.TEXT_HTML), resource);
+        assertNotNull(representation);
+        assertTrue(representation instanceof TemplateRepresentation);
+        assertEquals("Hello GET", representation.getText());
+    }
+
+    @Test
+    void testTemplateRepresentationConstructorsWithDefaultConfiguration() throws IOException {
+        StringRepresentation rep = new StringRepresentation("Hello ${name}");
+        rep.setCharacterSet(CharacterSet.UTF_8);
+
+        // Constructor(Representation, MediaType) - uses a default Configuration
+        TemplateRepresentation tr1 = new TemplateRepresentation(rep, MediaType.TEXT_PLAIN);
+        assertNotNull(tr1.getTemplate());
+        assertNull(tr1.getDataModel());
+
+        // Constructor(Representation, Object dataModel, MediaType) - default Configuration
+        StringRepresentation rep2 = new StringRepresentation("Hello ${name}");
+        rep2.setCharacterSet(CharacterSet.UTF_8);
+        TemplateRepresentation tr2 =
+                new TemplateRepresentation(rep2, Map.of("name", "world"), MediaType.TEXT_PLAIN);
+        assertEquals(Map.of("name", "world"), tr2.getDataModel());
+        assertEquals("Hello world", tr2.getText());
+
+        // Constructor(Representation, Configuration, Object dataModel, MediaType)
+        Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        StringRepresentation rep3 = new StringRepresentation("Hello ${name}");
+        rep3.setCharacterSet(CharacterSet.UTF_8);
+        TemplateRepresentation tr3 =
+                new TemplateRepresentation(
+                        rep3, cfg, Map.of("name", "restlet"), MediaType.TEXT_PLAIN);
+        assertEquals("Hello restlet", tr3.getText());
+    }
+
+    @Test
+    void testTemplateRepresentationWithoutExplicitCharacterSet() {
+        // No character set is set on the source representation: the UTF-8 fallback path is used.
+        StringRepresentation rep = new StringRepresentation("Hello ${name}");
+        Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        Template template = TemplateRepresentation.getTemplate(cfg, rep);
+        assertNotNull(template);
+    }
+
+    @Test
+    void testTemplateRepresentationEqualsAndHashCode() {
+        TemplateRepresentation tr =
+                new TemplateRepresentation((Template) null, MediaType.TEXT_PLAIN);
+        assertEquals(tr, tr);
+        assertEquals(tr.hashCode(), tr.hashCode());
+    }
+
+    @Test
+    void testTemplateRepresentationSetDataModelFromRequestResponse() throws IOException {
+        Request request = new Request(Method.GET, "/test");
+        Response response = new Response(request);
+        response.setStatus(Status.SUCCESS_OK);
+
+        Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        StringRepresentation rep = new StringRepresentation("Method=${m}");
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        TemplateRepresentation tr = new TemplateRepresentation(rep, cfg, MediaType.TEXT_PLAIN);
+
+        Object dataModel = tr.setDataModel(request, response);
+        assertNotNull(dataModel);
+        assertEquals(dataModel, tr.getDataModel());
+        assertEquals("Method=GET", tr.getText());
+    }
+
+    @Test
+    void testTemplateRepresentationWriteWithTemplateException() {
+        // A missing variable used with the "?number" built-in raises a TemplateException while
+        // processing, which write() should translate into an IOException.
+        Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        StringRepresentation rep = new StringRepresentation("${missingVar}");
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        TemplateRepresentation tr =
+                new TemplateRepresentation(rep, cfg, Map.of(), MediaType.TEXT_PLAIN);
+
+        StringWriter writer = new StringWriter();
+        assertThrows(IOException.class, () -> tr.write(writer));
     }
 }

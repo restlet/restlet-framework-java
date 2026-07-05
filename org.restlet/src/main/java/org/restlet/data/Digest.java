@@ -117,7 +117,7 @@ public class Digest {
 
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(algorithm, value);
+        return SystemUtils.hashCode(algorithm, Arrays.hashCode(value));
     }
 
     @Override

@@ -534,7 +534,7 @@ public final class MediaType extends Metadata {
                 continue;
             }
 
-            if ("*".equals(mostSpecific.getMainType())) {
+            if (mostSpecific == null || "*".equals(mostSpecific.getMainType())) {
                 mostSpecific = mediaType;
             } else {
                 final String subType = mostSpecific.getSubType();

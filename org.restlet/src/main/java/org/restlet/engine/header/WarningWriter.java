@@ -54,6 +54,7 @@ public class WarningWriter extends HeaderWriter<Warning> {
         appendQuotedString(text);
 
         if (warning.getDate() != null) {
+            append(" ");
             appendQuotedString(DateUtils.format(warning.getDate()));
         }
 

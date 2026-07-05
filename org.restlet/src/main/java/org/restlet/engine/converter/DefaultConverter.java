@@ -289,6 +289,9 @@ public class DefaultConverter extends ConverterHelper {
     public <T> void updatePreferences(List<Preference<MediaType>> preferences, Class<T> entity) {
         if (Form.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.APPLICATION_WWW_FORM, 1.0F);
+        } else if (String.class.isAssignableFrom(entity) || Reader.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, TEXT_PLAIN, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_ALL, 0.5F);
         } else if (Serializable.class.isAssignableFrom(entity)) {
             if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED) {
                 updatePreferences(preferences, MediaType.APPLICATION_JAVA_OBJECT, 1.0F);
@@ -296,9 +299,6 @@ public class DefaultConverter extends ConverterHelper {
             if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED) {
                 updatePreferences(preferences, MediaType.APPLICATION_JAVA_OBJECT_XML, 1.0F);
             }
-        } else if (String.class.isAssignableFrom(entity) || Reader.class.isAssignableFrom(entity)) {
-            updatePreferences(preferences, TEXT_PLAIN, 1.0F);
-            updatePreferences(preferences, MediaType.TEXT_ALL, 0.5F);
         } else if (InputStream.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, APPLICATION_OCTET_STREAM, 1.0F);
             updatePreferences(preferences, MediaType.APPLICATION_ALL, 0.5F);

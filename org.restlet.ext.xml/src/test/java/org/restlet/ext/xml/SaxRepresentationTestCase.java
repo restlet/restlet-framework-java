@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.sax.SAXSource;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.representation.StringRepresentation;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -138,5 +139,47 @@ class SaxRepresentationTestCase {
         SAXSource source = new SAXSource(new InputSource(new StringReader(XML)));
         sr.setSaxSource(source);
         assertEquals(source, sr.getSaxSource());
+    }
+
+    @Test
+    void getSaxSource_withXmlRepresentationSource_delegatesToItsSaxSource() throws Exception {
+        DomRepresentation domSource =
+                new DomRepresentation(new StringRepresentation(XML, MediaType.TEXT_XML));
+        SaxRepresentation sr = new SaxRepresentation(domSource);
+        assertNotNull(sr.getSaxSource());
+    }
+
+    @Test
+    void getSaxSource_withCustomFeatures_stillBuildsSource() throws Exception {
+        StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
+        SaxRepresentation sr = new SaxRepresentation(rep);
+        sr.setNamespaceAware(true);
+        sr.setXIncludeAware(true);
+        sr.setSecureProcessing(true);
+        sr.setExpandingEntityRefs(false);
+        assertNotNull(sr.getSaxSource());
+    }
+
+    @Test
+    void getSaxSource_withLocationRef_setsSystemId() throws Exception {
+        StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
+        rep.setLocationRef(new Reference("http://example.com/loc.xml"));
+        SaxRepresentation sr = new SaxRepresentation(rep);
+        assertEquals("http://example.com/loc.xml", sr.getSaxSource().getSystemId());
+    }
+
+    @Test
+    void parse_withMalformedXml_throwsIOException() {
+        SaxRepresentation sr =
+                new SaxRepresentation(new StringRepresentation("not xml", MediaType.TEXT_XML));
+        assertThrows(IOException.class, () -> sr.parse(new DefaultHandler()));
+    }
+
+    @Test
+    void release_releasesUnderlyingXmlRepresentation() throws Exception {
+        StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
+        SaxRepresentation sr = new SaxRepresentation(rep);
+        sr.release();
+        assertFalse(rep.isAvailable());
     }
 }

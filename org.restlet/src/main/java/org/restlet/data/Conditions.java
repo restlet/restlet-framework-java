@@ -189,7 +189,9 @@ public final class Conditions {
         }
 
         // Is the "if-Modified-Since" rule followed or not?
-        if (result == null && isNotModifiedSince(modificationDate)) {
+        if ((result == null)
+                && (getModifiedSince() != null)
+                && isNotModifiedSince(modificationDate)) {
             result = getIfModifiedSinceStatus(method);
         }
 
