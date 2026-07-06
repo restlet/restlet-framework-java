@@ -10,11 +10,13 @@ package org.restlet.engine.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
@@ -75,7 +77,7 @@ class FormUtilsTestCase {
     @Test
     void getParameter_multipleMatches_returnsListOfValues() throws IOException {
         Object result = FormUtils.getParameter("a=1&a=2", "a", CharacterSet.UTF_8, '&', true);
-        assertTrue(result instanceof java.util.List<?>);
+        assertInstanceOf(List.class, result);
         assertEquals(2, ((java.util.List<?>) result).size());
     }
 

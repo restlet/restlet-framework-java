@@ -78,6 +78,6 @@ class CharacterRepresentationTestCase {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         representation.write(out);
 
-        assertEquals("café", new String(out.toByteArray(), CharacterSet.UTF_8.getName()));
+        assertEquals("café", out.toString(CharacterSet.UTF_8.getName()));
     }
 }

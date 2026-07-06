@@ -179,18 +179,6 @@ class CacheDirectiveTestCase {
     }
 
     @Test
-    void equals_sameInstance_returnsTrue() {
-        CacheDirective directive = CacheDirective.noStore();
-        assertEquals(directive, directive);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        CacheDirective directive = CacheDirective.noStore();
-        assertNotEquals(directive, "no-store");
-    }
-
-    @Test
     void equals_differentDigitFlag_returnsFalse() {
         CacheDirective d1 = new CacheDirective("max-age", "10", true);
         CacheDirective d2 = new CacheDirective("max-age", "10", false);

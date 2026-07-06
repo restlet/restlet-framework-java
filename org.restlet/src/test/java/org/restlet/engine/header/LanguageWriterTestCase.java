@@ -11,6 +11,7 @@ package org.restlet.engine.header;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Language;
 
@@ -18,8 +19,7 @@ class LanguageWriterTestCase {
 
     @Test
     void write_singleLanguage_writesLanguageName() {
-        assertEquals(
-                Language.ENGLISH.getName(), LanguageWriter.write(Arrays.asList(Language.ENGLISH)));
+        assertEquals(Language.ENGLISH.getName(), LanguageWriter.write(List.of(Language.ENGLISH)));
     }
 
     @Test

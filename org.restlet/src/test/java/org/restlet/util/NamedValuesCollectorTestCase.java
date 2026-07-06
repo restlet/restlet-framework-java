@@ -10,6 +10,7 @@ package org.restlet.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -64,7 +65,7 @@ class NamedValuesCollectorTestCase {
         collector.collect(new Parameter("a", "2"));
 
         Object result = collector.getCollectedValues().get("a");
-        assertTrue(result instanceof List<?>);
+        assertInstanceOf(List.class, result);
         assertEquals(List.of("1", "2"), result);
     }
 

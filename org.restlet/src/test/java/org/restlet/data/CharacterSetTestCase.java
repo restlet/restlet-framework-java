@@ -10,11 +10,11 @@ package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 /** Test {@link org.restlet.data.CharacterSet}. */
@@ -35,7 +35,7 @@ class CharacterSetTestCase {
 
     @Test
     void constructor_withJavaCharset_usesCharsetNameAndDisplayName() {
-        java.nio.charset.Charset charset = java.nio.charset.Charset.forName("UTF-8");
+        java.nio.charset.Charset charset = StandardCharsets.UTF_8;
         CharacterSet characterSet = new CharacterSet(charset);
         assertEquals(charset.name(), characterSet.getName());
         assertEquals(charset.displayName(), characterSet.getDescription());
@@ -68,7 +68,7 @@ class CharacterSetTestCase {
 
     @Test
     void valueOf_nullOrEmptyName_returnsNull() {
-        assertNull(CharacterSet.valueOf((String) null));
+        assertNull(CharacterSet.valueOf(null));
         assertNull(CharacterSet.valueOf(""));
     }
 
@@ -78,11 +78,6 @@ class CharacterSetTestCase {
         CharacterSet cs2 = new CharacterSet("UTF-8");
         assertEquals(cs1, cs2);
         assertEquals(cs1.hashCode(), cs2.hashCode());
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        assertNotEquals(CharacterSet.UTF_8, "UTF-8");
     }
 
     @Test

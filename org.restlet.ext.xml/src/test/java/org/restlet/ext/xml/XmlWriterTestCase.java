@@ -161,20 +161,20 @@ class XmlWriterTestCase {
     @Test
     void setPrefix_getPrefix_roundTrip() {
         XmlWriter w = new XmlWriter(sw());
-        w.setPrefix("http://example.com/", "ex");
-        assertEquals("ex", w.getPrefix("http://example.com/"));
+        w.setPrefix("https://example.com/", "ex");
+        assertEquals("ex", w.getPrefix("https://example.com/"));
     }
 
     @Test
     void forceNSDecl_withPrefix_declaresOnRootElement() throws Exception {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
-        w.forceNSDecl("http://example.com/ns", "ex");
+        w.forceNSDecl("https://example.com/ns", "ex");
         w.startDocument();
         w.startElement("root");
         w.endElement("root");
         w.endDocument();
-        assertTrue(out.toString().contains("xmlns:ex=\"http://example.com/ns\""));
+        assertTrue(out.toString().contains("xmlns:ex=\"https://example.com/ns\""));
     }
 
     @Test
@@ -296,7 +296,7 @@ class XmlWriterTestCase {
         w.startDocument();
         w.dataElement("root", "ok");
         w.endDocument();
-        assertTrue(baos.toString("UTF-8").contains("<root>ok</root>"));
+        assertTrue(baos.toString(StandardCharsets.UTF_8).contains("<root>ok</root>"));
     }
 
     @Test
@@ -339,12 +339,12 @@ class XmlWriterTestCase {
     void emptyElement_asRootElement_forcesNamespaceDeclarationOnRoot() throws Exception {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
-        w.forceNSDecl("http://example.com/root-ns", "r");
+        w.forceNSDecl("https://example.com/root-ns", "r");
         w.startDocument();
-        w.emptyElement("http://example.com/root-ns", "root", "r:root", new AttributesImpl());
+        w.emptyElement("https://example.com/root-ns", "root", "r:root", new AttributesImpl());
         w.endDocument();
         String result = out.toString();
-        assertTrue(result.contains("xmlns:r=\"http://example.com/root-ns\""));
+        assertTrue(result.contains("xmlns:r=\"https://example.com/root-ns\""));
         assertTrue(result.contains("<r:root"));
     }
 
@@ -366,14 +366,14 @@ class XmlWriterTestCase {
     void writeAttributes_withXmlnsAttribute_forcesDefaultNamespaceDecl() throws Exception {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
-        w.setPrefix("http://example.com/default-ns", "");
+        w.setPrefix("https://example.com/default-ns", "");
         AttributesImpl atts = new AttributesImpl();
-        atts.addAttribute("", "", "xmlns", "CDATA", "http://example.com/default-ns");
+        atts.addAttribute("", "", "xmlns", "CDATA", "https://example.com/default-ns");
         w.startDocument();
         w.startElement("", "root", "root", atts);
         w.endElement("root");
         w.endDocument();
-        assertTrue(out.toString().contains("xmlns=\"http://example.com/default-ns\""));
+        assertTrue(out.toString().contains("xmlns=\"https://example.com/default-ns\""));
     }
 
     @Test
@@ -381,12 +381,12 @@ class XmlWriterTestCase {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
         AttributesImpl atts = new AttributesImpl();
-        atts.addAttribute("", "foo", "xmlns:foo", "CDATA", "http://example.com/foo-ns");
+        atts.addAttribute("", "foo", "xmlns:foo", "CDATA", "https://example.com/foo-ns");
         w.startDocument();
         w.startElement("", "root", "root", atts);
         w.endElement("root");
         w.endDocument();
-        assertTrue(out.toString().contains("xmlns:foo=\"http://example.com/foo-ns\""));
+        assertTrue(out.toString().contains("xmlns:foo=\"https://example.com/foo-ns\""));
     }
 
     @Test
@@ -407,10 +407,10 @@ class XmlWriterTestCase {
         XmlWriter w = new XmlWriter(out);
         AttributesImpl atts = new AttributesImpl();
         w.startDocument();
-        w.startElement("http://example.com/newns", "root", "root", atts);
-        w.endElement("http://example.com/newns", "root", "root");
+        w.startElement("https://example.com/newns", "root", "root", atts);
+        w.endElement("https://example.com/newns", "root", "root");
         w.endDocument();
-        assertTrue(out.toString().contains("xmlns=\"http://example.com/newns\""));
+        assertTrue(out.toString().contains("xmlns=\"https://example.com/newns\""));
     }
 
     @Test
@@ -419,11 +419,11 @@ class XmlWriterTestCase {
         XmlWriter w = new XmlWriter(out);
         AttributesImpl atts = new AttributesImpl();
         w.startDocument();
-        w.startElement("http://example.com/newns2", "root", "ns:root", atts);
-        w.endElement("http://example.com/newns2", "root", "ns:root");
+        w.startElement("https://example.com/newns2", "root", "ns:root", atts);
+        w.endElement("https://example.com/newns2", "root", "ns:root");
         w.endDocument();
         String result = out.toString();
-        assertTrue(result.contains("xmlns:ns=\"http://example.com/newns2\""));
+        assertTrue(result.contains("xmlns:ns=\"https://example.com/newns2\""));
         assertTrue(result.contains("<ns:root"));
     }
 
@@ -432,12 +432,12 @@ class XmlWriterTestCase {
             throws Exception {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
-        w.setPrefix("http://example.com/ns3", "");
+        w.setPrefix("https://example.com/ns3", "");
         w.startDocument();
-        w.startElement("http://example.com/ns3", "root");
+        w.startElement("https://example.com/ns3", "root");
         w.startElement("", "child");
         w.endElement("", "child");
-        w.endElement("http://example.com/ns3", "root");
+        w.endElement("https://example.com/ns3", "root");
         w.endDocument();
         String result = out.toString();
         assertTrue(result.contains("<root"));
@@ -449,7 +449,7 @@ class XmlWriterTestCase {
         StringWriter out = sw();
         XmlWriter w = new XmlWriter(out);
         w.startDocument();
-        w.emptyElement("http://www.foo.com/ns/", "foo");
+        w.emptyElement("https://www.foo.com/ns/", "foo");
         w.endDocument();
         assertTrue(out.toString().contains("NS"));
     }
@@ -459,15 +459,15 @@ class XmlWriterTestCase {
         StringWriter out1 = sw();
         XmlWriter w = new XmlWriter(out1);
         w.startDocument();
-        w.emptyElement("http://example.com/reused-ns", "a");
+        w.emptyElement("https://example.com/reused-ns", "a");
         w.endDocument();
 
         StringWriter out2 = sw();
         w.setOutput(out2);
         w.startDocument();
-        w.emptyElement("http://example.com/reused-ns", "a");
+        w.emptyElement("https://example.com/reused-ns", "a");
         w.endDocument();
 
-        assertTrue(out2.toString().contains("http://example.com/reused-ns"));
+        assertTrue(out2.toString().contains("https://example.com/reused-ns"));
     }
 }

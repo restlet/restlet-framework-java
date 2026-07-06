@@ -10,6 +10,7 @@ package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class DecoderTestCase {
         Decoder decoder = new Decoder(new Context());
         Representation representation = new StringRepresentation("body");
         representation.getEncodings().add(Encoding.GZIP);
-        assertTrue(decoder.decode(representation) instanceof DecodeRepresentation);
+        assertInstanceOf(DecodeRepresentation.class, decoder.decode(representation));
     }
 
     @Test
@@ -101,7 +102,7 @@ class DecoderTestCase {
 
         int result = decoder.beforeHandle(request, response);
 
-        assertTrue(request.getEntity() instanceof DecodeRepresentation);
+        assertInstanceOf(DecodeRepresentation.class, request.getEntity());
         assertEquals(org.restlet.routing.Filter.CONTINUE, result);
     }
 
@@ -130,7 +131,7 @@ class DecoderTestCase {
 
         decoder.afterHandle(request, response);
 
-        assertTrue(response.getEntity() instanceof DecodeRepresentation);
+        assertInstanceOf(DecodeRepresentation.class, response.getEntity());
     }
 
     @Test

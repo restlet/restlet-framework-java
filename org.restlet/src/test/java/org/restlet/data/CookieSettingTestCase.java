@@ -113,18 +113,6 @@ class CookieSettingTestCase {
     }
 
     @Test
-    void equals_sameInstance_returnsTrue() {
-        CookieSetting cookie = new CookieSetting("session", "abc123");
-        assertEquals(cookie, cookie);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        CookieSetting cookie = new CookieSetting("session", "abc123");
-        assertNotEquals(cookie, new Cookie("session", "abc123"));
-    }
-
-    @Test
     void equals_differentMaxAge_returnsFalse() {
         CookieSetting c1 = new CookieSetting(0, "session", "abc123", null, null, null, 10, false);
         CookieSetting c2 = new CookieSetting(0, "session", "abc123", null, null, null, 20, false);

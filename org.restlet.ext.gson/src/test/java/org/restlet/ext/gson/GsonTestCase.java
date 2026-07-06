@@ -20,6 +20,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Since;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,60 +42,13 @@ import org.restlet.representation.Variant;
  */
 class GsonTestCase {
 
-    private static class User {
-        private final boolean active;
-
-        private final Date createAt;
-
-        @Since(2.0)
-        private final Date lastLogin;
-
-        private final String loginId;
-
-        private final String password;
-
-        private final int rate;
-
-        public User(
-                String loginId,
-                String password,
-                int rate,
-                boolean active,
-                Date createAt,
-                Date lastLogin) {
-            super();
-            this.loginId = loginId;
-            this.password = password;
-            this.rate = rate;
-            this.active = active;
-            this.createAt = createAt;
-            this.lastLogin = lastLogin;
-        }
-
-        public Date getCreateAt() {
-            return createAt;
-        }
-
-        public Date getLastLogin() {
-            return lastLogin;
-        }
-
-        public String getLoginId() {
-            return loginId;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public int getRate() {
-            return rate;
-        }
-
-        public boolean isActive() {
-            return active;
-        }
-    }
+    private record User(
+            String loginId,
+            String password,
+            int rate,
+            boolean active,
+            Date createAt,
+            @Since(2.0) Date lastLogin) {}
 
     private GsonConverter gsonConverter;
 
@@ -102,7 +56,9 @@ class GsonTestCase {
 
     @BeforeEach
     void setUpEach() {
-        user = new User("hello", "secret", 1, true, new Date(), new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        Date date = new Date(instant.toEpochMilli());
+        user = new User("hello", "secret", 1, true, date, date);
         gsonConverter = new GsonConverter();
     }
 
@@ -134,24 +90,24 @@ class GsonTestCase {
         User parsedUser = gsonRep.getObject();
 
         assertNotNull(parsedUser);
-        assertEquals("hello", parsedUser.getLoginId());
-        assertEquals("secret", parsedUser.getPassword());
-        assertEquals(1, parsedUser.getRate());
-        assertTrue(parsedUser.isActive());
+        assertEquals("hello", parsedUser.loginId());
+        assertEquals("secret", parsedUser.password());
+        assertEquals(1, parsedUser.rate());
+        assertTrue(parsedUser.active());
         DateTime time = new DateTime("2012-05-20T15:41:01.489+08:00");
-        assertEquals(time.getMillis(), parsedUser.getCreateAt().getTime());
-        assertEquals(time.getMillis(), parsedUser.getLastLogin().getTime());
+        assertEquals(time.getMillis(), parsedUser.createAt().getTime());
+        assertEquals(time.getMillis(), parsedUser.lastLogin().getTime());
 
         GsonRepresentation<User> gsonRep1 = new GsonRepresentation<>(source, User.class);
         gsonRep1.getBuilder().setVersion(1.0);
 
         User u1 = gsonRep1.getObject();
-        assertNull(u1.getLastLogin());
-        assertEquals("hello", u1.getLoginId());
-        assertEquals("secret", u1.getPassword());
-        assertEquals(1, u1.getRate());
-        assertTrue(u1.isActive());
-        assertEquals(time.getMillis(), u1.getCreateAt().getTime());
+        assertNull(u1.lastLogin());
+        assertEquals("hello", u1.loginId());
+        assertEquals("secret", u1.password());
+        assertEquals(1, u1.rate());
+        assertTrue(u1.active());
+        assertEquals(time.getMillis(), u1.createAt().getTime());
     }
 
     @Test
@@ -276,7 +232,7 @@ class GsonTestCase {
 
         assertNotNull(variants);
         assertEquals(1, variants.size());
-        assertTrue(variants.get(0).isCompatible(new Variant(MediaType.APPLICATION_JSON)));
+        assertTrue(variants.getFirst().isCompatible(new Variant(MediaType.APPLICATION_JSON)));
     }
 
     @Test
@@ -332,7 +288,7 @@ class GsonTestCase {
         User result = gsonConverter.toObject(source, User.class, null);
 
         assertNotNull(result);
-        assertEquals("hello", result.getLoginId());
+        assertEquals("hello", result.loginId());
     }
 
     @Test
@@ -364,13 +320,21 @@ class GsonTestCase {
         gsonConverter.updatePreferences(preferences, User.class);
 
         assertFalse(preferences.isEmpty());
-        assertEquals(MediaType.APPLICATION_JSON, preferences.get(0).getMetadata());
+        assertEquals(MediaType.APPLICATION_JSON, preferences.getFirst().getMetadata());
     }
 
     @Test
     final void testSetObject_updatesWrappedObject() throws IOException {
         GsonRepresentation<Object> rep = new GsonRepresentation<>(user);
-        User other = new User("other", "pwd", 2, false, new Date(), new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        User other =
+                new User(
+                        "other",
+                        "pwd",
+                        2,
+                        false,
+                        new Date(instant.toEpochMilli()),
+                        new Date(instant.toEpochMilli()));
 
         rep.setObject(other);
 

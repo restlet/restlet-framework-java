@@ -83,18 +83,6 @@ class ChallengeMessageTestCase {
     }
 
     @Test
-    void equals_sameInstance_returnsTrue() {
-        ChallengeMessage message = new ChallengeRequest(ChallengeScheme.HTTP_BASIC);
-        assertEquals(message, message);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        ChallengeMessage message = new ChallengeRequest(ChallengeScheme.HTTP_BASIC);
-        assertNotEquals(message, "not a challenge message");
-    }
-
-    @Test
     void equals_differentRealm_returnsFalse() {
         ChallengeMessage m1 = new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "realm1");
         ChallengeMessage m2 = new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "realm2");

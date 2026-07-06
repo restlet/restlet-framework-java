@@ -32,8 +32,8 @@ class ExpectationReaderTestCase {
         Expectation expectation = reader.readValue();
         assertEquals("foo", expectation.getName());
         assertEquals(1, expectation.getParameters().size());
-        assertEquals("bar", expectation.getParameters().get(0).getName());
-        assertEquals("baz", expectation.getParameters().get(0).getValue());
+        assertEquals("bar", expectation.getParameters().getFirst().getName());
+        assertEquals("baz", expectation.getParameters().getFirst().getValue());
     }
 
     @Test
@@ -41,7 +41,7 @@ class ExpectationReaderTestCase {
         ClientInfo clientInfo = new ClientInfo();
         ExpectationReader.addValues("100-continue", clientInfo);
         assertEquals(1, clientInfo.getExpectations().size());
-        assertEquals("100-continue", clientInfo.getExpectations().get(0).getName());
+        assertEquals("100-continue", clientInfo.getExpectations().getFirst().getName());
     }
 
     @Test

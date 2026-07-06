@@ -58,15 +58,15 @@ class ReferenceTestCase {
     /** Test addition methods. */
     @Test
     void testAdditions() {
-        final Reference ref = new Reference("http://restlet.org");
+        final Reference ref = new Reference("https://restlet.org");
         ref.addQueryParameter("abc", "123");
-        assertEquals("http://restlet.org?abc=123", ref.toString());
+        assertEquals("https://restlet.org?abc=123", ref.toString());
         ref.addQueryParameter("def", null);
-        assertEquals("http://restlet.org?abc=123&def", ref.toString());
+        assertEquals("https://restlet.org?abc=123&def", ref.toString());
         ref.addSegment("root");
-        assertEquals("http://restlet.org/root?abc=123&def", ref.toString());
+        assertEquals("https://restlet.org/root?abc=123&def", ref.toString());
         ref.addSegment("dir");
-        assertEquals("http://restlet.org/root/dir?abc=123&def", ref.toString());
+        assertEquals("https://restlet.org/root/dir?abc=123&def", ref.toString());
     }
 
     @Test
@@ -89,7 +89,7 @@ class ReferenceTestCase {
         assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
 
         reference = new Reference();
-        reference.setIdentifier("http://host/abc/wkj"); // must not produce NPE
+        reference.setIdentifier("https://host/abc/wkj"); // must not produce NPE
 
         reference = new Reference();
         reference.setPath("loc/alhost"); // must not produce NPE
@@ -222,9 +222,9 @@ class ReferenceTestCase {
     /** Test the computation of parent references, for absolute and relative URIs. */
     @Test
     void testParentRef() {
-        Reference baseRef = new Reference("http://test.com/foo/bar");
+        Reference baseRef = new Reference("https://test.com/foo/bar");
         Reference parentRef = baseRef.getParentRef();
-        assertEquals("http://test.com/foo/", parentRef.toString());
+        assertEquals("https://test.com/foo/", parentRef.toString());
 
         baseRef = new Reference("/foo/bar");
         parentRef = baseRef.getParentRef();
@@ -289,27 +289,27 @@ class ReferenceTestCase {
 
         @Test
         void testGetters() {
-            final Reference host = new Reference("http://host.com");
+            final Reference host = new Reference("https://host.com");
             final Reference slashdir = new Reference(host, "/dir");
             final Reference dir = new Reference(host, "dir");
             final Reference dirslash = new Reference(host, "dir/");
-            final Reference fulldir = new Reference("http://host.com/dir");
+            final Reference fulldir = new Reference("https://host.com/dir");
             final Reference fulldirsub = new Reference(fulldir, "sub");
             final Reference fulldirslashsub = new Reference(fulldir, "/sub");
             final Reference slashdirsub = new Reference(slashdir, "sub");
             final Reference slashdirslashsub = new Reference(slashdir, "/sub");
             final Reference dirslashsub = new Reference(dirslash, "sub");
-            final Reference fullsub = new Reference("http://host.com/dir/sub");
-            final Reference fullsubQuery = new Reference("http://host.com/dir/sub?query");
+            final Reference fullsub = new Reference("https://host.com/dir/sub");
+            final Reference fullsubQuery = new Reference("https://host.com/dir/sub?query");
 
             testGetters(
                     host,
-                    "http",
+                    "https",
                     "host.com",
                     null,
-                    "http://host.com",
-                    "http://host.com",
-                    "http://host.com",
+                    "https://host.com",
+                    "https://host.com",
+                    "https://host.com",
                     null,
                     null);
             testGetters(
@@ -319,10 +319,10 @@ class ReferenceTestCase {
                     "/dir",
                     null,
                     "/dir",
-                    "http://host.com/dir",
+                    "https://host.com/dir",
                     null,
                     "/dir");
-            testGetters(dir, null, null, "dir", null, "dir", "http://host.com/dir", null, "dir");
+            testGetters(dir, null, null, "dir", null, "dir", "https://host.com/dir", null, "dir");
             testGetters(
                     dirslash,
                     null,
@@ -330,21 +330,29 @@ class ReferenceTestCase {
                     "dir/",
                     null,
                     "dir/",
-                    "http://host.com/dir/",
+                    "https://host.com/dir/",
                     null,
                     "dir/");
             testGetters(
                     fulldir,
-                    "http",
+                    "https",
                     "host.com",
                     "/dir",
-                    "http://host.com/dir",
-                    "http://host.com/dir",
-                    "http://host.com/dir",
+                    "https://host.com/dir",
+                    "https://host.com/dir",
+                    "https://host.com/dir",
                     null,
                     null);
             testGetters(
-                    fulldirsub, null, null, "sub", null, "sub", "http://host.com/sub", null, "sub");
+                    fulldirsub,
+                    null,
+                    null,
+                    "sub",
+                    null,
+                    "sub",
+                    "https://host.com/sub",
+                    null,
+                    "sub");
             testGetters(
                     fulldirslashsub,
                     null,
@@ -352,7 +360,7 @@ class ReferenceTestCase {
                     "/sub",
                     null,
                     "/sub",
-                    "http://host.com/sub",
+                    "https://host.com/sub",
                     null,
                     "/sub");
             testGetters(
@@ -362,7 +370,7 @@ class ReferenceTestCase {
                     "sub",
                     null,
                     "sub",
-                    "http://host.com/sub",
+                    "https://host.com/sub",
                     null,
                     "sub");
             testGetters(
@@ -372,7 +380,7 @@ class ReferenceTestCase {
                     "/sub",
                     null,
                     "/sub",
-                    "http://host.com/sub",
+                    "https://host.com/sub",
                     null,
                     "/sub");
             testGetters(
@@ -382,27 +390,27 @@ class ReferenceTestCase {
                     "sub",
                     null,
                     "sub",
-                    "http://host.com/dir/sub",
+                    "https://host.com/dir/sub",
                     null,
                     "sub");
             testGetters(
                     fullsub,
-                    "http",
+                    "https",
                     "host.com",
                     "/dir/sub",
-                    "http://host.com/dir/sub",
-                    "http://host.com/dir/sub",
-                    "http://host.com/dir/sub",
+                    "https://host.com/dir/sub",
+                    "https://host.com/dir/sub",
+                    "https://host.com/dir/sub",
                     null,
                     null);
             testGetters(
                     fullsubQuery,
-                    "http",
+                    "https",
                     "host.com",
                     "/dir/sub",
-                    "http://host.com/dir/sub?query",
-                    "http://host.com/dir/sub?query",
-                    "http://host.com/dir/sub?query",
+                    "https://host.com/dir/sub?query",
+                    "https://host.com/dir/sub?query",
+                    "https://host.com/dir/sub?query",
                     "query",
                     null);
         }

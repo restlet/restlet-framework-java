@@ -11,6 +11,7 @@ package org.restlet.ext.velocity;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,7 +49,7 @@ class RepresentationResourceLoaderTestCase {
     }
 
     @Test
-    void getResourceReader_sourceInStore_returnsStoredRepresentationContent() throws Exception {
+    void getResourceReader_sourceInStore_returnsStoredRepresentationContent() {
         RepresentationResourceLoader.getStore()
                 .put("storedKey", new StringRepresentation("stored-content"));
         RepresentationResourceLoader loader = new RepresentationResourceLoader(null);
@@ -59,8 +60,7 @@ class RepresentationResourceLoaderTestCase {
     }
 
     @Test
-    void getResourceReader_sourceNotInStoreWithDefault_returnsDefaultRepresentationContent()
-            throws Exception {
+    void getResourceReader_sourceNotInStoreWithDefault_returnsDefaultRepresentationContent() {
         Representation defaultRepresentation = new StringRepresentation("default-content");
         RepresentationResourceLoader loader =
                 new RepresentationResourceLoader(defaultRepresentation);
@@ -89,7 +89,7 @@ class RepresentationResourceLoaderTestCase {
                 assertThrows(
                         ResourceNotFoundException.class,
                         () -> loader.getResourceReader("anyKey", "UTF-8"));
-        assertTrue(e.getCause() instanceof IOException);
+        assertInstanceOf(IOException.class, e.getCause());
     }
 
     @Test

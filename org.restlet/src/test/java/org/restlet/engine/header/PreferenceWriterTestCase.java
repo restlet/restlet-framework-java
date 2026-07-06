@@ -57,8 +57,8 @@ class PreferenceWriterTestCase {
 
     @Test
     void appendQuality_invalidValue_throwsIllegalArgumentException() {
-        assertThrows(
-                IllegalArgumentException.class, () -> new PreferenceWriter().appendQuality(2F));
+        PreferenceWriter preferenceWriter = new PreferenceWriter();
+        assertThrows(IllegalArgumentException.class, () -> preferenceWriter.appendQuality(2F));
     }
 
     @Test

@@ -9,6 +9,7 @@
 package org.restlet.ext.velocity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
@@ -110,13 +111,13 @@ class TemplateFilterTestCase {
         Response response = filter.handle(new Request(Method.GET, "/"));
 
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
-        assertEquals(true, response.getEntity() instanceof TemplateRepresentation);
+        assertInstanceOf(TemplateRepresentation.class, response.getEntity());
     }
 
     @Test
     void constructorWithResolverDataModel_usesResolverDataModelWhenHandling() {
         Resolver<Object> resolver =
-                new Resolver<Object>() {
+                new Resolver<>() {
                     @Override
                     public Object resolve(String name) {
                         return "value".equals(name) ? "fromResolver" : null;
@@ -130,7 +131,7 @@ class TemplateFilterTestCase {
         Response response = filter.handle(new Request(Method.GET, "/"));
 
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
-        assertEquals(true, response.getEntity() instanceof TemplateRepresentation);
+        assertInstanceOf(TemplateRepresentation.class, response.getEntity());
     }
 
     @Test

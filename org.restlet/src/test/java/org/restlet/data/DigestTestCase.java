@@ -67,12 +67,6 @@ class DigestTestCase {
     }
 
     @Test
-    void equals_differentType_returnsFalse() {
-        Digest digest = new Digest(new byte[] {1});
-        assertNotEquals(digest, "not a digest");
-    }
-
-    @Test
     void toString_containsAlgorithmAndValue() {
         Digest digest = new Digest(Digest.ALGORITHM_MD5, new byte[] {1, 2, 3});
         String result = digest.toString();

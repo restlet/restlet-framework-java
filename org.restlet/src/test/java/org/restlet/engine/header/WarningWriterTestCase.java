@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
@@ -29,7 +29,7 @@ class WarningWriterTestCase {
 
     @Test
     void write_validWarning_formatsCodeAgentAndQuotedText() {
-        String result = WarningWriter.write(Arrays.asList(newWarning()));
+        String result = WarningWriter.write(List.of(newWarning()));
         assertEquals("110 restlet/2.7 \"Response is stale\"", result);
     }
 
@@ -37,7 +37,7 @@ class WarningWriterTestCase {
     void write_withDate_appendsQuotedDate() {
         Warning warning = newWarning();
         warning.setDate(new java.util.Date(0));
-        String result = WarningWriter.write(Arrays.asList(warning));
+        String result = WarningWriter.write(List.of(warning));
         assertTrue(result.startsWith("110 restlet/2.7 \"Response is stale\" \""));
     }
 
@@ -45,20 +45,23 @@ class WarningWriterTestCase {
     void append_nullStatus_throwsIllegalArgumentException() {
         Warning warning = newWarning();
         warning.setStatus(null);
-        assertThrows(IllegalArgumentException.class, () -> new WarningWriter().append(warning));
+        WarningWriter warningWriter = new WarningWriter();
+        assertThrows(IllegalArgumentException.class, () -> warningWriter.append(warning));
     }
 
     @Test
     void append_missingAgent_throwsIllegalArgumentException() {
         Warning warning = newWarning();
         warning.setAgent(null);
-        assertThrows(IllegalArgumentException.class, () -> new WarningWriter().append(warning));
+        WarningWriter warningWriter = new WarningWriter();
+        assertThrows(IllegalArgumentException.class, () -> warningWriter.append(warning));
     }
 
     @Test
     void append_missingText_throwsIllegalArgumentException() {
         Warning warning = newWarning();
         warning.setText("");
-        assertThrows(IllegalArgumentException.class, () -> new WarningWriter().append(warning));
+        WarningWriter warningWriter = new WarningWriter();
+        assertThrows(IllegalArgumentException.class, () -> warningWriter.append(warning));
     }
 }

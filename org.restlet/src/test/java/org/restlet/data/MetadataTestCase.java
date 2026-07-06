@@ -10,6 +10,7 @@ package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,15 +48,15 @@ class MetadataTestCase {
         // sharing the same name are never considered equal.
         Metadata characterSet = new CharacterSet("SAME-NAME");
         Metadata encoding = new Encoding("SAME-NAME");
-        assertFalse(characterSet.equals(encoding));
-        assertFalse(encoding.equals(characterSet));
+        assertNotEquals(characterSet, encoding);
+        assertNotEquals(encoding, characterSet);
     }
 
     @Test
     void equals_differentName_returnsFalse() {
         Metadata cs1 = new CharacterSet("A");
         Metadata cs2 = new CharacterSet("B");
-        assertFalse(((Metadata) cs1).equals(cs2));
+        assertNotEquals(cs1, cs2);
     }
 
     @Test

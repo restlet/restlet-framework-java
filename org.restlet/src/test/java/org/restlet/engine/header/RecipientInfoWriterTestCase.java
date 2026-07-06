@@ -11,7 +11,7 @@ package org.restlet.engine.header;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
@@ -22,7 +22,7 @@ class RecipientInfoWriterTestCase {
     void write_nameOnly_writesProtocolAndName() {
         RecipientInfo info =
                 new RecipientInfo(new Protocol("HTTP", "HTTP", null, -1, "1.1"), "proxy", null);
-        assertEquals("HTTP/1.1 proxy", RecipientInfoWriter.write(Arrays.asList(info)));
+        assertEquals("HTTP/1.1 proxy", RecipientInfoWriter.write(List.of(info)));
     }
 
     @Test
@@ -30,19 +30,21 @@ class RecipientInfoWriterTestCase {
         RecipientInfo info =
                 new RecipientInfo(new Protocol("HTTP", "HTTP", null, -1, "1.1"), "proxy", null);
         info.setComment("Apache");
-        assertEquals("HTTP/1.1 proxy (Apache)", RecipientInfoWriter.write(Arrays.asList(info)));
+        assertEquals("HTTP/1.1 proxy (Apache)", RecipientInfoWriter.write(List.of(info)));
     }
 
     @Test
     void append_nullProtocol_throwsIllegalArgumentException() {
         RecipientInfo info = new RecipientInfo();
-        assertThrows(IllegalArgumentException.class, () -> new RecipientInfoWriter().append(info));
+        RecipientInfoWriter recipientInfoWriter = new RecipientInfoWriter();
+        assertThrows(IllegalArgumentException.class, () -> recipientInfoWriter.append(info));
     }
 
     @Test
     void append_nullName_throwsIllegalArgumentException() {
         RecipientInfo info =
                 new RecipientInfo(new Protocol("HTTP", "HTTP", null, -1, "1.1"), null, null);
-        assertThrows(IllegalArgumentException.class, () -> new RecipientInfoWriter().append(info));
+        RecipientInfoWriter recipientInfoWriter = new RecipientInfoWriter();
+        assertThrows(IllegalArgumentException.class, () -> recipientInfoWriter.append(info));
     }
 }

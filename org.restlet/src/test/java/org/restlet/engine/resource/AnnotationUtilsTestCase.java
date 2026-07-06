@@ -42,14 +42,11 @@ class AnnotationUtilsTestCase {
         boolean found = false;
 
         for (AnnotationInfo ai : infos) {
-            if (ai instanceof MethodAnnotationInfo) {
-                MethodAnnotationInfo mai = (MethodAnnotationInfo) ai;
-
-                if (mai.getJavaClass().equals(IChild.class)
-                        && mai.getRestletMethod().equals(Method.PUT)) {
-                    found = true;
-                    assertEquals(String.class, mai.getJavaInputTypes()[0]);
-                }
+            if (ai instanceof MethodAnnotationInfo mai
+                    && mai.getJavaClass().equals(IChild.class)
+                    && mai.getRestletMethod().equals(Method.PUT)) {
+                found = true;
+                assertEquals(String.class, mai.getJavaInputTypes()[0]);
             }
         }
 
@@ -63,14 +60,11 @@ class AnnotationUtilsTestCase {
         boolean found = false;
 
         for (AnnotationInfo ai : infos) {
-            if (ai instanceof MethodAnnotationInfo) {
-                MethodAnnotationInfo mai = (MethodAnnotationInfo) ai;
-
-                if (mai.getJavaClass().equals(IChild.class)
-                        && mai.getRestletMethod().equals(Method.GET)) {
-                    found = true;
-                    assertEquals(String.class, mai.getJavaOutputType());
-                }
+            if (ai instanceof MethodAnnotationInfo mai
+                    && mai.getJavaClass().equals(IChild.class)
+                    && mai.getRestletMethod().equals(Method.GET)) {
+                found = true;
+                assertEquals(String.class, mai.getJavaOutputType());
             }
         }
 

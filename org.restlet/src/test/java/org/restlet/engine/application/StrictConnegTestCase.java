@@ -107,7 +107,7 @@ class StrictConnegTestCase {
 
         Variant variant = new Variant(MediaType.TEXT_PLAIN);
         variant.setCharacterSet(CharacterSet.UTF_8);
-        variant.setLanguages(Arrays.asList(Language.ENGLISH));
+        variant.setLanguages(List.of(Language.ENGLISH));
 
         float score = conneg.scoreVariant(variant);
         assertTrue(score >= 0.0F);

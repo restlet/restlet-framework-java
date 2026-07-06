@@ -83,7 +83,7 @@ class LocalReferenceTestCase {
 
     @Test
     void getClapAuthorityType_forNonClapReference_returnsZero() {
-        LocalReference reference = new LocalReference("http://example.com");
+        LocalReference reference = new LocalReference("https://example.com");
         assertEquals(0, reference.getClapAuthorityType());
     }
 
@@ -97,22 +97,22 @@ class LocalReferenceTestCase {
 
     @Test
     void getRiapAuthorityType_forNonRiapReference_returnsZero() {
-        LocalReference reference = new LocalReference("http://example.com");
+        LocalReference reference = new LocalReference("https://example.com");
         assertEquals(0, reference.getRiapAuthorityType());
     }
 
     @Test
     void createJarReference_buildsJarUri() {
-        Reference jarFile = new Reference("http://example.com/archive.jar");
+        Reference jarFile = new Reference("https://example.com/archive.jar");
         LocalReference reference = LocalReference.createJarReference(jarFile, "entry/path.txt");
         assertEquals("jar", reference.getScheme());
         assertEquals("entry/path.txt", reference.getJarEntryPath());
-        assertEquals("http://example.com/archive.jar", reference.getJarFileRef().toString());
+        assertEquals("https://example.com/archive.jar", reference.getJarFileRef().toString());
     }
 
     @Test
     void getJarEntryPath_forNonJarReference_returnsNull() {
-        LocalReference reference = new LocalReference("http://example.com");
+        LocalReference reference = new LocalReference("https://example.com");
         assertNull(reference.getJarEntryPath());
     }
 
@@ -132,7 +132,7 @@ class LocalReferenceTestCase {
 
     @Test
     void getFile_forNonFileReference_returnsNull() {
-        LocalReference reference = new LocalReference("http://example.com");
+        LocalReference reference = new LocalReference("https://example.com");
         assertNull(reference.getFile());
     }
 

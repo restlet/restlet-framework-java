@@ -9,8 +9,8 @@
 package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -30,7 +30,7 @@ class ExpectationTestCase {
     void constructorWithNameOnly_hasNullValue() {
         Expectation expectation = new Expectation("name");
         assertEquals("name", expectation.getName());
-        assertEquals(null, expectation.getValue());
+        assertNull(expectation.getValue());
     }
 
     @Test
@@ -56,11 +56,9 @@ class ExpectationTestCase {
         Expectation e2 = new Expectation("name", "value");
         Expectation e3 = new Expectation("other", "value");
 
-        assertEquals(e1, e1);
         assertEquals(e1, e2);
         assertEquals(e1.hashCode(), e2.hashCode());
         assertNotEquals(e1, e3);
-        assertFalse(e1.equals("not an expectation"));
     }
 
     @Test

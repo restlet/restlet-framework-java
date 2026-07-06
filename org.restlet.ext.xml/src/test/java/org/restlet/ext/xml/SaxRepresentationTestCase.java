@@ -163,9 +163,9 @@ class SaxRepresentationTestCase {
     @Test
     void getSaxSource_withLocationRef_setsSystemId() throws Exception {
         StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
-        rep.setLocationRef(new Reference("http://example.com/loc.xml"));
+        rep.setLocationRef(new Reference("https://example.com/loc.xml"));
         SaxRepresentation sr = new SaxRepresentation(rep);
-        assertEquals("http://example.com/loc.xml", sr.getSaxSource().getSystemId());
+        assertEquals("https://example.com/loc.xml", sr.getSaxSource().getSystemId());
     }
 
     @Test
@@ -176,7 +176,7 @@ class SaxRepresentationTestCase {
     }
 
     @Test
-    void release_releasesUnderlyingXmlRepresentation() throws Exception {
+    void release_releasesUnderlyingXmlRepresentation() {
         StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
         SaxRepresentation sr = new SaxRepresentation(rep);
         sr.release();

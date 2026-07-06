@@ -10,6 +10,7 @@ package org.restlet.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Context;
@@ -28,13 +29,19 @@ class CompositeHelperTestCase {
         }
 
         @Override
-        public void start() {}
+        public void start() {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
-        public void stop() {}
+        public void stop() {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
-        public void update() {}
+        public void update() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static Filter markerFilter(java.util.concurrent.atomic.AtomicBoolean invoked) {
@@ -109,7 +116,7 @@ class CompositeHelperTestCase {
         Response response = new Response(request);
         helper.handle(request, response);
 
-        assertEquals(true, invoked.get());
+        assertTrue(invoked.get());
     }
 
     @Test

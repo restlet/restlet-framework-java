@@ -112,13 +112,13 @@ class ProductTokenTestCase {
 
         @Test
         void testProductTokensAvantBrowser() {
-            final String userAgent = "Advanced Browser (http://www.avantbrowser.com)";
+            final String userAgent = "Advanced Browser (https://www.avantbrowser.com)";
 
             List<Product> list = ProductReader.read(userAgent);
             assertEquals(1, list.size());
             assertEquals("Advanced Browser", list.getFirst().getName());
             assertNull(list.getFirst().getVersion());
-            assertEquals("http://www.avantbrowser.com", list.getFirst().getComment());
+            assertEquals("https://www.avantbrowser.com", list.getFirst().getComment());
         }
 
         @Test
@@ -152,8 +152,8 @@ class ProductTokenTestCase {
             List<Product> list = ProductReader.read(userAgent);
             assertEquals(3, list.size());
             assertEquals("Mozilla", list.getFirst().getName());
-            assertEquals("5.0", list.get(0).getVersion());
-            assertEquals("Macintosh; U; PPC Mac OS X; en-US; rv:1.8", list.get(0).getComment());
+            assertEquals("5.0", list.getFirst().getVersion());
+            assertEquals("Macintosh; U; PPC Mac OS X; en-US; rv:1.8", list.getFirst().getComment());
             assertEquals("Gecko", list.get(1).getName());
             assertEquals("20051107", list.get(1).getVersion());
             assertNull(list.get(1).getComment());
@@ -170,8 +170,8 @@ class ProductTokenTestCase {
 
             assertEquals(3, list.size());
             assertEquals("Mozilla", list.getFirst().getName());
-            assertEquals("5.0", list.get(0).getVersion());
-            assertEquals("X11; U; Linux i686; en-US; rv:1.8.1", list.get(0).getComment());
+            assertEquals("5.0", list.getFirst().getVersion());
+            assertEquals("X11; U; Linux i686; en-US; rv:1.8.1", list.getFirst().getComment());
             assertEquals("Gecko", list.get(1).getName());
             assertEquals("20061024", list.get(1).getVersion());
             assertNull(list.get(1).getComment());
@@ -201,8 +201,8 @@ class ProductTokenTestCase {
         List<Product> list = ProductReader.read(ProductWriter.write(products));
         assertEquals(2, list.size());
         assertEquals("Product", list.getFirst().getName());
-        assertEquals("1.2", list.get(0).getVersion());
-        assertNull(list.get(0).getComment());
+        assertEquals("1.2", list.getFirst().getVersion());
+        assertNull(list.getFirst().getComment());
         assertEquals("Nre", list.get(1).getName());
         assertEquals("1.1m4", list.get(1).getVersion());
         assertEquals("This is a comment", list.get(1).getComment());

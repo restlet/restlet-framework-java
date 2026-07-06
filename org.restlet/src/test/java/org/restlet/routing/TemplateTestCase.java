@@ -69,7 +69,7 @@ class TemplateTestCase {
         List<String> names = tpl.getVariableNames();
 
         assertEquals(2, names.size());
-        assertEquals("userId", names.get(0));
+        assertEquals("userId", names.getFirst());
         assertEquals("invoiceId", names.get(1));
     }
 

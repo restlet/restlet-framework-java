@@ -22,49 +22,49 @@ class ReferenceUtilsTestCase {
 
     @Test
     void update_withoutChallengeResponse_returnsAbsoluteReferenceUnchanged() {
-        Request request = new Request(Method.GET, "http://example.com/path");
+        Request request = new Request(Method.GET, "https://example.com/path");
         Reference result = ReferenceUtils.update(request.getResourceRef(), request);
-        assertEquals("http://example.com/path", result.toString());
+        assertEquals("https://example.com/path", result.toString());
     }
 
     @Test
     void format_notProxied_returnsPathAndQuery() {
-        Request request = new Request(Method.GET, "http://example.com/path?a=b");
+        Request request = new Request(Method.GET, "https://example.com/path?a=b");
         String result = ReferenceUtils.format(request.getResourceRef(), false, request);
         assertEquals("/path?a=b", result);
     }
 
     @Test
     void format_notProxiedWithoutQuery_returnsPathOnly() {
-        Request request = new Request(Method.GET, "http://example.com/path");
+        Request request = new Request(Method.GET, "https://example.com/path");
         String result = ReferenceUtils.format(request.getResourceRef(), false, request);
         assertEquals("/path", result);
     }
 
     @Test
     void format_notProxiedWithEmptyPath_returnsRootSlash() {
-        Request request = new Request(Method.GET, "http://example.com");
+        Request request = new Request(Method.GET, "https://example.com");
         String result = ReferenceUtils.format(request.getResourceRef(), false, request);
         assertEquals("/", result);
     }
 
     @Test
     void format_proxied_returnsFullIdentifier() {
-        Request request = new Request(Method.GET, "http://example.com/path?a=b");
+        Request request = new Request(Method.GET, "https://example.com/path?a=b");
         String result = ReferenceUtils.format(request.getResourceRef(), true, request);
-        assertEquals("http://example.com/path?a=b", result);
+        assertEquals("https://example.com/path?a=b", result);
     }
 
     @Test
     void getOriginalRef_withNullHeaders_returnsTargetRef() {
-        Reference resourceRef = new Reference("http://example.com/path");
+        Reference resourceRef = new Reference("https://example.com/path");
         Reference result = ReferenceUtils.getOriginalRef(resourceRef, null);
-        assertEquals("http://example.com/path", result.toString());
+        assertEquals("https://example.com/path", result.toString());
     }
 
     @Test
     void getOriginalRef_withForwardedHeaders_updatesPortAndScheme() {
-        Reference resourceRef = new Reference("http://example.com/path");
+        Reference resourceRef = new Reference("https://example.com/path");
         Series<Header> headers = new Series<>(Header.class);
         headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "8443");
         headers.add(HeaderConstants.HEADER_X_FORWARDED_PROTO, "https");
@@ -77,11 +77,11 @@ class ReferenceUtilsTestCase {
 
     @Test
     void getOriginalRef_withoutForwardedHeaders_leavesReferenceUnchanged() {
-        Reference resourceRef = new Reference("http://example.com/path");
+        Reference resourceRef = new Reference("https://example.com/path");
         Series<Header> headers = new Series<>(Header.class);
 
         Reference result = ReferenceUtils.getOriginalRef(resourceRef, headers);
 
-        assertEquals("http", result.getScheme());
+        assertEquals("https", result.getScheme());
     }
 }

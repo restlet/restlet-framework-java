@@ -35,7 +35,7 @@ class RiapConnectorsTestCase {
                 "riap://component/app/test",
                 "riap://component/app/redirectToInternalResource"
             })
-    public void testRiapConnectors(final String url) throws IOException {
+    void testRiapConnectors(final String url) throws IOException {
         ClientResource res = new ClientResource(url);
         Representation rep = res.get();
 
@@ -70,6 +70,7 @@ class RiapConnectorsTestCase {
                         router.attach(
                                 "/redirectToInternalResource",
                                 new Restlet(getContext()) {
+                                    @Override
                                     public void handle(Request request, Response response) {
                                         ClientResource resource =
                                                 new ClientResource("riap://component/app/test");

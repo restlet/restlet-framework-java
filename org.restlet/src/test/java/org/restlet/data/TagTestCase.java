@@ -55,7 +55,7 @@ class TagTestCase {
     void testListOfValidTags() {
         List<Tag> tags = new ArrayList<>();
         new TagReader("\"xyz\", \"r2d2\", \"c3pio\", *").addValues(tags);
-        assertEquals("xyz", tags.get(0).getName());
+        assertEquals("xyz", tags.getFirst().getName());
         assertEquals("r2d2", tags.get(1).getName());
         assertEquals("c3pio", tags.get(2).getName());
         assertEquals(Tag.ALL.getName(), tags.get(3).getName());
@@ -66,7 +66,7 @@ class TagTestCase {
     void testListOfTagsWithInvalidTag() {
         List<Tag> tags = new ArrayList<>();
         new TagReader("\"xyz\", \"r2d2\", c3pio, *").addValues(tags);
-        assertEquals("xyz", tags.get(0).getName());
+        assertEquals("xyz", tags.getFirst().getName());
         assertEquals("r2d2", tags.get(1).getName());
         assertEquals(Tag.ALL.getName(), tags.get(2).getName());
         assertEquals(3, tags.size());

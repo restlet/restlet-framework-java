@@ -28,21 +28,21 @@ class AlphabeticalComparatorTestCase {
     @Test
     void compare_firstNullIdentifier_returnsNegative() {
         Reference ref0 = new Reference((String) null);
-        Reference ref1 = new Reference("http://example.com/a");
+        Reference ref1 = new Reference("https://example.com/a");
         assertTrue(comparator.compare(ref0, ref1) < 0);
     }
 
     @Test
     void compare_secondNullIdentifier_returnsPositive() {
-        Reference ref0 = new Reference("http://example.com/a");
+        Reference ref0 = new Reference("https://example.com/a");
         Reference ref1 = new Reference((String) null);
         assertTrue(comparator.compare(ref0, ref1) > 0);
     }
 
     @Test
     void compare_bothNonNull_delegatesToStringComparison() {
-        Reference ref0 = new Reference("http://example.com/a");
-        Reference ref1 = new Reference("http://example.com/b");
+        Reference ref0 = new Reference("https://example.com/a");
+        Reference ref1 = new Reference("https://example.com/b");
         assertTrue(comparator.compare(ref0, ref1) < 0);
         assertTrue(comparator.compare(ref1, ref0) > 0);
     }

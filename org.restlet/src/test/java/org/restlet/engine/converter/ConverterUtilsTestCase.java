@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.converter;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,7 +30,7 @@ class ConverterUtilsTestCase {
         ConverterHelper helper =
                 ConverterUtils.getBestHelper(source, new Variant(MediaType.TEXT_HTML), null);
         assertNotNull(helper);
-        assertTrue(helper instanceof StatusInfoHtmlConverter);
+        assertInstanceOf(StatusInfoHtmlConverter.class, helper);
     }
 
     @Test

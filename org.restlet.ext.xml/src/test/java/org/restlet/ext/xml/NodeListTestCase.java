@@ -34,7 +34,7 @@ class NodeListTestCase {
     @Test
     void get_returnsWrappedNodeAtIndex() throws Exception {
         NodeList nodeList = new NodeList(domNodeList());
-        assertEquals("a", nodeList.get(0).getNodeName());
+        assertEquals("a", nodeList.getFirst().getNodeName());
         assertEquals("b", nodeList.get(1).getNodeName());
         assertEquals("c", nodeList.get(2).getNodeName());
     }
@@ -80,7 +80,7 @@ class NodeListTestCase {
     @Test
     void asList_supportsStandardListOperations() throws Exception {
         NodeList nodeList = new NodeList(domNodeList());
-        assertTrue(nodeList.contains(nodeList.get(0)));
-        assertEquals(0, nodeList.indexOf(nodeList.get(0)));
+        assertTrue(nodeList.contains(nodeList.getFirst()));
+        assertEquals(0, nodeList.indexOf(nodeList.getFirst()));
     }
 }

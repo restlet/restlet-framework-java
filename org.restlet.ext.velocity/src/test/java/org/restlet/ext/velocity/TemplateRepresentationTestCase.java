@@ -67,7 +67,7 @@ class TemplateRepresentationTestCase {
     }
 
     private static Resolver<Object> knownValueResolver() {
-        return new Resolver<Object>() {
+        return new Resolver<>() {
             @Override
             public Object resolve(String name) {
                 return "known".equals(name) ? "value1" : null;

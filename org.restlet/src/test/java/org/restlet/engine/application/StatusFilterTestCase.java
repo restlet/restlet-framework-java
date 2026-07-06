@@ -9,8 +9,9 @@
 package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class StatusFilterTestCase {
     void constructor_withOverwritingFlag_setsFlagAndNullStatusService() {
         StatusFilter filter = new StatusFilter(new Context(), true);
         assertTrue(filter.isOverwriting());
-        assertEquals(null, filter.getStatusService());
+        assertNull(filter.getStatusService());
     }
 
     @Test
@@ -105,7 +106,7 @@ class StatusFilterTestCase {
 
         filter.afterHandle(response.getRequest(), response);
 
-        assertFalse("original".equals(getText(response)));
+        assertNotEquals("original", getText(response));
     }
 
     @Test

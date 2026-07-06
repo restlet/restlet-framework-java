@@ -51,14 +51,16 @@ class SpringComponentTestCase {
     void testSetClientAddsProtocolInstance() {
         this.component.setClient(Protocol.HTTP);
         assertEquals(1, this.component.getClients().size(), "Wrong number of clients");
-        assertEquals(Protocol.HTTP, this.component.getClients().get(0).getProtocols().get(0));
+        assertEquals(
+                Protocol.HTTP, this.component.getClients().getFirst().getProtocols().getFirst());
     }
 
     @Test
     void testSetClientAddsProtocolNamedByString() {
         this.component.setClient("FILE");
         assertEquals(1, this.component.getClients().size(), "Wrong number of clients");
-        assertEquals(Protocol.FILE, this.component.getClients().get(0).getProtocols().get(0));
+        assertEquals(
+                Protocol.FILE, this.component.getClients().getFirst().getProtocols().getFirst());
     }
 
     @Test
@@ -82,7 +84,7 @@ class SpringComponentTestCase {
         this.component.setDefaultTarget(target);
         assertEquals(
                 target,
-                this.component.getDefaultHost().getRoutes().get(0).getNext(),
+                this.component.getDefaultHost().getRoutes().getFirst().getNext(),
                 "Default target not attached to the default host");
     }
 
@@ -98,7 +100,8 @@ class SpringComponentTestCase {
     void testSetServerAddsProtocolNamedByString() {
         this.component.setServer("HTTP");
         assertEquals(1, this.component.getServers().size(), "Wrong number of servers");
-        assertEquals(Protocol.HTTP, this.component.getServers().get(0).getProtocols().get(0));
+        assertEquals(
+                Protocol.HTTP, this.component.getServers().getFirst().getProtocols().getFirst());
     }
 
     @Test

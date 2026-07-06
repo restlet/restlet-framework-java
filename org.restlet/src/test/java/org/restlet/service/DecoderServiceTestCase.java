@@ -8,6 +8,8 @@
  */
 package org.restlet.service;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +30,7 @@ class DecoderServiceTestCase {
     @Test
     void constructorWithFlag_setsEnabled() {
         DecoderService service = new DecoderService(false);
-        assertTrue(!service.isEnabled());
+        assertFalse(service.isEnabled());
     }
 
     @Test
@@ -38,7 +40,7 @@ class DecoderServiceTestCase {
         Filter filter = service.createInboundFilter(new Context());
 
         assertNotNull(filter);
-        assertTrue(filter instanceof Decoder);
+        assertInstanceOf(Decoder.class, filter);
     }
 
     @Test
@@ -48,6 +50,6 @@ class DecoderServiceTestCase {
         Filter filter = service.createOutboundFilter(new Context());
 
         assertNotNull(filter);
-        assertTrue(filter instanceof Decoder);
+        assertInstanceOf(Decoder.class, filter);
     }
 }

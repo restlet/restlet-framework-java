@@ -97,7 +97,7 @@ class AsyncTestCase {
     }
 
     @BeforeEach
-    protected void setUpEach() throws Exception {
+    void setUpEach() throws Exception {
         Engine.clearThreadLocalVariables();
         Engine.register(true);
         // Create components
@@ -190,7 +190,7 @@ class AsyncTestCase {
     }
 
     @AfterEach
-    protected void tearDownEach() throws Exception {
+    void tearDownEach() throws Exception {
         // Stop the components
         clientComponent.stop();
         originComponent.stop();

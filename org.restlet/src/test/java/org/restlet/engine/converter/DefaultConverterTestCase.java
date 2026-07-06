@@ -9,6 +9,7 @@
 package org.restlet.engine.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -49,22 +50,22 @@ class DefaultConverterTestCase {
     }
 
     @Test
-    void getVariants_stringClass_returnsAllVariant() throws IOException {
+    void getVariants_stringClass_returnsAllVariant() {
         assertEquals(1, converter.getVariants(String.class).size());
     }
 
     @Test
-    void getVariants_formClass_returnsFormVariant() throws IOException {
+    void getVariants_formClass_returnsFormVariant() {
         assertEquals(1, converter.getVariants(Form.class).size());
     }
 
     @Test
-    void getVariants_nullClass_returnsEmptyList() throws IOException {
+    void getVariants_nullClass_returnsEmptyList() {
         assertTrue(converter.getVariants(null).isEmpty());
     }
 
     @Test
-    void getVariants_unrelatedClass_returnsEmptyList() throws IOException {
+    void getVariants_unrelatedClass_returnsEmptyList() {
         assertTrue(converter.getVariants(Object.class).isEmpty());
     }
 
@@ -93,11 +94,11 @@ class DefaultConverterTestCase {
 
     @Test
     void score_null_returnsNegative() {
-        assertEquals(-1.0F, converter.score((Object) null, (Variant) null, null));
+        assertEquals(-1.0F, converter.score(null, (Variant) null, null));
     }
 
     @Test
-    void score_representationTarget_stringClass_returnsMaxScore() throws IOException {
+    void score_representationTarget_stringClass_returnsMaxScore() {
         Representation source = new StringRepresentation("body");
         assertEquals(1.0F, converter.score(source, String.class, null));
     }
@@ -142,21 +143,21 @@ class DefaultConverterTestCase {
     @Test
     void toObject_targetIsInputStream_returnsStream() throws IOException {
         Representation source = new StringRepresentation("hello");
-        assertTrue(converter.toObject(source, InputStream.class, null) instanceof InputStream);
+        assertInstanceOf(InputStream.class, converter.toObject(source, InputStream.class, null));
     }
 
     @Test
     void toObject_targetIsInputRepresentation_wrapsStream() throws IOException {
         Representation source = new StringRepresentation("hello");
-        assertTrue(
-                converter.toObject(source, InputRepresentation.class, null)
-                        instanceof InputRepresentation);
+        assertInstanceOf(
+                InputRepresentation.class,
+                converter.toObject(source, InputRepresentation.class, null));
     }
 
     @Test
     void toObject_targetIsReader_returnsReader() throws IOException {
         Representation source = new StringRepresentation("hello");
-        assertTrue(converter.toObject(source, Reader.class, null) instanceof Reader);
+        assertInstanceOf(Reader.class, converter.toObject(source, Reader.class, null));
     }
 
     @Test
@@ -220,7 +221,7 @@ class DefaultConverterTestCase {
     void updatePreferences_form_addsFormPreference() {
         List<Preference<MediaType>> preferences = new ArrayList<>();
         converter.updatePreferences(preferences, Form.class);
-        assertEquals(MediaType.APPLICATION_WWW_FORM, preferences.get(0).getMetadata());
+        assertEquals(MediaType.APPLICATION_WWW_FORM, preferences.getFirst().getMetadata());
     }
 
     @Test

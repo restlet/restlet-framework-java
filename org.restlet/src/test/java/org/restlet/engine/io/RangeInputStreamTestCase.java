@@ -102,13 +102,13 @@ class RangeInputStreamTestCase {
 
     @Test
     void constructor_unknownSizeWithLastIndexAndNonMaxSize_throws() {
+        ByteArrayInputStream in = new ByteArrayInputStream(source());
+        Range range = new Range(Range.INDEX_LAST, 3);
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
                         new RangeInputStream(
-                                new ByteArrayInputStream(source()),
-                                org.restlet.representation.Representation.UNKNOWN_SIZE,
-                                new Range(Range.INDEX_LAST, 3)));
+                                in, org.restlet.representation.Representation.UNKNOWN_SIZE, range));
     }
 
     @Test

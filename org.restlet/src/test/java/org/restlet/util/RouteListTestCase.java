@@ -155,7 +155,7 @@ class RouteListTestCase {
         list.removeAll(target);
 
         assertEquals(1, list.size());
-        assertEquals(other, list.get(0).getNext());
+        assertEquals(other, list.getFirst().getNext());
     }
 
     @Test

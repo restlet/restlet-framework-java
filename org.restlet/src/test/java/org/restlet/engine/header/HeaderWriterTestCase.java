@@ -9,11 +9,11 @@
 package org.restlet.engine.header;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
 
@@ -51,7 +51,7 @@ class HeaderWriterTestCase {
     @Test
     void appendCollection_nullOrEmpty_appendsNothing() {
         assertEquals("", newWriter().append((java.util.Collection<String>) null).toString());
-        assertEquals("", newWriter().append(java.util.List.<String>of()).toString());
+        assertEquals("", newWriter().append(java.util.List.of()).toString());
     }
 
     @Test
@@ -105,9 +105,7 @@ class HeaderWriterTestCase {
 
     @Test
     void appendExtension_nullNamedValue_appendsNothing() {
-        assertEquals(
-                "",
-                newWriter().appendExtension((org.restlet.util.NamedValue<String>) null).toString());
+        assertEquals("", newWriter().appendExtension(null).toString());
     }
 
     @Test
@@ -179,7 +177,9 @@ class HeaderWriterTestCase {
 
     @Test
     void appendToken_invalidToken_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> newWriter().appendToken("has space"));
+        HeaderWriter<String> stringHeaderWriter = newWriter();
+        assertThrows(
+                IllegalArgumentException.class, () -> stringHeaderWriter.appendToken("has space"));
     }
 
     @Test
@@ -195,7 +195,7 @@ class HeaderWriterTestCase {
 
     @Test
     void canWrite_nonNullValue_returnsTrueByDefault() {
-        assertTrue(newWriter().append(java.util.List.of("value")).toString().equals("value"));
+        assertEquals("value", newWriter().append(List.of("value")).toString());
     }
 
     @Test
@@ -219,6 +219,6 @@ class HeaderWriterTestCase {
                     }
                 };
         writer.append(Arrays.asList("a", "b"));
-        assertFalse(writer.toString().length() > 0);
+        assertTrue(writer.toString().isEmpty());
     }
 }

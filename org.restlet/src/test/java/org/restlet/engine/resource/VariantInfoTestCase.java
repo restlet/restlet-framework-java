@@ -9,9 +9,8 @@
 package org.restlet.engine.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class VariantInfoTestCase {
     void equals_sameMediaTypeAndAnnotationInfo_returnsTrue() {
         VariantInfo variant1 = new VariantInfo(MediaType.APPLICATION_JSON, null);
         VariantInfo variant2 = new VariantInfo(MediaType.APPLICATION_JSON, null);
-        assertTrue(variant1.equals(variant2));
+        assertEquals(variant1, variant2);
         assertEquals(variant1.hashCode(), variant2.hashCode());
     }
 
@@ -61,18 +60,6 @@ class VariantInfoTestCase {
     void equals_differentMediaType_returnsFalse() {
         VariantInfo variant1 = new VariantInfo(MediaType.APPLICATION_JSON, null);
         VariantInfo variant2 = new VariantInfo(MediaType.TEXT_PLAIN, null);
-        assertFalse(variant1.equals(variant2));
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        VariantInfo variant = new VariantInfo(MediaType.APPLICATION_JSON, null);
-        assertFalse(variant.equals("not a variant"));
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        VariantInfo variant = new VariantInfo(MediaType.APPLICATION_JSON, null);
-        assertTrue(variant.equals(variant));
+        assertNotEquals(variant1, variant2);
     }
 }

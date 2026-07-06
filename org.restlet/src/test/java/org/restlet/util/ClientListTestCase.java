@@ -51,7 +51,7 @@ class ClientListTestCase {
 
         assertEquals(1, list.size());
         assertNotNull(client.getContext());
-        assertEquals(client, list.get(0));
+        assertEquals(client, list.getFirst());
     }
 
     @Test

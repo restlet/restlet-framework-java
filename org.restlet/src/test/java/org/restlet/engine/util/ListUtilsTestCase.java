@@ -25,20 +25,19 @@ class ListUtilsTestCase {
 
     @Test
     void copySubList_negativeFromIndex_throws() {
-        assertThrows(
-                IndexOutOfBoundsException.class, () -> ListUtils.copySubList(List.of("a"), -1, 0));
+        List<String> list = List.of("a");
+        assertThrows(IndexOutOfBoundsException.class, () -> ListUtils.copySubList(list, -1, 0));
     }
 
     @Test
     void copySubList_toIndexBeyondSize_throws() {
-        assertThrows(
-                IndexOutOfBoundsException.class, () -> ListUtils.copySubList(List.of("a"), 0, 5));
+        List<String> list = List.of("a");
+        assertThrows(IndexOutOfBoundsException.class, () -> ListUtils.copySubList(list, 0, 5));
     }
 
     @Test
     void copySubList_fromIndexGreaterThanToIndex_throws() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> ListUtils.copySubList(List.of("a", "b"), 1, 0));
+        List<String> list = List.of("a", "b");
+        assertThrows(IllegalArgumentException.class, () -> ListUtils.copySubList(list, 1, 0));
     }
 }

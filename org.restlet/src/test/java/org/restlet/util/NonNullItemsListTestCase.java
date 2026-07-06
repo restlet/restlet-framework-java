@@ -9,13 +9,14 @@
 package org.restlet.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class NonNullItemsListTestCase {
@@ -24,7 +25,7 @@ class NonNullItemsListTestCase {
     void add_nonNullElement_succeeds() {
         NonNullItemsList<String> list = new NonNullItemsList<>("no nulls allowed");
         assertTrue(list.add("a"));
-        assertEquals("a", list.get(0));
+        assertEquals("a", list.getFirst());
     }
 
     @Test
@@ -52,7 +53,7 @@ class NonNullItemsListTestCase {
         NonNullItemsList<String> list = new NonNullItemsList<>("msg");
         list.add("b");
         list.addFirst("a");
-        assertEquals("a", list.get(0));
+        assertEquals("a", list.getFirst());
     }
 
     @Test
@@ -72,8 +73,8 @@ class NonNullItemsListTestCase {
     @Test
     void addAll_collectionWithNull_throws() {
         NonNullItemsList<String> list = new NonNullItemsList<>("msg");
-        assertThrows(
-                IllegalArgumentException.class, () -> list.addAll(Arrays.asList("a", null, "b")));
+        List<String> list1 = Arrays.asList("a", null, "b");
+        assertThrows(IllegalArgumentException.class, () -> list.addAll(list1));
     }
 
     @Test
@@ -111,7 +112,7 @@ class NonNullItemsListTestCase {
         list1.add("a");
         NonNullItemsList<String> list2 = new NonNullItemsList<>("msg");
         list2.add("a");
-        assertTrue(list1.equals(list2));
+        assertEquals(list1, list2);
     }
 
     @Test
@@ -120,7 +121,7 @@ class NonNullItemsListTestCase {
         list1.add("a");
         NonNullItemsList<String> list2 = new NonNullItemsList<>("msg2");
         list2.add("a");
-        assertFalse(list1.equals(list2));
+        assertNotEquals(list1, list2);
     }
 
     @Test
@@ -128,7 +129,7 @@ class NonNullItemsListTestCase {
         NonNullItemsList<String> list1 = new NonNullItemsList<>("msg");
         list1.add("a");
         ArrayList<String> plainList = new ArrayList<>(java.util.List.of("a"));
-        assertFalse(list1.equals(plainList));
+        assertNotEquals(list1, plainList);
     }
 
     @Test

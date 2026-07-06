@@ -39,7 +39,7 @@ class CacheDirectiveReaderTestCase {
         List<CacheDirective> directives = new ArrayList<>();
         new CacheDirectiveReader("no-cache, max-age=3600").addValues(directives);
         assertEquals(2, directives.size());
-        assertEquals("no-cache", directives.get(0).getName());
+        assertEquals("no-cache", directives.getFirst().getName());
         assertEquals("max-age", directives.get(1).getName());
     }
 

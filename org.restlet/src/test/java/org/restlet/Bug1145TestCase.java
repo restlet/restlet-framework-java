@@ -41,7 +41,7 @@ class Bug1145TestCase {
     private Component component;
 
     @BeforeEach
-    public void setUpEach() throws Exception {
+    void setUpEach() throws Exception {
         Engine.register(true);
         this.client = new Client(Protocol.HTTP);
 
@@ -54,7 +54,7 @@ class Bug1145TestCase {
     }
 
     @AfterEach
-    public void tearDownEach() throws Exception {
+    void tearDownEach() throws Exception {
         this.client.stop();
         this.component.stop();
         this.component = null;

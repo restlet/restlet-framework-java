@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.eclipse.jetty.client.StringRequestContent;
@@ -35,8 +34,7 @@ class MultiPartRepresentationTestCase {
     @Test
     void testWriteFromParts() throws IOException {
         Path textFilePath = Files.createTempFile("multiPart", "");
-        Files.write(
-                textFilePath, "this is the content of the file".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(textFilePath, "this is the content of the file");
         MultiPart.PathPart filePart =
                 new MultiPart.PathPart(
                         ByteBufferPool.SIZED_NON_POOLING,

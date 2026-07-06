@@ -75,7 +75,7 @@ class GroupTestCase {
         group.getMemberGroups().add(child);
 
         assertEquals(1, group.getMemberGroups().size());
-        assertSame(child, group.getMemberGroups().get(0));
+        assertSame(child, group.getMemberGroups().getFirst());
     }
 
     @Test
@@ -86,7 +86,7 @@ class GroupTestCase {
         group.getMemberUsers().add(user);
 
         assertEquals(1, group.getMemberUsers().size());
-        assertSame(user, group.getMemberUsers().get(0));
+        assertSame(user, group.getMemberUsers().getFirst());
     }
 
     @Test
@@ -108,7 +108,7 @@ class GroupTestCase {
         group.setMemberGroups(List.of(newChild));
 
         assertEquals(1, group.getMemberGroups().size());
-        assertSame(newChild, group.getMemberGroups().get(0));
+        assertSame(newChild, group.getMemberGroups().getFirst());
     }
 
     @Test
@@ -140,7 +140,7 @@ class GroupTestCase {
         group.setMemberUsers(List.of(newUser));
 
         assertEquals(1, group.getMemberUsers().size());
-        assertSame(newUser, group.getMemberUsers().get(0));
+        assertSame(newUser, group.getMemberUsers().getFirst());
     }
 
     @Test

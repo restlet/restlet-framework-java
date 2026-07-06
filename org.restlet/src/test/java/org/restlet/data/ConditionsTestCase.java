@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,8 @@ class ConditionsTestCase {
     @Test
     void setModifiedSince_marksConditionsAsPresent() {
         Conditions conditions = new Conditions();
-        conditions.setModifiedSince(new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        conditions.setModifiedSince(new Date(instant.toEpochMilli()));
         assertTrue(conditions.hasSome());
         assertNotNull(conditions.getModifiedSince());
     }
@@ -60,7 +62,8 @@ class ConditionsTestCase {
     @Test
     void setUnmodifiedSince_marksConditionsAsPresent() {
         Conditions conditions = new Conditions();
-        conditions.setUnmodifiedSince(new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        conditions.setUnmodifiedSince(new Date(instant.toEpochMilli()));
         assertTrue(conditions.hasSome());
         assertNotNull(conditions.getUnmodifiedSince());
     }
@@ -75,7 +78,8 @@ class ConditionsTestCase {
     @Test
     void setRangeDate_marksRangeConditionsAsPresent() {
         Conditions conditions = new Conditions();
-        conditions.setRangeDate(new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        conditions.setRangeDate(new Date(instant.toEpochMilli()));
         assertTrue(conditions.hasSomeRange());
     }
 
@@ -166,7 +170,9 @@ class ConditionsTestCase {
         Conditions conditions = new Conditions();
         Date future = new Date(System.currentTimeMillis() + 1_000_000_000L);
         conditions.setModifiedSince(future);
-        Status status = conditions.getStatus(Method.GET, true, null, new Date());
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        Status status =
+                conditions.getStatus(Method.GET, true, null, new Date(instant.toEpochMilli()));
         assertNull(status);
     }
 
@@ -183,6 +189,9 @@ class ConditionsTestCase {
     @Test
     void getStatus_noConditions_returnsNull() {
         Conditions conditions = new Conditions();
-        assertNull(conditions.getStatus(Method.GET, true, new Tag("abc"), new Date()));
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z");
+        assertNull(
+                conditions.getStatus(
+                        Method.GET, true, new Tag("abc"), new Date(instant.toEpochMilli())));
     }
 }

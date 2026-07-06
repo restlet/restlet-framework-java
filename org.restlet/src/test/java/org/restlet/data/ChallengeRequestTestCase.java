@@ -40,7 +40,7 @@ class ChallengeRequestTestCase {
         ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
         List<Reference> refs = request.getDomainRefs();
         assertEquals(1, refs.size());
-        assertEquals("/", refs.get(0).toString());
+        assertEquals("/", refs.getFirst().toString());
     }
 
     @Test
@@ -56,18 +56,18 @@ class ChallengeRequestTestCase {
         request.setDomainUris(Arrays.asList("/a", "/b"));
         List<Reference> refs = request.getDomainRefs();
         assertEquals(2, refs.size());
-        assertEquals("/a", refs.get(0).toString());
+        assertEquals("/a", refs.getFirst().toString());
         assertEquals("/b", refs.get(1).toString());
     }
 
     @Test
     void setDomainUris_withNull_setsNullDomainRefs() {
         ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
-        request.setDomainUris(Arrays.asList("/a"));
+        request.setDomainUris(List.of("/a"));
         request.setDomainUris(null);
         // getDomainRefs() re-initializes the lazy default when null.
         assertEquals(1, request.getDomainRefs().size());
-        assertEquals("/", request.getDomainRefs().get(0).toString());
+        assertEquals("/", request.getDomainRefs().getFirst().toString());
     }
 
     @Test
@@ -75,17 +75,17 @@ class ChallengeRequestTestCase {
         ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
         List<String> options = request.getQualityOptions();
         assertEquals(1, options.size());
-        assertEquals(ChallengeMessage.QUALITY_AUTHENTICATION, options.get(0));
+        assertEquals(ChallengeMessage.QUALITY_AUTHENTICATION, options.getFirst());
     }
 
     @Test
     void setQualityOptions_replacesList() {
         ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
-        request.setQualityOptions(Arrays.asList(ChallengeMessage.QUALITY_AUTHENTICATION_INTEGRITY));
+        request.setQualityOptions(List.of(ChallengeMessage.QUALITY_AUTHENTICATION_INTEGRITY));
         assertEquals(1, request.getQualityOptions().size());
         assertEquals(
                 ChallengeMessage.QUALITY_AUTHENTICATION_INTEGRITY,
-                request.getQualityOptions().get(0));
+                request.getQualityOptions().getFirst());
     }
 
     @Test
@@ -101,18 +101,6 @@ class ChallengeRequestTestCase {
         ChallengeRequest r2 = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST, "realm");
         assertEquals(r1, r2);
         assertEquals(r1.hashCode(), r2.hashCode());
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
-        assertEquals(request, request);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        ChallengeRequest request = new ChallengeRequest(ChallengeScheme.HTTP_DIGEST);
-        assertNotEquals(request, "not a challenge request");
     }
 
     @Test

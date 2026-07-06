@@ -161,7 +161,7 @@ class StringRepresentationTestCase {
     @Test
     void write_withNullText_writesNothing() throws IOException {
         StringRepresentation representation = new StringRepresentation("abc");
-        representation.setText((String) null);
+        representation.setText(null);
         StringWriter writer = new StringWriter();
 
         representation.write(writer);

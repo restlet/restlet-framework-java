@@ -9,8 +9,10 @@
 package org.restlet.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ class ConverterServiceTestCase {
     void constructors_createUsableInstances() {
         assertNotNull(new ConverterService());
         ConverterService disabled = new ConverterService(false);
-        assertEquals(false, disabled.isEnabled());
+        assertFalse(disabled.isEnabled());
     }
 
     @Test
@@ -92,11 +94,11 @@ class ConverterServiceTestCase {
         List<Class<?>> classes = service.getObjectClasses(variant);
 
         assertNotNull(classes);
-        assertEquals(true, classes.contains(String.class));
+        assertTrue(classes.contains(String.class));
     }
 
     @Test
-    void getVariants_forStringSource_returnsNonEmptyList() throws Exception {
+    void getVariants_forStringSource_returnsNonEmptyList() {
         ConverterService service = new ConverterService();
 
         List<? extends Variant> variants =

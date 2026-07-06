@@ -184,13 +184,14 @@ class JacksonTestCase {
         Assertions.assertEquals(customer1.getLastName(), customer2.getLastName());
         Assertions.assertEquals(customer1.getInvoices().size(), customer2.getInvoices().size());
         Assertions.assertEquals(
-                customer1.getInvoices().get(0).getAmount(),
-                customer2.getInvoices().get(0).getAmount());
+                customer1.getInvoices().getFirst().getAmount(),
+                customer2.getInvoices().getFirst().getAmount());
         Assertions.assertEquals(
                 customer1.getInvoices().get(1).getAmount(),
                 customer2.getInvoices().get(1).getAmount());
         Assertions.assertEquals(
-                customer1.getInvoices().get(0).getDate(), customer2.getInvoices().get(0).getDate());
+                customer1.getInvoices().getFirst().getDate(),
+                customer2.getInvoices().getFirst().getDate());
         Assertions.assertEquals(
                 customer1.getInvoices().get(1).getDate(), customer2.getInvoices().get(1).getDate());
     }

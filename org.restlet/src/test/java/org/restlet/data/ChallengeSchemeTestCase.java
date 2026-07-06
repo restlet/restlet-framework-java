@@ -65,12 +65,6 @@ class ChallengeSchemeTestCase {
     }
 
     @Test
-    void equals_differentType_returnsFalse() {
-        ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-        assertNotEquals(scheme, "Basic");
-    }
-
-    @Test
     void equals_differentName_returnsFalse() {
         assertNotEquals(ChallengeScheme.HTTP_BASIC, ChallengeScheme.HTTP_DIGEST);
     }

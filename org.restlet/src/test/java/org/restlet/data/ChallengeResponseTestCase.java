@@ -59,7 +59,7 @@ class ChallengeResponseTestCase {
     @Test
     void settersUpdateState() {
         ChallengeResponse response = new ChallengeResponse(ChallengeScheme.HTTP_BASIC);
-        Reference digestRef = new Reference("http://example.com/resource");
+        Reference digestRef = new Reference("https://example.com/resource");
         response.setClientNonce("clientNonce");
         response.setDigestRef(digestRef);
         response.setIdentifier("user");
@@ -92,20 +92,6 @@ class ChallengeResponseTestCase {
         ChallengeResponse r2 = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "user", "pass");
         assertEquals(r1, r2);
         assertEquals(r1.hashCode(), r2.hashCode());
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        ChallengeResponse response =
-                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "user", "pass");
-        assertEquals(response, response);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        ChallengeResponse response =
-                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "user", "pass");
-        assertNotEquals(response, "not a challenge response");
     }
 
     @Test

@@ -77,7 +77,7 @@ class SpringHostTestCase {
         assertEquals(1, this.host.getRoutes().size(), "Default route should have been attached");
         assertEquals(
                 target,
-                this.host.getRoutes().get(0).getNext(),
+                this.host.getRoutes().getFirst().getNext(),
                 "Default route should point to target");
     }
 

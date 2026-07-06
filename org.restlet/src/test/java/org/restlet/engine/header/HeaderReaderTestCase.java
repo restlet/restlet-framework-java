@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 
@@ -85,21 +87,14 @@ class HeaderReaderTestCase {
         assertNull(HeaderReader.readHeader(is, new StringBuilder()));
     }
 
-    @Test
-    void readHeaderFromInputStream_crWithoutLf_throws() {
-        ByteArrayInputStream is = new ByteArrayInputStream("\rX".getBytes());
-        assertThrows(IOException.class, () -> HeaderReader.readHeader(is, new StringBuilder()));
-    }
-
-    @Test
-    void readHeaderFromInputStream_missingColon_throws() {
-        ByteArrayInputStream is = new ByteArrayInputStream("NameOnly".getBytes());
-        assertThrows(IOException.class, () -> HeaderReader.readHeader(is, new StringBuilder()));
-    }
-
-    @Test
-    void readHeaderFromInputStream_missingTrailingLineFeed_throws() {
-        ByteArrayInputStream is = new ByteArrayInputStream("Name: value\r".getBytes());
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+        "crWithoutLf,\rX",
+        "missingColon,NameOnly",
+        "missingTrailingLineFeed,Name: value\r"
+    })
+    void readHeaderFromInputStream_throws(final String label, final String header) {
+        ByteArrayInputStream is = new ByteArrayInputStream(header.getBytes());
         assertThrows(IOException.class, () -> HeaderReader.readHeader(is, new StringBuilder()));
     }
 

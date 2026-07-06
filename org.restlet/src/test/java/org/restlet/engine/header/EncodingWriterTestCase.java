@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Encoding;
 
@@ -19,7 +20,7 @@ class EncodingWriterTestCase {
 
     @Test
     void write_gzip_writesEncodingName() {
-        assertEquals(Encoding.GZIP.getName(), EncodingWriter.write(Arrays.asList(Encoding.GZIP)));
+        assertEquals(Encoding.GZIP.getName(), EncodingWriter.write(List.of(Encoding.GZIP)));
     }
 
     @Test

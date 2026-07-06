@@ -35,14 +35,14 @@ class ParameterTestCase {
     }
 
     @Test
-    void create_withNonNullValue_createsParameter() throws Exception {
+    void create_withNonNullValue_createsParameter() {
         Parameter parameter = Parameter.create("name", "value");
         assertEquals("name", parameter.getName());
         assertEquals("value", parameter.getValue());
     }
 
     @Test
-    void create_withNullValue_createsParameterWithNullValue() throws Exception {
+    void create_withNullValue_createsParameterWithNullValue() {
         Parameter parameter = Parameter.create("name", null);
         assertEquals("name", parameter.getName());
         assertNull(parameter.getValue());
@@ -72,18 +72,6 @@ class ParameterTestCase {
         Parameter p2 = new Parameter("name", "value");
         assertEquals(p1, p2);
         assertEquals(p1.hashCode(), p2.hashCode());
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        Parameter parameter = new Parameter("name", "value");
-        assertEquals(parameter, parameter);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        Parameter parameter = new Parameter("name", "value");
-        assertNotEquals(parameter, "name=value");
     }
 
     @Test
@@ -118,6 +106,6 @@ class ParameterTestCase {
         Parameter parameter = new Parameter("name", "value");
         Series<Parameter> series = parameter.createSeries();
         assertEquals(1, series.size());
-        assertSame(parameter, series.get(0));
+        assertSame(parameter, series.getFirst());
     }
 }

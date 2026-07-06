@@ -28,13 +28,19 @@ class RestletHelperTestCase {
         }
 
         @Override
-        public void start() {}
+        public void start() {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
-        public void stop() {}
+        public void stop() {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
-        public void update() {}
+        public void update() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test

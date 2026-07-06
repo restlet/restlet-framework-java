@@ -92,6 +92,6 @@ class StreamRepresentationTestCase {
 
         representation.write(out);
 
-        assertEquals("raw", out.toString(StandardCharsets.UTF_8.name()));
+        assertEquals("raw", out.toString(StandardCharsets.UTF_8));
     }
 }

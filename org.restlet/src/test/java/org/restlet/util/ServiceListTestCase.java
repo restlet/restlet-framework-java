@@ -98,7 +98,7 @@ class ServiceListTestCase {
         list.set(List.of(new LogService()));
 
         assertEquals(1, list.size());
-        assertTrue(list.get(0) instanceof LogService);
+        assertTrue(list.getFirst() instanceof LogService);
     }
 
     @Test
@@ -121,7 +121,7 @@ class ServiceListTestCase {
         list.set(replacement);
 
         assertEquals(1, list.size());
-        assertEquals(replacement, list.get(0));
+        assertEquals(replacement, list.getFirst());
     }
 
     @Test

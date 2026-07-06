@@ -251,8 +251,8 @@ class ChallengeAuthenticatorTestCase {
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
         assertEquals(1, response.getChallengeRequests().size());
         assertEquals(
-                ChallengeScheme.HTTP_BASIC, response.getChallengeRequests().get(0).getScheme());
-        assertEquals("realm", response.getChallengeRequests().get(0).getRealm());
+                ChallengeScheme.HTTP_BASIC, response.getChallengeRequests().getFirst().getScheme());
+        assertEquals("realm", response.getChallengeRequests().getFirst().getRealm());
     }
 
     @Test

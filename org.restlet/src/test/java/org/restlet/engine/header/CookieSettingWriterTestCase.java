@@ -9,6 +9,7 @@
 package org.restlet.engine.header;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -103,7 +104,7 @@ class CookieSettingWriterTestCase {
     void write_commentVersionZero_isIgnored() {
         CookieSetting cookieSetting = new CookieSetting("name", "value");
         cookieSetting.setComment("a comment");
-        assertTrue(!CookieSettingWriter.write(cookieSetting).contains("Comment"));
+        assertFalse(CookieSettingWriter.write(cookieSetting).contains("Comment"));
     }
 
     @Test

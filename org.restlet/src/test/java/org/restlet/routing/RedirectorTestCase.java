@@ -226,7 +226,7 @@ class RedirectorTestCase {
 
         org.restlet.util.Series<Header> remaining = request.getHeaders();
         assertEquals(1, remaining.size());
-        assertEquals("X-Custom", remaining.get(0).getName());
+        assertEquals("X-Custom", remaining.getFirst().getName());
     }
 
     @Test

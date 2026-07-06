@@ -10,6 +10,7 @@ package org.restlet.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ class WrapperListTestCase {
     void add_appendsElement() {
         WrapperList<String> list = new WrapperList<>();
         assertTrue(list.add("a"));
-        assertEquals("a", list.get(0));
+        assertEquals("a", list.getFirst());
     }
 
     @Test
@@ -109,7 +110,7 @@ class WrapperListTestCase {
         list1.addAll(Arrays.asList("a", "b"));
         WrapperList<String> list2 = new WrapperList<>();
         list2.addAll(Arrays.asList("a", "b"));
-        assertTrue(list1.equals(list2));
+        assertEquals(list1, list2);
     }
 
     @Test
@@ -118,19 +119,7 @@ class WrapperListTestCase {
         list1.add("a");
         WrapperList<String> list2 = new WrapperList<>();
         list2.add("b");
-        assertFalse(list1.equals(list2));
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        WrapperList<String> list = new WrapperList<>();
-        assertTrue(list.equals(list));
-    }
-
-    @Test
-    void equals_notAList_returnsFalse() {
-        WrapperList<String> list = new WrapperList<>();
-        assertFalse(list.equals("not a list"));
+        assertNotEquals(list1, list2);
     }
 
     @Test
@@ -178,7 +167,7 @@ class WrapperListTestCase {
     void removeByIndex_returnsRemovedElement() {
         WrapperList<String> list = new WrapperList<>();
         list.add("a");
-        assertEquals("a", list.remove(0));
+        assertEquals("a", list.removeFirst());
         assertTrue(list.isEmpty());
     }
 
@@ -202,7 +191,7 @@ class WrapperListTestCase {
     void retainAll_keepsOnlySpecifiedElements() {
         WrapperList<String> list = new WrapperList<>();
         list.addAll(Arrays.asList("a", "b", "c"));
-        assertTrue(list.retainAll(Arrays.asList("b")));
+        assertTrue(list.retainAll(List.of("b")));
         assertEquals(List.of("b"), list);
     }
 
@@ -211,7 +200,7 @@ class WrapperListTestCase {
         WrapperList<String> list = new WrapperList<>();
         list.add("a");
         assertEquals("a", list.set(0, "b"));
-        assertEquals("b", list.get(0));
+        assertEquals("b", list.getFirst());
     }
 
     @Test

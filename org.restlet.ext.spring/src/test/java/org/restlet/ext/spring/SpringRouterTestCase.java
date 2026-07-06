@@ -97,7 +97,7 @@ class SpringRouterTestCase {
         TestRestlet target = new TestRestlet();
         SpringRouter.setAttachment(this.router, "/target", target);
 
-        Route route = this.router.getRoutes().get(0);
+        Route route = this.router.getRoutes().getFirst();
         assertInstanceOf(TemplateRoute.class, route, "Attached route should be a TemplateRoute");
         assertEquals(target, route.getNext(), "Attached route should point to the given Restlet");
     }
@@ -124,7 +124,7 @@ class SpringRouterTestCase {
         assertEquals(1, this.router.getRoutes().size(), "Default route should have been attached");
         assertEquals(
                 target,
-                this.router.getRoutes().get(0).getNext(),
+                this.router.getRoutes().getFirst().getNext(),
                 "Default route should point to target");
     }
 }

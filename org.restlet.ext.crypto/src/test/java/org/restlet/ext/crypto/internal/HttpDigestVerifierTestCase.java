@@ -44,8 +44,7 @@ class HttpDigestVerifierTestCase {
     private String ha1;
 
     private Request createRequest() {
-        Request request = new Request(Method.GET, "http://example.com" + RESOURCE_PATH);
-        return request;
+        return new Request(Method.GET, "http://example.com" + RESOURCE_PATH);
     }
 
     private String computeResponse(String ha1Value, String nonce, String requestUri) {

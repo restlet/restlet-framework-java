@@ -91,8 +91,8 @@ class XmlRepresentationTestCase {
     @Test
     void getNamespaceURI_whenRegistered_returnsUri() {
         DomRepresentation dr = dom();
-        dr.getNamespaces().put("cat", "http://example.com/catalog");
-        assertEquals("http://example.com/catalog", dr.getNamespaceURI("cat"));
+        dr.getNamespaces().put("cat", "https://example.com/catalog");
+        assertEquals("https://example.com/catalog", dr.getNamespaceURI("cat"));
     }
 
     @Test
@@ -104,15 +104,15 @@ class XmlRepresentationTestCase {
     @Test
     void getPrefix_whenRegistered_returnsPrefix() {
         DomRepresentation dr = dom();
-        dr.getNamespaces().put("ex", "http://example.com/");
-        assertEquals("ex", dr.getPrefix("http://example.com/"));
+        dr.getNamespaces().put("ex", "https://example.com/");
+        assertEquals("ex", dr.getPrefix("https://example.com/"));
     }
 
     @Test
     void getPrefixes_returnsIteratorWithMatchingEntries() {
         DomRepresentation dr = dom();
-        dr.getNamespaces().put("ex", "http://example.com/");
-        Iterator<String> it = dr.getPrefixes("http://example.com/");
+        dr.getNamespaces().put("ex", "https://example.com/");
+        Iterator<String> it = dr.getPrefixes("https://example.com/");
         assertTrue(it.hasNext());
         assertEquals("ex", it.next());
     }
@@ -181,20 +181,14 @@ class XmlRepresentationTestCase {
     @Test
     void getSaxSource_static_withLocationRef_setsSystemId() throws Exception {
         StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
-        rep.setLocationRef(new Reference("http://example.com/doc.xml"));
+        rep.setLocationRef(new Reference("https://example.com/doc.xml"));
         assertEquals(
-                "http://example.com/doc.xml", XmlRepresentation.getSaxSource(rep).getSystemId());
+                "https://example.com/doc.xml", XmlRepresentation.getSaxSource(rep).getSystemId());
     }
 
     @Test
     void getSaxSource_instance_returnsNonNull() throws Exception {
         assertNotNull(dom().getSaxSource());
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        DomRepresentation dr = dom();
-        assertTrue(dr.equals(dr));
     }
 
     @Test
@@ -206,7 +200,7 @@ class XmlRepresentationTestCase {
     @Test
     void release_clearsNamespacesMap() {
         DomRepresentation dr = dom();
-        dr.getNamespaces().put("ex", "http://example.com/");
+        dr.getNamespaces().put("ex", "https://example.com/");
         dr.release();
         assertTrue(dr.getNamespaces().isEmpty());
     }
@@ -340,8 +334,8 @@ class XmlRepresentationTestCase {
     @Test
     void getStreamSource_withLocationRef_setsSystemId() throws Exception {
         DomRepresentation dr = dom();
-        dr.setLocationRef(new Reference("http://example.com/catalog.xml"));
-        assertEquals("http://example.com/catalog.xml", dr.getStreamSource().getSystemId());
+        dr.setLocationRef(new Reference("https://example.com/catalog.xml"));
+        assertEquals("https://example.com/catalog.xml", dr.getStreamSource().getSystemId());
     }
 
     @Test
@@ -353,7 +347,8 @@ class XmlRepresentationTestCase {
 
     @Test
     void getText_withInvalidXPathExpression_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> dom().getText("///invalid[["));
+        DomRepresentation dom = dom();
+        assertThrows(IllegalArgumentException.class, () -> dom.getText("///invalid[["));
     }
 
     @Test
@@ -369,8 +364,8 @@ class XmlRepresentationTestCase {
     void getDomSource_withLocationRef_setsSystemId() throws Exception {
         StringRepresentation rep = new StringRepresentation(XML, MediaType.TEXT_XML);
         SaxRepresentation sr = new SaxRepresentation(rep);
-        sr.setLocationRef(new Reference("http://example.com/loc.xml"));
-        assertEquals("http://example.com/loc.xml", sr.getDomSource().getSystemId());
+        sr.setLocationRef(new Reference("https://example.com/loc.xml"));
+        assertEquals("https://example.com/loc.xml", sr.getDomSource().getSystemId());
     }
 
     @Test

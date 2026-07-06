@@ -172,10 +172,14 @@ class TransformRepresentationTestCase {
         ErrorListener listener =
                 new ErrorListener() {
                     @Override
-                    public void warning(TransformerException exception) {}
+                    public void warning(TransformerException exception) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
-                    public void error(TransformerException exception) {}
+                    public void error(TransformerException exception) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
                     public void fatalError(TransformerException exception)
@@ -218,13 +222,19 @@ class TransformRepresentationTestCase {
         ErrorListener listener =
                 new ErrorListener() {
                     @Override
-                    public void warning(TransformerException exception) {}
+                    public void warning(TransformerException exception) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
-                    public void error(TransformerException exception) {}
+                    public void error(TransformerException exception) {
+                        throw new UnsupportedOperationException();
+                    }
 
                     @Override
-                    public void fatalError(TransformerException exception) {}
+                    public void fatalError(TransformerException exception) {
+                        throw new UnsupportedOperationException();
+                    }
                 };
         tr.setErrorListener(listener);
         assertSame(listener, tr.getErrorListener());
@@ -260,8 +270,12 @@ class TransformRepresentationTestCase {
     void transform_withoutTransformSheetOrTemplates_logsWarningAndDoesNothing() throws Exception {
         TransformRepresentation tr =
                 new TransformRepresentation(this.source, (Representation) null);
-        StreamResult result = new StreamResult(new StringWriter());
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
         tr.transform(new StreamSource(new StringReader("<a/>")), result);
+        writer.flush();
+        writer.close();
+        assertEquals("", writer.toString());
     }
 
     @Test

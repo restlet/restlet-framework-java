@@ -228,7 +228,7 @@ class RouterTestCase {
                 new Router(new Context()) {
                     @Override
                     protected Route getCustom(Request request, Response response) {
-                        return getRoutes().isEmpty() ? null : getRoutes().get(0);
+                        return getRoutes().isEmpty() ? null : getRoutes().getFirst();
                     }
                 };
         router.setRoutingMode(Router.MODE_CUSTOM);
@@ -250,7 +250,7 @@ class RouterTestCase {
                 new Router(new Context()) {
                     @Override
                     protected Route getCustom(Request request, Response response) {
-                        return attempts.incrementAndGet() < 2 ? null : getRoutes().get(0);
+                        return attempts.incrementAndGet() < 2 ? null : getRoutes().getFirst();
                     }
                 };
         router.setRoutingMode(Router.MODE_CUSTOM);

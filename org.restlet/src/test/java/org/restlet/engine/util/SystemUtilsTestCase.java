@@ -10,6 +10,7 @@ package org.restlet.engine.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +58,7 @@ class SystemUtilsTestCase {
 
     @Test
     void hashCode_differsForDifferentInputs() {
-        assertFalse(SystemUtils.hashCode("a", "b") == SystemUtils.hashCode("a", "c"));
+        assertNotEquals(SystemUtils.hashCode("a", "b"), SystemUtils.hashCode("a", "c"));
     }
 
     @Test

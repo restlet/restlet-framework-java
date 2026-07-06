@@ -42,7 +42,7 @@ class DigesterRepresentationTestCase {
     private int serverPort;
 
     @BeforeEach
-    protected void setUpEach() throws Exception {
+    void setUpEach() throws Exception {
         Engine.clearThreadLocalVariables();
         Engine.register();
         component = new Component();
@@ -53,7 +53,7 @@ class DigesterRepresentationTestCase {
     }
 
     @AfterEach
-    protected void tearDownEach() throws Exception {
+    void tearDownEach() throws Exception {
         Engine.clearThreadLocalVariables();
         Engine.register();
         component.stop();

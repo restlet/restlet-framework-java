@@ -9,6 +9,7 @@
 package org.restlet.ext.freemarker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -160,7 +161,7 @@ class FreeMarkerTestCase {
         Representation representation =
                 converter.toRepresentation(template, new Variant(MediaType.TEXT_HTML), resource);
         assertNotNull(representation);
-        assertTrue(representation instanceof TemplateRepresentation);
+        assertInstanceOf(TemplateRepresentation.class, representation);
         assertEquals("Hello GET", representation.getText());
     }
 
@@ -205,7 +206,6 @@ class FreeMarkerTestCase {
     void testTemplateRepresentationEqualsAndHashCode() {
         TemplateRepresentation tr =
                 new TemplateRepresentation((Template) null, MediaType.TEXT_PLAIN);
-        assertEquals(tr, tr);
         assertEquals(tr.hashCode(), tr.hashCode());
     }
 

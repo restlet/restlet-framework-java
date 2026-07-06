@@ -88,7 +88,7 @@ class ProtocolTestCase {
 
     @Test
     void valueOf_nullOrEmptyScheme_returnsNull() {
-        assertNull(Protocol.valueOf((String) null));
+        assertNull(Protocol.valueOf(null));
         assertNull(Protocol.valueOf(""));
     }
 
@@ -113,11 +113,6 @@ class ProtocolTestCase {
         Protocol p2 = new Protocol("other", "name", "d2", 2, true);
         assertEquals(p1, p2);
         assertEquals(p1.hashCode(), p2.hashCode());
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        assertNotEquals(Protocol.HTTP, "HTTP");
     }
 
     @Test

@@ -171,7 +171,7 @@ class TaskServiceTestCase {
                         List.of((Callable<String>) () -> "a", (Callable<String>) () -> "b"));
 
         assertEquals(2, futures.size());
-        assertEquals("a", futures.get(0).get());
+        assertEquals("a", futures.getFirst().get());
         assertEquals("b", futures.get(1).get());
     }
 

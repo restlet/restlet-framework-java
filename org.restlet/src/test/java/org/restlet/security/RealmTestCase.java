@@ -107,7 +107,7 @@ class RealmTestCase {
         realm.setParameters(newParameters);
 
         assertEquals(1, realm.getParameters().size());
-        assertEquals("new", realm.getParameters().get(0).getName());
+        assertEquals("new", realm.getParameters().getFirst().getName());
     }
 
     @Test

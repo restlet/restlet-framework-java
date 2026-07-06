@@ -66,7 +66,7 @@ class StatusInfoHtmlConverterTestCase {
     }
 
     @Test
-    void score_representationSourceOverload_alwaysReturnsNegative() throws IOException {
+    void score_representationSourceOverload_alwaysReturnsNegative() {
         Representation rep = new org.restlet.representation.StringRepresentation("body");
         assertTrue(converter.score(rep, StatusInfo.class, null) < 0);
     }
@@ -83,7 +83,7 @@ class StatusInfoHtmlConverterTestCase {
         StatusInfo status = new StatusInfo(Status.SERVER_ERROR_INTERNAL);
         status.setDescription("Something broke");
         status.setContactEmail("admin@example.com");
-        status.setHomeRef("http://example.com/home");
+        status.setHomeRef("https://example.com/home");
 
         Representation result =
                 converter.toRepresentation(status, new Variant(MediaType.TEXT_HTML), null);

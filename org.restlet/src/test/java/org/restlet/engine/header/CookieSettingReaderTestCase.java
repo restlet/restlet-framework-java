@@ -100,7 +100,7 @@ class CookieSettingReaderTestCase {
         java.util.Date future = new java.util.Date(System.currentTimeMillis() + 3_600_000L);
         String expires =
                 org.restlet.engine.util.DateUtils.format(
-                        future, org.restlet.engine.util.DateUtils.FORMAT_RFC_1123.get(0));
+                        future, org.restlet.engine.util.DateUtils.FORMAT_RFC_1123.getFirst());
         CookieSetting cookieSetting = CookieSettingReader.read("name=value; expires=" + expires);
         assertTrue(cookieSetting.getMaxAge() > 0);
     }

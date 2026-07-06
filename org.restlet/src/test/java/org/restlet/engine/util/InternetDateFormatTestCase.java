@@ -11,7 +11,6 @@ package org.restlet.engine.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParsePosition;
 import java.util.Calendar;
@@ -206,7 +205,7 @@ class InternetDateFormatTestCase {
 
     @Test
     void utc_hasZeroOffsetAndNoDst() {
-        assertTrue(InternetDateFormat.UTC.getRawOffset() == 0);
-        assertTrue(InternetDateFormat.UTC.getDSTSavings() == 0);
+        assertEquals(0, InternetDateFormat.UTC.getRawOffset());
+        assertEquals(0, InternetDateFormat.UTC.getDSTSavings());
     }
 }

@@ -9,6 +9,8 @@
 package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +37,7 @@ class EncoderTestCase {
         Encoder encoder = new Encoder(new Context(), true, false, service);
 
         assertTrue(encoder.isEncodingRequest());
-        assertEquals(false, encoder.isEncodingResponse());
+        assertFalse(encoder.isEncodingResponse());
         assertSame(service, encoder.getEncoderService());
         assertTrue(encoder.getSupportedEncodings().contains(Encoding.GZIP));
     }
@@ -65,7 +67,7 @@ class EncoderTestCase {
         Representation source = new StringRepresentation("hello");
         Representation result = encoder.encode(clientInfo, source);
 
-        assertTrue(result instanceof EncodeRepresentation);
+        assertInstanceOf(EncodeRepresentation.class, result);
     }
 
     @Test
@@ -89,7 +91,7 @@ class EncoderTestCase {
         int result = encoder.beforeHandle(request, response);
 
         assertEquals(Filter.CONTINUE, result);
-        assertTrue(request.getEntity() instanceof EncodeRepresentation);
+        assertInstanceOf(EncodeRepresentation.class, request.getEntity());
     }
 
     @Test
@@ -117,6 +119,6 @@ class EncoderTestCase {
 
         encoder.afterHandle(request, response);
 
-        assertTrue(response.getEntity() instanceof EncodeRepresentation);
+        assertInstanceOf(EncodeRepresentation.class, response.getEntity());
     }
 }

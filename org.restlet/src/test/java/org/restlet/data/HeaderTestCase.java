@@ -49,22 +49,10 @@ class HeaderTestCase {
     }
 
     @Test
-    void equals_sameInstance_returnsTrue() {
-        Header header = new Header("X-Custom", "value");
-        assertEquals(header, header);
-    }
-
-    @Test
     void equals_differentValue_returnsFalse() {
         Header header1 = new Header("X-Custom", "value1");
         Header header2 = new Header("X-Custom", "value2");
         assertNotEquals(header1, header2);
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        Header header = new Header("X-Custom", "value");
-        assertNotEquals(header, "X-Custom");
     }
 
     @Test

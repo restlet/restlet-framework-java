@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CacheDirective;
 
@@ -19,13 +20,13 @@ class CacheDirectiveWriterTestCase {
 
     @Test
     void write_nameOnlyDirective_writesNameOnly() {
-        String result = CacheDirectiveWriter.write(Arrays.asList(CacheDirective.noCache()));
+        String result = CacheDirectiveWriter.write(List.of(CacheDirective.noCache()));
         assertEquals("no-cache", result);
     }
 
     @Test
     void write_nameValueDirective_writesNameEqualsValue() {
-        String result = CacheDirectiveWriter.write(Arrays.asList(CacheDirective.maxAge(3600)));
+        String result = CacheDirectiveWriter.write(List.of(CacheDirective.maxAge(3600)));
         assertTrue(result.startsWith("max-age="));
     }
 

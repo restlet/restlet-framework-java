@@ -10,6 +10,7 @@ package org.restlet.representation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +63,7 @@ class InputRepresentationTestCase {
         InputRepresentation representation = new InputRepresentation(stream("content"));
 
         InputStream first = representation.getStream();
-        assertTrue(first != null);
+        assertNotNull(first);
 
         InputStream second = representation.getStream();
         assertNull(second);
@@ -91,7 +92,7 @@ class InputRepresentationTestCase {
 
         representation.write(out);
 
-        assertEquals("copied content", out.toString(StandardCharsets.UTF_8.name()));
+        assertEquals("copied content", out.toString(StandardCharsets.UTF_8));
     }
 
     @Test

@@ -46,7 +46,7 @@ class FileRepresentationTestCase {
     private String uri;
 
     @BeforeEach
-    protected void setUpEach() throws Exception {
+    void setUpEach() throws Exception {
         Engine.clearThreadLocalVariables();
         Engine.register(true);
         component = new Component();
@@ -60,7 +60,7 @@ class FileRepresentationTestCase {
     }
 
     @AfterEach
-    protected void tearDownEach() throws Exception {
+    void tearDownEach() throws Exception {
         Engine.clearThreadLocalVariables();
         component.stop();
         component = null;

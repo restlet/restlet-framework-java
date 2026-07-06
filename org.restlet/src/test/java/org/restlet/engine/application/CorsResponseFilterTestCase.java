@@ -34,10 +34,14 @@ class CorsResponseFilterTestCase {
 
     public static class DummyServerResource extends ServerResource {
         @Options
-        public void doOption() {}
+        public void doOption() {
+            // Does nothing on purpose
+        }
 
         @Get
-        public void doGet() {}
+        public void doGet() {
+            // Does nothing on purpose
+        }
     }
 
     @BeforeEach

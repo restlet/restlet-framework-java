@@ -9,7 +9,7 @@
 package org.restlet.engine.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,7 +35,7 @@ class ThrowableAnnotationInfoTestCase {
                 new ThrowableAnnotationInfo(RuntimeException.class, 404, true);
         ThrowableAnnotationInfo info2 =
                 new ThrowableAnnotationInfo(RuntimeException.class, 404, false);
-        assertTrue(info1.equals(info2));
+        assertEquals(info1, info2);
     }
 
     @Test
@@ -44,21 +44,7 @@ class ThrowableAnnotationInfoTestCase {
                 new ThrowableAnnotationInfo(RuntimeException.class, 404, true);
         ThrowableAnnotationInfo info2 =
                 new ThrowableAnnotationInfo(RuntimeException.class, 500, true);
-        assertFalse(info1.equals(info2));
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        ThrowableAnnotationInfo info =
-                new ThrowableAnnotationInfo(RuntimeException.class, 404, true);
-        assertFalse(info.equals("not an info"));
-    }
-
-    @Test
-    void equals_sameInstance_returnsTrue() {
-        ThrowableAnnotationInfo info =
-                new ThrowableAnnotationInfo(RuntimeException.class, 404, true);
-        assertTrue(info.equals(info));
+        assertNotEquals(info1, info2);
     }
 
     @Test

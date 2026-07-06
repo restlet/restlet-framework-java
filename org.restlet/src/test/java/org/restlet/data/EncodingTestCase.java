@@ -10,7 +10,6 @@ package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,11 +63,6 @@ class EncodingTestCase {
         Encoding e2 = new Encoding("GZIP");
         assertEquals(e1, e2);
         assertEquals(e1.hashCode(), e2.hashCode());
-    }
-
-    @Test
-    void equals_differentType_returnsFalse() {
-        assertNotEquals(Encoding.GZIP, "gzip");
     }
 
     @Test

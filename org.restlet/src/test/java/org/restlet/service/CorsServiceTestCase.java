@@ -10,6 +10,7 @@ package org.restlet.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
@@ -77,6 +78,6 @@ class CorsServiceTestCase {
 
         Filter filter = service.createInboundFilter(new Context());
 
-        assertTrue(filter instanceof CorsFilter);
+        assertInstanceOf(CorsFilter.class, filter);
     }
 }

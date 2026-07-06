@@ -9,6 +9,7 @@
 package org.restlet.routing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,9 +28,9 @@ class ExtractorTestCase {
 
     @Test
     void constructors_createUsableInstances() {
-        assertTrue(new Extractor() instanceof Extractor);
-        assertTrue(new Extractor(new Context()) instanceof Extractor);
-        assertTrue(new Extractor(new Context(), null) instanceof Extractor);
+        assertInstanceOf(Extractor.class, new Extractor());
+        assertInstanceOf(Extractor.class, new Extractor(new Context()));
+        assertInstanceOf(Extractor.class, new Extractor(new Context(), null));
     }
 
     @Test

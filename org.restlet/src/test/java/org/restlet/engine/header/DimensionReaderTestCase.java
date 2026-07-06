@@ -84,6 +84,6 @@ class DimensionReaderTestCase {
         Header header = new Header("Vary", HeaderConstants.HEADER_ACCEPT);
         DimensionReader.addValues(header, dimensions);
         assertEquals(1, dimensions.size());
-        assertEquals(Dimension.MEDIA_TYPE, dimensions.get(0));
+        assertEquals(Dimension.MEDIA_TYPE, dimensions.getFirst());
     }
 }

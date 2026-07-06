@@ -39,7 +39,7 @@ class TagReaderTestCase {
         List<Tag> tags = new ArrayList<>();
         new TagReader("\"abc\", \"def\"").addValues(tags);
         assertEquals(2, tags.size());
-        assertEquals(new Tag("abc"), tags.get(0));
+        assertEquals(new Tag("abc"), tags.getFirst());
         assertEquals(new Tag("def"), tags.get(1));
     }
 
@@ -49,6 +49,6 @@ class TagReaderTestCase {
         Header header = new Header("ETag", "\"abc\"");
         TagReader.addValues(header, tags);
         assertEquals(1, tags.size());
-        assertEquals(new Tag("abc"), tags.get(0));
+        assertEquals(new Tag("abc"), tags.getFirst());
     }
 }
