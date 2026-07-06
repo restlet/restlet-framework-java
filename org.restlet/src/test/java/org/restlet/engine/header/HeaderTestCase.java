@@ -37,13 +37,13 @@ class HeaderTestCase {
         List<Encoding> list = new ArrayList<>();
         new EncodingReader("gzip,deflate").addValues(list);
         assertEquals(2, list.size());
-        assertEquals(Encoding.GZIP, list.get(0));
+        assertEquals(Encoding.GZIP, list.getFirst());
         assertEquals(Encoding.DEFLATE, list.get(1));
 
         list = new ArrayList<>();
         new EncodingReader("gzip,identity, deflate").addValues(list);
         assertEquals(2, list.size());
-        assertEquals(Encoding.GZIP, list.get(0));
+        assertEquals(Encoding.GZIP, list.getFirst());
         assertEquals(Encoding.DEFLATE, list.get(1));
 
         list = new ArrayList<>();
@@ -106,23 +106,24 @@ class HeaderTestCase {
         testValues(header1, values);
         testValues(header2, values);
 
-        // Test the parsing of a "Accept-encoding" header
+        // Test the parsing of an "Accept-encoding" header
         header1 = "gzip;q=1.0, identity;q=0.5 , *;q=0";
         ClientInfo clientInfo = new ClientInfo();
         PreferenceReader.addEncodings(header1, clientInfo);
-        assertEquals(Encoding.GZIP, clientInfo.getAcceptedEncodings().get(0).getMetadata());
-        assertEquals(1.0F, clientInfo.getAcceptedEncodings().get(0).getQuality());
+        assertEquals(Encoding.GZIP, clientInfo.getAcceptedEncodings().getFirst().getMetadata());
+        assertEquals(1.0F, clientInfo.getAcceptedEncodings().getFirst().getQuality());
         assertEquals(Encoding.IDENTITY, clientInfo.getAcceptedEncodings().get(1).getMetadata());
         assertEquals(0.5F, clientInfo.getAcceptedEncodings().get(1).getQuality());
         assertEquals(Encoding.ALL, clientInfo.getAcceptedEncodings().get(2).getMetadata());
         assertEquals(0F, clientInfo.getAcceptedEncodings().get(2).getQuality());
 
-        // Test the parsing of a "Accept" header
+        // Test the parsing of an "Accept" header
         header1 = "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
         clientInfo = new ClientInfo();
         PreferenceReader.addMediaTypes(header1, clientInfo);
-        assertEquals(MediaType.TEXT_HTML, clientInfo.getAcceptedMediaTypes().get(0).getMetadata());
-        assertEquals(1.0F, clientInfo.getAcceptedMediaTypes().get(0).getQuality());
+        assertEquals(
+                MediaType.TEXT_HTML, clientInfo.getAcceptedMediaTypes().getFirst().getMetadata());
+        assertEquals(1.0F, clientInfo.getAcceptedMediaTypes().getFirst().getQuality());
         assertEquals(MediaType.IMAGE_GIF, clientInfo.getAcceptedMediaTypes().get(1).getMetadata());
         assertEquals(1.0F, clientInfo.getAcceptedMediaTypes().get(1).getQuality());
         assertEquals(MediaType.IMAGE_JPEG, clientInfo.getAcceptedMediaTypes().get(2).getMetadata());
@@ -135,7 +136,7 @@ class HeaderTestCase {
         // Test a more complex header
         header1 =
                 "text/html, application/vnd.wap.xhtml+xml, "
-                        + "application/xhtml+xml; profile=\"http://www.wapforum.org/xhtml\", "
+                        + "application/xhtml+xml; profile=\"https://www.wapforum.org/xhtml\", "
                         + "image/gif, image/jpeg, image/pjpeg, audio/amr, */*";
         clientInfo = new ClientInfo();
         PreferenceReader.addMediaTypes(header1, clientInfo);

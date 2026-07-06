@@ -387,13 +387,14 @@ public class HeaderReader<V> {
             while (result == null) {
                 next = read();
 
-                if (isCommentText(next)) {
-                    buffer.append((char) next);
-                } else if (isQuoteCharacter(next)) {
+                if (isQuoteCharacter(next)) {
                     // Start of a quoted pair (escape sequence)
                     buffer.append((char) read());
+                } else if (isCommentText(next)) {
+                    buffer.append((char) next);
                 } else if (next == '(') {
                     // Nested comment
+                    unread();
                     buffer.append('(').append(readComment()).append(')');
                 } else if (next == ')') {
                     // End of comment
@@ -490,11 +491,11 @@ public class HeaderReader<V> {
             while (result == null) {
                 next = read();
 
-                if (isQuotedText(next)) {
-                    buffer.append((char) next);
-                } else if (isQuoteCharacter(next)) {
+                if (isQuoteCharacter(next)) {
                     // Start of a quoted pair (escape sequence)
                     buffer.append((char) read());
+                } else if (isQuotedText(next)) {
+                    buffer.append((char) next);
                 } else if (isDoubleQuote(next)) {
                     // End of quoted string
                     result = buffer.toString();

@@ -42,20 +42,20 @@ import org.restlet.util.Series;
 class TunnelFilterTestCase {
 
     /** . */
-    private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
+    private static final String EFFECTED = "https://example.com/adf.asdf/af.html";
 
     /** . */
-    private static final String QUERY = "http://example.org/?start=2013-11-26T03%3A45%2B1300";
+    private static final String QUERY = "https://example.com/?start=2013-11-26T03%3A45%2B1300";
 
     /** . */
     private static final String QUERY_PREF =
-            "http://example.org/?start=2013-11-26T03%3A45%2B1300&media=txt";
+            "https://example.com/?start=2013-11-26T03%3A45%2B1300&media=txt";
 
     /** . */
-    private static final String START_REF_FOR_PATH_TEST = "http://www.example.com/abc/def/";
+    private static final String START_REF_FOR_PATH_TEST = "https://www.example.com/abc/def/";
 
     /** . */
-    private static final String UNEFFECTED = "http://example.org/abc.def/af.ab";
+    private static final String UNEFFECTED = "https://example.com/abc.def/af.ab";
 
     private List<Preference<CharacterSet>> accCharsets;
 
@@ -245,7 +245,7 @@ class TunnelFilterTestCase {
     void shouldDetectMediaType() {
         createGet(EFFECTED);
         filter();
-        check("http://example.org/adf.asdf/af", null);
+        check("https://example.com/adf.asdf/af", null);
         assertMediaTypes(MediaType.TEXT_HTML);
         assertLanguages();
         assertCharSets();
@@ -368,7 +368,7 @@ class TunnelFilterTestCase {
     void testWithMatrixParam() {
         createGet(EFFECTED + ";abcdef");
         filter();
-        check("http://example.org/adf.asdf/af;abcdef", null);
+        check("https://example.com/adf.asdf/af;abcdef", null);
         assertMediaTypes(MediaType.TEXT_HTML);
         assertLanguages();
         assertCharSets();

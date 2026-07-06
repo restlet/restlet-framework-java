@@ -38,7 +38,7 @@ class DateUtilsTestCase {
     void testRfc822() {
         Date date1 = DateUtils.parse(DATE_RFC822_1, DateUtils.FORMAT_RFC_822);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_822.get(0));
+        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_822.getFirst());
 
         assertEquals(DATE_RFC822_1, dateFormat1);
     }
@@ -48,7 +48,7 @@ class DateUtilsTestCase {
     void testRfc1123() {
         Date date1 = DateUtils.parse(DATE_RFC1123_1, DateUtils.FORMAT_RFC_1123);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_1123.get(0));
+        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_1123.getFirst());
 
         assertEquals(DATE_RFC1123_1, dateFormat1);
     }

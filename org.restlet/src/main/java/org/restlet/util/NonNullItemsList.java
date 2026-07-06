@@ -62,8 +62,9 @@ public class NonNullItemsList<T> extends WrapperList<T> {
 
     @Override
     public boolean equals(final Object obj) {
-        return super.equals(obj)
-                && Objects.equals(exceptionMessage, ((NonNullItemsList<?>) obj).exceptionMessage);
+        return (obj instanceof NonNullItemsList<?> that)
+                && super.equals(obj)
+                && Objects.equals(exceptionMessage, that.exceptionMessage);
     }
 
     @Override

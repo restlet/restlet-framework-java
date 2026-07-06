@@ -49,7 +49,7 @@ class RiapTestCase {
     private static final String ECHO_TEST_MSG = JUST_SOME_OBJ.toString();
 
     private static String buildAggregate(String echoMessage, String echoCopy) {
-        return String.format("ORIGINAL: %s\nECHOCOPY: %s\n", echoMessage, echoCopy);
+        return String.format("ORIGINAL: %s%nECHOCOPY: %s%n", echoMessage, echoCopy);
     }
 
     static Restlet dispatcher;

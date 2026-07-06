@@ -41,15 +41,14 @@ class RedirectTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Engine.clearThreadLocalVariables();
         Engine.register();
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         Engine.clearThreadLocalVariables();
-        Engine.register();
     }
 
     /** Tests the cookies parsing. */

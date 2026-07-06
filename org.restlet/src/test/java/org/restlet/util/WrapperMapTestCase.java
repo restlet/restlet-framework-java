@@ -38,7 +38,7 @@ class WrapperMapTestCase {
         assertTrue(map.containsKey("key"));
         assertTrue(map.containsValue("value"));
         assertEquals("value", map.get("key"));
-        assertTrue(map.equals(delegate));
+        assertEquals(map, delegate);
         assertEquals(delegate.hashCode(), map.hashCode());
         assertEquals(1, map.keySet().size());
         assertEquals(1, map.entrySet().size());

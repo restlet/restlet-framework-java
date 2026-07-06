@@ -11,6 +11,7 @@ package org.restlet.data;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.time.Instant;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ class WarningTestCase {
         warning.setAgent("agent");
         assertEquals("agent", warning.getAgent());
 
-        Date date = new Date();
+        Date date = new Date(Instant.parse("2026-05-07T10:00:00Z").toEpochMilli());
         warning.setDate(date);
         assertEquals(date, warning.getDate());
 

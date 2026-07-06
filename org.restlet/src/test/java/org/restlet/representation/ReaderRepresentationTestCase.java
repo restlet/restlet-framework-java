@@ -10,6 +10,7 @@ package org.restlet.representation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,7 +41,7 @@ class ReaderRepresentationTestCase {
         ReaderRepresentation representation =
                 new ReaderRepresentation(new StringReader("hello"), MediaType.TEXT_PLAIN, 5);
         assertEquals(5, representation.getSize());
-        assertTrue(representation.getReader() != null);
+        assertNotNull(representation.getReader());
         assertNull(representation.getReader());
     }
 

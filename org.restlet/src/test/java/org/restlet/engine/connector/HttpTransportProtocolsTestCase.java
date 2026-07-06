@@ -54,7 +54,7 @@ class HttpTransportProtocolsTestCase {
     protected static File testKeystoreFile;
 
     @BeforeAll
-    public static void setup() throws IOException {
+    static void setup() throws IOException {
         Path keystorePath =
                 Files.createTempFile("HttpTransportProtocolsTestCase", KEYSTORE_FILE_NAME);
         final InputStream resourceAsStream =
@@ -65,23 +65,23 @@ class HttpTransportProtocolsTestCase {
     }
 
     @AfterAll
-    protected static void tearDown() {
+    static void tearDown() {
         testKeystoreFile.delete();
     }
 
     @Nested
     class HttpServerTestCase extends HttpTransportProtocolTest {
         @BeforeAll
-        public static void setup() {
+        static void setup() {
             Engine.clearThreadLocalVariables();
             Engine nre = Engine.register(false);
             nre.getRegisteredServers()
-                    .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
-            nre.getRegisteredClients().add(0, new HttpClientHelper(null));
+                    .addFirst(new org.restlet.engine.connector.HttpServerHelper(null));
+            nre.getRegisteredClients().addFirst(new HttpClientHelper(null));
         }
 
-        @BeforeAll
-        public static void tearDown() {
+        @AfterAll
+        static void tearDown() {
             Engine.clearThreadLocalVariables();
         }
 
@@ -137,16 +137,16 @@ class HttpTransportProtocolsTestCase {
     class HttpsServerTestCase extends HttpTransportProtocolTest {
 
         @BeforeAll
-        public static void setup() {
+        static void setup() {
             Engine.clearThreadLocalVariables();
             Engine nre = Engine.register(false);
             nre.getRegisteredServers()
-                    .add(0, new org.restlet.engine.connector.HttpsServerHelper(null));
-            nre.getRegisteredClients().add(0, new HttpClientHelper(null));
+                    .addFirst(new org.restlet.engine.connector.HttpsServerHelper(null));
+            nre.getRegisteredClients().addFirst(new HttpClientHelper(null));
         }
 
         @AfterAll
-        protected static void tearDown() {
+        static void tearDown() {
             // Restore a clean engine
             Engine.register();
             Engine.clearThreadLocalVariables();

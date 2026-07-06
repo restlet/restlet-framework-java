@@ -47,7 +47,7 @@ class RecipientInfoTestCase {
 
         assertEquals(2, recipients.size());
 
-        RecipientInfo recipient1 = recipients.get(0);
+        RecipientInfo recipient1 = recipients.getFirst();
         RecipientInfo recipient2 = recipients.get(1);
 
         assertEquals("1.0", recipient1.getProtocol().getVersion());
@@ -64,7 +64,7 @@ class RecipientInfoTestCase {
 
         recipients = new ArrayList<>();
         RecipientInfoReader.addValues(via1c, recipients);
-        recipient1 = recipients.get(0);
+        recipient1 = recipients.getFirst();
         recipient2 = recipients.get(1);
 
         assertEquals("1.0", recipient1.getProtocol().getVersion());
@@ -78,7 +78,7 @@ class RecipientInfoTestCase {
 
         recipients = new ArrayList<>();
         RecipientInfoReader.addValues(via1d, recipients);
-        recipient1 = recipients.get(0);
+        recipient1 = recipients.getFirst();
         recipient2 = recipients.get(1);
 
         assertEquals("1.0", recipient1.getProtocol().getVersion());

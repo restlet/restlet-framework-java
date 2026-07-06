@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.restlet.Context;
@@ -104,7 +105,8 @@ class ContextTemplateLoaderTestCase {
     @Test
     void getLastModified_withModificationDate_returnsTimestamp() {
         ContextTemplateLoader loader = new ContextTemplateLoader(null, "clap://test");
-        Date now = new Date();
+        Instant instant = Instant.parse("2026-05-07T10:00:00Z"); // Compliant
+        Date now = new Date(instant.toEpochMilli());
         StringRepresentation rep = new StringRepresentation("content");
         rep.setModificationDate(now);
         assertEquals(now.getTime(), loader.getLastModified(rep));
@@ -115,5 +117,16 @@ class ContextTemplateLoaderTestCase {
         ContextTemplateLoader loader = new ContextTemplateLoader(null, "clap://test");
         StringRepresentation rep = new StringRepresentation("content");
         assertEquals(-1L, loader.getLastModified(rep));
+    }
+
+    @Test
+    void getReader_returnsReaderWithGivenCharacterSet() throws IOException {
+        ContextTemplateLoader loader = new ContextTemplateLoader(null, "clap://test");
+        StringRepresentation rep = new StringRepresentation("template content");
+        try (java.io.Reader reader = loader.getReader(rep, "UTF-8")) {
+            char[] buffer = new char[64];
+            int read = reader.read(buffer);
+            assertEquals("template content", new String(buffer, 0, read));
+        }
     }
 }

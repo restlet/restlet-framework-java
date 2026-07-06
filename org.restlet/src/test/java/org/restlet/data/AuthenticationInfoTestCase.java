@@ -62,11 +62,11 @@ class AuthenticationInfoTestCase {
     void testNextNonce() {
         AuthenticationInfo authInfo =
                 new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
-        assertEquals(authInfo.getNextServerNonce(), "testnonce");
+        assertEquals("testnonce", authInfo.getNextServerNonce());
 
         String newNonce = "newnonce";
         authInfo.setNextServerNonce(newNonce);
-        assertEquals(authInfo.getNextServerNonce(), "newnonce");
+        assertEquals("newnonce", authInfo.getNextServerNonce());
     }
 
     /** Test nonce-count getting/setting. */
@@ -74,11 +74,11 @@ class AuthenticationInfoTestCase {
     void testNonceCount() {
         AuthenticationInfo authInfo =
                 new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
-        assertEquals(authInfo.getNonceCount(), 1111111);
+        assertEquals(1111111, authInfo.getNonceCount());
 
         int newNonceCount = 2222222;
         authInfo.setNonceCount(newNonceCount);
-        assertEquals(authInfo.getNonceCount(), 2222222);
+        assertEquals(2222222, authInfo.getNonceCount());
     }
 
     /** Test message-qop getting/setting. */
@@ -86,11 +86,11 @@ class AuthenticationInfoTestCase {
     void testQop() {
         AuthenticationInfo authInfo =
                 new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
-        assertEquals(authInfo.getQuality(), "auth");
+        assertEquals("auth", authInfo.getQuality());
 
         String newQop = "auth-int";
         authInfo.setQuality(newQop);
-        assertEquals(authInfo.getQuality(), "auth-int");
+        assertEquals("auth-int", authInfo.getQuality());
     }
 
     /** Test response-auth getting/setting. */
@@ -98,11 +98,11 @@ class AuthenticationInfoTestCase {
     void testResponseAuth() {
         AuthenticationInfo authInfo =
                 new AuthenticationInfo("testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
-        assertEquals(authInfo.getResponseDigest(), "FFFFFF");
+        assertEquals("FFFFFF", authInfo.getResponseDigest());
 
         String newResponseAuth = "000000";
         authInfo.setResponseDigest(newResponseAuth);
-        assertEquals(authInfo.getResponseDigest(), "000000");
+        assertEquals("000000", authInfo.getResponseDigest());
     }
 
     @Test

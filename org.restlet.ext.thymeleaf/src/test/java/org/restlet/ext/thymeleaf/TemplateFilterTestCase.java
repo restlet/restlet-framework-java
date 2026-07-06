@@ -9,9 +9,9 @@
 package org.restlet.ext.thymeleaf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 import java.util.Map;
@@ -39,10 +39,6 @@ class TemplateFilterTestCase {
 
         TestTemplateFilter(org.restlet.Context context) {
             super(context);
-        }
-
-        TestTemplateFilter(org.restlet.Context context, org.restlet.Restlet next) {
-            super(context, next);
         }
 
         TestTemplateFilter(
@@ -108,7 +104,7 @@ class TemplateFilterTestCase {
         filter.afterHandle(request, response);
 
         Representation result = response.getEntity();
-        assertTrue(result instanceof TemplateRepresentation);
+        assertInstanceOf(TemplateRepresentation.class, result);
         TemplateRepresentation tr = (TemplateRepresentation) result;
         assertEquals("myTemplate", tr.getTemplateName());
         assertEquals(MediaType.TEXT_HTML, tr.getMediaType());

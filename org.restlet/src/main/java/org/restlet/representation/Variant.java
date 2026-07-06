@@ -199,8 +199,7 @@ public class Variant {
 
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(
-                super.hashCode(), characterSet, encodings, locationRef, languages, mediaType);
+        return SystemUtils.hashCode(characterSet, encodings, locationRef, languages, mediaType);
     }
 
     /**

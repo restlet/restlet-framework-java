@@ -44,7 +44,7 @@ class UserAgentTunnelFilterTestCase {
     }
 
     @BeforeEach
-    public void setUpEach() {
+    void setUpEach() {
         this.application =
                 new Application() {
                     @Override
@@ -62,7 +62,7 @@ class UserAgentTunnelFilterTestCase {
         Request request = createRequest();
         Response response = new Response(request);
         this.application.handle(request, response);
-        assertEquals(response.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_XML, response.getEntity().getMediaType());
     }
 
@@ -72,7 +72,7 @@ class UserAgentTunnelFilterTestCase {
         Request request = createRequest();
         Response response = new Response(request);
         this.application.handle(request, response);
-        assertEquals(response.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
     }
 }

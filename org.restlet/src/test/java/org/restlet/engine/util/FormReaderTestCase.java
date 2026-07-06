@@ -69,7 +69,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) result;
             assertEquals(2, list.size());
-            assertEquals("text/html", list.get(0));
+            assertEquals("text/html", list.getFirst());
             assertEquals("application/json", list.get(1));
         }
 
@@ -84,7 +84,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) result;
             assertEquals(3, list.size());
-            assertEquals("1", list.get(0));
+            assertEquals("1", list.getFirst());
             assertEquals("2", list.get(1));
             assertEquals("3", list.get(2));
         }
@@ -100,7 +100,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) result;
             assertEquals(2, list.size());
-            assertSame(Series.EMPTY_VALUE, list.get(0));
+            assertSame(Series.EMPTY_VALUE, list.getFirst());
             assertSame(Series.EMPTY_VALUE, list.get(1));
         }
     }
@@ -152,7 +152,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) params.get("accept");
             assertEquals(2, list.size());
-            assertEquals("text/html", list.get(0));
+            assertEquals("text/html", list.getFirst());
             assertEquals("application/json", list.get(1));
         }
 
@@ -167,7 +167,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) params.get("x");
             assertEquals(3, list.size());
-            assertEquals("1", list.get(0));
+            assertEquals("1", list.getFirst());
             assertEquals("2", list.get(1));
             assertEquals("3", list.get(2));
         }
@@ -183,7 +183,7 @@ class FormReaderTestCase {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) params.get("h");
             assertEquals(2, list.size());
-            assertSame(Series.EMPTY_VALUE, list.get(0));
+            assertSame(Series.EMPTY_VALUE, list.getFirst());
             assertSame(Series.EMPTY_VALUE, list.get(1));
         }
 

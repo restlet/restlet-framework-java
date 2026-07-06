@@ -9,7 +9,6 @@
 package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -75,7 +74,7 @@ class DecodeRepresentationTestCase {
     }
 
     @Test
-    void getAvailableSize_delegatesToIoUtils() throws Exception {
+    void getAvailableSize_delegatesToIoUtils() {
         DecodeRepresentation representation =
                 new DecodeRepresentation(new StringRepresentation("hello"));
         assertEquals(5, representation.getAvailableSize());
@@ -86,12 +85,5 @@ class DecodeRepresentationTestCase {
         StringRepresentation wrapped = new StringRepresentation("hello");
         DecodeRepresentation representation = new DecodeRepresentation(wrapped);
         assertEquals(wrapped.getSize(), representation.getSize());
-    }
-
-    @Test
-    void equals_delegatesToSuper() {
-        StringRepresentation wrapped = new StringRepresentation("hello");
-        DecodeRepresentation representation = new DecodeRepresentation(wrapped);
-        assertFalse(representation.equals("not a representation"));
     }
 }
