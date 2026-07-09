@@ -26,6 +26,8 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
@@ -42,6 +46,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.service.MetadataService;
 
 public class RestletOpenApiReader implements OpenApiReader {
@@ -49,6 +54,8 @@ public class RestletOpenApiReader implements OpenApiReader {
     private final MetadataService metadataService = new MetadataService();
 
     private Router router;
+
+    private List<ChallengeAuthenticator> authenticators = List.of();
 
     private OpenAPIConfiguration config;
 
@@ -60,6 +67,10 @@ public class RestletOpenApiReader implements OpenApiReader {
 
     public void setRouter(Router router) {
         this.router = router;
+    }
+
+    public void setAuthenticators(List<ChallengeAuthenticator> authenticators) {
+        this.authenticators = authenticators == null ? List.of() : authenticators;
     }
 
     @Override
@@ -94,14 +105,7 @@ public class RestletOpenApiReader implements OpenApiReader {
 
         completeOpenApiInfo(router);
 
-        List<Route> allRoutes = new ArrayList<>(router.getRoutes());
-        if (router.getDefaultRoute() != null) {
-            allRoutes.add(router.getDefaultRoute());
-        }
-
-        for (Route route : allRoutes) {
-            processRoute(route);
-        }
+        processRoutes(router, "", authenticators);
 
         openApi.setComponents(components);
         openApi.setOpenapi("3.1.0");
@@ -110,26 +114,67 @@ public class RestletOpenApiReader implements OpenApiReader {
         return openApi;
     }
 
-    private void processRoute(Route route) {
-        if (route instanceof TemplateRoute templateRoute) {
-            String path = templateRoute.getTemplate().getPattern();
+    private void processRoutes(
+            Router router, String pathPrefix, List<ChallengeAuthenticator> activeAuthenticators) {
+        List<Route> allRoutes = new ArrayList<>(router.getRoutes());
+        if (router.getDefaultRoute() != null) {
+            allRoutes.add(router.getDefaultRoute());
+        }
 
-            if (route.getNext() instanceof Finder finder) {
+        for (Route route : allRoutes) {
+            processRoute(route, pathPrefix, activeAuthenticators);
+        }
+    }
+
+    private void processRoute(
+            Route route, String pathPrefix, List<ChallengeAuthenticator> activeAuthenticators) {
+        if (route instanceof TemplateRoute templateRoute) {
+            String path = pathPrefix + templateRoute.getTemplate().getPattern();
+
+            List<ChallengeAuthenticator> branchAuthenticators =
+                    new ArrayList<>(activeAuthenticators);
+            Restlet next = unwrapAuthenticators(route.getNext(), branchAuthenticators);
+
+            if (next instanceof Finder finder) {
                 ServerResource serverResource = finder.find(null, null);
 
                 if (serverResource != null) {
                     List<String> pathVariableNames = templateRoute.getTemplate().getVariableNames();
 
-                    processServerResource(serverResource, path, pathVariableNames);
+                    processServerResource(
+                            serverResource, path, pathVariableNames, branchAuthenticators);
                 }
+            } else if (next instanceof Router childRouter) {
+                processRoutes(childRouter, path, branchAuthenticators);
             }
         } else {
             Context.getCurrentLogger().info("Route type ignored: " + route.getClass());
         }
     }
 
+    /**
+     * Unwraps {@link ChallengeAuthenticator}s found on the way to the route's actual target (a
+     * {@link Finder} or a child {@link Router}), collecting them along the way so that the
+     * operations they guard can be documented accordingly.
+     *
+     * @param current The current Restlet to inspect.
+     * @param collected The list of authenticators found so far, to be completed.
+     * @return The first non-authenticator Restlet found.
+     */
+    private Restlet unwrapAuthenticators(Restlet current, List<ChallengeAuthenticator> collected) {
+        if (current instanceof ChallengeAuthenticator challengeAuthenticator) {
+            collected.add(challengeAuthenticator);
+            return unwrapAuthenticators(challengeAuthenticator.getNext(), collected);
+        }
+
+        return current;
+    }
+
     private void processServerResource(
-            ServerResource serverResource, String operationPath, List<String> pathVariableNames) {
+            ServerResource serverResource,
+            String operationPath,
+            List<String> pathVariableNames,
+            List<ChallengeAuthenticator> activeAuthenticators) {
         List<AnnotationInfo> annotations =
                 serverResource.isAnnotated()
                         ? AnnotationUtils.getInstance().getAnnotations(serverResource.getClass())
@@ -146,6 +191,7 @@ public class RestletOpenApiReader implements OpenApiReader {
 
                 completePathParameters(operation, pathVariableNames);
                 completeOperation(serverResource, operation, methodAnnotationInfo);
+                applySecurity(operation, activeAuthenticators);
 
                 PathItem pathItem =
                         Optional.ofNullable(openApi.getPaths())
@@ -163,6 +209,40 @@ public class RestletOpenApiReader implements OpenApiReader {
                 openApi.setPaths(this.paths);
             }
         }
+    }
+
+    /**
+     * Documents every {@link ChallengeAuthenticator} guarding this operation: registers a {@link
+     * SecurityScheme} for each of them, and requires the mandatory ones (those for which {@link
+     * ChallengeAuthenticator#isOptional()} is {@code false}) on the operation.
+     */
+    private void applySecurity(
+            Operation operation, List<ChallengeAuthenticator> activeAuthenticators) {
+        if (activeAuthenticators.isEmpty()) {
+            return;
+        }
+
+        SecurityRequirement mandatoryRequirement = new SecurityRequirement();
+
+        for (ChallengeAuthenticator authenticator : activeAuthenticators) {
+            ChallengeScheme scheme = authenticator.getScheme();
+
+            components.addSecuritySchemes(scheme.getName(), toSecurityScheme(scheme));
+
+            if (!authenticator.isOptional()) {
+                mandatoryRequirement.addList(scheme.getName());
+            }
+        }
+
+        if (!mandatoryRequirement.isEmpty()) {
+            operation.setSecurity(List.of(mandatoryRequirement));
+        }
+    }
+
+    private SecurityScheme toSecurityScheme(ChallengeScheme scheme) {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme(scheme.getTechnicalName().toLowerCase());
     }
 
     private void completeOpenApiInfo(Router router) {

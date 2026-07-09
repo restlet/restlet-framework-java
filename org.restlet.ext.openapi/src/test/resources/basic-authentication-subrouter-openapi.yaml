@@ -1,0 +1,94 @@
+---
+openapi: "3.1.0"
+info:
+  title: "BasicAuthenticationSubRouter REST API"
+  version: "1.0.0"
+paths:
+  /api/books:
+    get:
+      summary: "Get a list of all books"
+      operationId: "getBooks"
+      parameters:
+        - name: "filter"
+          in: "query"
+          description: "Filter books"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Book"
+      security:
+        - HTTP_BASIC: []
+    post:
+      summary: "Add a new book"
+      operationId: "addBook"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        "201":
+          description: "201 response"
+          headers:
+            Location:
+              style: "simple"
+              schema:
+                type: "string"
+      security:
+        - HTTP_BASIC: []
+  /api/books/{bookId}:
+    get:
+      summary: "Get a book by ID"
+      operationId: "getBook"
+      parameters:
+        - name: "bookId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+      security:
+        - HTTP_BASIC: []
+    delete:
+      summary: "Delete a book by ID"
+      operationId: "deleteBook"
+      parameters:
+        - name: "bookId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Success"
+      security:
+        - HTTP_BASIC: []
+components:
+  schemas:
+    Book:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        title:
+          type: "string"
+        author:
+          type: "string"
+  securitySchemes:
+    HTTP_BASIC:
+      type: "http"
+      scheme: "basic"

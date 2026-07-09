@@ -27,6 +27,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Router;
+import org.restlet.security.ChallengeAuthenticator;
 
 public class OpenApiSpecificationRestlet extends Restlet {
     private static final VariantInfo VARIANT_JSON = new VariantInfo(MediaType.APPLICATION_JSON);
@@ -36,9 +37,17 @@ public class OpenApiSpecificationRestlet extends Restlet {
 
     private final Router router;
 
-    public OpenApiSpecificationRestlet(Router router) {
+    private final List<ChallengeAuthenticator> authenticators;
+
+    private final String openApiContextId;
+
+    public OpenApiSpecificationRestlet(Router router, List<ChallengeAuthenticator> authenticators) {
         super(router.getContext());
         this.router = router;
+        this.authenticators = authenticators;
+        // Unique per router so that swagger-core's global OpenApiContextLocator doesn't hand back
+        // another application's cached context (and therefore its router/paths).
+        this.openApiContextId = "restlet-openapi-" + System.identityHashCode(router);
     }
 
     @Override
@@ -66,7 +75,9 @@ public class OpenApiSpecificationRestlet extends Restlet {
         try {
             var context =
                     new RestletOpenApiContextBuilder()
+                            .ctxId(openApiContextId)
                             .router(router)
+                            .authenticators(authenticators)
                             .openApiConfiguration(oasConfig)
                             .buildContext(true);
 
