@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.openapi;
+package org.restlet.ext.openapi.example;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,9 +22,8 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.restlet.routing.Router;
 
-public class LibraryExample {
+public class BookResources {
     private static final List<Book> BOOKS =
             List.of(
                     new Book("1", "The Great Gatsby", "F. Scott Fitzgerald"),
@@ -77,16 +76,6 @@ public class LibraryExample {
             getResponse().setStatus(Status.SUCCESS_CREATED);
             Reference locationRef = getRequest().getResourceRef().addSegment(book.id);
             getResponse().setLocationRef(locationRef);
-        }
-    }
-
-    public static class LibraryApplication extends OpenApiApplication {
-        @Override
-        public org.restlet.Restlet createInboundRoot() {
-            var router = new Router(getContext());
-            router.attach("/books", BooksResource.class);
-            router.attach("/books/{bookId}", BookResource.class);
-            return router;
         }
     }
 }

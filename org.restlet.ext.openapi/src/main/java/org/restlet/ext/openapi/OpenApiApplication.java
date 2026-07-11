@@ -8,10 +8,13 @@
  */
 package org.restlet.ext.openapi;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.security.ChallengeAuthenticator;
 
 public class OpenApiApplication extends Application {
     /**
@@ -30,10 +33,11 @@ public class OpenApiApplication extends Application {
         if (!documented) {
             synchronized (this) {
                 if (!documented) {
-                    Router rootRouter = getNextRouter(inboundRoot);
+                    List<ChallengeAuthenticator> authenticators = new ArrayList<>();
+                    Router rootRouter = getNextRouter(inboundRoot, authenticators);
 
                     if (!documented && rootRouter != null) {
-                        attachOpenApiSpecificationRestlet(rootRouter);
+                        attachOpenApiSpecificationRestlet(rootRouter, authenticators);
                         documented = true;
                     }
                 }
@@ -49,25 +53,33 @@ public class OpenApiApplication extends Application {
     }
 
     /**
-     * Returns the next router available.
+     * Returns the next router available, collecting any {@link ChallengeAuthenticator} found while
+     * unwrapping the filter chain along the way.
      *
      * @param current The current Restlet to inspect.
+     * @param authenticators The list of authenticators found so far, to be completed.
      * @return The first router available.
      */
-    private static Router getNextRouter(Restlet current) {
+    private static Router getNextRouter(
+            Restlet current, List<ChallengeAuthenticator> authenticators) {
         Router result = null;
 
         if (current instanceof Router router) {
             result = router;
         } else if (current instanceof Filter filter) {
-            result = getNextRouter(filter.getNext());
+            if (filter instanceof ChallengeAuthenticator challengeAuthenticator) {
+                authenticators.add(challengeAuthenticator);
+            }
+            result = getNextRouter(filter.getNext(), authenticators);
         }
 
         return result;
     }
 
-    private void attachOpenApiSpecificationRestlet(Router router) {
-        getOpenApiSpecificationRestlet(router).attach(router, getOpenApiSpecificationPath());
+    private void attachOpenApiSpecificationRestlet(
+            Router router, List<ChallengeAuthenticator> authenticators) {
+        getOpenApiSpecificationRestlet(router, authenticators)
+                .attach(router, getOpenApiSpecificationPath());
         documented = true;
     }
 
@@ -76,7 +88,8 @@ public class OpenApiApplication extends Application {
      *
      * @return The {@link Restlet} able to generate the Swagger specification formats.
      */
-    OpenApiSpecificationRestlet getOpenApiSpecificationRestlet(Router router) {
-        return new OpenApiSpecificationRestlet(router);
+    OpenApiSpecificationRestlet getOpenApiSpecificationRestlet(
+            Router router, List<ChallengeAuthenticator> authenticators) {
+        return new OpenApiSpecificationRestlet(router, authenticators);
     }
 }

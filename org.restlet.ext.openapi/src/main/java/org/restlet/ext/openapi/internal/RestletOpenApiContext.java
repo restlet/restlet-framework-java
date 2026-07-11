@@ -11,14 +11,19 @@ package org.restlet.ext.openapi.internal;
 import io.swagger.v3.oas.integration.GenericOpenApiContext;
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
 import io.swagger.v3.oas.integration.api.OpenApiReader;
+import java.util.List;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.routing.Router;
+import org.restlet.security.ChallengeAuthenticator;
 
 public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiContext> {
     private final Router router;
 
-    public RestletOpenApiContext(Router router) {
+    private final List<ChallengeAuthenticator> authenticators;
+
+    public RestletOpenApiContext(Router router, List<ChallengeAuthenticator> authenticators) {
         this.router = router;
+        this.authenticators = authenticators;
     }
 
     @Override
@@ -36,6 +41,7 @@ public class RestletOpenApiContext extends GenericOpenApiContext<RestletOpenApiC
 
         if (reader instanceof RestletOpenApiReader restletOpenApiReader) {
             restletOpenApiReader.setRouter(router);
+            restletOpenApiReader.setAuthenticators(authenticators);
         }
 
         reader.setConfiguration(openApiConfiguration);
