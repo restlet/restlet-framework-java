@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-- 2.7 Release Candidate 1 (??-06-2026)
+- 2.7 Release Candidate 1 (23-07-2026)
   - Misc
     - Upgraded Gson library to version 2.14.0.
     - Upgraded Jackson library to version 2.21 (LTS).
