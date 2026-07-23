@@ -1,8 +1,6 @@
 Changes log
 ===========
 
-- 2.7 Release Candidate 2 (??-08-2026)
-
 - 2.7 Release Candidate 1 (23-07-2026)
   - Misc
     - Upgraded Gson library to version 2.14.0.
