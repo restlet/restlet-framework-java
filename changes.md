@@ -2,7 +2,7 @@ Changes log
 ===========
 
 
-- 2.7 Release Candidate 2 (??-08-2026)
+- 2.7.0 (30-09-2026)
   - Misc
     - Upgraded Freemarker library to version 2.3.35.
     - Upgraded Jackson library to version 2.22.3.
