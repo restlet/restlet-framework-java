@@ -3,6 +3,11 @@ Changes log
 
 
 - 2.7 Release Candidate 2 (??-08-2026)
+  - Misc
+    - Upgraded Freemarker library to version 2.3.35.
+    - Upgraded Jackson library to version 2.22.3.
+    - Upgraded Swagger library to version 2.2.55.
+    - Upgraded Swagger parser library to version 2.1.48.
 
 - 2.7 Release Candidate 1 (23-07-2026)
   - Misc
