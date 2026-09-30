@@ -56,7 +56,7 @@
         <lib-gwt-version>2.13.1</lib-gwt-version>
         <lib-gwt-server-version>2.13.1</lib-gwt-server-version>
         <lib-istack-version>3.0.12</lib-istack-version>
-        <lib-jackson-version>2.19.4</lib-jackson-version>
+        <lib-jackson-version>2.21.4</lib-jackson-version>
         <lib-jaxb-ri-version>4.0.9</lib-jaxb-ri-version>
         <lib-jaxb-api-version>4.0.5</lib-jaxb-api-version>
         <lib-jetty-version>12.0.39</lib-jetty-version>
