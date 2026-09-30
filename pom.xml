@@ -67,6 +67,8 @@
         <lib-swagger-parser-version>2.1.48</lib-swagger-parser-version>
         <lib-thymeleaf-version>3.1.5.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
+        <!-- fix CVEs -->
+        <lib-cves-commons-lang3-version>3.21.0</lib-cves-commons-lang3-version>
         <!-- tests -->
         <lib-junit-version>5.14.4</lib-junit-version>
     </properties>
