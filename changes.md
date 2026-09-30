@@ -6,6 +6,7 @@ Changes log
   - Misc
     - Upgraded Freemarker library to version 2.3.35.
     - Upgraded Jackson library to version 2.22.3.
+    - Upgraded Jetty library to version 12.0.39.
     - Upgraded Swagger library to version 2.2.55.
     - Upgraded Swagger parser library to version 2.1.48.
 
