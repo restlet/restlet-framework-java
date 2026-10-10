@@ -56,10 +56,10 @@
         <lib-gwt-version>2.13.1</lib-gwt-version>
         <lib-gwt-server-version>2.13.1</lib-gwt-server-version>
         <lib-istack-version>3.0.12</lib-istack-version>
-        <lib-jackson-version>2.19.4</lib-jackson-version>
+        <lib-jackson-version>2.21.7</lib-jackson-version>
         <lib-jaxb-ri-version>4.0.9</lib-jaxb-ri-version>
         <lib-jaxb-api-version>4.0.5</lib-jaxb-api-version>
-        <lib-jetty-version>12.0.39</lib-jetty-version>
+        <lib-jetty-version>12.1.14</lib-jetty-version>
         <lib-joda-time-version>2.14.4</lib-joda-time-version>
         <lib-json-version>20250517</lib-json-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>
@@ -67,7 +67,7 @@
         <lib-osgi-version>4.3.1</lib-osgi-version>
         <lib-servlet-version>6.0.0</lib-servlet-version>
         <lib-slf4j-version>2.0.18</lib-slf4j-version>
-        <lib-spring-version>6.2.19</lib-spring-version>
+        <lib-spring-version>7.0.9</lib-spring-version>
         <lib-thymeleaf-version>3.1.5.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
         <!-- fix CVEs -->
