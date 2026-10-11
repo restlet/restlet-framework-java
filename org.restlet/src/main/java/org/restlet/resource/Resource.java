@@ -713,7 +713,7 @@ public abstract class Resource {
      * @see Request#isConfidential()
      */
     public boolean isConfidential() {
-        return getRequest() == null ? null : getRequest().isConfidential();
+        return getRequest() != null && getRequest().isConfidential();
     }
 
     /**
@@ -722,7 +722,7 @@ public abstract class Resource {
      * @return True if the call is loggable
      */
     public boolean isLoggable() {
-        return getRequest() == null ? null : getRequest().isLoggable();
+        return getRequest() != null && getRequest().isLoggable();
     }
 
     /** Releases the resource by calling {@link #doRelease()}. */

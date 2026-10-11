@@ -238,4 +238,14 @@ class ResourceTestCase {
     void toString_isEmptyWhenNoRequestOrResponse() {
         assertEquals("", resource.toString());
     }
+
+    @Test
+    void isConfidential_noRequest_returnsFalse() {
+        assertFalse(resource.isConfidential());
+    }
+
+    @Test
+    void isLoggable_noRequest_returnsFalse() {
+        assertFalse(resource.isLoggable());
+    }
 }
