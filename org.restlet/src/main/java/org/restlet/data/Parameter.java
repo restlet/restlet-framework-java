@@ -45,7 +45,6 @@ public class Parameter implements Comparable<Parameter>, NamedValue<String> {
      * @param name The parameter name buffer.
      * @param value The parameter value buffer (can be null).
      * @return The created parameter.
-     * @throws IOException
      */
     public static Parameter create(CharSequence name, CharSequence value) {
         if (value != null) {

@@ -25,11 +25,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Restlet {@link Router} which behaves like Spring's {@link
- * org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It takes every bean of type
- * {@link org.restlet.resource.ServerResource} or {@link Restlet} defined in a particular context
- * and examines its aliases (generally speaking, its name and id). If one of the aliases begins with
- * a forward slash, the resource will be attached to that URI.
+ * Restlet {@link Router} which behaves like Spring's {@code BeanNameUrlHandlerMapping}. It takes
+ * every bean of type {@link org.restlet.resource.ServerResource} or {@link Restlet} defined in a
+ * particular context and examines its aliases (generally speaking, its name and id). If one of the
+ * aliases begins with a forward slash, the resource will be attached to that URI.
  *
  * <p>Example:
  *
@@ -237,8 +236,7 @@ public class SpringBeanRouter extends Router
 
     /**
      * Uses this first alias for this bean that starts with '/' and is not mapped in the explicit
-     * attachments to another bean. This mimics the behavior of {@link
-     * org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping} .
+     * attachments to another bean. This mimics the behavior of {@code BeanNameUrlHandlerMapping} .
      *
      * @param beanName The bean name to lookup in the bean factory aliases.
      * @param beanFactory The Spring bean factory.

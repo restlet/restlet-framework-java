@@ -18,7 +18,7 @@ import org.restlet.ext.crypto.DigestUtils;
 /**
  * Simple usage of standard cipher features from JRE.
  *
- * @author Remi Dewitte <remi@gide.net>
+ * @author Remi Dewitte &lt;remi@gide.net&gt;
  * @author Jerome Louvel
  */
 public final class CryptoUtils {
@@ -116,10 +116,12 @@ public final class CryptoUtils {
 
     /**
      * Generates nonce as recommended in section 3.2.1 of RFC-2617, but without the ETag field. The
-     * format is: <code><pre>
+     * format is:
+     *
+     * <pre>
      * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
      *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
-     * </pre></code>
+     * </pre>
      *
      * @param secretKey a secret value known only to the creator of the nonce. It's inserted into
      *     the nonce and can be used later to validate the nonce.

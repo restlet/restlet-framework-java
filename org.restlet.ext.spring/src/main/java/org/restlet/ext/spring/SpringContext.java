@@ -32,7 +32,7 @@ import org.springframework.context.support.GenericApplicationContext;
  *         &quot;clap://thread/config/applicationContext.xml&quot;);
  * </pre>
  *
- * @author Jerome Louvel</a>
+ * @author Jerome Louvel
  */
 public class SpringContext extends GenericApplicationContext {
     /** Indicates if the context has been already loaded. */

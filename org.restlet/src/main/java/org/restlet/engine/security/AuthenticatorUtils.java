@@ -159,14 +159,12 @@ public class AuthenticatorUtils {
     /**
      * Formats a challenge response as an HTTP header value. The header is {@link
      * HeaderConstants#HEADER_AUTHORIZATION}. The default implementation relies on {@link
-     * AuthenticatorHelper#formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)}
-     * unless some custom credentials are provided via
+     * AuthenticatorHelper#formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)}.
      *
      * @param challenge The challenge response to format.
      * @param request The parent request.
      * @param httpHeaders The current request HTTP headers.
      * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
-     * @link ChallengeResponse#getCredentials()}.
      */
     public static String formatResponse(
             ChallengeResponse challenge, Request request, Series<Header> httpHeaders) {

@@ -829,7 +829,6 @@ public abstract class ServerResource extends Resource {
      * variants will be provided based on annotated methods.
      *
      * @return The modifiable list of variants.
-     * @throws IOException
      */
     public List<Variant> getVariants() {
         return getVariants(getMethod());

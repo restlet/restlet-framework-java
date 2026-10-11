@@ -268,17 +268,14 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
-     * Creates a configured and initialized SSLContext from the values set via the
-     * various setters of this class. If <code>keyStorePath</code>,
-     * <code>keyStoreProvider</code>, <code>keyStoreType</code> are all
-     * <code>null</code>, the SSLContext will be initialized with a
-     * <code>null</core> array of <code>KeyManager</code>s. Similarly, if
-     * <code>trustStorePath</code>, <code>trustStoreProvider</code>,
-     * <code>trustStoreType</code> are all <code>null</code>, a <code>null</code>
-     * array of <code>TrustManager</code>s will be used.
+     * Creates a configured and initialized SSLContext from the values set via the various setters
+     * of this class. If <code>keyStorePath</code>, <code>keyStoreProvider</code>, <code>
+     * keyStoreType</code> are all <code>null</code>, the SSLContext will be initialized with a
+     * <code>null</code> array of <code>KeyManager</code>s. Similarly, if <code>trustStorePath
+     * </code>, <code>trustStoreProvider</code>, <code>trustStoreType</code> are all <code>null
+     * </code>, a <code>null</code> array of <code>TrustManager</code>s will be used.
      *
-     * @see SSLContext#init(javax.net.ssl.KeyManager[],
-     * javax.net.ssl.TrustManager[], SecureRandom)
+     * @see SSLContext#init(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], SecureRandom)
      */
     @Override
     public javax.net.ssl.SSLContext createSslContext() throws Exception {

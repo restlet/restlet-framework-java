@@ -27,7 +27,7 @@ import org.restlet.util.Series;
  * header is missing or the request is older than the allowed time limit, specified by the {@code
  * maxRequestAge} property, the request fails verification.
  *
- * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
+ * @author Jean-Philippe Steinmetz &lt;caskater47@gmail.com&gt;
  * @see <a href="http://docs.amazonwebservices.com/AmazonS3/latest/RESTAuthentication.html">
  *     Authenticating REST Requests</a>
  */

@@ -499,7 +499,7 @@ public class TaskService extends Service implements ScheduledExecutorService {
      * @param delay The delay between the termination of one execution and the commencement of the
      *     next.
      * @param unit The time unit of the initialDelay and delay parameters
-     * @return a Future representing pending completion of the task, and whose <tt>get()</tt> method
+     * @return a Future representing pending completion of the task, and whose {@code get()} method
      *     will throw an exception upon cancellation.
      * @throws RejectedExecutionException if a task cannot be scheduled for execution.
      * @throws NullPointerException if the command is null

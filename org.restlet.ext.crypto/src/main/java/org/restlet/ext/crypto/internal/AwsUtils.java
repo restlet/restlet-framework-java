@@ -34,7 +34,7 @@ import org.restlet.util.Series;
 /**
  * Provides utility functions for implementing the Amazon S3 Authentication scheme.
  *
- * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
+ * @author Jean-Philippe Steinmetz &lt;caskater47@gmail.com&gt;
  * @see <a href="http://docs.amazonwebservices.com/AmazonS3/latest/RESTAuthentication.html">
  *     Authenticating REST Requests</a>
  */

@@ -548,7 +548,7 @@ public class StringUtils {
     /**
      * Returns {@code true} if the given string is null or is the empty string.
      *
-     * <p>Consider normalizing your string references with {@link #nullToEmpty}. If you do, you can
+     * <p>Consider normalizing your string references with {@code nullToEmpty}. If you do, you can
      * use {@link String#isEmpty()} instead of this method, and you won't need special null-safe
      * forms of methods like {@link String#toUpperCase} either.
      *

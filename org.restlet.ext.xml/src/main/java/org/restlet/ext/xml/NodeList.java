@@ -35,12 +35,12 @@ public class NodeList extends AbstractList<Node> implements org.w3c.dom.NodeList
         return this.nodes.item(index);
     }
 
-    /** {@inheritDoc org.w3c.dom.NodeList#getLength()} */
+    /** {@inheritDoc} */
     public int getLength() {
         return this.nodes.getLength();
     }
 
-    /** {@inheritDoc org.w3c.dom.NodeList#item(int)} */
+    /** {@inheritDoc} */
     public Node item(int index) {
         return this.nodes.item(index);
     }

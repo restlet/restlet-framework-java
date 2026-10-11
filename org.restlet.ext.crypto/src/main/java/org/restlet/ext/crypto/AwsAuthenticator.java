@@ -18,7 +18,7 @@ import org.restlet.security.Verifier;
 /**
  * Authenticator supporting the {@link ChallengeScheme#HTTP_AWS_S3} scheme.
  *
- * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
+ * @author Jean-Philippe Steinmetz &lt;caskater47@gmail.com&gt;
  */
 public class AwsAuthenticator extends ChallengeAuthenticator {
     /**

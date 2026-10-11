@@ -29,7 +29,7 @@ import org.restlet.data.Protocol;
  * state in member variables.
  *
  * @see <a href="http://www.springframework.org/">Spring home page</a>
- * @author Jerome Louvel</a>
+ * @author Jerome Louvel
  */
 public class SpringServer extends org.restlet.Server {
 

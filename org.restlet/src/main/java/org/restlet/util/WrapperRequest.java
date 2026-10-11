@@ -84,7 +84,7 @@ public class WrapperRequest extends Request {
      * </table>
      *
      * Adding standard HTTP headers is forbidden because it could conflict with the connector's
-     * internal behavior, limit portability, or prevent future optimizations.</td>
+     * internal behavior, limit portability, or prevent future optimizations.
      *
      * @return The modifiable attributes map.
      */
