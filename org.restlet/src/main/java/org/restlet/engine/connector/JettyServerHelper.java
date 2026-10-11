@@ -17,11 +17,11 @@ import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.LowResourceMonitor;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.ServerConnector;
@@ -334,9 +334,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
         int serverMaxConnections = getServerMaxConnections();
         if (serverMaxConnections > 0) {
-            ConnectionLimit connectionLimit =
-                    new ConnectionLimit(serverMaxConnections, jettyServer);
-            connectionLimit.setIdleTimeout(getServerMaxConnectionsIdleTimeout());
+            NetworkConnectionLimit connectionLimit =
+                    new NetworkConnectionLimit(serverMaxConnections, jettyServer);
+            connectionLimit.setEndPointIdleTimeout(getServerMaxConnectionsIdleTimeout());
             jettyServer.addBean(connectionLimit);
         }
 
