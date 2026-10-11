@@ -467,8 +467,10 @@
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <showWarnings>true</showWarnings>
+                        <!-- Main code is compiled as a module. Tests run on the classpath. -->
+                        <useModulePath>false</useModulePath>
                         <compilerArgs>
-                            <arg>-Xlint:all,-this-escape</arg>
+                            <arg>-Xlint:all,-this-escape,-missing-explicit-ctor</arg>
                             <arg>-Werror</arg>
                         </compilerArgs>
                     </configuration>
@@ -508,6 +510,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.6.0</version>
+                    <configuration>
+                        <useModulePath>false</useModulePath>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
