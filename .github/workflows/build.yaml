@@ -26,7 +26,15 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
-      - name: Build with Maven
-        run: ./mvnw -B package --file pom.xml
-      - name: Run tests
-        run: ./mvnw -B test -P default,test
+      - name: Build and test with Maven
+        # verify also runs the Spotless check, the JaCoCo coverage check and SpotBugs
+        run: ./mvnw -B verify -P default,test
+      - name: Upload coverage and static analysis reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: quality-reports
+          path: |
+            **/target/site/jacoco/
+            **/target/spotbugsXml.xml
+          if-no-files-found: ignore
