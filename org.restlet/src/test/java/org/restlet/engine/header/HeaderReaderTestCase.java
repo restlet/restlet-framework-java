@@ -19,9 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 
@@ -88,14 +90,18 @@ class HeaderReaderTestCase {
     }
 
     @ParameterizedTest(name = "{0}")
-    @CsvSource({
-        "crWithoutLf,\rX",
-        "missingColon,NameOnly",
-        "missingTrailingLineFeed,Name: value\r"
-    })
+    @MethodSource("malformedHeaders")
     void readHeaderFromInputStream_throws(final String label, final String header) {
         ByteArrayInputStream is = new ByteArrayInputStream(header.getBytes());
         assertThrows(IOException.class, () -> HeaderReader.readHeader(is, new StringBuilder()));
+    }
+
+    // A raw carriage return can't be expressed in a @CsvSource: it is read as a line separator.
+    static Stream<Arguments> malformedHeaders() {
+        return Stream.of(
+                Arguments.of("crWithoutLf", "\rX"),
+                Arguments.of("missingColon", "NameOnly"),
+                Arguments.of("missingTrailingLineFeed", "Name: value\r"));
     }
 
     @Test

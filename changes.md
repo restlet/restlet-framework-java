@@ -20,6 +20,7 @@ Changes log
     - Misc
         - Upgraded Jackson extension to Jackson 3.2.3. The OpenAPI extension remains on Jackson 2
           (2.22.3), as required by swagger-core.
+        - Upgraded JUnit library to 6.1.3.
         - Upgraded Hamcrest library to 3.0 (`hamcrest` replaces `hamcrest-all`).
         - Upgraded OSGi core library to 8.0.0 (`osgi.core` replaces `org.osgi.core`).
         - Upgraded Woodstox library to 7.2.1 and Stax2 API to 4.3.0.
