@@ -30,4 +30,4 @@ Changes log
         - The build now enforces Maven 3.9+, Java 21+ and dependency convergence, compiles with
           `-Xlint:all` and runs SpotBugs on `verify`.
         - CI runs `verify` (Spotless, JaCoCo coverage and SpotBugs checks), fails when tests fail,
-          publishes coverage reports and runs CodeQL. GitHub Actions are updated by Dependabot.
+          publishes coverage reports. GitHub Actions are updated by Dependabot.
