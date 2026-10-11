@@ -16,7 +16,7 @@
 
     <properties>
         <!-- Known high-priority SpotBugs findings, to be fixed (see Engine, Resource, ...) -->
-        <spotbugs.max.violations>14</spotbugs.max.violations>
+        <spotbugs.max.violations>11</spotbugs.max.violations>
     </properties>
 
     <dependencies>
