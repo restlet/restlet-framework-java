@@ -469,4 +469,15 @@ class ClientResourceTestCase {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void contextAndRequestConstructor_createsResponseLinkedToRequest() {
+        Request request = new Request(Method.GET, "http://localhost/test");
+
+        ClientResource resource = new ClientResource(new Context(), request);
+
+        assertEquals(request, resource.getRequest());
+        assertNotNull(resource.getResponse());
+        assertEquals(request, resource.getResponse().getRequest());
+    }
 }

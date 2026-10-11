@@ -219,7 +219,7 @@ public class ClientResource extends Resource {
      * @param request The handled request.
      */
     public ClientResource(Context context, Request request) {
-        this(context, request, null);
+        this(context, request, new Response(request));
     }
 
     /**
