@@ -35,5 +35,7 @@ Changes log
         - Upgraded all Maven plugins (compiler, surefire, bundle, javadoc, enforcer, spotless, ...).
         - The build now enforces Maven 3.9+, Java 21+ and dependency convergence, compiles with
           `-Xlint:all -Werror` (no warnings left) and runs SpotBugs on `verify`.
+        - Javadoc is now checked with doclint (html, syntax, reference and accessibility) and the
+          errors found were fixed. Missing comments are not checked yet.
         - CI runs `verify` (Spotless, JaCoCo coverage and SpotBugs checks), fails when tests fail,
           publishes coverage reports. GitHub Actions are updated by Dependabot.

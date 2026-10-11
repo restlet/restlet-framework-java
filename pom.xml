@@ -48,7 +48,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spotbugs.max.violations>0</spotbugs.max.violations>
-        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+        <!-- 'missing' is left out: comments are still missing in many places -->
+        <javadoc.opts>-Xdoclint:html,syntax,reference,accessibility</javadoc.opts>
 
         <!-- dependencies -->
         <lib-freemarker-version>2.3.35</lib-freemarker-version>
@@ -480,6 +481,12 @@
                         <additionalJOptions>
                             <additionalJOption>${javadoc.opts}</additionalJOption>
                         </additionalJOptions>
+                        <additionalOptions>
+                            <additionalOption>-Xmaxerrs</additionalOption>
+                            <additionalOption>10000</additionalOption>
+                            <additionalOption>-Xmaxwarns</additionalOption>
+                            <additionalOption>10000</additionalOption>
+                        </additionalOptions>
                     </configuration>
                 </plugin>
                 <plugin>

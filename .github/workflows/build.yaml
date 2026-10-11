@@ -29,6 +29,8 @@ jobs:
       - name: Build and test with Maven
         # verify also runs the Spotless check, the JaCoCo coverage check and SpotBugs
         run: ./mvnw -B verify -P default,test
+      - name: Check Javadoc
+        run: ./mvnw -B -q compile javadoc:javadoc
       - name: Upload coverage and static analysis reports
         if: always()
         uses: actions/upload-artifact@v7
