@@ -48,7 +48,9 @@ public class XmlFactoryProvider {
     public static XMLInputFactory newInputFactory() {
         if (inputFactoryProvider == null) {
             if (Edition.ANDROID.isCurrentEdition()) {
-                inputFactoryProvider = new com.ctc.wstx.osgi.InputFactoryProviderImpl();
+                inputFactoryProvider =
+                        (Stax2InputFactoryProvider)
+                                newProvider("com.ctc.wstx.osgi.InputFactoryProviderImpl");
             } else {
                 return XMLInputFactory.newFactory();
             }
@@ -62,12 +64,26 @@ public class XmlFactoryProvider {
     public static XMLOutputFactory newOutputFactory() {
         if (outputFactoryProvider == null) {
             if (Edition.ANDROID.isCurrentEdition()) {
-                outputFactoryProvider = new com.ctc.wstx.osgi.OutputFactoryProviderImpl();
+                outputFactoryProvider =
+                        (Stax2OutputFactoryProvider)
+                                newProvider("com.ctc.wstx.osgi.OutputFactoryProviderImpl");
             } else {
                 return XMLOutputFactory.newFactory();
             }
         }
 
         return outputFactoryProvider.createOutputFactory();
+    }
+
+    /**
+     * Instantiates a Woodstox provider by name. The OSGi package of Woodstox isn't exported by its
+     * Java module, which would prevent a direct reference.
+     */
+    private static Object newProvider(String className) {
+        try {
+            return Class.forName(className).getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to instantiate " + className, e);
+        }
     }
 }
