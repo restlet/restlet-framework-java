@@ -468,6 +468,7 @@
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
                             <arg>-Xlint:all,-this-escape</arg>
+                            <arg>-Werror</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>

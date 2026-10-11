@@ -12,6 +12,9 @@ Changes log
         - `ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED` and
           `ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED` are now `final`. They can only be
           enabled with the system properties of the same names, and no longer at runtime.
+        - The `TaskService` methods `invokeAll` and `invokeAny` now have the generic signatures of
+          `ExecutorService` instead of raw types.
+        - The `ImmutableDate` setters, which always throw, are now marked as `@Deprecated`.
     - Bugs fixed
         - `Resource.isConfidential()` and `Resource.isLoggable()` threw a `NullPointerException`
           when the resource had no request. They now return `false`.
@@ -20,6 +23,8 @@ Changes log
     - Misc
         - Upgraded Jackson extension to Jackson 3.2.3. The OpenAPI extension remains on Jackson 2
           (2.22.3), as required by swagger-core.
+        - Replaced the deprecated Jetty `ConnectionLimit` with `NetworkConnectionLimit` and Spring's
+          deprecated `@NonNull`/`@Nullable` with the JSpecify ones.
         - Upgraded JUnit library to 6.1.3.
         - Upgraded Hamcrest library to 3.0 (`hamcrest` replaces `hamcrest-all`).
         - Upgraded OSGi core library to 8.0.0 (`osgi.core` replaces `org.osgi.core`).
@@ -28,6 +33,6 @@ Changes log
         - Upgraded Maven to 3.9.16 (also in the Maven wrapper).
         - Upgraded all Maven plugins (compiler, surefire, bundle, javadoc, enforcer, spotless, ...).
         - The build now enforces Maven 3.9+, Java 21+ and dependency convergence, compiles with
-          `-Xlint:all` and runs SpotBugs on `verify`.
+          `-Xlint:all -Werror` (no warnings left) and runs SpotBugs on `verify`.
         - CI runs `verify` (Spotless, JaCoCo coverage and SpotBugs checks), fails when tests fail,
           publishes coverage reports. GitHub Actions are updated by Dependabot.
