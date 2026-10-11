@@ -42,6 +42,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setDate(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }
@@ -51,6 +52,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setHours(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }
@@ -60,6 +62,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setMinutes(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }
@@ -69,6 +72,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setMonth(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }
@@ -78,6 +82,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setSeconds(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }
@@ -96,6 +101,7 @@ public final class ImmutableDate extends Date {
      * exception.
      */
     @Override
+    @Deprecated
     public void setYear(int arg0) {
         throw new UnsupportedOperationException("ImmutableDate is immutable");
     }

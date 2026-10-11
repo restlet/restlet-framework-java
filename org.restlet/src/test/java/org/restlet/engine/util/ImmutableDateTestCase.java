@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation") // the deprecated setters are the subject of these tests
 class ImmutableDateTestCase {
 
     @Test
