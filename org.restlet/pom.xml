@@ -97,7 +97,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <version>${lib-osgi-version}</version>
             <scope>provided</scope>
             <optional>true</optional>
@@ -117,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
+            <artifactId>hamcrest</artifactId>
             <version>${lib-hamcrest-version}</version>
             <scope>test</scope>
         </dependency>
