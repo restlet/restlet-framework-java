@@ -8,24 +8,27 @@
  */
 package org.restlet.ext.jackson;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.csv.CsvFactory;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.fasterxml.jackson.dataformat.xml.XmlFactory;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.internal.XmlFactoryProvider;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import tools.jackson.core.StreamWriteFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.csv.CsvFactory;
+import tools.jackson.dataformat.csv.CsvMapper;
+import tools.jackson.dataformat.csv.CsvSchema;
+import tools.jackson.dataformat.smile.SmileFactory;
+import tools.jackson.dataformat.smile.SmileMapper;
+import tools.jackson.dataformat.xml.XmlFactory;
+import tools.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize automatically in
@@ -159,15 +162,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     protected ObjectMapper createObjectMapper() {
         final ObjectMapper result;
 
-        if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
-            JsonFactory jsonFactory = new JsonFactory();
-            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(jsonFactory);
-        } else if (MediaType.APPLICATION_JSON_SMILE.isCompatible(getMediaType())) {
-            SmileFactory smileFactory = new SmileFactory();
-            smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(smileFactory);
-
+        if (MediaType.APPLICATION_JSON_SMILE.isCompatible(getMediaType())) {
+            SmileFactory smileFactory =
+                    SmileFactory.builder().disable(StreamWriteFeature.AUTO_CLOSE_TARGET).build();
+            result = SmileMapper.builder(smileFactory).build();
         } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
                 || MediaType.TEXT_XML.isCompatible(getMediaType())) {
             javax.xml.stream.XMLInputFactory xif = XmlFactoryProvider.newInputFactory();
@@ -177,23 +175,27 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             xif.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, isExpandingEntityRefs());
             xif.setProperty(javax.xml.stream.XMLInputFactory.IS_VALIDATING, isValidatingDtd());
             javax.xml.stream.XMLOutputFactory xof = XmlFactoryProvider.newOutputFactory();
-            XmlFactory xmlFactory = new XmlFactory(xif, xof);
-            xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new XmlMapper(xmlFactory);
-
+            XmlFactory xmlFactory =
+                    XmlFactory.builder()
+                            .xmlInputFactory(xif)
+                            .xmlOutputFactory(xof)
+                            .disable(StreamWriteFeature.AUTO_CLOSE_TARGET)
+                            .build();
+            result = XmlMapper.builder(xmlFactory).build();
         } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())
                 || MediaType.TEXT_YAML.isCompatible(getMediaType())) {
-            YAMLFactory yamlFactory = new YAMLFactory();
-            yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(yamlFactory);
+            YAMLFactory yamlFactory =
+                    YAMLFactory.builder().disable(StreamWriteFeature.AUTO_CLOSE_TARGET).build();
+            result = YAMLMapper.builder(yamlFactory).build();
         } else if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
-            CsvFactory csvFactory = new CsvFactory();
-            csvFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new CsvMapper(csvFactory);
+            CsvFactory csvFactory =
+                    CsvFactory.builder().disable(StreamWriteFeature.AUTO_CLOSE_TARGET).build();
+            result = CsvMapper.builder(csvFactory).build();
         } else {
-            JsonFactory jsonFactory = new JsonFactory();
-            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(jsonFactory);
+            // JSON (default)
+            JsonFactory jsonFactory =
+                    JsonFactory.builder().disable(StreamWriteFeature.AUTO_CLOSE_TARGET).build();
+            result = JsonMapper.builder(jsonFactory).build();
         }
 
         return result;

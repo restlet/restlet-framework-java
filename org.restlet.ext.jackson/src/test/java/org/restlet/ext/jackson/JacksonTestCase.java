@@ -10,7 +10,6 @@ package org.restlet.ext.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import tools.jackson.core.exc.StreamReadException;
 
 /**
  * Unit test for the Jackson extension.
@@ -63,7 +63,7 @@ class JacksonTestCase {
         JacksonRepresentation<Invoice> rep =
                 new JacksonRepresentation<>(MediaType.TEXT_CSV, invoice);
         String text = rep.getText();
-        Assertions.assertEquals("12456,1356533333882,false\n", text);
+        Assertions.assertEquals("12456,2012-12-26T14:48:53.882Z,false\n", text);
         rep =
                 new JacksonRepresentation<>(
                         new StringRepresentation(text, rep.getMediaType()), Invoice.class);
@@ -97,7 +97,7 @@ class JacksonTestCase {
         String text = rep.getText();
 
         Assertions.assertEquals(
-                "{\"firstName\":\"Foo\",\"lastName\":\"Bar\",\"invoices\":[{\"date\":1356533333882,\"amount\":12456,\"paid\":false},{\"date\":1356533333882,\"amount\":7890,\"paid\":true}]}",
+                "{\"firstName\":\"Foo\",\"invoices\":[{\"amount\":12456,\"date\":\"2012-12-26T14:48:53.882Z\",\"paid\":false},{\"amount\":7890,\"date\":\"2012-12-26T14:48:53.882Z\",\"paid\":true}],\"lastName\":\"Bar\"}",
                 text);
 
         rep =
@@ -122,7 +122,7 @@ class JacksonTestCase {
                 new JacksonRepresentation<>(MediaType.APPLICATION_XML, customer);
         String text = rep.getText();
         Assertions.assertEquals(
-                "<Customer><firstName>Foo</firstName><lastName>Bar</lastName><invoices><invoices><date>1356533333882</date><amount>12456</amount><paid>false</paid></invoices><invoices><date>1356533333882</date><amount>7890</amount><paid>true</paid></invoices></invoices></Customer>",
+                "<Customer><firstName>Foo</firstName><invoices><invoices><amount>12456</amount><date>2012-12-26T14:48:53.882Z</date><paid>false</paid></invoices><invoices><amount>7890</amount><date>2012-12-26T14:48:53.882Z</date><paid>true</paid></invoices></invoices><lastName>Bar</lastName></Customer>",
                 text);
 
         rep =
@@ -140,7 +140,7 @@ class JacksonTestCase {
 
         Exception exception =
                 assertThrows(
-                        JsonParseException.class,
+                        StreamReadException.class,
                         () -> new JacksonRepresentation<>(xmlRep, Customer.class).getObject());
         String expected =
                 """
@@ -162,14 +162,14 @@ class JacksonTestCase {
                 """
                 ---
                 firstName: "Foo"
-                lastName: "Bar"
                 invoices:
-                - date: 1356533333882
-                  amount: 12456
+                - amount: 12456
+                  date: "2012-12-26T14:48:53.882Z"
                   paid: false
-                - date: 1356533333882
-                  amount: 7890
+                - amount: 7890
+                  date: "2012-12-26T14:48:53.882Z"
                   paid: true
+                lastName: "Bar"
                 """,
                 text);
 
