@@ -1,6 +1,8 @@
 Changes log
 ===========
 
+- 3.0 Milestone 2 (??-??-2026)
+
 - 3.0 Milestone 1 (10-11-2026)
     - Breaking changes
         - The Jackson extension now relies on Jackson 3 (`tools.jackson` packages, version 3.2.3).
