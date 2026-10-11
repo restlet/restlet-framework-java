@@ -15,6 +15,24 @@
     <name>Restlet Framework - OpenAPI extension</name>
     <description>Support for the OpenAPI specification.</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- swagger-core relies on Jackson 2: align all of its modules -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${lib-jackson-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>2.6</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
