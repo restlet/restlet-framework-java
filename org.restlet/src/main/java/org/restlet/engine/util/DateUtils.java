@@ -8,7 +8,7 @@
  */
 package org.restlet.engine.util;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -219,7 +219,12 @@ public final class DateUtils {
      */
     @SafeVarargs
     private static <T> List<T> unmodifiableList(final T... array) {
-        return Collections.unmodifiableList(Arrays.asList(array));
+        // The array isn't passed on, to keep @SafeVarargs valid
+        List<T> result = new ArrayList<>(array.length);
+        for (T element : array) {
+            result.add(element);
+        }
+        return Collections.unmodifiableList(result);
     }
 
     /**

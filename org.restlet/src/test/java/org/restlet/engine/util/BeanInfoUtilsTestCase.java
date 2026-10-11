@@ -30,6 +30,8 @@ class BeanInfoUtilsTestCase {
     }
 
     public static class SampleException extends Exception {
+        private static final long serialVersionUID = 1L;
+
         private String code;
 
         public String getCode() {

@@ -85,6 +85,8 @@ class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTes
 
     public static class Contact extends LightContact {
 
+        private static final long serialVersionUID = 1L;
+
         private Date birthDate;
 
         private String email2;
@@ -114,6 +116,8 @@ class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTes
     }
 
     public static class FullContact extends Contact {
+
+        private static final long serialVersionUID = 1L;
 
         private String address1;
 
@@ -186,6 +190,8 @@ class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTes
     }
 
     public static class LightContact implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private String email1;
 

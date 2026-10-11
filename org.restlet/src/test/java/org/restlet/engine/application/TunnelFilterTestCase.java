@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +88,11 @@ class TunnelFilterTestCase {
             List<? extends Preference<A>> actual, A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
-            System.out.println("Should: " + Arrays.asList(expected));
+            List<A> expectedList = new ArrayList<>();
+            for (A element : expected) {
+                expectedList.add(element);
+            }
+            System.out.println("Should: " + expectedList);
         }
         assertEquals(actual.size(), expected.length);
         boolean contained = false;

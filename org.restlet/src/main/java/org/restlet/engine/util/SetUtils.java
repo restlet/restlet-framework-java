@@ -8,7 +8,6 @@
  */
 package org.restlet.engine.util;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +27,9 @@ public class SetUtils {
     @SafeVarargs
     public static <E> Set<E> newHashSet(E... elements) {
         HashSet<E> set = HashSet.newHashSet(elements.length);
-        Collections.addAll(set, elements);
+        for (E element : elements) {
+            set.add(element);
+        }
         return set;
     }
 }

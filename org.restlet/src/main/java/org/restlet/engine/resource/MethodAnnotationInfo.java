@@ -132,7 +132,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      */
     public Class<?>[] getJavaInputTypes() {
         int count = getJavaMethod().getParameterTypes().length;
-        Class<?>[] classes = new Class[count];
+        Class<?>[] classes = new Class<?>[count];
 
         for (int i = 0; i < count; i++) {
             classes[i] = getJavaInputType(i);
