@@ -12,6 +12,11 @@ Changes log
         - `ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED` and
           `ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED` are now `final`. They can only be
           enabled with the system properties of the same names, and no longer at runtime.
+        - Added `module-info.java` to the core and all extensions (JPMS modules named after the
+          Maven artifacts, e.g. `org.restlet` and `org.restlet.ext.jackson`). The converter and
+          authenticator helpers are declared with `provides`. Applications that use the module path
+          must `requires` the Restlet modules they use. Third-party libraries without a module
+          descriptor are required as automatic modules. Classpath usage is unchanged.
         - Removed `Reference.clone()`, deprecated since 2.7. Use `Reference.copy()` instead.
         - The `TaskService` methods `invokeAll` and `invokeAny` now have the generic signatures of
           `ExecutorService` instead of raw types.
