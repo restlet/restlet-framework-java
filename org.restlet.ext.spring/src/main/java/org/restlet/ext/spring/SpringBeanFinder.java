@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.spring;
 
+import org.jspecify.annotations.NonNull;
 import org.restlet.Context;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
 
 /**
  * An alternative to {@link SpringFinder} which uses Spring's BeanFactory mechanism to load a

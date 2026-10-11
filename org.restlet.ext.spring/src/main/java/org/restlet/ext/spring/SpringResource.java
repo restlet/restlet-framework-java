@@ -11,11 +11,11 @@ package org.restlet.ext.spring;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.springframework.core.io.AbstractResource;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 /**
  * Spring Resource based on a Restlet Representation. DON'T GET CONFUSED, Spring's notion of

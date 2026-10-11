@@ -9,6 +9,7 @@
 package org.restlet.ext.spring;
 
 import java.util.Map;
+import org.jspecify.annotations.NonNull;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
 
 /**
  * Restlet {@link Router} which behaves like Spring's {@link
