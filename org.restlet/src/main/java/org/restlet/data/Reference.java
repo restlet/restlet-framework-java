@@ -668,15 +668,6 @@ public class Reference {
         return this;
     }
 
-    /**
-     * @deprecated Use the {@code copy} method instead.
-     */
-    @Override
-    @Deprecated(since = "2.7", forRemoval = true)
-    public Reference clone() {
-        return copy();
-    }
-
     public Reference copy() {
         final Reference newRef = new Reference();
 

@@ -12,6 +12,7 @@ Changes log
         - `ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED` and
           `ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED` are now `final`. They can only be
           enabled with the system properties of the same names, and no longer at runtime.
+        - Removed `Reference.clone()`, deprecated since 2.7. Use `Reference.copy()` instead.
         - The `TaskService` methods `invokeAll` and `invokeAny` now have the generic signatures of
           `ExecutorService` instead of raw types.
         - The `ImmutableDate` setters, which always throw, are now marked as `@Deprecated`.
