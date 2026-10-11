@@ -48,12 +48,12 @@ import org.restlet.data.MediaType;
 public class ObjectRepresentation<T extends Serializable> extends OutputRepresentation {
 
     /** Indicates whether the JavaBeans XML deserialization is supported or not. */
-    public static boolean VARIANT_OBJECT_XML_SUPPORTED =
+    public static final boolean VARIANT_OBJECT_XML_SUPPORTED =
             Boolean.getBoolean(
                     "org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED");
 
     /** Indicates whether the JavaBeans binary deserialization is supported or not. */
-    public static boolean VARIANT_OBJECT_BINARY_SUPPORTED =
+    public static final boolean VARIANT_OBJECT_BINARY_SUPPORTED =
             Boolean.getBoolean(
                     "org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED");
 

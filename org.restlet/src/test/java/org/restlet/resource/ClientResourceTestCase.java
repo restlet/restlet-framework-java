@@ -285,23 +285,15 @@ class ClientResourceTestCase {
 
     @Test
     void wrap_proxiesAnnotatedInterfaceThroughFinder() {
-        boolean previous =
-                org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED;
-        org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
-        try {
-            ClientResource cr = new ClientResource("http://localhost/test");
-            Finder finder = new Finder(new Context());
-            finder.setTargetClass(MyServerResource01.class);
-            cr.setNext(finder);
+        ClientResource cr = new ClientResource("http://localhost/test");
+        Finder finder = new Finder(new Context());
+        finder.setTargetClass(MyServerResource01.class);
+        cr.setNext(finder);
 
-            MyResource01 proxy = cr.wrap(MyResource01.class);
+        MyResource01 proxy = cr.wrap(MyResource01.class);
 
-            assertNotNull(proxy.represent());
-            assertEquals("myName", proxy.represent().getName());
-        } finally {
-            org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED =
-                    previous;
-        }
+        assertNotNull(proxy.represent());
+        assertEquals("myName", proxy.represent().getName());
     }
 
     @Test

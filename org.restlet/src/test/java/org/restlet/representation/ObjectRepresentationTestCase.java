@@ -17,8 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 
@@ -28,22 +26,6 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel
  */
 class ObjectRepresentationTestCase {
-
-    private boolean initialBinarySupported;
-
-    private boolean initialXmlSupported;
-
-    @BeforeEach
-    void setUpEach() {
-        initialBinarySupported = ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED;
-        initialXmlSupported = ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED;
-    }
-
-    @AfterEach
-    void tearDownEach() {
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = initialBinarySupported;
-        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = initialXmlSupported;
-    }
 
     @Test
     void constructor_withObjectOnly_usesJavaObjectMediaType() throws IOException {
@@ -80,7 +62,6 @@ class ObjectRepresentationTestCase {
 
     @Test
     void writeThenReadBack_roundTripsBinarySerializedObject() throws Exception {
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
         ObjectRepresentation<String> original = new ObjectRepresentation<>("round-trip-value");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -91,20 +72,6 @@ class ObjectRepresentationTestCase {
         ObjectRepresentation<Serializable> deserialized = new ObjectRepresentation<>(serialized);
 
         assertEquals("round-trip-value", deserialized.getObject());
-    }
-
-    @Test
-    void constructor_fromBinaryRepresentation_throwsWhenBinaryNotSupported() throws Exception {
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
-        ObjectRepresentation<String> original = new ObjectRepresentation<>("value");
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        original.write(out);
-        Representation serialized =
-                new ByteArrayRepresentation(out.toByteArray(), MediaType.APPLICATION_JAVA_OBJECT);
-
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = false;
-
-        assertThrows(IllegalArgumentException.class, () -> new ObjectRepresentation<>(serialized));
     }
 
     @Test

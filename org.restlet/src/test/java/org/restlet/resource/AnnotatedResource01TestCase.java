@@ -16,7 +16,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.StringRepresentation;
 
 /**
@@ -51,12 +50,10 @@ class AnnotatedResource01TestCase extends AbstractAnnotatedResourceWithFinderTes
         assertEquals("myName", myBean.getName());
         assertEquals("myDescription", myBean.getDescription());
 
-        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
         String result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML).getText();
         assertTrue(
                 result.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                         && result.contains("<java version=\""));
-        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = false;
     }
 
     @Test

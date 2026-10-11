@@ -22,7 +22,6 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.HttpClientHelper;
 import org.restlet.engine.connector.HttpServerHelper;
-import org.restlet.representation.ObjectRepresentation;
 
 /**
  * All test cases relying on a client and a server should inherit from this class.
@@ -76,10 +75,6 @@ public abstract class JettyConnectorTestCase {
 
         int serverPort = setUpServer(0, "/test");
         setUpClient(serverPort, "/test");
-
-        // Enable object serialization
-        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
     }
 
     protected void releaseResponse(Response response) {

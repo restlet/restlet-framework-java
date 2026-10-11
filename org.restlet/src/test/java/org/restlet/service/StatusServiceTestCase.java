@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.io.Serial;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
@@ -42,13 +41,7 @@ class StatusServiceTestCase {
         // Restore a clean engine
         Engine.clearThreadLocalVariables();
         Engine.register(true);
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
         Application.setCurrent(new Application());
-    }
-
-    @AfterEach
-    void cleanUp() {
-        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = false;
     }
 
     @Test

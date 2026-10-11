@@ -16,7 +16,7 @@
 
     <properties>
         <!-- Known high-priority SpotBugs findings, to be fixed (see Engine, Resource, ...) -->
-        <spotbugs.max.violations>11</spotbugs.max.violations>
+        <spotbugs.max.violations>9</spotbugs.max.violations>
     </properties>
 
     <dependencies>
@@ -135,6 +135,34 @@
             </testResource>
         </testResources>
         <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <!-- Java object (de)serialization is disabled by default and the flags are
+                         final: most tests need it enabled... -->
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <excludedGroups>serialization-disabled</excludedGroups>
+                            <systemPropertyVariables>
+                                <org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED>true</org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED>
+                                <org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED>true</org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <!-- ...and a few need the default configuration, in a fresh JVM. -->
+                    <execution>
+                        <id>serialization-disabled</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <groups>serialization-disabled</groups>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
