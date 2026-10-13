@@ -2,6 +2,8 @@ Changes log
 ===========
 
 - 2.7.1 (??-??-2026)
+  - Bugs fixed
+    - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
 
 - 2.7.0 (30-09-2026)
   - Misc

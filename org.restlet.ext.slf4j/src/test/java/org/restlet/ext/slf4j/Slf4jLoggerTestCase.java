@@ -14,11 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LocationAwareLogger;
 
 /** Unit tests for {@link Slf4jLogger}. */
 class Slf4jLoggerTestCase {
@@ -163,5 +167,81 @@ class Slf4jLoggerTestCase {
     void testLogRecord_simple() {
         LogRecord logRecord = new LogRecord(Level.WARNING, "simple message");
         assertDoesNotThrow(() -> logger.log(logRecord));
+    }
+
+    @Test
+    void testLocationAwareLoggerReceivesCallerBoundary() {
+        List<Object[]> calls = new ArrayList<>();
+        LocationAwareLogger fake =
+                (LocationAwareLogger)
+                        Proxy.newProxyInstance(
+                                getClass().getClassLoader(),
+                                new Class<?>[] {LocationAwareLogger.class},
+                                (proxy, method, args) -> {
+                                    if ("log".equals(method.getName()) && args.length == 6) {
+                                        calls.add(args);
+                                    } else if ("getName".equals(method.getName())) {
+                                        return "fake";
+                                    }
+                                    return null;
+                                });
+        Slf4jLogger wrapper = new Slf4jLogger(fake);
+        Throwable t = new RuntimeException("test");
+
+        wrapper.info("info");
+        wrapper.log(Level.WARNING, "warn {}", "p");
+        wrapper.log(Level.SEVERE, "error", t);
+        wrapper.log(Level.FINEST, "ignored level mapping still trace");
+        wrapper.log(Level.ALL, "unmapped");
+
+        assertEquals(4, calls.size());
+        for (Object[] call : calls) {
+            assertEquals(Slf4jLogger.class.getName(), call[1]);
+        }
+        assertEquals(LocationAwareLogger.INFO_INT, calls.get(0)[2]);
+        assertEquals(LocationAwareLogger.WARN_INT, calls.get(1)[2]);
+        assertEquals(LocationAwareLogger.ERROR_INT, calls.get(2)[2]);
+        assertEquals(t, calls.get(2)[5]);
+        assertEquals(LocationAwareLogger.TRACE_INT, calls.get(3)[2]);
+    }
+
+    @Test
+    void testPlainSlf4jLoggerFallback() {
+        List<String> calls = new ArrayList<>();
+        org.slf4j.Logger fake =
+                (org.slf4j.Logger)
+                        Proxy.newProxyInstance(
+                                getClass().getClassLoader(),
+                                new Class<?>[] {org.slf4j.Logger.class},
+                                (proxy, method, args) -> {
+                                    String name = method.getName();
+                                    if ("getName".equals(name)) {
+                                        return "fake";
+                                    } else if (!name.startsWith("is")) {
+                                        calls.add(name + "/" + args.length);
+                                    }
+                                    return null;
+                                });
+        Slf4jLogger wrapper = new Slf4jLogger(fake);
+        Throwable t = new RuntimeException("test");
+        Level[] levels = {
+            Level.FINEST, Level.CONFIG, Level.INFO, Level.WARNING, Level.SEVERE, Level.ALL
+        };
+        String[] expected = {"trace", "debug", "info", "warn", "error"};
+
+        for (Level level : levels) {
+            wrapper.log(level, "msg");
+            wrapper.log(level, "msg {}", "p");
+            wrapper.log(level, "msg {} {}", new Object[] {"p1", "p2"});
+            wrapper.log(level, "msg", t);
+        }
+
+        assertEquals(20, calls.size());
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i] + "/1", calls.get(i * 4));
+            assertEquals(expected[i] + "/2", calls.get(i * 4 + 1));
+            assertEquals(expected[i] + "/2", calls.get(i * 4 + 2));
+            assertEquals(expected[i] + "/2", calls.get(i * 4 + 3));
+        }
     }
 }

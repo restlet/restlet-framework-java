@@ -11,6 +11,7 @@ package org.restlet.ext.slf4j;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import org.slf4j.spi.LocationAwareLogger;
 
 /**
  * JULI logger that efficiently wraps a SLF4J logger. It prevents the creation of intermediary
@@ -50,7 +51,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void config(String msg) {
-        getSlf4jLogger().debug(msg);
+        doLog(Level.CONFIG, msg, null, null);
     }
 
     /**
@@ -60,7 +61,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void fine(String msg) {
-        getSlf4jLogger().debug(msg);
+        doLog(Level.FINE, msg, null, null);
     }
 
     /**
@@ -70,7 +71,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void finer(String msg) {
-        getSlf4jLogger().trace(msg);
+        doLog(Level.FINER, msg, null, null);
     }
 
     /**
@@ -80,7 +81,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void finest(String msg) {
-        getSlf4jLogger().trace(msg);
+        doLog(Level.FINEST, msg, null, null);
     }
 
     /**
@@ -99,7 +100,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void info(String msg) {
-        getSlf4jLogger().info(msg);
+        doLog(Level.INFO, msg, null, null);
     }
 
     @Override
@@ -129,78 +130,101 @@ public class Slf4jLogger extends Logger {
 
     @Override
     public void log(Level level, String msg) {
-        if (Level.CONFIG == level) {
-            getSlf4jLogger().debug(msg);
-        } else if (Level.FINE == level) {
-            getSlf4jLogger().debug(msg);
-        } else if (Level.FINER == level) {
-            getSlf4jLogger().trace(msg);
-        } else if (Level.FINEST == level) {
-            getSlf4jLogger().trace(msg);
-        } else if (Level.INFO == level) {
-            getSlf4jLogger().info(msg);
-        } else if (Level.SEVERE == level) {
-            getSlf4jLogger().error(msg);
-        } else if (Level.WARNING == level) {
-            getSlf4jLogger().warn(msg);
-        }
+        doLog(level, msg, null, null);
     }
 
     @Override
     public void log(Level level, String msg, Object param) {
-        if (Level.CONFIG == level) {
-            getSlf4jLogger().debug(msg, param);
-        } else if (Level.FINE == level) {
-            getSlf4jLogger().debug(msg, param);
-        } else if (Level.FINER == level) {
-            getSlf4jLogger().trace(msg, param);
-        } else if (Level.FINEST == level) {
-            getSlf4jLogger().trace(msg, param);
-        } else if (Level.INFO == level) {
-            getSlf4jLogger().info(msg, param);
-        } else if (Level.SEVERE == level) {
-            getSlf4jLogger().error(msg, param);
-        } else if (Level.WARNING == level) {
-            getSlf4jLogger().warn(msg, param);
-        }
+        doLog(level, msg, new Object[] {param}, null);
     }
 
     @Override
     public void log(Level level, String msg, Object[] params) {
-        if (Level.CONFIG == level) {
-            getSlf4jLogger().debug(msg, params);
-        } else if (Level.FINE == level) {
-            getSlf4jLogger().debug(msg, params);
-        } else if (Level.FINER == level) {
-            getSlf4jLogger().trace(msg, params);
-        } else if (Level.FINEST == level) {
-            getSlf4jLogger().trace(msg, params);
-        } else if (Level.INFO == level) {
-            getSlf4jLogger().info(msg, params);
-        } else if (Level.SEVERE == level) {
-            getSlf4jLogger().error(msg, params);
-        } else if (Level.WARNING == level) {
-            getSlf4jLogger().warn(msg, params);
-        }
+        doLog(level, msg, params, null);
     }
 
     @Override
     public void log(Level level, String msg, Throwable thrown) {
-        if (Level.CONFIG == level) {
-            getSlf4jLogger().debug(msg, thrown);
-        } else if (Level.FINE == level) {
-            getSlf4jLogger().debug(msg, thrown);
-        } else if (Level.FINER == level) {
-            getSlf4jLogger().trace(msg, thrown);
-        } else if (Level.FINEST == level) {
-            getSlf4jLogger().trace(msg, thrown);
+        doLog(level, msg, null, thrown);
+    }
+
+    /**
+     * Maps a JULI level to the matching SLF4J level.
+     *
+     * @param level The JULI level.
+     * @return The {@link LocationAwareLogger} level constant, or -1 if the level isn't mapped.
+     */
+    private static int toSlf4jLevel(Level level) {
+        if (Level.CONFIG == level || Level.FINE == level) {
+            return LocationAwareLogger.DEBUG_INT;
+        } else if (Level.FINER == level || Level.FINEST == level) {
+            return LocationAwareLogger.TRACE_INT;
         } else if (Level.INFO == level) {
-            getSlf4jLogger().info(msg, thrown);
+            return LocationAwareLogger.INFO_INT;
         } else if (Level.SEVERE == level) {
-            getSlf4jLogger().error(msg, thrown);
+            return LocationAwareLogger.ERROR_INT;
         } else if (Level.WARNING == level) {
-            getSlf4jLogger().warn(msg, thrown);
+            return LocationAwareLogger.WARN_INT;
         }
+        return -1;
+    }
+
+    /**
+     * Forwards a message to the wrapped SLF4J logger. When the latter is location aware, this class
+     * name is given as the caller boundary so that the actual caller class, method and line number
+     * are reported by the logging backend instead of this wrapper.
+     *
+     * @param level The JULI level.
+     * @param msg The message to log.
+     * @param params The optional message parameters.
+     * @param thrown The optional throwable.
+     */
+    private void doLog(Level level, String msg, Object[] params, Throwable thrown) {
+        int slf4jLevel = toSlf4jLevel(level);
+
+        if (slf4jLevel < 0) {
+            return;
+        }
+
+        org.slf4j.Logger slf4j = getSlf4jLogger();
+
+        if (slf4j instanceof LocationAwareLogger locationAware) {
+            locationAware.log(null, getCallerBoundary(), slf4jLevel, msg, params, thrown);
+        } else if (thrown != null) {
+            switch (slf4jLevel) {
+                case LocationAwareLogger.TRACE_INT -> slf4j.trace(msg, thrown);
+                case LocationAwareLogger.DEBUG_INT -> slf4j.debug(msg, thrown);
+                case LocationAwareLogger.INFO_INT -> slf4j.info(msg, thrown);
+                case LocationAwareLogger.WARN_INT -> slf4j.warn(msg, thrown);
+                default -> slf4j.error(msg, thrown);
+            }
+        } else if (params != null) {
+            switch (slf4jLevel) {
+                case LocationAwareLogger.TRACE_INT -> slf4j.trace(msg, params);
+                case LocationAwareLogger.DEBUG_INT -> slf4j.debug(msg, params);
+                case LocationAwareLogger.INFO_INT -> slf4j.info(msg, params);
+                case LocationAwareLogger.WARN_INT -> slf4j.warn(msg, params);
+                default -> slf4j.error(msg, params);
+            }
+        } else {
+            switch (slf4jLevel) {
+                case LocationAwareLogger.TRACE_INT -> slf4j.trace(msg);
+                case LocationAwareLogger.DEBUG_INT -> slf4j.debug(msg);
+                case LocationAwareLogger.INFO_INT -> slf4j.info(msg);
+                case LocationAwareLogger.WARN_INT -> slf4j.warn(msg);
+                default -> slf4j.error(msg);
+            }
+        }
+    }
+
+    /**
+     * Returns the fully qualified name of the class after which the caller is searched in the stack
+     * trace. Subclasses that add their own logging methods should override it.
+     *
+     * @return The caller boundary class name.
+     */
+    protected String getCallerBoundary() {
+        return Slf4jLogger.class.getName();
     }
 
     @Override
@@ -235,7 +259,7 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void severe(String msg) {
-        getSlf4jLogger().error(msg);
+        doLog(Level.SEVERE, msg, null, null);
     }
 
     /**
@@ -245,6 +269,6 @@ public class Slf4jLogger extends Logger {
      */
     @Override
     public void warning(String msg) {
-        getSlf4jLogger().warn(msg);
+        doLog(Level.WARNING, msg, null, null);
     }
 }
