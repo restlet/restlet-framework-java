@@ -1659,6 +1659,10 @@ public abstract class ServerResource extends Resource {
                 }
             }
         }
+
+        if (getAllowedMethods().contains(Method.GET)) {
+            getAllowedMethods().add(Method.HEAD);
+        }
     }
 
     /**
