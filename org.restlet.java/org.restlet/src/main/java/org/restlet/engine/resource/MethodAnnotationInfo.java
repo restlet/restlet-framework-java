@@ -225,87 +225,100 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 	}
 
 	/**
-	 * Returns the list of representation variants associated to a given annotation
-	 * value, corresponding to either an input or output entity.
+	 * Returns the list of representation variants associated with a given annotation value,
+	 * corresponding to either an input or output entity.
 	 *
 	 * @param metadataService The metadata service to use.
 	 * @param annotationValue The entity annotation value.
 	 * @return A list of variants.
 	 */
 	private List<Variant> getVariants(MetadataService metadataService, String annotationValue) {
-		List<Variant> result = null;
-
-		if (annotationValue != null) {
-
-			StringTokenizer stValue = new StringTokenizer(annotationValue, "\\|");
-			while (stValue.hasMoreTokens()) {
-				String variantValue = stValue.nextToken().trim();
-
-				Variant variant = null;
-				List<MediaType> mediaTypes = null;
-				List<Language> languages = null;
-				CharacterSet characterSet = null;
-
-				StringTokenizer stExtension = new StringTokenizer(variantValue, "\\+");
-				while (stExtension.hasMoreTokens()) {
-					String extension = stExtension.nextToken().trim();
-					if (extension == null) {
-						continue;
-					}
-
-					List<Metadata> metadataList = metadataService.getAllMetadata(extension);
-
-					if (metadataList != null) {
-						for (Metadata metadata : metadataList) {
-							if (metadata instanceof MediaType) {
-								if (mediaTypes == null) {
-									mediaTypes = new ArrayList<>();
-								}
-
-								mediaTypes.add((MediaType) metadata);
-							} else if (metadata instanceof Language) {
-								if (languages == null) {
-									languages = new ArrayList<>();
-								}
-
-								languages.add((Language) metadata);
-							} else if (metadata instanceof CharacterSet) {
-								if (characterSet == null) {
-									characterSet = (CharacterSet) metadata;
-								} else {
-									Context.getCurrentLogger().warning(
-											"A representation variant can have only one character set. Please check your annotation value.");
-								}
-							}
-						}
-					}
-				}
-
-				// Now build the representation variants
-				if (mediaTypes != null) {
-					for (MediaType mediaType : mediaTypes) {
-						if ((result == null) || (!result.contains(mediaType))) {
-							if (result == null) {
-								result = new ArrayList<>();
-							}
-
-							variant = new Variant(mediaType);
-
-							if (languages != null) {
-								variant.getLanguages().addAll(languages);
-							}
-
-							if (characterSet != null) {
-								variant.setCharacterSet(characterSet);
-							}
-
-							result.add(variant);
-						}
-					}
-				}
-			}
+		if (annotationValue == null) {
+			return null;
 		}
 
+		List<Variant> result = null;
+		StringTokenizer stValue = new StringTokenizer(annotationValue, "\\|");
+		while (stValue.hasMoreTokens()) {
+			String variantValue = stValue.nextToken().trim();
+
+			result = addVariants(metadataService, variantValue, result);
+		}
+
+		return result;
+	}
+
+	private static List<Variant> addVariants(
+			final MetadataService metadataService,
+			final String variantValue,
+			List<Variant> result) {
+		List<Metadata> allMetadata =
+				Arrays.stream(variantValue.split("\\+"))
+						.map(String::trim)
+						.map(metadataService::getAllMetadata)
+						.filter(Objects::nonNull)
+						.flatMap(List::stream)
+						.toList();
+
+		List<MediaType> mediaTypes =
+				allMetadata.stream()
+						.filter(MediaType.class::isInstance)
+						.map(MediaType.class::cast)
+						.toList();
+
+		List<Language> languages =
+				allMetadata.stream()
+						.filter(Language.class::isInstance)
+						.map(Language.class::cast)
+						.toList();
+
+		List<CharacterSet> charSets =
+				allMetadata.stream()
+						.filter(CharacterSet.class::isInstance)
+						.map(CharacterSet.class::cast)
+						.toList();
+
+		if (charSets.size() > 1) {
+			Context.getCurrentLogger()
+					.warning("A representation variant can have only one character set...");
+		}
+		CharacterSet characterSet = charSets.isEmpty() ? null : charSets.get(0);
+
+		// Now build the representation variants
+		return getVariantList(result, mediaTypes, languages, characterSet);
+	}
+
+	private static List<Variant> getVariantList(
+			List<Variant> result,
+			final List<MediaType> mediaTypes,
+			final List<Language> languages,
+			final CharacterSet characterSet) {
+		Variant variant;
+		for (MediaType mediaType : mediaTypes) {
+			boolean containsMediaType =
+					result != null
+							&& result.stream()
+							.map(Variant::getMediaType)
+							.anyMatch(mediaType::equals);
+
+			if ((result == null) || !containsMediaType) {
+				if (result == null) {
+					result = new ArrayList<>();
+				}
+
+				variant = new Variant(mediaType);
+
+				if (languages != null) {
+					variant.getLanguages().addAll(languages);
+				}
+
+				if (characterSet != null) {
+					variant.setCharacterSet(characterSet);
+				}
+
+				result.add(variant);
+			}
+		}
 		return result;
 	}
 

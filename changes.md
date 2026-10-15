@@ -4,6 +4,7 @@ Changes log
 - 2.6.2 (??-??-2026)
     - Bugs fixed
         - Missing throw in JsonConverter.java. Issue #729.
+        - Type mismatch on container access in MethodAnnotationInfo. Issue #1278.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed
