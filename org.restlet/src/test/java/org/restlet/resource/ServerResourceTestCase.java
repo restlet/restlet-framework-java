@@ -62,6 +62,15 @@ class ServerResourceTestCase {
         }
     }
 
+    /** Server resource exposing a GET method through an annotation. */
+    private static class AnnotatedGetServerResource extends ServerResource {
+
+        @Get
+        public String read() {
+            return "get-result";
+        }
+    }
+
     @BeforeEach
     void setUpEach() {
         Engine.clearThreadLocalVariables();
@@ -385,6 +394,18 @@ class ServerResourceTestCase {
         resource.abort();
 
         assertNotNull(resource.getResponse());
+    }
+
+    @Test
+    void updateAllowedMethods_withGet_includesHead() {
+        AnnotatedGetServerResource resource = new AnnotatedGetServerResource();
+        resource.init(
+                new Context(), new Request(Method.GET, "http://localhost/"), new Response(null));
+
+        resource.updateAllowedMethods();
+
+        assertTrue(resource.getAllowedMethods().contains(Method.GET));
+        assertTrue(resource.getAllowedMethods().contains(Method.HEAD));
     }
 
     @Test

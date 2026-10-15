@@ -119,7 +119,7 @@ class CorsResponseFilterTestCase {
         assertIsEmpty(response.getAccessControlAllowHeaders());
         assertThat(
                 response.getAccessControlAllowMethods(),
-                Matchers.contains(Method.GET, Method.OPTIONS));
+                Matchers.containsInAnyOrder(Method.GET, Method.HEAD, Method.OPTIONS));
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
@@ -175,7 +175,7 @@ class CorsResponseFilterTestCase {
         assertIsEmpty(response.getAccessControlAllowHeaders());
         assertThat(
                 response.getAccessControlAllowMethods(),
-                Matchers.contains(Method.GET, Method.OPTIONS));
+                Matchers.containsInAnyOrder(Method.GET, Method.HEAD, Method.OPTIONS));
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
