@@ -5,6 +5,7 @@ Changes log
     - Bugs fixed
         - Missing throw in JsonConverter.java. Issue #729.
         - Type mismatch on container access in MethodAnnotationInfo. Issue #1278.
+        - Boolean canAppend in ZipClientHelper can only be false. Issue #1279.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed

@@ -1,35 +1,42 @@
 /**
- * Copyright 2005-2024 Qlik
- * 
- * The contents of this file is subject to the terms of the Apache 2.0 open
- * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-
 package org.restlet.engine.local;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.*;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Representation;
-import org.restlet.service.MetadataService;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.LocalReference;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Status;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 
 /**
- * ZIP and JAR client connector. Only works for archives available as local
- * files.<br>
+ * ZIP and JAR client connector. Only works for archives available as local files.<br>
  * <br>
- * Handles GET, HEAD and PUT request on resources referenced as :
- * zip:file://<file path>
+ * Handles GET, HEAD, and PUT request on resources referenced as: zip:file://<file path>
  *
  * @author Remi Dewitte remi@gide.net
  */
@@ -47,11 +54,10 @@ public class ZipClientHelper extends LocalClientHelper {
 	}
 
 	/**
-	 * Handles a call for a local entity. By default, only GET and HEAD methods are
-	 * implemented.
+	 * Handles a call for a local entity. By default, only GET and HEAD methods are implemented.
 	 *
-	 * @param request     The request to handle.
-	 * @param response    The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to modify.
 	 * @param decodedPath The URL decoded entity path.
 	 */
 	@Override
@@ -88,31 +94,30 @@ public class ZipClientHelper extends LocalClientHelper {
 	/**
 	 * Handles a GET call.
 	 *
-	 * @param request         The request to answer.
-	 * @param response        The response to update.
-	 * @param file            The Zip archive file.
-	 * @param entryName       The Zip archive entry name.
+	 * @param request The request to answer.
+	 * @param response The response to modify.
+	 * @param file The Zip archive file.
+	 * @param entryName The Zip archive entry name.
 	 * @param metadataService The metadata service.
 	 */
-	protected void handleGet(Request request, Response response, File file, String entryName,
+	protected void handleGet(
+			Request request,
+			Response response,
+			File file,
+			String entryName,
 			final MetadataService metadataService) {
 
 		if (!file.exists()) {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		} else {
-			ZipFile zipFile;
+			return;
+		}
 
-			try {
-				zipFile = new ZipFile(file);
-			} catch (Exception e) {
-				response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
-				return;
-			}
-
-			Entity entity = new ZipEntryEntity(zipFile, entryName, metadataService);
-			if (!entity.exists()) {
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			} else {
+		boolean shouldCloseZipFile = true;
+		ZipFile zipFile = null;
+		try {
+			zipFile = new ZipFile(file);
+			final Entity entity = new ZipEntryEntity(zipFile, entryName, metadataService);
+			if (entity.exists()) {
 				final Representation output;
 
 				if (entity.isDirectory()) {
@@ -129,20 +134,29 @@ public class ZipClientHelper extends LocalClientHelper {
 
 					output = rl.getTextRepresentation();
 
-					try {
-						zipFile.close();
-					} catch (IOException e) {
-						// Do something ???
-					}
-				} else {
-					// Return the file content
-					output = entity.getRepresentation(metadataService.getDefaultMediaType(), getTimeToLive());
+				} else { // Return the file content
+					shouldCloseZipFile = false; // Keep zipFile open for the stream to be read
+					output =
+							entity.getRepresentation(
+									metadataService.getDefaultMediaType(), getTimeToLive());
 					output.setLocationRef(request.getResourceRef());
 					Entity.updateMetadata(entity.getName(), output, true, getMetadataService());
 				}
 
 				response.setStatus(Status.SUCCESS_OK);
 				response.setEntity(output);
+			} else {
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
+		} catch (Exception e) {
+			response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
+		}
+
+		if (shouldCloseZipFile && zipFile != null) {
+			try {
+				zipFile.close();
+			} catch (IOException ignored) {
+				// Ignored exception
 			}
 		}
 	}
@@ -150,136 +164,56 @@ public class ZipClientHelper extends LocalClientHelper {
 	/**
 	 * Handles a PUT call.
 	 *
-	 * @param request   The request to answer.
-	 * @param response  The response to update.
-	 * @param file      The Zip archive file.
+	 * @param request The request to answer.
+	 * @param response The response to modify.
+	 * @param file The Zip archive file.
 	 * @param entryName The Zip archive entry name.
 	 */
 	protected void handlePut(Request request, Response response, File file, String entryName) {
-		boolean zipExists = file.exists();
-		ZipOutputStream zipOut = null;
-
-		if ("".equals(entryName) && request.getEntity() != null && request.getEntity().getDisposition() != null) {
+		if ("".equals(entryName)
+				&& request.getEntity() != null
+				&& request.getEntity().getDisposition() != null) {
 			entryName = request.getEntity().getDisposition().getFilename();
 		}
 		if (entryName == null) {
 			response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Must specify an entry name.");
 			return;
 		}
-		// boolean canAppend = true;
-		boolean canAppend = !zipExists;
+
 		boolean isDirectory = entryName.endsWith("/");
-		boolean wrongReplace = false;
 		try {
-			if (zipExists) {
-				ZipFile zipFile = new ZipFile(file);
-				// Already exists ?
-				canAppend &= null == zipFile.getEntry(entryName);
-				// Directory with the same name ?
-				if (isDirectory) {
-					wrongReplace = null != zipFile.getEntry(entryName.substring(0, entryName.length() - 1));
-				} else {
-					wrongReplace = null != zipFile.getEntry(entryName + "/");
-				}
+			if (file.exists()) {
+				try (ZipFile zipFile = new ZipFile(file)) {
+					final boolean wrongReplace;
+					if (isDirectory) { // File with the same name?
+						final String directoryName = entryName.substring(0, entryName.length() - 1);
+						wrongReplace = null != zipFile.getEntry(directoryName);
+					} else { // Directory with the same name?
+						wrongReplace = null != zipFile.getEntry(entryName + "/");
+					}
 
-				canAppend &= !wrongReplace;
-				zipFile.close();
-			}
-
-			Representation entity;
-			if (isDirectory) {
-				entity = null;
-			} else {
-				entity = request.getEntity();
-			}
-
-			if (canAppend) {
-				try {
-					// zipOut = new ZipOutputStream(new BufferedOutputStream(new
-					// FileOutputStream(file, true)));
-					zipOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-					writeEntityStream(entity, zipOut, entryName);
-					zipOut.close();
-				} catch (Exception e) {
-					response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
-					return;
-				} finally {
-					if (zipOut != null) {
-						zipOut.close();
+					if (wrongReplace) {
+						response.setStatus(
+								Status.CLIENT_ERROR_BAD_REQUEST,
+								"Directory cannot be replaced by a file or file by a directory.");
+						return;
 					}
 				}
-				response.setStatus(Status.SUCCESS_CREATED);
-			} else {
-				if (wrongReplace) {
-					response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-							"Directory cannot be replaced by a file or file by a directory.");
-				} else {
-					File writeTo;
-					ZipFile zipFile = null;
-					try {
-						writeTo = File.createTempFile("restlet_zip_", "zip");
-						zipFile = new ZipFile(file);
-						zipOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(writeTo)));
-						Enumeration<? extends ZipEntry> entries = zipFile.entries();
-						boolean replaced = false;
-						while (entries.hasMoreElements()) {
-							ZipEntry e = entries.nextElement();
-							if (!replaced && entryName.equals(e.getName())) {
-								writeEntityStream(entity, zipOut, entryName);
-								replaced = true;
-							} else {
-								zipOut.putNextEntry(e);
-								try (final BufferedInputStream zipStream = new BufferedInputStream(
-										zipFile.getInputStream(e))) {
-									IoUtils.copy(zipStream, zipOut);
-								}
-								zipOut.closeEntry();
-							}
-						}
-						if (!replaced) {
-							writeEntityStream(entity, zipOut, entryName);
-						}
-						zipFile.close();
-						zipOut.close();
-					} finally {
-						try {
-							if (zipFile != null) {
-								zipFile.close();
-							}
-						} finally {
-							if (zipOut != null) {
-								zipOut.close();
-							}
-						}
-					}
+			}
 
-					if (!(IoUtils.delete(file) && writeTo.renameTo(file))) {
-						if (!file.exists()) {
-							file.createNewFile();
-						}
-						FileInputStream fis = null;
-						FileOutputStream fos = null;
-						try {
-							fis = new FileInputStream(writeTo);
-							fos = new FileOutputStream(file);
-							// ByteUtils.write(fis.getChannel(),
-							// fos.getChannel());
-							IoUtils.copy(fis, fos);
-							response.setStatus(Status.SUCCESS_OK);
-						} finally {
-							try {
-								if (fis != null) {
-									fis.close();
-								}
-							} finally {
-								if (fos != null) {
-									fos.close();
-								}
-							}
-						}
-					} else {
-						response.setStatus(Status.SUCCESS_OK);
-					}
+			final Representation entity = isDirectory ? null : request.getEntity();
+
+			if (file.exists()) {
+				final File newZipFile =
+						copyZipFileWithUpdatedEntry(file, entryName, entity, isDirectory);
+				Files.move(newZipFile.toPath(), file.toPath(), REPLACE_EXISTING);
+
+				response.setStatus(Status.SUCCESS_OK);
+			} else {
+				try (ZipOutputStream zipOut =
+							 new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+					writeEntityStream(entity, zipOut, entryName, isDirectory);
+					response.setStatus(Status.SUCCESS_CREATED);
 				}
 			}
 		} catch (Exception e) {
@@ -287,17 +221,68 @@ public class ZipClientHelper extends LocalClientHelper {
 		}
 	}
 
+	private File copyZipFileWithUpdatedEntry(
+			final File file,
+			final String entryName,
+			final Representation entity,
+			final boolean isDirectory)
+			throws IOException {
+
+		final File writeTo = createPrivateTempFile();
+		boolean completed = false;
+
+		try (final ZipFile zipFile = new ZipFile(file);
+		     final ZipOutputStream zipOut =
+					 new ZipOutputStream(
+							 new BufferedOutputStream(new FileOutputStream(writeTo)))) {
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			boolean replaced = false;
+			while (entries.hasMoreElements()) {
+				ZipEntry e = entries.nextElement();
+				if (!replaced && entryName.equals(e.getName())) {
+					writeEntityStream(entity, zipOut, entryName, isDirectory);
+					replaced = true;
+				} else {
+					zipOut.putNextEntry(e);
+					try (final BufferedInputStream zipStream =
+								 new BufferedInputStream(zipFile.getInputStream(e))) {
+						IoUtils.copy(zipStream, zipOut);
+					}
+					zipOut.closeEntry();
+				}
+			}
+			if (!replaced) {
+				writeEntityStream(entity, zipOut, entryName, isDirectory);
+			}
+			completed = true;
+		} finally {
+			if (!completed) {
+				Files.deleteIfExists(writeTo.toPath());
+			}
+		}
+		return writeTo;
+	}
+
+	/** Create a temporary file with private access rights. */
+	private static File createPrivateTempFile() throws IOException {
+		return LocalClientHelper.createPrivateTempFile("restlet_zip_", ".zip");
+	}
+
 	/**
 	 * Writes an entity to a given ZIP output stream with a given ZIP entry name.
 	 *
-	 * @param entity    The entity to write.
-	 * @param out       The ZIP output stream.
+	 * @param entity The entity to write.
+	 * @param out The ZIP output stream.
 	 * @param entryName The ZIP entry name.
-	 * @return True if the writing was successful.
-	 * @throws IOException
+	 * @throws IOException Thrown if an I/O error occurs.
 	 */
-	private boolean writeEntityStream(Representation entity, ZipOutputStream out, String entryName) throws IOException {
-		if (entity != null && !entryName.endsWith("/")) {
+	private void writeEntityStream(
+			Representation entity, ZipOutputStream out, String entryName, boolean isDirectory)
+			throws IOException {
+		if (entity == null || isDirectory) {
+			out.putNextEntry(new ZipEntry(entryName));
+			out.closeEntry();
+		} else {
 			ZipEntry entry = new ZipEntry(entryName);
 			if (entity.getModificationDate() != null) {
 				entry.setTime(entity.getModificationDate().getTime());
@@ -305,15 +290,11 @@ public class ZipClientHelper extends LocalClientHelper {
 				entry.setTime(System.currentTimeMillis());
 			}
 			out.putNextEntry(entry);
-			try (final BufferedInputStream entityStream = new BufferedInputStream(entity.getStream())) {
+			try (final BufferedInputStream entityStream =
+						 new BufferedInputStream(entity.getStream())) {
 				IoUtils.copy(entityStream, out);
 			}
 			out.closeEntry();
-			return true;
 		}
-
-		out.putNextEntry(new ZipEntry(entryName));
-		out.closeEntry();
-		return false;
 	}
 }
