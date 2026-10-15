@@ -137,6 +137,7 @@ public class JsonConverter extends ConverterHelper {
                     IOException ioe = new IOException(
                             "Unable to convert to JSON array");
                     ioe.initCause(e);
+                    throw ioe;
                 }
             } else if (JSONObject.class.isAssignableFrom(target)) {
                 try {
