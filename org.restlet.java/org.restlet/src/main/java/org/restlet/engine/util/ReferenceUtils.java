@@ -86,7 +86,18 @@ public class ReferenceUtils {
 
 		String value = headers.getFirstValue(HeaderConstants.HEADER_X_FORWARDED_PORT);
 		if (value != null) {
-			originalRef.setHostPort(Integer.parseInt(value));
+			int commaIndex = value.indexOf(',');
+			if (commaIndex != -1) {
+				value = value.substring(0, commaIndex);
+			}
+			value = value.trim();
+			if (!value.isEmpty()) {
+				try {
+					originalRef.setHostPort(Integer.parseInt(value));
+				} catch (NumberFormatException nfe) {
+					// Leave the port unchanged for invalid non-standard header values.
+				}
+			}
 		}
 
 		value = headers.getFirstValue(HeaderConstants.HEADER_X_FORWARDED_PROTO);
