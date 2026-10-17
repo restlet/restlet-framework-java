@@ -76,7 +76,6 @@ class ProtocolTestCase {
         assertSame(Protocol.JAR, Protocol.valueOf("jar"));
         assertSame(Protocol.JDBC, Protocol.valueOf("jdbc"));
         assertSame(Protocol.RIAP, Protocol.valueOf("riap"));
-        assertSame(Protocol.WAR, Protocol.valueOf("war"));
         assertSame(Protocol.ZIP, Protocol.valueOf("zip"));
     }
 
@@ -128,5 +127,12 @@ class ProtocolTestCase {
     @Test
     void toString_withoutVersion_omitsSlash() {
         assertEquals("FTP", Protocol.FTP.toString());
+    }
+
+    @Test
+    void valueOf_warScheme_isNoLongerKnown() {
+        Protocol protocol = Protocol.valueOf("war");
+        assertEquals("WAR", protocol.getName());
+        assertEquals(Protocol.UNKNOWN_PORT, protocol.getDefaultPort());
     }
 }
