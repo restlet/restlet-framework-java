@@ -26,7 +26,6 @@ module org.restlet {
     requires transitive org.eclipse.jetty.util;
     requires transitive org.eclipse.jetty.quic.client;
     requires transitive org.eclipse.jetty.quic.server;
-    requires static osgi.core;
 
     exports org.restlet;
     exports org.restlet.data;

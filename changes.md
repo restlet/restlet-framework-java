@@ -2,6 +2,11 @@ Changes log
 ===========
 
 - 3.0 Milestone 2 (??-??-2026)
+    - Breaking changes
+        - Removed the OSGi support: the `Activator`, the `osgi.core` dependency and the bundle
+          packaging (Maven artifacts are now plain JARs, without `Bundle-*` manifest headers).
+          `XmlFactoryProvider` of the Jackson extension now relies on the plain `ServiceLoader`.
+          OSGi users should stay on 2.x.
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.

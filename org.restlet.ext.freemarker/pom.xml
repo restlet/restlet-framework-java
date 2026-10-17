@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.freemarker</artifactId>
-	<packaging>bundle</packaging>
 	<name>Restlet Framework - FreeMarker extension</name>
 	<description>Integration with FreeMarker.</description>
 
@@ -32,13 +31,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

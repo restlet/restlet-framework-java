@@ -10,80 +10,26 @@ package org.restlet.ext.jackson.internal;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
-import org.codehaus.stax2.osgi.Stax2InputFactoryProvider;
-import org.codehaus.stax2.osgi.Stax2OutputFactoryProvider;
-import org.restlet.engine.Edition;
 
 /**
- * Provides {@link javax.xml.stream.XMLInputFactory} and {@link javax.xml.stream.XMLOutputFactory}
- * in an OSGI context.
- *
- * <p>In a non-OSGI context, the factories are retrieved with java service loader.
+ * Provides {@link javax.xml.stream.XMLInputFactory} and {@link javax.xml.stream.XMLOutputFactory}.
+ * The factories are retrieved with the Java service loader.
  *
  * @author Manuel Boillod
  */
 public class XmlFactoryProvider {
 
     /**
-     * Allow explicitly setting the Stax2InputFactory instance in OSGI context. In a no-OSGI
-     * context, the factory is retrieved with a java service loader.
-     *
-     * <p>Note: Stax2 implementation is provided by woodstox library, which is a dependency of
-     * Jackson.
-     */
-    public static Stax2InputFactoryProvider inputFactoryProvider = null;
-
-    /**
-     * Allow explicitly setting the Stax2OutputFactoryProvider instance in OSGI context. In a
-     * no-OSGI context, the factory is retrieved with a java service loader.
-     *
-     * <p>Note: Stax2 implementation is provided by woodstox library, which is a dependency of
-     * Jackson.
-     */
-    public static Stax2OutputFactoryProvider outputFactoryProvider = null;
-
-    /**
      * Returns an instance of {@link javax.xml.stream.XMLInputFactory} according to the classpath.
      */
     public static XMLInputFactory newInputFactory() {
-        if (inputFactoryProvider == null) {
-            if (Edition.ANDROID.isCurrentEdition()) {
-                inputFactoryProvider =
-                        (Stax2InputFactoryProvider)
-                                newProvider("com.ctc.wstx.osgi.InputFactoryProviderImpl");
-            } else {
-                return XMLInputFactory.newFactory();
-            }
-        }
-        return inputFactoryProvider.createInputFactory();
+        return XMLInputFactory.newFactory();
     }
 
     /**
-     * Returns an instance of {@link javax.xml.stream.XMLInputFactory} according to the classpath.
+     * Returns an instance of {@link javax.xml.stream.XMLOutputFactory} according to the classpath.
      */
     public static XMLOutputFactory newOutputFactory() {
-        if (outputFactoryProvider == null) {
-            if (Edition.ANDROID.isCurrentEdition()) {
-                outputFactoryProvider =
-                        (Stax2OutputFactoryProvider)
-                                newProvider("com.ctc.wstx.osgi.OutputFactoryProviderImpl");
-            } else {
-                return XMLOutputFactory.newFactory();
-            }
-        }
-
-        return outputFactoryProvider.createOutputFactory();
-    }
-
-    /**
-     * Instantiates a Woodstox provider by name. The OSGi package of Woodstox isn't exported by its
-     * Java module, which would prevent a direct reference.
-     */
-    private static Object newProvider(String className) {
-        try {
-            return Class.forName(className).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Unable to instantiate " + className, e);
-        }
+        return XMLOutputFactory.newFactory();
     }
 }

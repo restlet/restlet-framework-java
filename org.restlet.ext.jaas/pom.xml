@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jaas</artifactId>
-	<packaging>bundle</packaging>
 	<name>Restlet Framework - JAAS extension</name>
 	<description>Support for JAAS based security.</description>
 
@@ -27,13 +26,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
