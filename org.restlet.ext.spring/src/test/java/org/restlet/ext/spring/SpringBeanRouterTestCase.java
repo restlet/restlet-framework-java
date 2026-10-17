@@ -121,8 +121,8 @@ class SpringBeanRouterTestCase {
         Set<String> uris = new HashSet<>();
 
         for (Route actualRoute : routes) {
-            if (actualRoute instanceof TemplateRoute) {
-                uris.add(((TemplateRoute) actualRoute).getTemplate().getPattern());
+            if (actualRoute instanceof TemplateRoute route) {
+                uris.add(route.getTemplate().getPattern());
             }
         }
 

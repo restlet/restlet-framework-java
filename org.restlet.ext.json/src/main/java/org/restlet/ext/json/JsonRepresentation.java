@@ -191,27 +191,17 @@ public class JsonRepresentation extends WriterRepresentation {
     }
 
     private String getJsonTextFromJsonValue() {
-        final String result;
-        switch (this.jsonValue) {
-            case final JSONArray jsonArray -> {
-                if (isIndenting()) {
-                    result = jsonArray.toString(getIndentingSize());
-                } else {
-                    result = jsonArray.toString();
-                }
-            }
-            case final JSONObject jsonObject -> {
-                if (isIndenting()) {
-                    result = jsonObject.toString(getIndentingSize());
-                } else {
-                    result = jsonObject.toString();
-                }
-            }
-            case final JSONStringer jsonStringer -> result = jsonStringer.toString();
-            case final JSONTokener jsonTokener -> result = jsonTokener.toString();
-            case null, default -> result = null;
-        }
-        return result;
+        return switch (this.jsonValue) {
+            case final JSONArray jsonArray when isIndenting() ->
+                    jsonArray.toString(getIndentingSize());
+            case final JSONArray jsonArray -> jsonArray.toString();
+            case final JSONObject jsonObject when isIndenting() ->
+                    jsonObject.toString(getIndentingSize());
+            case final JSONObject jsonObject -> jsonObject.toString();
+            case final JSONStringer jsonStringer -> jsonStringer.toString();
+            case final JSONTokener jsonTokener -> jsonTokener.toString();
+            case null, default -> null;
+        };
     }
 
     /**

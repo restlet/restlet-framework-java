@@ -169,8 +169,8 @@ public class JacksonConverter extends ConverterHelper {
 
         // The source for the Jackson conversion
         JacksonRepresentation<?> jacksonSource = null;
-        if (source instanceof JacksonRepresentation) {
-            jacksonSource = (JacksonRepresentation<?>) source;
+        if (source instanceof JacksonRepresentation<?> representation) {
+            jacksonSource = representation;
         } else if (isCompatible(source)) {
             jacksonSource = create(source, target);
         }

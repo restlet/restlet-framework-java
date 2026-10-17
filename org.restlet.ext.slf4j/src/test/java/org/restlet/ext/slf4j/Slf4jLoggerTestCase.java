@@ -198,7 +198,7 @@ class Slf4jLoggerTestCase {
         for (Object[] call : calls) {
             assertEquals(Slf4jLogger.class.getName(), call[1]);
         }
-        assertEquals(LocationAwareLogger.INFO_INT, calls.get(0)[2]);
+        assertEquals(LocationAwareLogger.INFO_INT, calls.getFirst()[2]);
         assertEquals(LocationAwareLogger.WARN_INT, calls.get(1)[2]);
         assertEquals(LocationAwareLogger.ERROR_INT, calls.get(2)[2]);
         assertEquals(t, calls.get(2)[5]);
