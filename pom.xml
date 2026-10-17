@@ -61,7 +61,6 @@
         <lib-jetty-version>12.0.39</lib-jetty-version>
         <lib-json-version>20260522</lib-json-version>
         <lib-hamcrest-version>3.0</lib-hamcrest-version>
-        <lib-osgi-version>8.0.0</lib-osgi-version>
         <lib-slf4j-version>2.0.18</lib-slf4j-version>
         <lib-spring-version>7.0.8</lib-spring-version>
         <lib-swagger-core-version>2.2.55</lib-swagger-core-version>
@@ -543,11 +542,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>3.3.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>6.2.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
