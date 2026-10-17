@@ -280,42 +280,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
     @Override
     public javax.net.ssl.SSLContext createSslContext() throws Exception {
         final javax.net.ssl.SSLContext result;
-
-        final javax.net.ssl.KeyManagerFactory kmf;
-        if ((this.keyStorePath != null)
-                || (this.keyStoreProvider != null)
-                || (this.keyStoreType != null)) {
-            final KeyStore keyStore =
-                    loadKeyStore(
-                            this.keyStorePath,
-                            this.keyStoreProvider,
-                            this.keyStoreType,
-                            this.keyStorePassword);
-
-            // Creates the key-manager factory.
-            kmf = javax.net.ssl.KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
-            kmf.init(keyStore, this.keyStoreKeyPassword);
-        } else {
-            kmf = null;
-        }
-
-        final javax.net.ssl.TrustManagerFactory tmf;
-        if ((this.trustStorePath != null)
-                || (this.trustStoreProvider != null)
-                || (this.trustStoreType != null)) {
-            final KeyStore trustStore =
-                    loadKeyStore(
-                            this.trustStorePath,
-                            this.trustStoreProvider,
-                            this.trustStoreType,
-                            this.trustStorePassword);
-
-            // Creates the trust-manager factory.
-            tmf = javax.net.ssl.TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
-            tmf.init(trustStore);
-        } else {
-            tmf = null;
-        }
+        final javax.net.ssl.KeyManagerFactory kmf = createKeyManagerFactory();
+        final javax.net.ssl.TrustManagerFactory tmf = createTrustManagerFactory();
 
         final SecureRandom sr;
         if (this.secureRandomAlgorithm != null) {
@@ -335,6 +301,60 @@ public class DefaultSslContextFactory extends SslContextFactory {
         // Wraps the SSL context to be able to set cipher suites and other
         // properties after SSL engine creation, for example
         result = createWrapper(sslContext);
+        return result;
+    }
+
+    /**
+     * Creates the key manager factory from the key store settings, or returns null if no key store
+     * is configured. Used by {@link #createSslContext()}, and by the connectors that can't use a
+     * JDK {@link SSLContext}, such as the experimental HTTP/3 support.
+     *
+     * @return The key manager factory or null.
+     * @throws Exception If the key store can't be loaded.
+     */
+    public javax.net.ssl.KeyManagerFactory createKeyManagerFactory() throws Exception {
+        if ((this.keyStorePath == null)
+                && (this.keyStoreProvider == null)
+                && (this.keyStoreType == null)) {
+            return null;
+        }
+
+        final KeyStore keyStore =
+                loadKeyStore(
+                        this.keyStorePath,
+                        this.keyStoreProvider,
+                        this.keyStoreType,
+                        this.keyStorePassword);
+        final javax.net.ssl.KeyManagerFactory result =
+                javax.net.ssl.KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
+        result.init(keyStore, this.keyStoreKeyPassword);
+        return result;
+    }
+
+    /**
+     * Creates the trust manager factory from the trust store settings, or returns null if no trust
+     * store is configured. Used by {@link #createSslContext()}, and by the connectors that can't
+     * use a JDK {@link SSLContext}, such as the experimental HTTP/3 support.
+     *
+     * @return The trust manager factory or null.
+     * @throws Exception If the trust store can't be loaded.
+     */
+    public javax.net.ssl.TrustManagerFactory createTrustManagerFactory() throws Exception {
+        if ((this.trustStorePath == null)
+                && (this.trustStoreProvider == null)
+                && (this.trustStoreType == null)) {
+            return null;
+        }
+
+        final KeyStore trustStore =
+                loadKeyStore(
+                        this.trustStorePath,
+                        this.trustStoreProvider,
+                        this.trustStoreType,
+                        this.trustStorePassword);
+        final javax.net.ssl.TrustManagerFactory result =
+                javax.net.ssl.TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
+        result.init(trustStore);
         return result;
     }
 

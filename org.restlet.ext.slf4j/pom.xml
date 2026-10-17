@@ -30,5 +30,12 @@
 			<version>${lib-junit-version}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- SLF4J provider for the tests (previously brought by Jetty's jetty-slf4j-impl) -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${lib-slf4j-version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

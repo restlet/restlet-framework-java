@@ -3,6 +3,50 @@ Changes log
 
 - 3.0 Milestone 2 (??-??-2026)
     - Breaking changes
+        - Java 25 is now the minimum version (compiled with `--release 25`).
+        - The HTTP/HTTPS server and client connectors of the core now rely on Netty 4.2 instead of
+          Jetty 12. The connector class names are unchanged
+          (`org.restlet.engine.connector.HttpServerHelper`, `HttpsServerHelper`,
+          `HttpClientHelper`), and the Jetty dependencies are removed. No Netty type is exposed by
+          the public API: the module requires the Netty modules without `requires transitive`.
+        - Server calls run by default on virtual threads, one per call ("threadPool.virtual"
+          parameter, `true` by default). Set it to `false` to use a pool of platform threads
+          configured by the existing "threadPool.*" parameters.
+        - Server connector parameters: added "threadPool.virtual", "server.maxConcurrentCalls",
+          "eventLoop.bossThreads", "eventLoop.workerThreads". Kept "threadPool.minThreads",
+          "threadPool.maxThreads", "threadPool.threadsPriority", "threadPool.idleTimeout",
+          "connector.acceptQueueSize", "connector.idleTimeout", "http.requestHeaderSize",
+          "http.outputBufferSize", "server.maxConnections", "shutdown.gracefully",
+          "shutdown.timeout", "http.transport.protocol(s)". The other Jetty-specific parameters
+          ("connector.acceptors", "connector.selectors", "lowResource.*", "http.*CacheSize", ...)
+          are removed and ignored.
+        - HTTP/3 is now **experimental**, on Netty's QUIC and HTTP/3 codecs. It is off by default,
+          and enabled with HTTP3 in "http.transport.protocols" (server, combined with HTTP1_1 or
+          HTTP2) or "httpClientTransportMode" (client). It requires the optional
+          `io.netty:netty-codec-http3` dependency and the native QUIC library of the platform
+          (`io.netty:netty-codec-native-quic` with the platform classifier: Linux, macOS, Windows
+          x86_64). The server serves HTTP/3 on the UDP port having the same number as the TCP port
+          and advertises it with the "Alt-Svc" response header; the client doesn't discover it
+          with "Alt-Svc" and only uses it when asked to. TLS comes from the key and trust stores
+          of the `DefaultSslContextFactory` (custom `SslContextFactory` implementations and the
+          cipher suite and protocol settings are not supported). The Jetty "http3PemWorkDir" and
+          "http3.pem.workdir" parameters are removed. See `org.restlet.engine.netty.Http3Support`
+          for the documented limits.
+        - Client connector: removed `getHttpClient()`, `createHttpClient()`, the Jetty
+          authentication and cookie stores (`get/setAuthenticationStore`, `get/setCookieStore`),
+          `get/setExecutor`, `getScheduler` and the "cookieSupported", "addressResolutionTimeout",
+          "connectBlocking", "destinationIdleTimeout", "httpComplianceMode",
+          "maxRequestsQueuedPerDestination", "responseBufferSize", "strictEventOrdering" and
+          "http3PemWorkDir" parameters. Added "hostnameVerification" (`true` by default) and
+          "eventLoop.workerThreads". "maxResponseHeadersSize" is renamed "maxResponseHeaderSize"
+          (8192 by default). Redirects ("followRedirects", "maxRedirects") are now followed by
+          the connector for synchronous calls, without leaking credentials to other origins.
+        - Removed `JettyServerHelper`, `JettyServerCall`, `JettyClientCall`, `JettyHandler`,
+          `RestletSslContextFactoryClient` and `RestletSslContextFactoryServer`.
+        - `MultiPartRepresentation` no longer exposes Jetty types: parts are instances of the new
+          `MultiPartRepresentation.Part` class (name, file name, headers, content
+          representation), parsing takes an optional storage directory instead of a Jetty
+          `MultiPartConfig`, and generation streams the parts.
         - Removed the OSGi support: the `Activator`, the `osgi.core` dependency and the bundle
           packaging (Maven artifacts are now plain JARs, without `Bundle-*` manifest headers).
           `XmlFactoryProvider` of the Jackson extension now relies on the plain `ServiceLoader`.
@@ -15,6 +59,9 @@ Changes log
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
     - Misc
         - Pinned the Maven Deploy plugin to version 3.2.0 (avoids resolving incompatible Maven 4 beta versions).
+        - Added Netty 4.2.19 (imported with the `netty-bom`). CI builds with Java 25.
+        - The `dangling-doc-comments` lint, new in Java 23, is disabled because license headers
+          use Javadoc-style comments.
  
 - 3.0 Milestone 1 (10-11-2026)
     - Breaking changes

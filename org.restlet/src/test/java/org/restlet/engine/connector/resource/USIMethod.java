@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.jetty.resource;
+package org.restlet.engine.connector.resource;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -18,8 +18,8 @@ import org.restlet.engine.connector.Method;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Method("SNI")
-public @interface SNIMethod {
+@Method("USI")
+public @interface USIMethod {
 
     String value() default "";
 }

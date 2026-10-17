@@ -9,7 +9,7 @@
 @SuppressWarnings({"module", "requires-automatic", "requires-transitive-automatic"})
 module org.restlet.ext.slf4j {
     requires transitive org.restlet;
-    requires org.slf4j;
+    requires transitive org.slf4j;
 
     exports org.restlet.ext.slf4j;
 }

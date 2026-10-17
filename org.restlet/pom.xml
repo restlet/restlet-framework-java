@@ -16,88 +16,46 @@
     <properties>
         <!-- Known high-priority SpotBugs findings, to be fixed (see Engine, Resource, ...) -->
         <spotbugs.max.violations>9</spotbugs.max.violations>
+        <!-- Native QUIC library for the HTTP/3 tests, overridden per platform by the profiles
+             below. On other platforms, the HTTP/3 tests are skipped. -->
+        <netty.quic.classifier>linux-x86_64</netty.quic.classifier>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${lib-jetty-version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.http2</groupId>
-            <artifactId>jetty-http2-server</artifactId>
-            <version>${lib-jetty-version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-alpn-server</artifactId>
-            <version>${lib-jetty-version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-alpn-java-server</artifactId>
-            <version>${lib-jetty-version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+        </dependency>
+        <!-- Experimental HTTP/3: optional, applications add it (with its native QUIC library for
+             their platform) to enable HTTP/3. The native libraries are test dependencies here. -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http3</artifactId>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-codec-native-quic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.http3</groupId>
-            <artifactId>jetty-http3-server</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.quic</groupId>
-            <artifactId>jetty-quic-server</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-client</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.http2</groupId>
-            <artifactId>jetty-http2-client</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.http2</groupId>
-            <artifactId>jetty-http2-client-transport</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.http3</groupId>
-            <artifactId>jetty-http3-client</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.http3</groupId>
-            <artifactId>jetty-http3-client-transport</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-slf4j-impl</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.quic</groupId>
-            <artifactId>jetty-quic-client</artifactId>
-            <version>${lib-jetty-version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-native-quic</artifactId>
+            <classifier>${netty.quic.classifier}</classifier>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -175,4 +133,43 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Native QUIC library of the build platform, used by the experimental HTTP/3 tests. -->
+    <profiles>
+        <profile>
+            <id>quic-linux-x86_64</id>
+            <activation>
+                <os><family>unix</family><name>Linux</name><arch>amd64</arch></os>
+            </activation>
+            <properties><netty.quic.classifier>linux-x86_64</netty.quic.classifier></properties>
+        </profile>
+        <profile>
+            <id>quic-linux-aarch_64</id>
+            <activation>
+                <os><family>unix</family><name>Linux</name><arch>aarch64</arch></os>
+            </activation>
+            <properties><netty.quic.classifier>linux-aarch_64</netty.quic.classifier></properties>
+        </profile>
+        <profile>
+            <id>quic-osx-x86_64</id>
+            <activation>
+                <os><family>mac</family><arch>x86_64</arch></os>
+            </activation>
+            <properties><netty.quic.classifier>osx-x86_64</netty.quic.classifier></properties>
+        </profile>
+        <profile>
+            <id>quic-osx-aarch_64</id>
+            <activation>
+                <os><family>mac</family><arch>aarch64</arch></os>
+            </activation>
+            <properties><netty.quic.classifier>osx-aarch_64</netty.quic.classifier></properties>
+        </profile>
+        <profile>
+            <id>quic-windows-x86_64</id>
+            <activation>
+                <os><family>windows</family><arch>amd64</arch></os>
+            </activation>
+            <properties><netty.quic.classifier>windows-x86_64</netty.quic.classifier></properties>
+        </profile>
+    </profiles>
 </project>

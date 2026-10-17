@@ -10,32 +10,35 @@ package org.restlet.engine.connector;
 
 import java.util.Arrays;
 import java.util.List;
-import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.netty.NettyServerHelper;
 
 /**
- * Jetty HTTP server connector.
+ * Netty HTTP server connector. Here is the list of additional parameters that are supported. See
+ * {@link NettyServerHelper} for the common ones.
  *
  * <table>
  * <caption>list of supported parameters</caption>
  * <tr>
- * <td>http.transport.mode</td>
- * <td>string</td>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>http.transport.protocol</td>
+ * <td>String</td>
  * <td>HTTP1_1</td>
- * <td>Supported protocol. Values: HTTP1_1 or HTTP2. The protocol HTTP 1.1 is always supported, the support of HTTP2 (in
- * clear text mode) is done thanks to upgrade from HTTP 1.1 protocol.</td>
+ * <td>Supported protocol. Values: HTTP1_1 or HTTP2. HTTP/1.1 is always supported. With HTTP2,
+ * cleartext HTTP/2 (h2c) is also accepted, through the HTTP/1.1 "Upgrade" mechanism or with prior
+ * knowledge.</td>
  * </tr>
  * </table>
  *
  * @author Jerome Louvel
- * @author Tal Liron
  */
-public class HttpServerHelper extends JettyServerHelper {
+public class HttpServerHelper extends NettyServerHelper {
 
     /**
      * Constructor.
@@ -47,30 +50,22 @@ public class HttpServerHelper extends JettyServerHelper {
         getProtocols().add(Protocol.HTTP);
     }
 
-    /**
-     * Create and configure the Jetty HTTP connector
-     *
-     * @param configuration The HTTP configuration.
-     */
     @Override
-    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-        HttpTransportProtocol httpTransportProtocol =
-                HttpTransportProtocol.fromName(getHttpTransportProtocol());
+    protected void validateConfiguration() {
+        HttpTransportProtocol.fromName(getHttpTransportProtocol());
+    }
 
-        return switch (httpTransportProtocol) {
-            case HTTP1_1 -> new ConnectionFactory[] {new HttpConnectionFactory(configuration)};
-            case HTTP2 ->
-                    new ConnectionFactory[] {
-                        new HttpConnectionFactory(
-                                configuration), // still necessary to support protocol upgrade
-                        new HTTP2CServerConnectionFactory(configuration)
-                    };
+    @Override
+    protected List<String> getApplicationProtocols() {
+        return switch (HttpTransportProtocol.fromName(getHttpTransportProtocol())) {
+            case HTTP1_1 -> List.of(HTTP_1_1);
+            case HTTP2 -> List.of(HTTP_1_1, HTTP_2);
         };
     }
 
     @Override
-    protected List<Connector> createConnectors(org.eclipse.jetty.server.Server server) {
-        return List.of(createServerConnector(server, createHttpConfiguration()));
+    protected boolean isConfidential() {
+        return false;
     }
 
     /**
@@ -91,16 +86,11 @@ public class HttpServerHelper extends JettyServerHelper {
         static HttpTransportProtocol fromName(final String name) {
             try {
                 return HttpTransportProtocol.valueOf(name);
-            } catch (final IllegalArgumentException iae) {
-                String supportedHttpTransportProtocols =
-                        Arrays.toString(HttpTransportProtocol.values());
-
-                final String errorMessage =
+            } catch (final IllegalArgumentException | NullPointerException e) {
+                throw new IllegalArgumentException(
                         String.format(
                                 "'%s' is not one of the supported values: %s",
-                                name, supportedHttpTransportProtocols);
-
-                throw new IllegalArgumentException(errorMessage);
+                                name, Arrays.toString(HttpTransportProtocol.values())));
             }
         }
     }

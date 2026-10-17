@@ -42,9 +42,8 @@
 
     <properties>
         <release>false</release>
-        <java.version>21</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <java.version>25</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spotbugs.max.violations>0</spotbugs.max.violations>
@@ -58,7 +57,7 @@
         <lib-jackson3-version>3.2.3</lib-jackson3-version>
         <lib-jackson-annotations-version>2.22</lib-jackson-annotations-version>
         <lib-joda-time-version>2.14.2</lib-joda-time-version>
-        <lib-jetty-version>12.0.39</lib-jetty-version>
+        <lib-netty-version>4.2.19.Final</lib-netty-version>
         <lib-json-version>20260522</lib-json-version>
         <lib-hamcrest-version>3.0</lib-hamcrest-version>
         <lib-slf4j-version>2.0.18</lib-slf4j-version>
@@ -253,6 +252,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${lib-netty-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -463,13 +469,12 @@
                     <version>3.16.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <release>${java.version}</release>
                         <showWarnings>true</showWarnings>
                         <!-- Main code is compiled as a module. Tests run on the classpath. -->
                         <useModulePath>false</useModulePath>
                         <compilerArgs>
-                            <arg>-Xlint:all,-this-escape,-missing-explicit-ctor</arg>
+                            <arg>-Xlint:all,-this-escape,-missing-explicit-ctor,-dangling-doc-comments</arg>
                             <arg>-Werror</arg>
                         </compilerArgs>
                     </configuration>

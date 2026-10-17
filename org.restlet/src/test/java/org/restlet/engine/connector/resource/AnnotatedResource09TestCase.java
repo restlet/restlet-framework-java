@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.jetty.resource;
+package org.restlet.engine.connector.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,7 +34,7 @@ import org.restlet.routing.Router;
  *
  * @author Thierry Boileau
  */
-class AnnotatedResource09TestCase extends JettyConnectorTestCase {
+class AnnotatedResource09TestCase extends ConnectorTestCase {
 
     public static final Method SI =
             new Method("SI", "What a method!", "http://restlet.org", true, true);

@@ -1,32 +1,27 @@
-# Debug Jetty
+# Debug the Netty connectors
 
-## Add full logs
+The HTTP connectors of the core are based on Netty. Netty logs through `java.util.logging` when no
+other logging framework (SLF4J, Log4j 2) is found, under the `io.netty` logger names.
 
-[Jetty's documentation](https://jetty.org/docs/jetty/12/programming-guide/troubleshooting/logging.html) (the `org.eclipse.jetty:jetty-slf4j-impl`is already added to the `pom.xml`).
+To trace the connectors in a test:
 
-Programmatically:
-```
-System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
-```
-
-Or add a `jetty-logging.properties`:
-```
-org.eclipse.jetty.LEVEL=TRACE
-org.eclipse.jetty.client.LEVEL=TRACE
+```java
+Engine.setLogLevel(Level.FINE);
+Logger.getLogger("io.netty").setLevel(Level.FINE);
 ```
 
-## Debug using JMX
-You need to update the current implementation by hand.
+To dump the HTTP traffic, add a Netty `LoggingHandler` at the start of the connection pipeline, in
+`NettyServerHelper.start()` (server) or `NettyClientHelper.initConnection(...)` (client):
 
-- [activate JMX](https://jetty.org/docs/jetty/12/programming-guide/arch/jmx.html)
-The Jetty server is created in class `JettyServerHelper`.
-
-```
-        // Create an MBeanContainer with the platform MBeanServer.
-        MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-        // Add MBeanContainer to the root component.
-        jettyServer.addBean(mbeanContainer);
+```java
+p.addFirst("wire", new io.netty.handler.logging.LoggingHandler(io.netty.handler.logging.LogLevel.INFO));
 ```
 
-- to [state tracking](https://jetty.org/docs/jetty/12/programming-guide/troubleshooting/state-tracking.html)
-  You can use [jconsole](https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.html) to check the state of MBean or just run operations on them.
+Server calls run on virtual threads by default. A thread dump that includes them can be taken with:
+
+```
+jcmd <pid> Thread.dump_to_file -format=text threads.txt
+```
+
+Set the "threadPool.virtual" server parameter to `false` to run calls on platform threads instead,
+which `jstack` also shows.
