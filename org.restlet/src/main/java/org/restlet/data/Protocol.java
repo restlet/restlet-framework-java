@@ -91,10 +91,6 @@ public final class Protocol {
     public static final Protocol RIAP =
             new Protocol("riap", "RIAP", "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
 
-    /** Local Web Archive access protocol. */
-    public static final Protocol WAR =
-            new Protocol("war", "WAR", "Web Archive Access Protocol", UNKNOWN_PORT, true);
-
     /**
      * ZIP is a special scheme to access to representations inside Zip archive files. Example URI:
      * "zip:file:///tmp/test.zip!/test.txt".
@@ -131,8 +127,6 @@ public final class Protocol {
                 result = JDBC;
             } else if (name.equalsIgnoreCase(RIAP.getSchemeName())) {
                 result = RIAP;
-            } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
-                result = WAR;
             } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {
                 result = ZIP;
             } else {

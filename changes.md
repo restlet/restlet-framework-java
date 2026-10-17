@@ -7,6 +7,9 @@ Changes log
           packaging (Maven artifacts are now plain JARs, without `Bundle-*` manifest headers).
           `XmlFactoryProvider` of the Jackson extension now relies on the plain `ServiceLoader`.
           OSGi users should stay on 2.x.
+        - Removed the `Protocol.WAR` constant ("war" scheme, Web Archive Access Protocol), a
+          leftover of the Servlet mode, which is no longer supported. `Protocol.valueOf("war")`
+          now returns a new, unknown protocol. Use CLAP or FILE references instead.
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.

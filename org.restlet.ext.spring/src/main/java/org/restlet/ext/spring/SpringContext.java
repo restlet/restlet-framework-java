@@ -24,8 +24,7 @@ import org.springframework.context.support.GenericApplicationContext;
  *
  * <pre>
  * SpringContext springContext = new SpringContext(getContext());
- * springContext.getPropertyConfigRefs().add(&quot;war://config/database.properties&quot;);
- * springContext.getXmlConfigRefs().add(&quot;war://config/applicationContext.xml&quot;);
+ * springContext.getPropertyConfigRefs().add(&quot;clap://thread/config/database.properties&quot;);
  * springContext.getXmlConfigRefs().add(
  *         &quot;file:///C/myApp/config/applicationContext.xml&quot;);
  * springContext.getXmlConfigRefs().add(
