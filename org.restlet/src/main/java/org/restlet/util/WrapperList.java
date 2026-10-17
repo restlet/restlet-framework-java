@@ -91,12 +91,12 @@ public class WrapperList<E> implements List<E> {
 
     @Override
     public void addFirst(final E e) {
-        getDelegate().addFirst(e);
+        add(0, e);
     }
 
     @Override
     public void addLast(final E e) {
-        getDelegate().addLast(e);
+        add(e);
     }
 
     /** Removes the elements from this list. */
