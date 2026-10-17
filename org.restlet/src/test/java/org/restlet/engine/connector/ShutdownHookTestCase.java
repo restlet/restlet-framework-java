@@ -141,8 +141,7 @@ class ShutdownHookTestCase {
 
         assertIntervalBetweenDatesEquals(
                 shutdownTimeout, serverAskedToStopInstant, hangingClient.stoppedAt);
-        assertIntervalBetweenDatesEquals(
-                toJettyEffectiveTimeout(shutdownTimeout), serverAskedToStopInstant, Instant.now());
+        assertIntervalBetweenDatesEquals(shutdownTimeout, serverAskedToStopInstant, Instant.now());
     }
 
     /**
@@ -190,8 +189,7 @@ class ShutdownHookTestCase {
         assertTrue(
                 blockedTestClient.cr.getStatus().isConnectorError(),
                 "Any new client is blocked and fails with a connection error");
-        assertIntervalBetweenDatesEquals(
-                toJettyEffectiveTimeout(shutdownTimeout), serverAskedToStopInstant, Instant.now());
+        assertIntervalBetweenDatesEquals(shutdownTimeout, serverAskedToStopInstant, Instant.now());
     }
 
     /**
@@ -282,7 +280,7 @@ class ShutdownHookTestCase {
 
         Engine.getInstance()
                 .getRegisteredServers()
-                .addFirst(new HttpServerHelper(null)); // Creates a Jetty server helper manually
+                .addFirst(new HttpServerHelper(null)); // Creates a Netty server helper manually
         // 0 port means it will be computed when the server starts
         Server server =
                 new Server(
@@ -295,16 +293,9 @@ class ShutdownHookTestCase {
 
         if (shouldDebug) {
             server.getContext().getParameters().add("tracing", "true");
-            System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
             Engine.setLogLevel(Level.FINE);
         }
 
-        if (graceful) {
-            // Don't let the lowResource monitor mess with the current test
-            server.getContext()
-                    .getParameters()
-                    .add("lowResource.idleTimeout", Long.toString(timeout.toMillis() * 10));
-        }
         server.getContext().getParameters().add("shutdown.gracefully", Boolean.toString(graceful));
         server.getContext()
                 .getParameters()
@@ -330,8 +321,7 @@ class ShutdownHookTestCase {
                 try {
                     Thread.sleep(requestHangingTime.toMillis());
                 } catch (Exception e) {
-                    // silently stops, especially when Jetty server will abruptly quit after time
-                    // out
+                    // silently stops, especially when the server abruptly quits after time out
                     LOGGER.log(Level.FINE, "Restlet error", e);
                 }
                 log("Restlet woke up, answering");
@@ -348,8 +338,7 @@ class ShutdownHookTestCase {
                 try {
                     Thread.sleep(requestHangingTime.toMillis());
                 } catch (Exception e) {
-                    // silently stops, especially when Jetty server will abruptly quit after time
-                    // out
+                    // silently stops, especially when the server abruptly quits after time out
                     LOGGER.log(Level.FINE, "Restlet error", e);
                 }
                 LOGGER.log(Level.FINE, "Restlet woke up, answering");
@@ -392,21 +381,13 @@ class ShutdownHookTestCase {
             final HttpServerHelper serverHelper =
                     (HttpServerHelper)
                             server.getContext().getAttributes().get("org.restlet.engine.helper");
-            serverHelper.getWrappedServer().stop();
+            serverHelper.stop();
             log("Server stopped");
         } catch (Exception e) {
             // silently ignore errors
             log("Server stopped", e);
         }
         return serverAskedToStopInstant;
-    }
-
-    /**
-     * Returns the effective Jetty timeout since there is an extra half-timeout in the {@link
-     * org.eclipse.jetty.util.thread.QueuedThreadPool}.
-     */
-    private Duration toJettyEffectiveTimeout(final Duration timeout) {
-        return timeout.plusMillis(500); // Accounts for Jetty's extra half-timeout behavior.
     }
 
     private static void log(final String message) {

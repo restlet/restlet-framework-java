@@ -63,7 +63,7 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected List<ConnectorsPair> listTestCases() {
-        return List.of(new ConnectorsPair(HttpServer.JETTY_HTTPS, HttpClient.JETTY));
+        return List.of(new ConnectorsPair(HttpServer.NETTY_HTTPS, HttpClient.NETTY));
     }
 
     @Override

@@ -7,25 +7,28 @@
  * <p>Restlet is a registered trademark of QlikTech International AB.
  */
 /** Restlet Framework core: API, engine and connectors. */
-@SuppressWarnings({"module", "requires-automatic", "requires-transitive-automatic"})
 module org.restlet {
     requires transitive java.desktop;
     requires transitive java.logging;
     requires transitive java.xml;
-    requires transitive org.eclipse.jetty.http2.client;
-    requires transitive org.eclipse.jetty.http2.client.transport;
-    requires transitive org.eclipse.jetty.http2.server;
-    requires transitive org.eclipse.jetty.http3.client;
-    requires transitive org.eclipse.jetty.http3.client.transport;
-    requires transitive org.eclipse.jetty.http3.server;
-    requires transitive org.eclipse.jetty.alpn.server;
-    requires transitive org.eclipse.jetty.client;
-    requires transitive org.eclipse.jetty.http;
-    requires transitive org.eclipse.jetty.io;
-    requires transitive org.eclipse.jetty.server;
-    requires transitive org.eclipse.jetty.util;
-    requires transitive org.eclipse.jetty.quic.client;
-    requires transitive org.eclipse.jetty.quic.server;
+
+    // Netty is an implementation detail of the HTTP connectors: required, not re-exported.
+    requires io.netty.buffer;
+    requires io.netty.codec;
+    // Needed by the HTTP content decompressor; netty-codec-http only requires it statically, so
+    // it would not be resolved on the module path otherwise.
+    requires io.netty.codec.compression;
+    requires io.netty.codec.http;
+    requires io.netty.codec.http2;
+    requires io.netty.common;
+    requires io.netty.handler;
+    requires io.netty.handler.proxy;
+    requires io.netty.resolver;
+    requires io.netty.transport;
+
+    // Experimental HTTP/3: optional at runtime, see org.restlet.engine.netty.Http3Support.
+    requires static io.netty.codec.http3;
+    requires static io.netty.codec.classes.quic;
 
     exports org.restlet;
     exports org.restlet.data;
@@ -39,6 +42,7 @@ module org.restlet {
     exports org.restlet.engine.io;
     exports org.restlet.engine.local;
     exports org.restlet.engine.log;
+    exports org.restlet.engine.netty;
     exports org.restlet.engine.resource;
     exports org.restlet.engine.security;
     exports org.restlet.engine.ssl;

@@ -46,9 +46,6 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
 
         final Series<Parameter> parameters = server.getContext().getParameters();
         parameters.add("server.maxConnections", Integer.toString(CONNECTIONS_NUMBER));
-        parameters.add(
-                "connector.acceptors",
-                Integer.toString(CONCURRENT_REQUESTS)); // server can accept all requests
     }
 
     @Override

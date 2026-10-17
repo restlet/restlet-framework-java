@@ -34,12 +34,10 @@ public abstract class Call {
     public static boolean isBroken(Throwable exception) {
         boolean result = false;
 
-        // detect Tomcat and Jetty exceptions
+        // detect client abort exceptions
         if (exception instanceof IOException) {
             String exceptionName = exception.getClass().getName();
-            result =
-                    (exceptionName.endsWith("ClientAbortException")
-                            || exceptionName.endsWith("jetty.io.EofException"));
+            result = exceptionName.endsWith("ClientAbortException");
         }
 
         // check for known exception messages

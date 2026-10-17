@@ -6,17 +6,12 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.jetty.resource;
-
-import org.restlet.resource.Post;
+package org.restlet.engine.connector.resource;
 
 /**
- * Annotated interface that declares a single "Post" method.
+ * Annotated interface that extends {@link AnnotatedInterface03_01} and {@link
+ * AnnotatedInterface03_02}.
  *
  * @author Thierry Boileau
  */
-public interface AnnotatedInterface03_02 {
-
-    @Post
-    String accept();
-}
+public interface AnnotatedInterface03 extends AnnotatedInterface03_01, AnnotatedInterface03_02 {}

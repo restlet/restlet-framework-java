@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.jetty.resource;
+package org.restlet.engine.connector.resource;
 
 import java.util.logging.Level;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,7 @@ import org.restlet.engine.connector.HttpServerHelper;
  *
  * @author Jerome Louvel
  */
-public abstract class JettyConnectorTestCase {
+public abstract class ConnectorTestCase {
 
     private Component c;
 
@@ -36,7 +36,7 @@ public abstract class JettyConnectorTestCase {
 
     private String uri;
 
-    protected JettyConnectorTestCase() {
+    protected ConnectorTestCase() {
         super();
     }
 

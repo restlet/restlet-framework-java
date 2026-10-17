@@ -45,7 +45,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.util.Series;
 
-/** Test the support of HTTP2 and HTTP3 transport protocols. */
+/** Test the support of the HTTP/1.1 and HTTP/2 transport protocols. */
 class HttpTransportProtocolsTestCase {
 
     protected static final String KEYSTORE_FILE_NAME = "dummy.p12";
@@ -117,19 +117,21 @@ class HttpTransportProtocolsTestCase {
                     Arguments.of("HTTP1_1", newJdkHttpClient(HttpClient.Version.HTTP_2)),
                     Arguments.of("HTTP2", newJdkHttpClient(HttpClient.Version.HTTP_1_1)),
                     Arguments.of("HTTP1_1", newJdkHttpClient(HttpClient.Version.HTTP_2)),
-                    Arguments.of(null, newJettyHttpClient("HTTP1_1")), // server default to HTTP1_1
-                    Arguments.of(null, newJettyHttpClient("DYNAMIC")), // server default to HTTP1_1
-                    Arguments.of("HTTP1_1", newJettyHttpClient("HTTP1_1")),
-                    Arguments.of("HTTP1_1", newJettyHttpClient("DYNAMIC")),
-                    Arguments.of("HTTP2", newJettyHttpClient("HTTP1_1")),
-                    Arguments.of("HTTP2", newJettyHttpClient("HTTP2")),
-                    Arguments.of("HTTP2", newJettyHttpClient("DYNAMIC")));
+                    Arguments.of(
+                            null, newRestletHttpClient("HTTP1_1")), // server default to HTTP1_1
+                    Arguments.of(
+                            null, newRestletHttpClient("DYNAMIC")), // server default to HTTP1_1
+                    Arguments.of("HTTP1_1", newRestletHttpClient("HTTP1_1")),
+                    Arguments.of("HTTP1_1", newRestletHttpClient("DYNAMIC")),
+                    Arguments.of("HTTP2", newRestletHttpClient("HTTP1_1")),
+                    Arguments.of("HTTP2", newRestletHttpClient("HTTP2")),
+                    Arguments.of("HTTP2", newRestletHttpClient("DYNAMIC")));
         }
 
         static Stream<Arguments> invalidTestCases() {
             return Stream.of(
-                    Arguments.of(null, newJettyHttpClient("HTTP2")), // server default to HTTP1_1
-                    Arguments.of("HTTP1_1", newJettyHttpClient("HTTP2")));
+                    Arguments.of(null, newRestletHttpClient("HTTP2")), // server default to HTTP1_1
+                    Arguments.of("HTTP1_1", newRestletHttpClient("HTTP2")));
         }
     }
 
@@ -174,26 +176,28 @@ class HttpTransportProtocolsTestCase {
                     Arguments.of("HTTP1_1,HTTP2", newJdkHttpsClient(HttpClient.Version.HTTP_2)),
                     Arguments.of("HTTP2,HTTP1_1", newJdkHttpsClient(HttpClient.Version.HTTP_1_1)),
                     Arguments.of("HTTP2,HTTP1_1", newJdkHttpsClient(HttpClient.Version.HTTP_2)),
-                    Arguments.of(null, newJettyHttpsClient("HTTP1_1")), // server default to HTTP1_1
-                    Arguments.of(null, newJettyHttpsClient("DYNAMIC")), // server default to HTTP1_1
-                    Arguments.of("HTTP1_1", newJettyHttpsClient("HTTP1_1")),
-                    Arguments.of("HTTP1_1", newJettyHttpsClient("DYNAMIC")),
-                    Arguments.of("HTTP2", newJettyHttpsClient("HTTP2")),
-                    Arguments.of("HTTP2", newJettyHttpsClient("DYNAMIC")),
-                    Arguments.of("HTTP1_1,HTTP2", newJettyHttpsClient("HTTP1_1")),
-                    Arguments.of("HTTP1_1,HTTP2", newJettyHttpsClient("DYNAMIC")),
-                    Arguments.of("HTTP2,HTTP1_1", newJettyHttpsClient("HTTP1_1")),
-                    Arguments.of("HTTP2,HTTP1_1", newJettyHttpsClient("HTTP2")),
-                    Arguments.of("HTTP2,HTTP1_1", newJettyHttpsClient("DYNAMIC")));
+                    Arguments.of(
+                            null, newRestletHttpsClient("HTTP1_1")), // server default to HTTP1_1
+                    Arguments.of(
+                            null, newRestletHttpsClient("DYNAMIC")), // server default to HTTP1_1
+                    Arguments.of("HTTP1_1", newRestletHttpsClient("HTTP1_1")),
+                    Arguments.of("HTTP1_1", newRestletHttpsClient("DYNAMIC")),
+                    Arguments.of("HTTP2", newRestletHttpsClient("HTTP2")),
+                    Arguments.of("HTTP2", newRestletHttpsClient("DYNAMIC")),
+                    Arguments.of("HTTP1_1,HTTP2", newRestletHttpsClient("HTTP1_1")),
+                    Arguments.of("HTTP1_1,HTTP2", newRestletHttpsClient("HTTP2")),
+                    Arguments.of("HTTP1_1,HTTP2", newRestletHttpsClient("DYNAMIC")),
+                    Arguments.of("HTTP2,HTTP1_1", newRestletHttpsClient("HTTP1_1")),
+                    Arguments.of("HTTP2,HTTP1_1", newRestletHttpsClient("HTTP2")),
+                    Arguments.of("HTTP2,HTTP1_1", newRestletHttpsClient("DYNAMIC")));
         }
 
         static Stream<Arguments> invalidTestCases() {
             return Stream.of(
                     Arguments.of("HTTP2", newJdkHttpsClient(HttpClient.Version.HTTP_1_1)),
-                    Arguments.of(null, newJettyHttpsClient("HTTP2")), // server default to http1
-                    Arguments.of("HTTP1_1", newJettyHttpsClient("HTTP2")),
-                    Arguments.of("HTTP2", newJettyHttpsClient("HTTP1_1")),
-                    Arguments.of("HTTP1_1,HTTP2", newJettyHttpsClient("HTTP2")));
+                    Arguments.of(null, newRestletHttpsClient("HTTP2")), // server default to http1
+                    Arguments.of("HTTP1_1", newRestletHttpsClient("HTTP2")),
+                    Arguments.of("HTTP2", newRestletHttpsClient("HTTP1_1")));
         }
 
         @Override
@@ -285,12 +289,12 @@ class HttpTransportProtocolsTestCase {
         return new JdkTestHttpClient(Protocol.HTTPS, httpVersion);
     }
 
-    private static TestHttpClient newJettyHttpClient(final String httpClientTransportMode) {
-        return new JettyTestHttpClient(Protocol.HTTP, httpClientTransportMode);
+    private static TestHttpClient newRestletHttpClient(final String httpClientTransportMode) {
+        return new RestletTestHttpClient(Protocol.HTTP, httpClientTransportMode);
     }
 
-    private static TestHttpClient newJettyHttpsClient(final String httpClientTransportMode) {
-        return new JettyTestHttpClient(Protocol.HTTPS, httpClientTransportMode);
+    private static TestHttpClient newRestletHttpsClient(final String httpClientTransportMode) {
+        return new RestletTestHttpClient(Protocol.HTTPS, httpClientTransportMode);
     }
 
     static class JdkTestHttpClient implements TestHttpClient {
@@ -343,12 +347,13 @@ class HttpTransportProtocolsTestCase {
         }
     }
 
-    static class JettyTestHttpClient implements TestHttpClient {
+    static class RestletTestHttpClient implements TestHttpClient {
 
         final Protocol protocol;
         final String httpClientTransportMode;
 
-        private JettyTestHttpClient(final Protocol protocol, final String httpClientTransportMode) {
+        private RestletTestHttpClient(
+                final Protocol protocol, final String httpClientTransportMode) {
             this.protocol = protocol;
             this.httpClientTransportMode = httpClientTransportMode;
         }
@@ -386,7 +391,7 @@ class HttpTransportProtocolsTestCase {
 
         @Override
         public String toString() {
-            return "Jetty " + protocol.getSchemeName() + " " + httpClientTransportMode;
+            return "Restlet " + protocol.getSchemeName() + " " + httpClientTransportMode;
         }
     }
 }

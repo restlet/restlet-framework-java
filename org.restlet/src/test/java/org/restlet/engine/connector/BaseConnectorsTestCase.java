@@ -62,7 +62,7 @@ public abstract class BaseConnectorsTestCase {
     protected abstract Application createApplication();
 
     protected List<ConnectorsPair> listTestCases() {
-        return List.of(new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.JETTY));
+        return List.of(new ConnectorsPair(HttpServer.NETTY_HTTP, HttpClient.NETTY));
     }
 
     @TestFactory
@@ -76,9 +76,7 @@ public abstract class BaseConnectorsTestCase {
     }
 
     private void runTest(final HttpServer server, final HttpClient client) throws Exception {
-        if (shouldDebug()) {
-            System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
-        }
+        if (shouldDebug()) {}
 
         try {
             initEngine(server, client);
@@ -127,8 +125,8 @@ public abstract class BaseConnectorsTestCase {
     }
 
     public enum HttpServer {
-        JETTY_HTTP(new org.restlet.engine.connector.HttpServerHelper(null)),
-        JETTY_HTTPS(new org.restlet.engine.connector.HttpsServerHelper(null));
+        NETTY_HTTP(new org.restlet.engine.connector.HttpServerHelper(null)),
+        NETTY_HTTPS(new org.restlet.engine.connector.HttpsServerHelper(null));
 
         final ServerHelper serverHelper;
 
@@ -138,7 +136,7 @@ public abstract class BaseConnectorsTestCase {
     }
 
     public enum HttpClient {
-        JETTY(new org.restlet.engine.connector.HttpClientHelper(null));
+        NETTY(new org.restlet.engine.connector.HttpClientHelper(null));
 
         final ClientHelper clientHelper;
 
