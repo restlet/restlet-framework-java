@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.application;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.restlet.data.Status;
 
@@ -18,7 +19,7 @@ import org.restlet.data.Status;
  */
 public class StatusInfo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     /** The specification code. */
     private volatile int code;

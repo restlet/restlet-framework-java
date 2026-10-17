@@ -742,42 +742,25 @@ public class Template {
      * @return The quoted character.
      */
     private String quote(char character) {
-        switch (character) {
-            case '[':
-                return "\\[";
-            case ']':
-                return "\\]";
-            case '.':
-                return "\\.";
-            case '\\':
-                return "\\\\";
-            case '$':
-                return "\\$";
-            case '^':
-                return "\\^";
-            case '?':
-                return "\\?";
-            case '*':
-                return "\\*";
-            case '|':
-                return "\\|";
-            case '(':
-                return "\\(";
-            case ')':
-                return "\\)";
-            case ':':
-                return "\\:";
-            case '-':
-                return "\\-";
-            case '!':
-                return "\\!";
-            case '<':
-                return "\\<";
-            case '>':
-                return "\\>";
-            default:
-                return Character.toString(character);
-        }
+        return switch (character) {
+            case '[' -> "\\[";
+            case ']' -> "\\]";
+            case '.' -> "\\.";
+            case '\\' -> "\\\\";
+            case '$' -> "\\$";
+            case '^' -> "\\^";
+            case '?' -> "\\?";
+            case '*' -> "\\*";
+            case '|' -> "\\|";
+            case '(' -> "\\(";
+            case ')' -> "\\)";
+            case ':' -> "\\:";
+            case '-' -> "\\-";
+            case '!' -> "\\!";
+            case '<' -> "\\<";
+            case '>' -> "\\>";
+            default -> Character.toString(character);
+        };
     }
 
     /**

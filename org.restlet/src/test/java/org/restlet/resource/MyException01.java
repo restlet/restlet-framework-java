@@ -8,12 +8,13 @@
  */
 package org.restlet.resource;
 
+import java.io.Serial;
 import java.util.Date;
 
 @Status(value = 400, serialize = false)
 public class MyException01 extends Throwable {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private Date date;
 

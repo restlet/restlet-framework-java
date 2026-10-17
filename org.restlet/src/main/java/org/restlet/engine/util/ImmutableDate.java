@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.util;
 
+import java.io.Serial;
 import java.util.Date;
 
 /**
@@ -20,7 +21,7 @@ import java.util.Date;
  */
 public final class ImmutableDate extends Date {
 
-    private static final long serialVersionUID = -5946186780670229206L;
+    @Serial private static final long serialVersionUID = -5946186780670229206L;
 
     /**
      * Private constructor. A factory method is provided.

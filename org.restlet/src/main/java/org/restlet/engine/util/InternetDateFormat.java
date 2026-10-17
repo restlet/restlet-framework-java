@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.util;
 
+import java.io.Serial;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
@@ -49,7 +50,7 @@ public class InternetDateFormat extends DateFormat {
     /** The Regex pattern to match. */
     private static volatile Pattern pattern;
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     /** A time zone with zero offset and no DST. */
     public static final TimeZone UTC = new SimpleTimeZone(0, "Z");

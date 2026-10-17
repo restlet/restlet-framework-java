@@ -8,13 +8,14 @@
  */
 package org.restlet.engine.util;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 
 /** Implementation of the Set Interface that is case-insensitive. */
 public class CaseInsensitiveHashSet extends HashSet<String> {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     /**
      * Constructor initializing the set with the given collection.

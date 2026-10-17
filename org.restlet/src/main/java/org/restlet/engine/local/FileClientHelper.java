@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -237,7 +236,7 @@ public class FileClientHelper extends EntityClientHelper {
                 filePath = fileAbsolute;
             }
 
-            final Path rootDirectoryPath = Paths.get(filePath).normalize();
+            final Path rootDirectoryPath = Path.of(filePath).normalize();
             final Path actualFilePath = file.toPath().normalize();
             result = !rootDirectoryPath.relativize(actualFilePath).toString().startsWith("..");
         }
@@ -640,23 +639,9 @@ public class FileClientHelper extends EntityClientHelper {
      * @param metadata The metadata.
      */
     private void updateFileExtension(StringBuilder fileName, Metadata metadata) {
-        boolean defaultMetadata = true;
-
-        if (getMetadataService() != null) {
-            if (metadata instanceof Language language) {
-                defaultMetadata = language.equals(getMetadataService().getDefaultLanguage());
-            } else if (metadata instanceof MediaType mediaType) {
-                defaultMetadata = mediaType.equals(getMetadataService().getDefaultMediaType());
-            } else if (metadata instanceof CharacterSet characterSet) {
-                defaultMetadata =
-                        characterSet.equals(getMetadataService().getDefaultCharacterSet());
-            } else if (metadata instanceof Encoding encoding) {
-                defaultMetadata = encoding.equals(getMetadataService().getDefaultEncoding());
-            }
-        }
 
         // We only add an extension for metadata that differs from default ones
-        if (!defaultMetadata) {
+        if (!isDefaultMetadata(metadata)) {
             String extension = getMetadataService().getExtension(metadata);
 
             if (extension != null) {
@@ -667,5 +652,20 @@ public class FileClientHelper extends EntityClientHelper {
                 }
             }
         }
+    }
+
+    private boolean isDefaultMetadata(Metadata metadata) {
+        if (getMetadataService() == null) {
+            return true;
+        }
+        return switch (metadata) {
+            case Language language -> language.equals(getMetadataService().getDefaultLanguage());
+            case MediaType mediaType ->
+                    mediaType.equals(getMetadataService().getDefaultMediaType());
+            case CharacterSet characterSet ->
+                    characterSet.equals(getMetadataService().getDefaultCharacterSet());
+            case Encoding encoding -> encoding.equals(getMetadataService().getDefaultEncoding());
+            case null, default -> true;
+        };
     }
 }

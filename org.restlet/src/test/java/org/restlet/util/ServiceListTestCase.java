@@ -39,7 +39,7 @@ class ServiceListTestCase {
         ServiceList list = new ServiceList(context);
         RangeService service = new RangeService();
 
-        list.add(0, service);
+        list.addFirst(service);
 
         assertEquals(context, service.getContext());
     }

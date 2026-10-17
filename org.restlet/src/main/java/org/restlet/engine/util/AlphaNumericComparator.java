@@ -8,6 +8,8 @@
  */
 package org.restlet.engine.util;
 
+import java.io.Serial;
+
 /**
  * Optimized public-domain implementation of a Java alphanumeric sort.
  *
@@ -29,7 +31,7 @@ package org.restlet.engine.util;
  * @author Rob Heittman, <a href="http://www.solertium.com">Solertium Corporation</a>
  */
 public class AlphaNumericComparator extends AlphabeticalComparator {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Override
     public int compare(final String uri0, final String uri1) {
