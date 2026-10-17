@@ -39,7 +39,7 @@ class NonNullItemsListTestCase {
     @Test
     void addAtIndex_nullElement_throws() {
         NonNullItemsList<String> list = new NonNullItemsList<>("msg");
-        assertThrows(IllegalArgumentException.class, () -> list.add(0, null));
+        assertThrows(IllegalArgumentException.class, () -> list.addFirst(null));
     }
 
     @Test

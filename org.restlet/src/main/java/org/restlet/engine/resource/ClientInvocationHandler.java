@@ -159,8 +159,8 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
         Type genericParameterType = javaMethod.getGenericParameterTypes()[argIndex];
         if (genericParameterType instanceof ParameterizedType parameterizedType) {
             Type firstArg = parameterizedType.getActualTypeArguments()[0];
-            if (firstArg instanceof Class<?>) {
-                return (Class<?>) firstArg;
+            if (firstArg instanceof Class<?> clazz) {
+                return clazz;
             }
         }
         return null;

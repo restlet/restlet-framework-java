@@ -367,7 +367,7 @@ public class MetadataService extends Service {
     public void addExtension(String extension, Metadata metadata, boolean preferred) {
         if (preferred) {
             // Add the mapping at the beginning of the list
-            this.mappings.add(0, new MetadataExtension(extension, metadata));
+            this.mappings.addFirst(new MetadataExtension(extension, metadata));
         } else {
             // Add the mapping at the end of the list
             this.mappings.add(new MetadataExtension(extension, metadata));
@@ -405,7 +405,7 @@ public class MetadataService extends Service {
             boolean preferred) {
         if (preferred) {
             // Add the mapping at the beginning of the list
-            extensions.add(0, new MetadataExtension(extension, metadata));
+            extensions.addFirst(new MetadataExtension(extension, metadata));
         } else {
             // Add the mapping at the end of the list
             extensions.add(new MetadataExtension(extension, metadata));

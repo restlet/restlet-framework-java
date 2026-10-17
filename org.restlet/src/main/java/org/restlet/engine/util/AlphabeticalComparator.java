@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.util;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 import org.restlet.data.Reference;
@@ -18,7 +19,7 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class AlphabeticalComparator implements Comparator<Reference>, Serializable {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     /**
      * Compares two references.

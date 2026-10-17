@@ -8,10 +8,12 @@
  */
 package org.restlet.resource;
 
+import java.io.Serial;
+
 @Status(value = 400)
 public class MyException02 extends Throwable {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private String customProperty;
 

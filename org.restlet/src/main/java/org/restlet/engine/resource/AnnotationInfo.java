@@ -33,7 +33,7 @@ public abstract class AnnotationInfo {
      * @return The actual type.
      */
     protected static Class<?> getJavaActualType(Class<?> currentClass, String genericTypeName) {
-        Class<?> result = null;
+        Class<?> result;
 
         // Lookup in the super class
         result = getJavaActualType(currentClass.getGenericSuperclass(), genericTypeName);
@@ -61,9 +61,9 @@ public abstract class AnnotationInfo {
         Class<?> result = null;
 
         if (currentType != null) {
-            if (currentType instanceof Class<?>) {
+            if (currentType instanceof Class<?> class1) {
                 // Look in the generic super class or the implemented interfaces
-                result = getJavaActualType((Class<?>) currentType, genericTypeName);
+                result = getJavaActualType(class1, genericTypeName);
             } else if (currentType instanceof final ParameterizedType parameterizedType) {
                 Class<?> rawType = (Class<?>) parameterizedType.getRawType();
                 Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
@@ -87,22 +87,20 @@ public abstract class AnnotationInfo {
      * @return The underlying class
      */
     protected static Class<?> getTypeClass(Type type) {
-        Class<?> result = null;
+        return switch (type) {
+            case Class<?> clazz -> clazz;
+            case ParameterizedType parameterizedType ->
+                    getTypeClass(parameterizedType.getRawType());
+            case GenericArrayType genericArrayType -> getArrayTypeClass(genericArrayType);
+            case null, default -> null;
+        };
+    }
 
-        if (type instanceof Class<?>) {
-            result = (Class<?>) type;
-        } else if (type instanceof ParameterizedType parameterizedType) {
-            result = getTypeClass(parameterizedType.getRawType());
-        } else if (type instanceof GenericArrayType genericArrayType) {
-            Type componentType = genericArrayType.getGenericComponentType();
-            Class<?> componentClass = getTypeClass(componentType);
+    private static Class<?> getArrayTypeClass(GenericArrayType genericArrayType) {
+        Type componentType = genericArrayType.getGenericComponentType();
+        Class<?> componentClass = getTypeClass(componentType);
 
-            if (componentClass != null) {
-                result = Array.newInstance(componentClass, 0).getClass();
-            }
-        }
-
-        return result;
+        return (componentClass == null) ? null : Array.newInstance(componentClass, 0).getClass();
     }
 
     /** The raw annotation value. */
@@ -130,7 +128,7 @@ public abstract class AnnotationInfo {
         this.javaClass = javaClass;
         this.javaMethod = javaMethod;
         this.annotationValue = annotationValue;
-        java.lang.reflect.Method m = null;
+        java.lang.reflect.Method m;
 
         try {
             m = javaClass.getMethod(javaMethod.getName(), javaMethod.getParameterTypes());

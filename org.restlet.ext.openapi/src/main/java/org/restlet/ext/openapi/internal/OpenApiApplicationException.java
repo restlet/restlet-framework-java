@@ -8,12 +8,13 @@
  */
 package org.restlet.ext.openapi.internal;
 
+import java.io.Serial;
 import org.restlet.resource.Status;
 
 @Status(500)
 public class OpenApiApplicationException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     public OpenApiApplicationException(final String message, final Throwable cause) {
         super(message, cause);

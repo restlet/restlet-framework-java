@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -167,10 +166,10 @@ public abstract class LocalClientHelper extends ClientHelper {
         String userHome = System.getProperty("user.home");
 
         if (userHome != null && !userHome.isEmpty()) {
-            return Paths.get(userHome);
+            return Path.of(userHome);
         }
 
-        return Paths.get(".").toAbsolutePath().normalize();
+        return Path.of(".").toAbsolutePath().normalize();
     }
 
     private static void setOwnerOnlyAccess(File file, boolean executable) throws IOException {

@@ -5,6 +5,8 @@ Changes log
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
+    - Misc
+        - Pinned the Maven Deploy plugin to version 3.2.0 (avoids resolving incompatible Maven 4 beta versions).
  
 - 3.0 Milestone 1 (10-11-2026)
     - Breaking changes

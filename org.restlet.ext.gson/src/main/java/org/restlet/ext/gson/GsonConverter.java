@@ -121,8 +121,8 @@ public class GsonConverter extends ConverterHelper {
         // The source for the gson conversion
         GsonRepresentation<?> gsonSource = null;
 
-        if (source instanceof GsonRepresentation) {
-            gsonSource = (GsonRepresentation<?>) source;
+        if (source instanceof GsonRepresentation<?> representation) {
+            gsonSource = representation;
         } else if (VARIANT_JSON.isCompatible(source)) {
             gsonSource = create(source, target);
         }
@@ -143,8 +143,8 @@ public class GsonConverter extends ConverterHelper {
     public Representation toRepresentation(Object source, Variant target, Resource resource) {
         Representation result = null;
 
-        if (source instanceof GsonRepresentation) {
-            result = (GsonRepresentation<?>) source;
+        if (source instanceof GsonRepresentation<?> representation) {
+            result = representation;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);

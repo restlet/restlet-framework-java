@@ -157,17 +157,12 @@ public class JsonConverter extends ConverterHelper {
 
     @Override
     public Representation toRepresentation(Object source, Variant target, Resource resource) {
-        Representation result = null;
-
-        if (source instanceof JSONArray jsonArray) {
-            result = new JsonRepresentation(jsonArray);
-        } else if (source instanceof JSONObject jsonObject) {
-            result = new JsonRepresentation(jsonObject);
-        } else if (source instanceof JSONTokener jsonTokener) {
-            result = new JsonRepresentation(jsonTokener);
-        }
-
-        return result;
+        return switch (source) {
+            case JSONArray jsonArray -> new JsonRepresentation(jsonArray);
+            case JSONObject jsonObject -> new JsonRepresentation(jsonObject);
+            case JSONTokener jsonTokener -> new JsonRepresentation(jsonTokener);
+            case null, default -> null;
+        };
     }
 
     @Override

@@ -8,6 +8,7 @@
  */
 package org.restlet.resource;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import org.restlet.engine.util.SystemUtils;
@@ -19,7 +20,7 @@ import org.restlet.engine.util.SystemUtils;
  */
 public class MyBean implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private String description;
 

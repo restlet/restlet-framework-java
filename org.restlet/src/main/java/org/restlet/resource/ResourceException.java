@@ -8,6 +8,7 @@
  */
 package org.restlet.resource;
 
+import java.io.Serial;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
@@ -19,7 +20,7 @@ import org.restlet.data.Status;
  */
 public class ResourceException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     /** The status associated with this exception. */
     private transient Status status;

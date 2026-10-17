@@ -400,8 +400,8 @@ public class Router extends Restlet {
 
         if ((target instanceof Directory) || (target instanceof Router)) {
             result = Template.MODE_STARTS_WITH;
-        } else if (target instanceof Filter) {
-            result = getMatchingMode(((Filter) target).getNext());
+        } else if (target instanceof Filter filter) {
+            result = getMatchingMode(filter.getNext());
         }
 
         return result;

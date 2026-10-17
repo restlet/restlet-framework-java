@@ -9,11 +9,12 @@
 package org.restlet.ext.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serial;
 
 @JsonIgnoreProperties({"cause", "localizedMessage", "suppressed", "message"})
 public class MyException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("serial")
     private Customer customer;
