@@ -2,6 +2,8 @@ Changes log
 ===========
 
 - 2.7.1 (??-??-2026)
+  - Misc
+    - Upgraded Jetty library to version 12.1.14. Issue #1515.
   - Bugs fixed
     - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
     - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
