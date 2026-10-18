@@ -20,6 +20,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Encoding;
+import org.restlet.data.Header;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -79,6 +80,9 @@ public class Request extends Message {
 
     /** The cookies provided by the client. */
     private volatile Series<Cookie> cookies;
+
+    /** The trailing headers received with the request entity. */
+    private volatile Series<Header> trailers;
 
     /** The host reference. */
     private volatile Reference hostRef;
@@ -197,6 +201,8 @@ public class Request extends Message {
         for (Cookie o : request.getCookies()) {
             getCookies().add(o);
         }
+
+        getTrailers().addAll(request.getTrailers());
 
         this.hostRef = request.getHostRef();
         this.maxForwards = request.getMaxForwards();
@@ -426,6 +432,25 @@ public class Request extends Message {
             }
         }
         return c;
+    }
+
+    /**
+     * Returns the modifiable series of trailing headers received with the request entity. Trailers
+     * become available when the entity has been fully read.
+     *
+     * @return The trailing headers.
+     */
+    public Series<Header> getTrailers() {
+        Series<Header> result = this.trailers;
+        if (result == null) {
+            synchronized (this) {
+                result = this.trailers;
+                if (result == null) {
+                    this.trailers = result = new Series<>(Header.class);
+                }
+            }
+        }
+        return result;
     }
 
     /**

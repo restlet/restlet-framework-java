@@ -23,6 +23,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
+import org.restlet.data.Header;
 import org.restlet.representation.Representation;
 
 /**
@@ -131,6 +132,11 @@ public class WrapperRequest extends Request {
     @Override
     public Series<Cookie> getCookies() {
         return getWrappedRequest().getCookies();
+    }
+
+    @Override
+    public Series<Header> getTrailers() {
+        return getWrappedRequest().getTrailers();
     }
 
     /**

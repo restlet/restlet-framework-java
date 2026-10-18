@@ -48,6 +48,9 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /** The body stream of the request in progress, if any. */
     private ChannelInputStream currentBody;
 
+    /** The call receiving the current request body. */
+    private NettyServerCall currentCall;
+
     NettyServerHandler(NettyServerHelper helper, boolean confidential, StreamKind kind) {
         this.helper = helper;
         this.confidential = confidential;
@@ -108,6 +111,7 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
         NettyServerCall call =
                 new NettyServerCall(helper, ctx.channel(), kind, request, body, confidential);
+        currentCall = call;
         if (kind != StreamKind.HTTP3) {
             call.setAltSvc(helper.getAltSvc());
         }
@@ -144,6 +148,10 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             readMore = body.offer(content.content().retain());
         }
         boolean last = content instanceof LastHttpContent;
+        if (last && currentCall != null) {
+            currentCall.setRequestTrailers(((LastHttpContent) content).trailingHeaders());
+            currentCall = null;
+        }
         content.release();
 
         if (last) {

@@ -126,6 +126,11 @@ class NettyRequest extends Request {
         setDate((date != null) ? date : new Date());
     }
 
+    @Override
+    public Series<Header> getTrailers() {
+        return call.getRequestTrailers();
+    }
+
     /** Returns the host reference built from the "Host" header. */
     private static String hostRef(Protocol protocol, Series<Header> headers) {
         StringBuilder sb = new StringBuilder();
