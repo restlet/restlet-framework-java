@@ -293,7 +293,11 @@ public abstract class NettyClientHelper extends ClientHelper {
     @Override
     public void handle(Request request, Response response) {
         if (!isFollowRedirects() || request.isAsynchronous()) {
-            handleOnce(request, response);
+            try {
+                handleOnce(request, response);
+            } finally {
+                request.getAttributes().remove(NettyClientCall.ASYNC_REQUEST_BODY_ATTRIBUTE);
+            }
             return;
         }
 
@@ -315,8 +319,13 @@ public abstract class NettyClientHelper extends ClientHelper {
                 }
             }
         } finally {
-            // The request entity was kept available for redirects, see NettyClientCall.
-            if (request.getEntity() != null) {
+            boolean entityReleasedByWriter =
+                    Boolean.TRUE.equals(
+                                    request.getAttributes()
+                                            .remove(NettyClientCall.ASYNC_REQUEST_BODY_ATTRIBUTE))
+                            && !response.getStatus().isRedirection();
+            // A full-duplex HTTP/2 body writer releases the entity once it has finished writing.
+            if (request.getEntity() != null && !entityReleasedByWriter) {
                 request.getEntity().release();
             }
         }
