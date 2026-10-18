@@ -67,8 +67,8 @@ class WebSocketSessionTestCase {
         Engine.register();
     }
 
-    private static WebSocketResource resource(WebSocketHandler handler) {
-        return new WebSocketResource() {
+    private static WebSocketUpgrader upgrader(WebSocketHandler handler) {
+        return new WebSocketUpgrader() {
             @Override
             protected WebSocketHandler accept(Request request, Response response) {
                 return handler;
@@ -86,7 +86,7 @@ class WebSocketSessionTestCase {
 
     private int start(Protocol protocol, Context context, WebSocketHandler handler)
             throws Exception {
-        server = new Server(context, protocol, 0, resource(handler));
+        server = new Server(context, protocol, 0, upgrader(handler));
         server.start();
         return server.getActualPort();
     }

@@ -67,7 +67,7 @@ Changes log
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
           `server.maxEventStreams` parameter limits concurrent event streams.
         - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
-          `WebSocketResource` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
+          `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
           virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
           `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server

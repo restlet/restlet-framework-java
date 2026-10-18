@@ -21,10 +21,10 @@ import org.restlet.data.Status;
  * authenticators in front of it apply to the upgrade request. Requests that do not ask for an
  * upgrade receive a 400 (Bad Request) response.
  */
-public abstract class WebSocketResource extends Restlet {
+public abstract class WebSocketUpgrader extends Restlet {
 
     /** Constructor. */
-    protected WebSocketResource() {
+    protected WebSocketUpgrader() {
         super();
     }
 
@@ -33,7 +33,7 @@ public abstract class WebSocketResource extends Restlet {
      *
      * @param context The context.
      */
-    protected WebSocketResource(Context context) {
+    protected WebSocketUpgrader(Context context) {
         super(context);
     }
 
