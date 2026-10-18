@@ -17,6 +17,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.TooLongFrameException;
+import io.netty.handler.codec.compression.DecompressionException;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CorruptedWebSocketFrameException;
@@ -283,6 +284,10 @@ final class NettyWebSocketSession implements WebSocketSession {
     }
 
     private void failSession(ChannelHandlerContext ctx, int code) {
+        if (!closeReceived) {
+            closeCode = code;
+            closeReceived = true;
+        }
         if (closeSent.compareAndSet(false, true) && ctx.channel().isActive()) {
             ctx.writeAndFlush(new CloseWebSocketFrame(code, null))
                     .addListener(ChannelFutureListener.CLOSE);
@@ -371,6 +376,10 @@ final class NettyWebSocketSession implements WebSocketSession {
             if (cause instanceof CorruptedWebSocketFrameException corrupted) {
                 code = corrupted.closeStatus().code();
             } else if (cause instanceof TooLongFrameException) {
+                code = MESSAGE_TOO_BIG;
+            } else if (cause instanceof DecompressionException) {
+                // Raised by the permessage-deflate decoder when an inflated message exceeds the
+                // maximum message size.
                 code = MESSAGE_TOO_BIG;
             } else {
                 logger.log(Level.FINE, "WebSocket session failure", cause);

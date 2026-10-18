@@ -113,9 +113,11 @@ public interface WebSocketSession extends AutoCloseable {
 
     /**
      * Returns the status code of the close frame received from the peer, {@link #NO_STATUS} if it
-     * had none, or {@link #ABNORMAL_CLOSURE} if the connection closed without one.
+     * had none, or {@link #ABNORMAL_CLOSURE} if the connection closed without one. When this side
+     * fails the session because of a peer error (for example {@link #MESSAGE_TOO_BIG} or {@link
+     * #PROTOCOL_ERROR}), the status code it sent is returned.
      *
-     * @return The close status code, or -1 while no close frame was received.
+     * @return The close status code, or -1 while the session was not closed.
      */
     int getCloseCode();
 

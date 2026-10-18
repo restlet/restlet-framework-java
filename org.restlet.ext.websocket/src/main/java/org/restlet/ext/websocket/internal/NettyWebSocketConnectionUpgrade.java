@@ -12,12 +12,15 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.compression.ZlibCodecFactory;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
@@ -25,6 +28,11 @@ import io.netty.handler.codec.http.websocketx.WebSocketDecoderConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.extensions.WebSocketExtensionData;
+import io.netty.handler.codec.http.websocketx.extensions.WebSocketExtensionUtil;
+import io.netty.handler.codec.http.websocketx.extensions.WebSocketServerExtension;
+import io.netty.handler.codec.http.websocketx.extensions.compression.PerMessageDeflateServerExtensionHandshaker;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -74,6 +82,9 @@ public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpg
         }
 
         int maxMessageSize = getMaxMessageSize(parameters);
+        int maxFrameSize = getMaxFrameSize(parameters, maxMessageSize);
+        boolean compression =
+                Boolean.parseBoolean(parameters.getFirstValue("websocket.compression", "true"));
         HttpRequest request = context.getRequest();
         FullHttpRequest full =
                 new DefaultFullHttpRequest(
@@ -87,8 +98,8 @@ public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpg
                         location,
                         upgrade.getSubprotocol(),
                         WebSocketDecoderConfig.newBuilder()
-                                .maxFramePayloadLength(maxMessageSize)
-                                .allowExtensions(false)
+                                .maxFramePayloadLength(maxFrameSize)
+                                .allowExtensions(compression)
                                 .build());
         WebSocketServerHandshaker handshaker = factory.newHandshaker(full);
         if (handshaker == null) {
@@ -107,10 +118,23 @@ public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpg
                         context.getLogger());
         // Installed before the handshake so that no frame sent right after it is missed.
         ChannelPipeline pipeline = channel.pipeline();
+        HttpHeaders responseHeaders = new DefaultHttpHeaders();
+        if (compression) {
+            WebSocketServerExtension extension = negotiateCompression(request, maxMessageSize);
+            if (extension != null) {
+                responseHeaders.set(
+                        HttpHeaderNames.SEC_WEBSOCKET_EXTENSIONS,
+                        toHeaderValue(extension.newReponseData()));
+                // The frame codecs installed by the handshake pass through these positions.
+                pipeline.addLast("ws-inflater", extension.newExtensionDecoder());
+                pipeline.addLast("ws-deflater", extension.newExtensionEncoder());
+            }
+        }
         pipeline.addLast("ws-aggregator", new WebSocketFrameAggregator(maxMessageSize));
         pipeline.addLast("ws-session", session.newHandler());
         try {
-            ChannelFuture future = handshaker.handshake(channel, full);
+            ChannelFuture future =
+                    handshaker.handshake(channel, full, responseHeaders, channel.newPromise());
             if (!future.await(HANDSHAKE_TIMEOUT_MS, TimeUnit.MILLISECONDS) || !future.isSuccess()) {
                 context.getLogger().log(Level.FINE, "WebSocket handshake failed", future.cause());
                 channel.close();
@@ -159,6 +183,48 @@ public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpg
                 context.getAttributes().computeIfAbsent(PERMITS_ATTRIBUTE, k -> new Semaphore(max));
     }
 
+    /**
+     * Accepts the first "permessage-deflate" offer of the request that can be honored.
+     *
+     * @param request The upgrade request.
+     * @param maxMessageSize The maximum size of an inflated message.
+     * @return The negotiated extension, or null.
+     */
+    private static WebSocketServerExtension negotiateCompression(
+            HttpRequest request, int maxMessageSize) {
+        String offers = request.headers().getAsString(HttpHeaderNames.SEC_WEBSOCKET_EXTENSIONS);
+        if (offers == null) {
+            return null;
+        }
+        PerMessageDeflateServerExtensionHandshaker handshaker =
+                new PerMessageDeflateServerExtensionHandshaker(
+                        6,
+                        ZlibCodecFactory.isSupportingWindowSizeAndMemLevel(),
+                        PerMessageDeflateServerExtensionHandshaker.MAX_WINDOW_SIZE,
+                        false,
+                        false,
+                        maxMessageSize);
+        for (WebSocketExtensionData offer : WebSocketExtensionUtil.extractExtensions(offers)) {
+            WebSocketServerExtension extension = handshaker.handshakeExtension(offer);
+            if (extension != null) {
+                return extension;
+            }
+        }
+        return null;
+    }
+
+    /** Formats extension data as a "Sec-WebSocket-Extensions" header value. */
+    static String toHeaderValue(WebSocketExtensionData data) {
+        StringBuilder result = new StringBuilder(data.name());
+        for (Map.Entry<String, String> parameter : data.parameters().entrySet()) {
+            result.append("; ").append(parameter.getKey());
+            if (parameter.getValue() != null) {
+                result.append('=').append(parameter.getValue());
+            }
+        }
+        return result.toString();
+    }
+
     private static int getMaxMessageSize(Series<Parameter> parameters) {
         int result =
                 Integer.parseInt(parameters.getFirstValue("websocket.maxMessageSize", "65536"));
@@ -166,6 +232,18 @@ public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpg
             throw new IllegalArgumentException("'websocket.maxMessageSize' must be positive");
         }
         return result;
+    }
+
+    private static int getMaxFrameSize(Series<Parameter> parameters, int maxMessageSize) {
+        String value = parameters.getFirstValue("websocket.maxFrameSize");
+        if (value == null) {
+            return maxMessageSize;
+        }
+        int result = Integer.parseInt(value);
+        if (result <= 0) {
+            throw new IllegalArgumentException("'websocket.maxFrameSize' must be positive");
+        }
+        return Math.min(result, maxMessageSize);
     }
 
     private static void sendError(Channel channel, HttpResponseStatus status) {

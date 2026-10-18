@@ -21,6 +21,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.compression.ZlibCodecFactory;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -30,6 +31,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
+import io.netty.handler.codec.http.websocketx.extensions.compression.PerMessageDeflateClientExtensionHandshaker;
+import io.netty.handler.codec.http.websocketx.extensions.compression.PerMessageDeflateServerExtensionHandshaker;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.IdentityCipherSuiteFilter;
@@ -70,6 +74,10 @@ public final class NettyWebSocketConnector implements AutoCloseable {
 
     private final int maxMessageSize;
 
+    private final int maxFrameSize;
+
+    private final boolean compression;
+
     private final boolean hostnameVerification;
 
     private final Logger logger;
@@ -82,6 +90,8 @@ public final class NettyWebSocketConnector implements AutoCloseable {
      * @param idleTimeoutMs The idle time after which the connection is pinged, then closed, 0 for
      *     none.
      * @param maxMessageSize The maximum size in bytes of a received message.
+     * @param maxFrameSize The maximum size in bytes of a received frame.
+     * @param compression Whether "permessage-deflate" compression is offered to the server.
      * @param hostnameVerification Whether the server host name is verified for "wss" URIs.
      * @param logger The logger.
      * @throws IOException If the SSL context cannot be created.
@@ -91,6 +101,8 @@ public final class NettyWebSocketConnector implements AutoCloseable {
             long connectTimeoutMs,
             long idleTimeoutMs,
             int maxMessageSize,
+            int maxFrameSize,
+            boolean compression,
             boolean hostnameVerification,
             Logger logger)
             throws IOException {
@@ -112,6 +124,8 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         this.connectTimeoutMs = connectTimeoutMs;
         this.idleTimeoutMs = idleTimeoutMs;
         this.maxMessageSize = maxMessageSize;
+        this.maxFrameSize = Math.min(maxFrameSize, maxMessageSize);
+        this.compression = compression;
         this.hostnameVerification = hostnameVerification;
         this.logger = logger;
         this.group = new MultiThreadIoEventLoopGroup(0, NioIoHandler.newFactory());
@@ -150,9 +164,9 @@ public final class NettyWebSocketConnector implements AutoCloseable {
                         uri,
                         WebSocketVersion.V13,
                         subprotocols.isEmpty() ? null : String.join(",", subprotocols),
-                        false,
+                        compression,
                         extraHeaders,
-                        maxMessageSize);
+                        maxFrameSize);
 
         Promise<NettyWebSocketSession> ready = group.next().newPromise();
         Bootstrap bootstrap =
@@ -239,6 +253,20 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         }
         p.addLast("http-codec", new HttpClientCodec());
         p.addLast("http-aggregator", new HttpObjectAggregator(8192));
+        if (compression) {
+            // Offers permessage-deflate, then installs the compression codecs if accepted.
+            // Inflated messages are capped by the message size limit.
+            p.addLast(
+                    "ws-compression",
+                    new WebSocketClientExtensionHandler(
+                            new PerMessageDeflateClientExtensionHandshaker(
+                                    6,
+                                    ZlibCodecFactory.isSupportingWindowSizeAndMemLevel(),
+                                    PerMessageDeflateServerExtensionHandshaker.MAX_WINDOW_SIZE,
+                                    false,
+                                    false,
+                                    maxMessageSize)));
+        }
         p.addLast("ws-handshake", new HandshakeHandler(handshaker, ready));
     }
 
