@@ -64,6 +64,7 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
+import org.restlet.websocket.WebSocketUpgrade;
 
 /**
  * Server exchange bridging a Netty HTTP request (HTTP/1.1, or one HTTP/2 or HTTP/3 stream converted
@@ -356,6 +357,30 @@ class NettyServerCall {
      * @param response The Restlet response.
      */
     void commit(Response response) {
+        WebSocketUpgrade upgrade = WebSocketUpgrade.get(response);
+        if (upgrade != null && Status.INFO_SWITCHING_PROTOCOL.equals(response.getStatus())) {
+            if (kind != StreamKind.HTTP1) {
+                response.setStatus(
+                        Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                        "WebSocket is only supported over HTTP/1.1");
+            } else if (!helper.tryAcquireWebSocket()) {
+                response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+            } else {
+                completed = true;
+                responseHeadWritten = true;
+                requestBody.close();
+                try {
+                    NettyWebSocketUpgrader.upgrade(helper, channel, request, confidential, upgrade);
+                } finally {
+                    if (response.getOnSent() != null) {
+                        response.getOnSent().handle(response.getRequest(), response);
+                    }
+                }
+                return;
+            }
+            response.setEntity(null);
+        }
+
         try {
             responseTrailers = response.getTrailers();
             if (isEventStream(response.getEntity())) {
