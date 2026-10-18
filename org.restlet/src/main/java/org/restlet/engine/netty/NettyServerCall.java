@@ -41,6 +41,7 @@ import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -151,24 +152,30 @@ class NettyServerCall {
         this.request = request;
         this.requestBody = requestBody;
         this.confidential = confidential;
-        this.requestHeaders = copyHeaders(request);
+        this.requestHeaders = copyHeaders(request, kind.isStream());
     }
 
     /**
      * Copies the Netty request headers, except the HTTP/2 pseudo-headers. HTTP/2 and HTTP/3 carry
      * the host in the ":authority" pseudo-header, mapped to a "Host" header when absent.
      */
-    private static Series<Header> copyHeaders(HttpRequest request) {
+    private static Series<Header> copyHeaders(HttpRequest request, boolean lowerCaseNames) {
         Series<Header> result = new Series<>(Header.class);
         for (Map.Entry<String, String> header : request.headers()) {
             if (!header.getKey().startsWith(":")) {
-                result.add(header.getKey(), header.getValue());
+                String name =
+                        lowerCaseNames ? header.getKey().toLowerCase(Locale.ROOT) : header.getKey();
+                result.add(name, header.getValue());
             }
         }
         if (result.getFirstValue(HeaderConstants.HEADER_HOST, true) == null) {
             String authority = request.headers().get(":authority");
             if (authority != null) {
-                result.add(HeaderConstants.HEADER_HOST, authority);
+                result.add(
+                        lowerCaseNames
+                                ? HeaderConstants.HEADER_HOST.toLowerCase(Locale.ROOT)
+                                : HeaderConstants.HEADER_HOST,
+                        authority);
             }
         }
         return result;
@@ -266,7 +273,9 @@ class NettyServerCall {
     /** Copies the request trailing headers before the body stream is ended. */
     void setRequestTrailers(HttpHeaders trailers) {
         for (Map.Entry<String, String> trailer : trailers) {
-            requestTrailers.add(trailer.getKey(), trailer.getValue());
+            String name =
+                    kind.isStream() ? trailer.getKey().toLowerCase(Locale.ROOT) : trailer.getKey();
+            requestTrailers.add(name, trailer.getValue());
         }
     }
 
@@ -539,11 +548,13 @@ class NettyServerCall {
         HttpResponse head = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 
         for (Header header : responseHeaders) {
-            head.headers().add(header.getName(), header.getValue());
+            String name =
+                    kind.isStream() ? header.getName().toLowerCase(Locale.ROOT) : header.getName();
+            head.headers().add(name, header.getValue());
         }
 
         if (altSvc != null && !head.headers().contains("Alt-Svc")) {
-            head.headers().set("Alt-Svc", altSvc);
+            head.headers().set(kind.isStream() ? "alt-svc" : "Alt-Svc", altSvc);
         }
 
         boolean hasTrailers = !responseTrailers.isEmpty();
@@ -612,7 +623,7 @@ class NettyServerCall {
         LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
         if (responseTrailersEnabled) {
             DefaultLastHttpContent withTrailers = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
-            copyHeaders(responseTrailers, withTrailers.trailingHeaders());
+            copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
             lastContent = withTrailers;
         }
         ChannelFuture future = channel.writeAndFlush(lastContent);
@@ -639,9 +650,13 @@ class NettyServerCall {
     }
 
     private static void copyHeaders(
-            Series<Header> source, io.netty.handler.codec.http.HttpHeaders target) {
+            Series<Header> source,
+            io.netty.handler.codec.http.HttpHeaders target,
+            boolean lowerCaseNames) {
         for (Header header : source) {
-            target.add(header.getName(), header.getValue());
+            String name =
+                    lowerCaseNames ? header.getName().toLowerCase(Locale.ROOT) : header.getName();
+            target.add(name, header.getValue());
         }
     }
 
