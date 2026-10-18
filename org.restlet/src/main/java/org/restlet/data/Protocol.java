@@ -91,6 +91,10 @@ public final class Protocol {
     public static final Protocol RIAP =
             new Protocol("riap", "RIAP", "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
 
+    /** Standard Input/Output pseudo-protocol. */
+    public static final Protocol STDIO =
+            new Protocol("stdio", "STDIO", "Standard Input/Output Streams", UNKNOWN_PORT);
+
     /**
      * ZIP is a special scheme to access to representations inside Zip archive files. Example URI:
      * "zip:file:///tmp/test.zip!/test.txt".
@@ -127,6 +131,8 @@ public final class Protocol {
                 result = JDBC;
             } else if (name.equalsIgnoreCase(RIAP.getSchemeName())) {
                 result = RIAP;
+            } else if (name.equalsIgnoreCase(STDIO.getSchemeName())) {
+                result = STDIO;
             } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {
                 result = ZIP;
             } else {
