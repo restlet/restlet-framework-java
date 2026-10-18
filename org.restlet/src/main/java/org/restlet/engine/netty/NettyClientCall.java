@@ -9,10 +9,12 @@
 package org.restlet.engine.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -92,6 +94,12 @@ class NettyClientCall {
 
     /** The response body stream. */
     private volatile ChannelInputStream body;
+
+    /** The response being updated by this exchange. */
+    private volatile org.restlet.Response response;
+
+    /** The request trailers to send after the request entity. */
+    private volatile Series<Header> requestTrailers = new Series<>(Header.class);
 
     /** The response status code. */
     private volatile int statusCode;
@@ -174,6 +182,8 @@ class NettyClientCall {
      * @param response The Restlet response to update.
      */
     void handle(org.restlet.Request request, org.restlet.Response response) {
+        this.response = response;
+        this.requestTrailers = request.getTrailers();
         HeaderUtils.addGeneralHeaders(request, requestHeaders);
         if (request.getEntity() != null) {
             HeaderUtils.addEntityHeaders(request.getEntity(), requestHeaders);
@@ -363,6 +373,11 @@ class NettyClientCall {
         Channel ch = this.channel;
         HttpRequest nettyRequest = newRequestHead();
         boolean hasBody = setBodyHeaders(nettyRequest, entity);
+        if (!requestTrailers.isEmpty() && !kind.isStream()) {
+            HttpUtil.setTransferEncodingChunked(nettyRequest, true);
+            nettyRequest.headers().remove(HttpHeaderNames.CONTENT_LENGTH);
+            NettyServerCall.setTrailerNames(nettyRequest.headers(), requestTrailers);
+        }
 
         long timeout = helper.getIdleTimeout();
         Writability.await(ch, timeout);
@@ -379,7 +394,15 @@ class NettyClientCall {
         }
 
         Writability.await(ch, timeout);
-        check(ch.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT));
+        LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
+        if (!requestTrailers.isEmpty()) {
+            DefaultLastHttpContent withTrailers = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
+            for (Header trailer : requestTrailers) {
+                withTrailers.trailingHeaders().add(trailer.getName(), trailer.getValue());
+            }
+            lastContent = withTrailers;
+        }
+        check(ch.writeAndFlush(lastContent));
 
         lock.lock();
         try {
@@ -550,7 +573,13 @@ class NettyClientCall {
     }
 
     /** Called on the event loop when the response is fully received. */
-    void onResponseComplete() {
+    void onResponseComplete(io.netty.handler.codec.http.HttpHeaders trailers) {
+        org.restlet.Response currentResponse = response;
+        if (currentResponse != null) {
+            for (Map.Entry<String, String> trailer : trailers) {
+                currentResponse.getTrailers().add(trailer.getKey(), trailer.getValue());
+            }
+        }
         ChannelInputStream stream = this.body;
         if (stream != null) {
             stream.end();

@@ -18,6 +18,7 @@ import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -134,6 +135,11 @@ public class WrapperResponse extends Response {
     @Override
     public Series<CookieSetting> getCookieSettings() {
         return getWrappedResponse().getCookieSettings();
+    }
+
+    @Override
+    public Series<Header> getTrailers() {
+        return getWrappedResponse().getTrailers();
     }
 
     /**

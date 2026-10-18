@@ -111,7 +111,7 @@ class NettyClientHandler extends ChannelInboundHandlerAdapter {
         }
         boolean readMore = current.onResponseContent(content.content());
         if (last) {
-            current.onResponseComplete();
+            current.onResponseComplete(((LastHttpContent) content).trailingHeaders());
             return false;
         }
         return readMore;
