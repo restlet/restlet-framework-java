@@ -500,7 +500,9 @@ public class Request extends Message {
 
     /**
      * Returns the callback invoked on response reception. If the value is not null, then the
-     * associated request will be executed asynchronously.
+     * associated request will be executed asynchronously. For a streaming response, the callback
+     * can be invoked again if the exchange fails after the initial response has been received; the
+     * response then has a connector-error status and reading its entity fails.
      *
      * @return The callback invoked on response reception.
      */
