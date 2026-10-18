@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -124,7 +125,8 @@ class Http2CancellationTestCase {
             assertEquals(Status.CONNECTOR_ERROR_COMMUNICATION, response.getStatus());
             assertEquals(2, callbackStatuses.size());
             assertEquals(Status.CONNECTOR_ERROR_COMMUNICATION, callbackStatuses.get(1));
-            assertThrows(IOException.class, () -> response.getEntity().getStream().readAllBytes());
+            InputStream responseBody = response.getEntity().getStream();
+            assertThrows(IOException.class, responseBody::readAllBytes);
         } finally {
             continueResponseWrite.countDown();
         }

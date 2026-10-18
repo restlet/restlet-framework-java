@@ -196,6 +196,7 @@ public class Request extends Message {
      */
     public Request(Request request) {
         this(request.getMethod(), new Reference(request.getResourceRef()), request.getEntity());
+        this.abortAction = null;
         challengeResponse = request.getChallengeResponse();
 
         copyClientInfo(request);

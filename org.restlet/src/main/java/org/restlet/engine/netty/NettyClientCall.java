@@ -320,76 +320,103 @@ class NettyClientCall {
             if (cancelled.get()) {
                 throw new IOException("Request cancelled by client");
             }
-            boolean fullDuplex =
-                    kind == StreamKind.HTTP2 && entity != null && entity.getSize() != 0;
-            if (fullDuplex) {
-                CompletableFuture<Boolean> releaseEntity = new CompletableFuture<>();
-                releaseRequestEntity = releaseEntity;
-                request.getAttributes().put(ASYNC_REQUEST_BODY_ATTRIBUTE, Boolean.TRUE);
-                Thread.startVirtualThread(
-                        () -> {
-                            try {
-                                writeRequest(entity);
-                            } catch (IOException | RuntimeException e) {
-                                onFailure(e);
-                            } finally {
-                                if (releaseEntity.join() || forceEntityRelease.get()) {
-                                    entity.release();
-                                }
-                                if (connectorService != null) {
-                                    connectorService.afterSend(entity);
-                                }
-                            }
-                        });
-                backgroundWriterStarted = true;
-            } else {
-                writeRequest(entity);
-            }
+            backgroundWriterStarted = sendRequestBody(request, entity, connectorService);
             awaitHead();
             result = new Status(statusCode, reasonPhrase);
-            if (backgroundWriterStarted) {
-                boolean followRedirect =
-                        helper.isFollowRedirects()
-                                && !request.isAsynchronous()
-                                && result.isRedirection();
-                releaseRequestEntity.complete(!followRedirect);
-                if (followRedirect) {
-                    awaitRequestSent();
-                }
-            }
+            finishRequestBody(request, result, backgroundWriterStarted);
         } catch (ConnectException e) {
-            completeEntityRelease();
-            helper.logFailure("Unable to connect to the remote HTTP server", e);
-            abort();
-            result = new Status(Status.CONNECTOR_ERROR_CONNECTION, e);
+            result = handleConnectFailure(e);
         } catch (IOException e) {
-            completeEntityRelease();
-            helper.logFailure(
-                    "An error occurred during the communication with the remote HTTP server", e);
-            abort();
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
+            result = handleCommunicationFailure(e);
         } catch (RuntimeException e) {
-            completeEntityRelease();
-            helper.logFailure("An unexpected error occurred while sending the request", e);
-            abort();
-            result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
+            result = handleInternalFailure(e);
         } finally {
             if (!backgroundWriterStarted) {
-                // A repeatable entity is kept for a possible redirect (307/308) and released by
-                // the helper once the redirects are followed.
-                if (entity != null
-                        && (entity.isTransient()
-                                || !helper.isFollowRedirects()
-                                || request.isAsynchronous())) {
-                    entity.release();
-                }
-                if (connectorService != null) {
-                    connectorService.afterSend(entity);
-                }
+                releaseRequestEntityAfterSend(request, entity, connectorService);
             }
         }
 
         return result;
+    }
+
+    private boolean sendRequestBody(
+            org.restlet.Request request, Representation entity, ConnectorService connectorService)
+            throws IOException {
+        if (kind != StreamKind.HTTP2 || entity == null || entity.getSize() == 0) {
+            writeRequest(entity);
+            return false;
+        }
+
+        CompletableFuture<Boolean> releaseEntity = new CompletableFuture<>();
+        releaseRequestEntity = releaseEntity;
+        request.getAttributes().put(ASYNC_REQUEST_BODY_ATTRIBUTE, Boolean.TRUE);
+        Thread.startVirtualThread(
+                () -> {
+                    try {
+                        writeRequest(entity);
+                    } catch (IOException | RuntimeException e) {
+                        onFailure(e);
+                    } finally {
+                        if (releaseEntity.join() || forceEntityRelease.get()) {
+                            entity.release();
+                        }
+                        if (connectorService != null) {
+                            connectorService.afterSend(entity);
+                        }
+                    }
+                });
+        return true;
+    }
+
+    private void finishRequestBody(
+            org.restlet.Request request, Status result, boolean backgroundWriterStarted)
+            throws IOException {
+        if (!backgroundWriterStarted) {
+            return;
+        }
+        boolean followRedirect =
+                helper.isFollowRedirects() && !request.isAsynchronous() && result.isRedirection();
+        releaseRequestEntity.complete(!followRedirect);
+        if (followRedirect) {
+            awaitRequestSent();
+        }
+    }
+
+    private Status handleConnectFailure(ConnectException cause) {
+        completeEntityRelease();
+        helper.logFailure("Unable to connect to the remote HTTP server", cause);
+        abort();
+        return new Status(Status.CONNECTOR_ERROR_CONNECTION, cause);
+    }
+
+    private Status handleCommunicationFailure(IOException cause) {
+        completeEntityRelease();
+        helper.logFailure(
+                "An error occurred during the communication with the remote HTTP server", cause);
+        abort();
+        return new Status(Status.CONNECTOR_ERROR_COMMUNICATION, cause);
+    }
+
+    private Status handleInternalFailure(RuntimeException cause) {
+        completeEntityRelease();
+        helper.logFailure("An unexpected error occurred while sending the request", cause);
+        abort();
+        return new Status(Status.CONNECTOR_ERROR_INTERNAL, cause);
+    }
+
+    private void releaseRequestEntityAfterSend(
+            org.restlet.Request request, Representation entity, ConnectorService connectorService) {
+        // A repeatable entity is kept for a possible redirect (307/308) and released by the helper
+        // once the redirects are followed.
+        if (entity != null
+                && (entity.isTransient()
+                        || !helper.isFollowRedirects()
+                        || request.isAsynchronous())) {
+            entity.release();
+        }
+        if (connectorService != null) {
+            connectorService.afterSend(entity);
+        }
     }
 
     private void completeEntityRelease() {
