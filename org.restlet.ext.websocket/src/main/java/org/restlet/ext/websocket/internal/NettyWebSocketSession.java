@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.websocket;
+package org.restlet.ext.websocket.internal;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -36,6 +36,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.restlet.ext.websocket.WebSocketMessage;
+import org.restlet.ext.websocket.WebSocketSession;
 
 /**
  * WebSocket session over a Netty channel whose pipeline decodes WebSocket frames and aggregates

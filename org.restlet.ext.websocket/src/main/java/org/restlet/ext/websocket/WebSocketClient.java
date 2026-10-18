@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
+import org.restlet.ext.websocket.internal.NettyWebSocketConnector;
 
 /**
  * Opens WebSocket client sessions ("ws" and "wss" URIs) over HTTP/1.1 upgrades. Each session uses
