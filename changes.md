@@ -68,6 +68,8 @@ Changes log
           `Response.toString()` now shows it.
         - Added request and response trailers to the HTTP connectors, supporting HTTP/1.1 chunked
           transfers and HTTP/2 trailing headers.
+        - HTTP/2 clients receive a response as soon as its headers arrive, while the request entity
+          continues to be written on a virtual thread.
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
