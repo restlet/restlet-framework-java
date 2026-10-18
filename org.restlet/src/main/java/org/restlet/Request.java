@@ -470,6 +470,15 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the last event ID sent by an SSE client, if present.
+     *
+     * @return The value of the {@code Last-Event-ID} header, or null.
+     */
+    public String getLastEventId() {
+        return getHeaders().getFirstValue("Last-Event-ID", true);
+    }
+
+    /**
      * Returns the host reference. This may be different from the resourceRef's host, for example,
      * for URNs and other URIs that don't contain host information.<br>
      * <br>

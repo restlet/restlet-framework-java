@@ -21,6 +21,7 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
@@ -37,6 +38,9 @@ import org.restlet.engine.Engine;
  * order without buffering them.
  */
 class NettyServerHandler extends ChannelInboundHandlerAdapter {
+
+    static final AttributeKey<Boolean> EVENT_STREAM_ACTIVE =
+            AttributeKey.valueOf("restlet.eventStreamActive");
 
     private final NettyServerHelper helper;
 
@@ -192,7 +196,9 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            ctx.close();
+            if (!Boolean.TRUE.equals(ctx.channel().attr(EVENT_STREAM_ACTIVE).get())) {
+                ctx.close();
+            }
         } else {
             super.userEventTriggered(ctx, evt);
         }

@@ -454,6 +454,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_DAT = register("text/x-fixed-field", "Fixed-width Values");
 
+    public static final MediaType TEXT_EVENT_STREAM =
+            register("text/event-stream", "Server-sent events");
+
     public static final MediaType TEXT_HTML = register("text/html", "HTML document");
 
     public static final MediaType TEXT_J2ME_APP_DESCRIPTOR =

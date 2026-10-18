@@ -110,6 +110,13 @@ import org.restlet.engine.ssl.SslUtils;
  * 0, there is no limit.</td>
  * </tr>
  * <tr>
+ * <td>server.maxEventStreams</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Maximum number of open Server-Sent Event streams; extra streams receive a 503 response.
+ * When 0, there is no limit.</td>
+ * </tr>
+ * <tr>
  * <td>eventLoop.bossThreads</td>
  * <td>int</td>
  * <td>1</td>
@@ -200,6 +207,9 @@ public abstract class NettyServerHelper extends ServerHelper {
 
     /** Limits concurrent calls, or null when unlimited. */
     private volatile Semaphore callPermits;
+
+    /** Limits concurrent SSE streams, or null when unlimited. */
+    private volatile Semaphore eventStreamPermits;
 
     /** The number of calls in progress. */
     private final AtomicInteger activeCalls = new AtomicInteger();
@@ -498,6 +508,20 @@ public abstract class NettyServerHelper extends ServerHelper {
         }
     }
 
+    /** Tries to acquire a permit for an SSE response. */
+    boolean tryAcquireEventStream() {
+        Semaphore permits = eventStreamPermits;
+        return permits == null || permits.tryAcquire();
+    }
+
+    /** Releases an acquired SSE response permit. */
+    void releaseEventStream() {
+        Semaphore permits = eventStreamPermits;
+        if (permits != null) {
+            permits.release();
+        }
+    }
+
     /**
      * Returns the executor running Restlet calls.
      *
@@ -520,6 +544,8 @@ public abstract class NettyServerHelper extends ServerHelper {
 
         int maxCalls = getServerMaxConcurrentCalls();
         callPermits = (maxCalls > 0) ? new Semaphore(maxCalls) : null;
+        int maxEventStreams = getServerMaxEventStreams();
+        eventStreamPermits = (maxEventStreams > 0) ? new Semaphore(maxEventStreams) : null;
         callExecutor =
                 CallExecutors.create(
                         "restlet-server",
@@ -817,6 +843,21 @@ public abstract class NettyServerHelper extends ServerHelper {
     public int getServerMaxConcurrentCalls() {
         return Integer.parseInt(
                 getHelpedParameters().getFirstValue("server.maxConcurrentCalls", "0"));
+    }
+
+    /**
+     * Maximum number of open Server-Sent Event streams. Defaults to 0 (unlimited).
+     *
+     * @return Maximum number of open SSE streams.
+     */
+    public int getServerMaxEventStreams() {
+        int result =
+                Integer.parseInt(
+                        getHelpedParameters().getFirstValue("server.maxEventStreams", "0"));
+        if (result < 0) {
+            throw new IllegalArgumentException("'server.maxEventStreams' cannot be negative");
+        }
+        return result;
     }
 
     /**
