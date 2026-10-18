@@ -48,6 +48,7 @@ import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.security.GeneralSecurityException;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -508,9 +509,11 @@ public abstract class NettyClientHelper extends HttpClientHelper {
                                         SslUtils.getSslContextFactory(this),
                                         isHostnameVerification(),
                                         getIdleTimeout());
-                    } catch (IllegalArgumentException | IllegalStateException e) {
-                        throw e;
-                    } catch (Exception e) {
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new InterruptedIOException(
+                                "Interrupted while creating the HTTP/3 client");
+                    } catch (GeneralSecurityException e) {
                         throw new IOException("Unable to create the HTTP/3 client", e);
                     }
                     connections.add(result.channel());

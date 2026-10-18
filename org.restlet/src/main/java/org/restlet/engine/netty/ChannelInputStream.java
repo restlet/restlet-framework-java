@@ -201,11 +201,24 @@ final class ChannelInputStream extends InputStream {
     private ByteBuf awaitData() throws IOException {
         long remainingNanos =
                 (readTimeoutMs > 0) ? TimeUnit.MILLISECONDS.toNanos(readTimeoutMs) : Long.MAX_VALUE;
-        while (buffers.isEmpty()) {
-            if (isEndOfStream()) {
-                return null;
+        try {
+            // Condition waits stay in this loop, which rechecks the state after each wake-up
+            // (spurious wake-ups included).
+            while (buffers.isEmpty()) {
+                if (isEndOfStream()) {
+                    return null;
+                }
+                if (readTimeoutMs <= 0) {
+                    available.await();
+                } else if (remainingNanos > 0) {
+                    remainingNanos = available.awaitNanos(remainingNanos);
+                } else {
+                    throw new InterruptedIOException("Read timed out");
+                }
             }
-            remainingNanos = awaitSignal(remainingNanos);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while reading");
         }
         return buffers.peekFirst();
     }
@@ -225,29 +238,6 @@ final class ChannelInputStream extends InputStream {
             throw failure;
         }
         return endOfStream;
-    }
-
-    /**
-     * Must be called with the lock held. Waits for a signal of the event loop.
-     *
-     * @param remainingNanos The remaining time to wait, when a read timeout is set.
-     * @return The new remaining time.
-     * @throws InterruptedIOException If the read times out or is interrupted.
-     */
-    private long awaitSignal(long remainingNanos) throws InterruptedIOException {
-        try {
-            if (readTimeoutMs <= 0) {
-                available.await();
-                return remainingNanos;
-            }
-            if (remainingNanos <= 0) {
-                throw new InterruptedIOException("Read timed out");
-            }
-            return available.awaitNanos(remainingNanos);
-        } catch (InterruptedException _) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedIOException("Interrupted while reading");
-        }
     }
 
     /** Must be called with the lock held. */
