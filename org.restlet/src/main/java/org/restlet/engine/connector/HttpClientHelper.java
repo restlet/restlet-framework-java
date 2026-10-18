@@ -238,8 +238,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
         this.authenticationStore = null;
-        this.cookieStore =
-                isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
+        this.cookieStore = isCookieSupported()
+                ? new HttpCookieStore.Default()
+                : new HttpCookieStore.Empty();
         this.executor = null;
     }
 
@@ -250,15 +251,10 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      * @return A low-level HTTP client call.
      */
     public ClientCall create(Request request) {
-        ClientCall result = null;
-
-        result =
-                new JettyClientCall(
+        return new JettyClientCall(
                         this,
                         request.getMethod().toString(),
                         ReferenceUtils.update(request.getResourceRef(), request).toString());
-
-        return result;
     }
 
     /**
@@ -366,7 +362,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         QuicheClientQuicConfiguration quicConfiguration =
                 HTTP3ClientQuicConfiguration.configure(
                         new QuicheClientQuicConfiguration(getHttp3PemWorkDirectoryPath()));
-        quicConfiguration.setSessionMaxData(64 * 1024 * 1024);
+        quicConfiguration.setSessionMaxData(64 * 1024L * 1024L);
         return quicConfiguration;
     }
 
