@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.connector;
+package org.restlet.ext.websocket;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,13 +43,10 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.HttpClientHelper;
+import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
-import org.restlet.websocket.WebSocketClient;
-import org.restlet.websocket.WebSocketHandler;
-import org.restlet.websocket.WebSocketMessage;
-import org.restlet.websocket.WebSocketResource;
-import org.restlet.websocket.WebSocketSession;
 
 class WebSocketTestCase {
 
@@ -258,7 +255,7 @@ class WebSocketTestCase {
     @Test
     void enforcesTheOpenSessionLimit() throws Exception {
         Context context = new Context();
-        context.getParameters().add("server.maxWebSockets", "1");
+        context.getParameters().add("websocket.maxSessions", "1");
         String base = start(resource(ECHO), context);
 
         WebSocketSession first = client.connect(base + "/");

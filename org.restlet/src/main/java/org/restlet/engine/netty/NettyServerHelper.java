@@ -117,20 +117,6 @@ import org.restlet.engine.ssl.SslUtils;
  * When 0, there is no limit.</td>
  * </tr>
  * <tr>
- * <td>server.maxWebSockets</td>
- * <td>int</td>
- * <td>0</td>
- * <td>Maximum number of open WebSocket sessions; extra upgrades receive a 503 response. When 0,
- * there is no limit.</td>
- * </tr>
- * <tr>
- * <td>websocket.maxMessageSize</td>
- * <td>int</td>
- * <td>65536</td>
- * <td>Maximum size in bytes of a received WebSocket message; larger messages close the session
- * with status 1009.</td>
- * </tr>
- * <tr>
  * <td>eventLoop.bossThreads</td>
  * <td>int</td>
  * <td>1</td>
@@ -224,9 +210,6 @@ public abstract class NettyServerHelper extends ServerHelper {
 
     /** Limits concurrent SSE streams, or null when unlimited. */
     private volatile Semaphore eventStreamPermits;
-
-    /** Limits open WebSocket sessions, or null when unlimited. */
-    private volatile Semaphore webSocketPermits;
 
     /** The number of calls in progress. */
     private final AtomicInteger activeCalls = new AtomicInteger();
@@ -539,20 +522,6 @@ public abstract class NettyServerHelper extends ServerHelper {
         }
     }
 
-    /** Tries to acquire a permit for a WebSocket session. */
-    boolean tryAcquireWebSocket() {
-        Semaphore permits = webSocketPermits;
-        return !stopping && (permits == null || permits.tryAcquire());
-    }
-
-    /** Releases an acquired WebSocket session permit. */
-    void releaseWebSocket() {
-        Semaphore permits = webSocketPermits;
-        if (permits != null) {
-            permits.release();
-        }
-    }
-
     /**
      * Returns the executor running Restlet calls.
      *
@@ -577,8 +546,6 @@ public abstract class NettyServerHelper extends ServerHelper {
         callPermits = (maxCalls > 0) ? new Semaphore(maxCalls) : null;
         int maxEventStreams = getServerMaxEventStreams();
         eventStreamPermits = (maxEventStreams > 0) ? new Semaphore(maxEventStreams) : null;
-        int maxWebSockets = getServerMaxWebSockets();
-        webSocketPermits = (maxWebSockets > 0) ? new Semaphore(maxWebSockets) : null;
         callExecutor =
                 CallExecutors.create(
                         "restlet-server",
@@ -889,35 +856,6 @@ public abstract class NettyServerHelper extends ServerHelper {
                         getHelpedParameters().getFirstValue("server.maxEventStreams", "0"));
         if (result < 0) {
             throw new IllegalArgumentException("'server.maxEventStreams' cannot be negative");
-        }
-        return result;
-    }
-
-    /**
-     * Maximum number of open WebSocket sessions. Defaults to 0 (unlimited).
-     *
-     * @return Maximum number of open WebSocket sessions.
-     */
-    public int getServerMaxWebSockets() {
-        int result =
-                Integer.parseInt(getHelpedParameters().getFirstValue("server.maxWebSockets", "0"));
-        if (result < 0) {
-            throw new IllegalArgumentException("'server.maxWebSockets' cannot be negative");
-        }
-        return result;
-    }
-
-    /**
-     * Maximum size in bytes of a received WebSocket message. Defaults to 65536.
-     *
-     * @return Maximum WebSocket message size.
-     */
-    public int getWebSocketMaxMessageSize() {
-        int result =
-                Integer.parseInt(
-                        getHelpedParameters().getFirstValue("websocket.maxMessageSize", "65536"));
-        if (result <= 0) {
-            throw new IllegalArgumentException("'websocket.maxMessageSize' must be positive");
         }
         return result;
     }

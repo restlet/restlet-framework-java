@@ -85,6 +85,7 @@
         <module>org.restlet.ext.spring</module>
         <module>org.restlet.ext.thymeleaf</module>
         <module>org.restlet.ext.velocity</module>
+        <module>org.restlet.ext.websocket</module>
         <module>org.restlet.ext.xml</module>
     </modules>
 

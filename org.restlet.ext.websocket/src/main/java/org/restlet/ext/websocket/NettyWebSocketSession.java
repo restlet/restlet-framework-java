@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.netty;
+package org.restlet.ext.websocket;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -32,11 +32,10 @@ import java.io.InterruptedIOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.restlet.websocket.WebSocketMessage;
-import org.restlet.websocket.WebSocketSession;
 
 /**
  * WebSocket session over a Netty channel whose pipeline decodes WebSocket frames and aggregates
@@ -44,7 +43,7 @@ import org.restlet.websocket.WebSocketSession;
  * demand, so a slow consumer slows down the peer. Pings are answered with pongs, and an idle
  * connection is pinged once before being closed.
  *
- * <p>This class is internal to the Netty connectors.
+ * <p>This class is internal to the extension.
  */
 final class NettyWebSocketSession implements WebSocketSession {
 
@@ -74,6 +73,10 @@ final class NettyWebSocketSession implements WebSocketSession {
     private final AtomicBoolean closeSent = new AtomicBoolean();
 
     private final ReentrantLock sendLock = new ReentrantLock();
+
+    private final ReentrantLock writabilityLock = new ReentrantLock();
+
+    private final Condition writable = writabilityLock.newCondition();
 
     private volatile boolean closeReceived;
 
@@ -170,7 +173,7 @@ final class NettyWebSocketSession implements WebSocketSession {
             if (!isOpen()) {
                 throw new IOException("The WebSocket session is closed");
             }
-            Writability.await(channel, writeTimeoutMs);
+            awaitWritable();
             ChannelFuture future = channel.writeAndFlush(frame);
             frame = null;
             if (future.isDone() && !future.isSuccess()) {
@@ -181,6 +184,49 @@ final class NettyWebSocketSession implements WebSocketSession {
             if (frame != null) {
                 frame.release();
             }
+        }
+    }
+
+    /** Blocks until the channel is writable, so that a slow peer slows down the sender. */
+    private void awaitWritable() throws IOException {
+        if (channel.isWritable()) {
+            return;
+        }
+        channel.flush();
+        long remaining =
+                (writeTimeoutMs > 0)
+                        ? TimeUnit.MILLISECONDS.toNanos(writeTimeoutMs)
+                        : Long.MAX_VALUE;
+        writabilityLock.lock();
+        try {
+            while (!channel.isWritable()) {
+                if (!channel.isActive()) {
+                    throw new IOException("Connection closed by peer");
+                }
+                if (remaining <= 0) {
+                    throw new InterruptedIOException("WebSocket write timed out");
+                }
+                // Wake up periodically in case a signal raced with the check above.
+                long slice = Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(100));
+                long left = writable.awaitNanos(slice);
+                if (writeTimeoutMs > 0) {
+                    remaining -= (slice - Math.max(0, left));
+                }
+            }
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while sending a WebSocket message");
+        } finally {
+            writabilityLock.unlock();
+        }
+    }
+
+    private void signalWritability() {
+        writabilityLock.lock();
+        try {
+            writable.signalAll();
+        } finally {
+            writabilityLock.unlock();
         }
     }
 
@@ -285,7 +331,16 @@ final class NettyWebSocketSession implements WebSocketSession {
         }
 
         @Override
+        public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+            if (ctx.channel().isWritable()) {
+                signalWritability();
+            }
+            super.channelWritabilityChanged(ctx);
+        }
+
+        @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            signalWritability();
             if (!closeReceived) {
                 closeCode = ABNORMAL_CLOSURE;
                 closeReceived = true;

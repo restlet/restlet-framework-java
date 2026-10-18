@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.engine.netty;
+package org.restlet.ext.websocket;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -32,11 +32,16 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.IdentityCipherSuiteFilter;
+import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +50,13 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
-import org.restlet.websocket.WebSocketSession;
 
 /**
  * Netty implementation of the WebSocket client: one connection per session, HTTP/1.1 upgrade.
  *
- * <p>This class is internal to the Netty connectors; use {@link org.restlet.websocket
- * .WebSocketClient}.
+ * <p>This class is internal to the extension; use {@link WebSocketClient}.
  */
-public final class NettyWebSocketConnector implements AutoCloseable {
+final class NettyWebSocketConnector implements AutoCloseable {
 
     private final EventLoopGroup group;
 
@@ -81,7 +84,7 @@ public final class NettyWebSocketConnector implements AutoCloseable {
      * @param logger The logger.
      * @throws IOException If the SSL context cannot be created.
      */
-    public NettyWebSocketConnector(
+    NettyWebSocketConnector(
             SSLContext sslContext,
             long connectTimeoutMs,
             long idleTimeoutMs,
@@ -92,8 +95,15 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         try {
             SSLContext jdkContext = (sslContext != null) ? sslContext : SSLContext.getDefault();
             this.sslContext =
-                    NettySsl.newContext(
-                            jdkContext, true, ApplicationProtocolConfig.DISABLED, ClientAuth.NONE);
+                    new JdkSslContext(
+                            jdkContext,
+                            true,
+                            null,
+                            IdentityCipherSuiteFilter.INSTANCE,
+                            ApplicationProtocolConfig.DISABLED,
+                            ClientAuth.NONE,
+                            null,
+                            false);
         } catch (Exception e) {
             throw new IOException("Unable to create the WebSocket SSL context", e);
         }
@@ -114,7 +124,7 @@ public final class NettyWebSocketConnector implements AutoCloseable {
      * @return The open session.
      * @throws IOException If the connection or the handshake fails.
      */
-    public WebSocketSession connect(URI uri, List<String> subprotocols, Map<String, String> headers)
+    WebSocketSession connect(URI uri, List<String> subprotocols, Map<String, String> headers)
             throws IOException {
         String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
         boolean secure;
@@ -161,16 +171,45 @@ public final class NettyWebSocketConnector implements AutoCloseable {
                     (int) Math.min(Integer.MAX_VALUE, connectTimeoutMs));
         }
         ChannelFuture connect = bootstrap.connect(host, port);
-        Channel channel =
-                NettyFutures.await(connect, connectTimeoutMs, "Unable to connect to " + uri);
+        await(connect, "Unable to connect to " + uri);
+        Channel channel = connect.channel();
         try {
-            NettyWebSocketSession session =
-                    NettyFutures.await(ready, connectTimeoutMs, "WebSocket handshake with " + uri);
+            await(ready, "WebSocket handshake with " + uri);
+            NettyWebSocketSession session = ready.getNow();
             session.start();
             return session;
         } catch (IOException e) {
             channel.close();
             throw e;
+        }
+    }
+
+    private void await(Future<?> future, String message) throws IOException {
+        try {
+            boolean done =
+                    (connectTimeoutMs > 0)
+                            ? future.await(connectTimeoutMs, TimeUnit.MILLISECONDS)
+                            : future.await().isDone();
+            if (!done) {
+                future.cancel(false);
+                throw new ConnectException(message + ": timed out");
+            }
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            future.cancel(false);
+            throw new InterruptedIOException(message + ": interrupted");
+        }
+        if (!future.isSuccess()) {
+            Throwable cause = future.cause();
+            if (future instanceof ChannelFuture channelFuture) {
+                channelFuture.channel().close();
+            }
+            if (cause instanceof IOException ioe && !(future instanceof ChannelFuture)) {
+                throw new IOException(message + ": " + ioe.getMessage(), ioe);
+            }
+            ConnectException ce = new ConnectException(message + ": " + cause);
+            ce.initCause(cause);
+            throw ce;
         }
     }
 
@@ -185,7 +224,6 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         if (idleTimeoutMs > 0) {
             p.addLast("idle", new IdleStateHandler(0, 0, idleTimeoutMs, TimeUnit.MILLISECONDS));
         }
-        p.addLast("writability", Writability.HANDLER);
         if (secure) {
             SSLEngine engine = sslContext.newEngine(ch.alloc(), host, port);
             if (hostnameVerification) {

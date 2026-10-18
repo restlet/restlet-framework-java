@@ -17,6 +17,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.DefaultLastHttpContent;
@@ -26,6 +28,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpServerKeepAliveHandler;
+import io.netty.handler.codec.http.HttpServerUpgradeHandler;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
@@ -64,7 +68,6 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
-import org.restlet.websocket.WebSocketUpgrade;
 
 /**
  * Server exchange bridging a Netty HTTP request (HTTP/1.1, or one HTTP/2 or HTTP/3 stream converted
@@ -357,27 +360,16 @@ class NettyServerCall {
      * @param response The Restlet response.
      */
     void commit(Response response) {
-        WebSocketUpgrade upgrade = WebSocketUpgrade.get(response);
-        if (upgrade != null && Status.INFO_SWITCHING_PROTOCOL.equals(response.getStatus())) {
-            if (kind != StreamKind.HTTP1) {
-                response.setStatus(
-                        Status.SERVER_ERROR_NOT_IMPLEMENTED,
-                        "WebSocket is only supported over HTTP/1.1");
-            } else if (!helper.tryAcquireWebSocket()) {
-                response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
-            } else {
-                completed = true;
-                responseHeadWritten = true;
-                requestBody.close();
-                try {
-                    NettyWebSocketUpgrader.upgrade(helper, channel, request, confidential, upgrade);
-                } finally {
-                    if (response.getOnSent() != null) {
-                        response.getOnSent().handle(response.getRequest(), response);
-                    }
-                }
+        if (response.getAttributes().get(NettyConnectionUpgrade.ATTRIBUTE)
+                        instanceof NettyConnectionUpgrade upgrade
+                && Status.INFO_SWITCHING_PROTOCOL.equals(response.getStatus())) {
+            if (kind == StreamKind.HTTP1) {
+                upgrade(response, upgrade);
                 return;
             }
+            response.setStatus(
+                    Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                    "Protocol upgrades are only supported over HTTP/1.1");
             response.setEntity(null);
         }
 
@@ -399,6 +391,38 @@ class NettyServerCall {
             handleException(response, e);
         } finally {
             complete();
+            if (response.getOnSent() != null) {
+                response.getOnSent().handle(response.getRequest(), response);
+            }
+        }
+    }
+
+    /**
+     * Hands the HTTP/1.1 connection over to a protocol upgrade instead of writing the response.
+     *
+     * @param response The "101 Switching Protocols" response.
+     * @param upgrade The connection upgrade.
+     */
+    private void upgrade(Response response, NettyConnectionUpgrade upgrade) {
+        completed = true;
+        responseHeadWritten = true;
+        requestBody.close();
+        try {
+            ChannelPipeline pipeline = channel.pipeline();
+            for (Class<? extends ChannelHandler> type :
+                    List.of(
+                            HttpServerKeepAliveHandler.class,
+                            HttpServerUpgradeHandler.class,
+                            NettyServerHandler.class)) {
+                if (pipeline.get(type) != null) {
+                    pipeline.remove(type);
+                }
+            }
+            upgrade.upgrade(new NettyUpgradeContext(channel, request, confidential, helper));
+        } catch (Exception | LinkageError e) {
+            getLogger().log(Level.WARNING, "Unable to upgrade the connection", e);
+            channel.close();
+        } finally {
             if (response.getOnSent() != null) {
                 response.getOnSent().handle(response.getRequest(), response);
             }

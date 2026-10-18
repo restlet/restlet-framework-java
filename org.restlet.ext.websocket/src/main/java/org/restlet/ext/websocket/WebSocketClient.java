@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.websocket;
+package org.restlet.ext.websocket;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
-import org.restlet.engine.netty.NettyWebSocketConnector;
 
 /**
  * Opens WebSocket client sessions ("ws" and "wss" URIs) over HTTP/1.1 upgrades. Each session uses
