@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.websocket;
+package org.restlet.ext.websocket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,19 +17,21 @@ import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.netty.NettyConnectionUpgrade;
 
 /**
  * Accepts a WebSocket upgrade on a Restlet response. The upgrade request goes through the normal
  * routing, filters and authenticators; the Restlet handling it calls {@link #accept(Response,
- * WebSocketHandler, String)}, and the HTTP server connector then performs the handshake and runs
- * the handler on its own virtual thread.
+ * WebSocketHandler, String)}, and the Netty HTTP server connector of the core then hands the
+ * connection over to this extension, which performs the handshake and runs the handler on its own
+ * virtual thread.
  *
  * <p>Only HTTP/1.1 upgrades are supported (not WebSocket over HTTP/2).
  */
 public final class WebSocketUpgrade {
 
     /** Name of the response attribute holding the accepted upgrade. */
-    public static final String ATTRIBUTE = "org.restlet.websocket.upgrade";
+    public static final String ATTRIBUTE = "org.restlet.ext.websocket.upgrade";
 
     private final WebSocketHandler handler;
 
@@ -95,7 +97,10 @@ public final class WebSocketUpgrade {
             throw new IllegalArgumentException(
                     "The subprotocol \"" + subprotocol + "\" was not offered by the client");
         }
-        response.getAttributes().put(ATTRIBUTE, new WebSocketUpgrade(handler, subprotocol));
+        WebSocketUpgrade upgrade = new WebSocketUpgrade(handler, subprotocol);
+        response.getAttributes().put(ATTRIBUTE, upgrade);
+        response.getAttributes()
+                .put(NettyConnectionUpgrade.ATTRIBUTE, new NettyWebSocketUpgrader(upgrade));
         response.setStatus(Status.INFO_SWITCHING_PROTOCOL);
         response.setEntity(null);
     }

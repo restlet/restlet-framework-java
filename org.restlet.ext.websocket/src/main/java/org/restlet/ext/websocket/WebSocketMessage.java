@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.websocket;
+package org.restlet.ext.websocket;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

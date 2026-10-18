@@ -52,5 +52,4 @@ module org.restlet {
     exports org.restlet.security;
     exports org.restlet.service;
     exports org.restlet.util;
-    exports org.restlet.websocket;
 }

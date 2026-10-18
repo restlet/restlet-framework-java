@@ -66,13 +66,16 @@ Changes log
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
           `server.maxEventStreams` parameter limits concurrent event streams.
-        - Added experimental WebSocket support in the new `org.restlet.websocket` package, on
-          HTTP/1.1 upgrades. `WebSocketResource` (or `WebSocketUpgrade.accept`) accepts upgrades
-          that went through the normal routing, filters and authenticators, and runs a
-          `WebSocketHandler` on its own virtual thread with a blocking `WebSocketSession`
-          (`receive`, `sendText`, `sendBinary`, `close`). `WebSocketClient` opens client
-          sessions on "ws" and "wss" URIs. The server answers pings, pings idle sessions, and
-          supports the "server.maxWebSockets" and "websocket.maxMessageSize" parameters.
+        - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
+          `WebSocketResource` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
+          the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
+          virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
+          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server
+          answers pings, pings idle sessions, and supports the "websocket.maxSessions" and
+          "websocket.maxMessageSize" parameters.
+        - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
+          Protocols" response with this response attribute takes over the HTTP/1.1 connection
+          (`NettyUpgradeContext`), which the WebSocket extension relies on.
         - Added `Response.getProtocol()` and `setProtocol()`: the protocol, with its version,
           used by the server to reply (for example HTTP/1.1, HTTP/2.0 or HTTP/3.0), set by the HTTP
           client connector. When unknown, the protocol of the request is returned.
