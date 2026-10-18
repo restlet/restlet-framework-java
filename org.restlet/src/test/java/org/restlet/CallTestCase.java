@@ -19,7 +19,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
 /**
- * Test {@link org.restlet.engine.adapter.Call}.
+ * Test the properties of {@link Request} and {@link Response}.
  *
  * @author Lars Heuer (heuer[at]semagia.com)
  */

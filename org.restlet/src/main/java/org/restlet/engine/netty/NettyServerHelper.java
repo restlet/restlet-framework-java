@@ -52,8 +52,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import javax.net.ssl.SSLContext;
+import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.engine.adapter.HttpServerHelper;
+import org.restlet.engine.connector.ServerHelper;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
@@ -167,11 +168,20 @@ import org.restlet.engine.ssl.SslUtils;
  * <td>0</td>
  * <td>Graceful shutdown timeout in milliseconds.</td>
  * </tr>
+ * <tr>
+ * <td>useForwardedForHeader</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Lookup the "X-Forwarded-For" header supported by popular proxies and caches and uses it to
+ * populate the Request.getClientAddresses() method result. This information is only safe for
+ * intermediary components within your local network. Other addresses could easily be changed by
+ * setting a fake header and should not be trusted for serious security checks.</td>
+ * </tr>
  * </table>
  *
  * @author Jerome Louvel
  */
-public abstract class NettyServerHelper extends HttpServerHelper {
+public abstract class NettyServerHelper extends ServerHelper {
 
     /** The event loop group accepting connections. */
     private volatile EventLoopGroup bossGroup;
@@ -903,5 +913,18 @@ public abstract class NettyServerHelper extends HttpServerHelper {
      */
     String getAltSvc() {
         return altSvc;
+    }
+
+    /**
+     * Handles an exchange: converts it into a Restlet request and response, lets the server handle
+     * them, then writes the response.
+     *
+     * @param call The exchange.
+     */
+    void handle(NettyServerCall call) {
+        NettyRequest request = call.toRequest(getContext());
+        Response response = call.toResponse(request);
+        handle(request, response);
+        call.commit(response);
     }
 }

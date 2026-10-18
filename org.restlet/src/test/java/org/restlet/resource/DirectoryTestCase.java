@@ -49,7 +49,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.adapter.HttpServerHelper;
+import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.local.FileClientHelper;

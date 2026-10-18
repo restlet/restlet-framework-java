@@ -19,7 +19,6 @@ import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.adapter.HttpServerHelper;
 
 /**
  * Base test case that will call an abstract method for several client/server connectors
@@ -124,7 +123,7 @@ public abstract class BaseConnectorsTestCase {
 
         final ServerHelper serverHelper;
 
-        HttpServer(HttpServerHelper serverHelper) {
+        HttpServer(ServerHelper serverHelper) {
             this.serverHelper = serverHelper;
         }
     }
