@@ -202,30 +202,52 @@ final class ChannelInputStream extends InputStream {
         long remainingNanos =
                 (readTimeoutMs > 0) ? TimeUnit.MILLISECONDS.toNanos(readTimeoutMs) : Long.MAX_VALUE;
         while (buffers.isEmpty()) {
-            if (closed) {
-                throw new IOException("Stream closed");
-            }
-            if (failure != null) {
-                throw failure;
-            }
-            if (endOfStream) {
+            if (isEndOfStream()) {
                 return null;
             }
-            try {
-                if (readTimeoutMs > 0) {
-                    if (remainingNanos <= 0) {
-                        throw new InterruptedIOException("Read timed out");
-                    }
-                    remainingNanos = available.awaitNanos(remainingNanos);
-                } else {
-                    available.await();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new InterruptedIOException("Interrupted while reading");
-            }
+            remainingNanos = awaitSignal(remainingNanos);
         }
         return buffers.peekFirst();
+    }
+
+    /**
+     * Must be called with the lock held, when no buffer is available. Checks whether no more data
+     * will come.
+     *
+     * @return True at the end of the stream.
+     * @throws IOException If the stream is closed or failed.
+     */
+    private boolean isEndOfStream() throws IOException {
+        if (closed) {
+            throw new IOException("Stream closed");
+        }
+        if (failure != null) {
+            throw failure;
+        }
+        return endOfStream;
+    }
+
+    /**
+     * Must be called with the lock held. Waits for a signal of the event loop.
+     *
+     * @param remainingNanos The remaining time to wait, when a read timeout is set.
+     * @return The new remaining time.
+     * @throws InterruptedIOException If the read times out or is interrupted.
+     */
+    private long awaitSignal(long remainingNanos) throws InterruptedIOException {
+        try {
+            if (readTimeoutMs <= 0) {
+                available.await();
+                return remainingNanos;
+            }
+            if (remainingNanos <= 0) {
+                throw new InterruptedIOException("Read timed out");
+            }
+            return available.awaitNanos(remainingNanos);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while reading");
+        }
     }
 
     /** Must be called with the lock held. */

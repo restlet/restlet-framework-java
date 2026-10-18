@@ -110,7 +110,7 @@ public class HttpsServerHelper extends NettyServerHelper {
         static HttpTransportProtocol fromName(final String name) {
             try {
                 return HttpTransportProtocol.valueOf(name);
-            } catch (final IllegalArgumentException | NullPointerException e) {
+            } catch (final IllegalArgumentException | NullPointerException _) {
                 throw new IllegalArgumentException(
                         String.format(
                                 "'%s' is not one of the supported values: %s",

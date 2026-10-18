@@ -296,26 +296,18 @@ public abstract class NettyClientHelper extends HttpClientHelper {
         int redirects = 0;
 
         try {
-            while (true) {
-                super.handle(current, response);
-
-                Status status = response.getStatus();
-                Reference location = response.getLocationRef();
-                if (!isRedirect(status) || location == null || redirects >= getMaxRedirects()) {
-                    break;
-                }
-
-                Request next = newRedirectRequest(current, status, location);
-                if (next == null) {
-                    break;
-                }
-
-                if (response.getEntity() != null) {
-                    response.getEntity().release();
-                }
-                resetResponse(response, next);
+            Request next = current;
+            while (next != null) {
                 current = next;
-                redirects++;
+                super.handle(current, response);
+                next = (redirects < getMaxRedirects()) ? nextRedirect(current, response) : null;
+                if (next != null) {
+                    if (response.getEntity() != null) {
+                        response.getEntity().release();
+                    }
+                    resetResponse(response, next);
+                    redirects++;
+                }
             }
         } finally {
             // The request entity was kept available for redirects, see NettyClientCall.
@@ -325,6 +317,19 @@ public abstract class NettyClientHelper extends HttpClientHelper {
         }
 
         response.setRequest(request);
+    }
+
+    /**
+     * Returns the request following a redirect response, or null if the response is not a redirect
+     * that can be followed.
+     */
+    private static Request nextRedirect(Request current, Response response) {
+        Status status = response.getStatus();
+        Reference location = response.getLocationRef();
+        if (!isRedirect(status) || location == null) {
+            return null;
+        }
+        return newRedirectRequest(current, status, location);
     }
 
     private static boolean isRedirect(Status status) {
@@ -579,7 +584,7 @@ public abstract class NettyClientHelper extends HttpClientHelper {
                 throw new ConnectException(
                         "Too many connections to " + pool.host + ":" + pool.port);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new InterruptedIOException("Interrupted while waiting for a connection");
         }
@@ -831,7 +836,7 @@ public abstract class NettyClientHelper extends HttpClientHelper {
         String name = getHttpClientTransportMode();
         try {
             return TransportMode.valueOf(name);
-        } catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException _) {
             throw new IllegalArgumentException(
                     String.format(
                             "'%s' is not one of the supported values: %s",

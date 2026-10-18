@@ -301,23 +301,21 @@ public class MultiPartRepresentation extends InputRepresentation {
     public MultiPartRepresentation(
             MediaType mediaType, InputStream multiPartEntity, Path storageLocation)
             throws IOException {
-        super(null, mediaType);
-
-        if (!MediaType.MULTIPART_FORM_DATA.equals(getMediaType(), true)) {
+        if (!MediaType.MULTIPART_FORM_DATA.equals(mediaType, true)) {
             throw new IllegalArgumentException(
                     "The content type must be \"multipart/form-data\" with a \"boundary\" parameter");
         }
-
-        this.boundary = getMediaType().getParameters().getFirstValue(PARAMETER_BOUNDARY);
-
-        if (this.boundary == null) {
+        String parsedBoundary = mediaType.getParameters().getFirstValue(PARAMETER_BOUNDARY);
+        if (parsedBoundary == null) {
             throw new IllegalArgumentException(
                     "The content type must have a \"boundary\" parameter");
         }
-
         if (multiPartEntity == null) {
             throw new IllegalArgumentException("The multipart entity can't be null");
         }
+
+        super(null, mediaType);
+        this.boundary = parsedBoundary;
 
         try (InputStream in = multiPartEntity) {
             this.parts = new Parser(in, this.boundary, storageLocation).parse();
@@ -674,22 +672,24 @@ public class MultiPartRepresentation extends InputRepresentation {
         }
 
         private static String unquote(String value) {
-            if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 1; i < value.length() - 1; i++) {
-                    char ch = value.charAt(i);
-                    // Browsers don't escape backslashes in file names (Windows paths), so only
-                    // quotes and backslashes are unescaped.
-                    if (ch == '\\'
-                            && i + 1 < value.length() - 1
-                            && (value.charAt(i + 1) == '"' || value.charAt(i + 1) == '\\')) {
-                        ch = value.charAt(++i);
-                    }
-                    sb.append(ch);
-                }
-                return sb.toString();
+            if (value.length() < 2 || !value.startsWith("\"") || !value.endsWith("\"")) {
+                return value;
             }
-            return value;
+            // Browsers don't escape backslashes in file names (Windows paths), so only quotes and
+            // backslashes are unescaped.
+            StringBuilder sb = new StringBuilder();
+            int end = value.length() - 1;
+            int i = 1;
+            while (i < end) {
+                char ch = value.charAt(i);
+                boolean escape =
+                        ch == '\\'
+                                && i + 1 < end
+                                && (value.charAt(i + 1) == '"' || value.charAt(i + 1) == '\\');
+                sb.append(escape ? value.charAt(i + 1) : ch);
+                i += escape ? 2 : 1;
+            }
+            return sb.toString();
         }
     }
 

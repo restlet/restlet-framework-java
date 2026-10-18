@@ -68,42 +68,53 @@ class NettyClientHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        boolean readMore = true;
-
         if (msg instanceof HttpResponse response) {
-            HttpResponseStatus status = response.status();
-            if (status.codeClass() == HttpStatusClass.INFORMATIONAL
-                    && status.code() != HttpResponseStatus.SWITCHING_PROTOCOLS.code()) {
-                skippingInterim = true;
-            } else {
-                skippingInterim = false;
-                current.onResponseHead(response);
-            }
+            onHead(current, response);
         }
 
+        boolean readMore = true;
         if (msg instanceof HttpContent content) {
-            boolean last = msg instanceof LastHttpContent;
-            if (skippingInterim) {
-                content.release();
-                if (last) {
-                    skippingInterim = false;
-                }
-            } else {
-                readMore = current.onResponseContent(content.content());
-                if (last) {
-                    readMore = false;
-                    current.onResponseComplete();
-                }
-            }
-        } else if (msg instanceof HttpResponse) {
-            // Head only, the content follows.
-        } else {
+            readMore = onContent(current, content);
+        } else if (!(msg instanceof HttpResponse)) {
             ReferenceCountUtil.release(msg);
         }
 
         if (readMore) {
             ctx.read();
         }
+    }
+
+    /** Handles a response head, skipping interim (1xx) responses. */
+    private void onHead(NettyClientCall current, HttpResponse response) {
+        HttpResponseStatus status = response.status();
+        skippingInterim =
+                status.codeClass() == HttpStatusClass.INFORMATIONAL
+                        && status.code() != HttpResponseStatus.SWITCHING_PROTOCOLS.code();
+        if (!skippingInterim) {
+            current.onResponseHead(response);
+        }
+    }
+
+    /**
+     * Handles response content, whose ownership is transferred.
+     *
+     * @return True if the event loop should read more content now.
+     */
+    private boolean onContent(NettyClientCall current, HttpContent content) {
+        boolean last = content instanceof LastHttpContent;
+        if (skippingInterim) {
+            content.release();
+            if (last) {
+                skippingInterim = false;
+            }
+            return true;
+        }
+        boolean readMore = current.onResponseContent(content.content());
+        if (last) {
+            current.onResponseComplete();
+            return false;
+        }
+        return readMore;
     }
 
     @Override

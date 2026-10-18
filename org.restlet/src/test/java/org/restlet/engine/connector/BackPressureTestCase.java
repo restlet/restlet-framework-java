@@ -72,18 +72,16 @@ class BackPressureTestCase {
 
     /** A large response body written as fast as possible, tracking the bytes produced. */
     private static Representation largeBody(AtomicLong produced) {
-        Representation result =
-                new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM, SIZE) {
-                    @Override
-                    public void write(OutputStream out) throws IOException {
-                        byte[] chunk = pattern(CHUNK);
-                        for (long sent = 0; sent < SIZE; sent += CHUNK) {
-                            out.write(chunk);
-                            produced.addAndGet(CHUNK);
-                        }
-                    }
-                };
-        return result;
+        return new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM, SIZE) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                byte[] chunk = pattern(CHUNK);
+                for (long sent = 0; sent < SIZE; sent += CHUNK) {
+                    out.write(chunk);
+                    produced.addAndGet(CHUNK);
+                }
+            }
+        };
     }
 
     private static byte[] pattern(int length) {
@@ -134,8 +132,7 @@ class BackPressureTestCase {
                             .getBytes(StandardCharsets.US_ASCII));
             out.flush();
 
-            Thread.sleep(1500);
-            long producedWhileStalled = produced.get();
+            long producedWhileStalled = awaitStall(produced);
             assertTrue(
                     producedWhileStalled < SIZE / 4,
                     "The server buffered " + producedWhileStalled + " bytes for a stalled reader");
@@ -151,6 +148,7 @@ class BackPressureTestCase {
     @Test
     void clientWriterIsSlowedDownBySlowServerReader() throws Exception {
         final CountDownLatch started = new CountDownLatch(1);
+        final CountDownLatch readAllowed = new CountDownLatch(1);
         final AtomicLong received = new AtomicLong();
         server =
                 new Server(
@@ -162,11 +160,17 @@ class BackPressureTestCase {
                             public void handle(Request request, Response response) {
                                 started.countDown();
                                 try (InputStream in = request.getEntity().getStream()) {
-                                    Thread.sleep(1500);
+                                    // Don't read until the test has checked the client stalled.
+                                    if (!readAllowed.await(30, TimeUnit.SECONDS)) {
+                                        throw new IOException("The test didn't allow reading");
+                                    }
                                     received.set(drain(in, CHUNK));
                                     response.setEntity(
                                             Long.toString(received.get()), MediaType.TEXT_PLAIN);
-                                } catch (Exception e) {
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
+                                } catch (IOException e) {
                                     response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
                                 }
                             }
@@ -187,8 +191,8 @@ class BackPressureTestCase {
         Thread sender = Thread.ofVirtual().start(() -> result[0] = client.handle(request));
 
         assertTrue(started.await(10, TimeUnit.SECONDS));
-        Thread.sleep(500);
-        long producedWhileStalled = produced.get();
+        long producedWhileStalled = awaitStall(produced);
+        readAllowed.countDown();
         assertTrue(
                 producedWhileStalled < SIZE / 4,
                 "The client buffered " + producedWhileStalled + " bytes for a stalled server");
@@ -223,8 +227,7 @@ class BackPressureTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         try (InputStream in = response.getEntity().getStream()) {
-            Thread.sleep(1500);
-            long producedWhileStalled = produced.get();
+            long producedWhileStalled = awaitStall(produced);
             assertTrue(
                     producedWhileStalled < SIZE / 4,
                     "The server produced "
@@ -244,5 +247,33 @@ class BackPressureTestCase {
             sb.append((char) c);
         }
         return sb.toString();
+    }
+
+    /**
+     * Waits, without consuming anything, until the producer stalls: its counter stops progressing
+     * for a while, because back-pressure blocks it. Fails if it never stalls.
+     *
+     * @param produced The bytes produced so far.
+     * @return The bytes produced once stalled.
+     */
+    private static long awaitStall(AtomicLong produced) throws InterruptedException {
+        final long quietNanos = TimeUnit.MILLISECONDS.toNanos(300);
+        final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        final Object monitor = new Object();
+        long last = produced.get();
+        long lastChange = System.nanoTime();
+        synchronized (monitor) {
+            while (System.nanoTime() < deadline) {
+                monitor.wait(20);
+                long now = produced.get();
+                if (now != last) {
+                    last = now;
+                    lastChange = System.nanoTime();
+                } else if (System.nanoTime() - lastChange >= quietNanos) {
+                    return last;
+                }
+            }
+        }
+        throw new AssertionError("The producer never stalled, " + last + " bytes produced");
     }
 }

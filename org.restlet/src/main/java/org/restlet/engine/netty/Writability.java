@@ -89,7 +89,7 @@ final class Writability {
                     remaining -= (slice - Math.max(0, left));
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new InterruptedIOException("Interrupted while writing");
         } finally {

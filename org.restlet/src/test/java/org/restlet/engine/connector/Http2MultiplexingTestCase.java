@@ -107,7 +107,7 @@ class Http2MultiplexingTestCase {
                         // streams are processed concurrently.
                         barrier.countDown();
                         barrier.await(10, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException _) {
                         Thread.currentThread().interrupt();
                     } finally {
                         inFlight.decrementAndGet();
