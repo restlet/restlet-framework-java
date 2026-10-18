@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.BooleanSupplier;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSet;
@@ -80,6 +81,9 @@ public class Request extends Message {
 
     /** The cookies provided by the client. */
     private volatile Series<Cookie> cookies;
+
+    /** Action used by an active client connector to abort this request. */
+    private volatile BooleanSupplier abortAction;
 
     /** The trailing headers received with the request entity. */
     private volatile Series<Header> trailers;
@@ -311,7 +315,18 @@ public class Request extends Message {
      * @return True if the request was aborted.
      */
     public boolean abort() {
-        return false;
+        BooleanSupplier action = abortAction;
+        return action != null && action.getAsBoolean();
+    }
+
+    /**
+     * Sets the action used to abort an active client request. Connector implementations configure
+     * this while a request is in flight and clear it when the exchange ends.
+     *
+     * @param action The abort action, or null when no exchange is active.
+     */
+    public void setAbortAction(BooleanSupplier action) {
+        this.abortAction = action;
     }
 
     /**
