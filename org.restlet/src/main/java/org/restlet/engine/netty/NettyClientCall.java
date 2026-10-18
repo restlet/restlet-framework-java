@@ -31,7 +31,9 @@ import java.io.InterruptedIOException;
 import java.io.PushbackInputStream;
 import java.net.ConnectException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -51,12 +53,14 @@ import org.restlet.util.Series;
 
 /**
  * HTTP client exchange based on Netty, mapping a Restlet request and response to Netty messages.
- * The calling thread blocks while the request is written and until the response head is received;
- * the response body is then streamed from the connection.
+ * The calling thread waits until the response head is received; on HTTP/2, the request body is
+ * written concurrently. The response body is then streamed from the connection.
  *
  * <p>This class is internal to the Netty connectors.
  */
 class NettyClientCall {
+
+    static final String ASYNC_REQUEST_BODY_ATTRIBUTE = "org.restlet.engine.netty.asyncRequestBody";
 
     /** The parent helper. */
     private final NettyClientHelper helper;
@@ -85,6 +89,8 @@ class NettyClientCall {
     private final ReentrantLock lock = new ReentrantLock();
 
     private final Condition headReceived = lock.newCondition();
+
+    private final Condition requestSentCondition = lock.newCondition();
 
     /** The kind of channel carrying the exchange, set by the helper when it is acquired. */
     private volatile StreamKind kind = StreamKind.HTTP1;
@@ -115,6 +121,14 @@ class NettyClientCall {
 
     /** The failure before the response head, if any. */
     private Throwable failure;
+
+    /** The failure while writing the request body, if any. */
+    private Throwable requestFailure;
+
+    /** Signals whether the background writer or the redirect handler releases the entity. */
+    private volatile CompletableFuture<Boolean> releaseRequestEntity;
+
+    private final AtomicBoolean forceEntityRelease = new AtomicBoolean();
 
     /** Indicates whether the request was fully sent. */
     private boolean requestSent;
@@ -229,39 +243,116 @@ class NettyClientCall {
             connectorService.beforeSend(entity);
         }
 
+        boolean backgroundWriterStarted = false;
         try {
             this.channel = helper.acquire(this);
-            writeRequest(entity);
+            boolean fullDuplex =
+                    kind == StreamKind.HTTP2 && entity != null && entity.getSize() != 0;
+            if (fullDuplex) {
+                CompletableFuture<Boolean> releaseEntity = new CompletableFuture<>();
+                releaseRequestEntity = releaseEntity;
+                request.getAttributes().put(ASYNC_REQUEST_BODY_ATTRIBUTE, Boolean.TRUE);
+                Thread.startVirtualThread(
+                        () -> {
+                            try {
+                                writeRequest(entity);
+                            } catch (IOException | RuntimeException e) {
+                                onFailure(e);
+                            } finally {
+                                if (releaseEntity.join() || forceEntityRelease.get()) {
+                                    entity.release();
+                                }
+                                if (connectorService != null) {
+                                    connectorService.afterSend(entity);
+                                }
+                            }
+                        });
+                backgroundWriterStarted = true;
+            } else {
+                writeRequest(entity);
+            }
             awaitHead();
             result = new Status(statusCode, reasonPhrase);
+            if (backgroundWriterStarted) {
+                boolean followRedirect =
+                        helper.isFollowRedirects()
+                                && !request.isAsynchronous()
+                                && result.isRedirection();
+                releaseRequestEntity.complete(!followRedirect);
+                if (followRedirect) {
+                    awaitRequestSent();
+                }
+            }
         } catch (ConnectException e) {
+            completeEntityRelease();
             helper.logFailure("Unable to connect to the remote HTTP server", e);
             abort();
             result = new Status(Status.CONNECTOR_ERROR_CONNECTION, e);
         } catch (IOException e) {
+            completeEntityRelease();
             helper.logFailure(
                     "An error occurred during the communication with the remote HTTP server", e);
             abort();
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
         } catch (RuntimeException e) {
+            completeEntityRelease();
             helper.logFailure("An unexpected error occurred while sending the request", e);
             abort();
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
         } finally {
-            // A repeatable entity is kept for a possible redirect (307/308) and released by the
-            // helper once the redirects are followed.
-            if (entity != null
-                    && (entity.isTransient()
-                            || !helper.isFollowRedirects()
-                            || request.isAsynchronous())) {
-                entity.release();
-            }
-            if (connectorService != null) {
-                connectorService.afterSend(entity);
+            if (!backgroundWriterStarted) {
+                // A repeatable entity is kept for a possible redirect (307/308) and released by
+                // the helper once the redirects are followed.
+                if (entity != null
+                        && (entity.isTransient()
+                                || !helper.isFollowRedirects()
+                                || request.isAsynchronous())) {
+                    entity.release();
+                }
+                if (connectorService != null) {
+                    connectorService.afterSend(entity);
+                }
             }
         }
 
         return result;
+    }
+
+    private void completeEntityRelease() {
+        forceEntityRelease.set(true);
+        CompletableFuture<Boolean> releaseEntity = releaseRequestEntity;
+        if (releaseEntity != null) {
+            releaseEntity.complete(true);
+        }
+    }
+
+    private void awaitRequestSent() throws IOException {
+        long timeout = helper.getIdleTimeout();
+        lock.lock();
+        try {
+            long remaining =
+                    (timeout > 0) ? TimeUnit.MILLISECONDS.toNanos(timeout) : Long.MAX_VALUE;
+            while (!requestSent && requestFailure == null) {
+                if (timeout > 0) {
+                    if (remaining <= 0) {
+                        throw new InterruptedIOException("Timed out waiting for the request body");
+                    }
+                    remaining = requestSentCondition.awaitNanos(remaining);
+                } else {
+                    requestSentCondition.await();
+                }
+            }
+            if (requestFailure != null) {
+                throw (requestFailure instanceof IOException ioe)
+                        ? ioe
+                        : new IOException("Unable to write the request body", requestFailure);
+            }
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while waiting for the request body");
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -407,6 +498,7 @@ class NettyClientCall {
         lock.lock();
         try {
             requestSent = true;
+            requestSentCondition.signalAll();
         } finally {
             lock.unlock();
         }
@@ -601,6 +693,10 @@ class NettyClientCall {
     void onFailure(Throwable cause) {
         lock.lock();
         try {
+            if (!requestSent) {
+                requestFailure = cause;
+                requestSentCondition.signalAll();
+            }
             if (responseComplete) {
                 return;
             }
@@ -629,7 +725,6 @@ class NettyClientCall {
                 // The rest of the body would have to be drained.
                 reusable = false;
                 responseComplete = true;
-                requestSent = true;
             }
         } finally {
             lock.unlock();
