@@ -38,7 +38,7 @@ import org.restlet.util.Series;
  * Switches an HTTP/1.1 server connection to WebSocket after a Restlet accepted the upgrade, then
  * runs the session handler on its own virtual thread.
  */
-final class NettyWebSocketUpgrader implements NettyConnectionUpgrade {
+final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpgrade {
 
     /** Name of the server connector attribute holding the session permits. */
     private static final String PERMITS_ATTRIBUTE = "org.restlet.ext.websocket.permits";
@@ -53,7 +53,7 @@ final class NettyWebSocketUpgrader implements NettyConnectionUpgrade {
      *
      * @param upgrade The accepted upgrade.
      */
-    NettyWebSocketUpgrader(WebSocketUpgrade upgrade) {
+    NettyWebSocketConnectionUpgrade(WebSocketUpgrade upgrade) {
         this.upgrade = upgrade;
     }
 

@@ -86,8 +86,8 @@ class WebSocketUpgradeTestCase {
 
     @Test
     void resourceRejectsWhenNoHandler() {
-        WebSocketResource refusing =
-                new WebSocketResource() {
+        WebSocketUpgrader refusing =
+                new WebSocketUpgrader() {
                     @Override
                     protected WebSocketHandler accept(Request request, Response response) {
                         return null;

@@ -100,7 +100,9 @@ public final class WebSocketUpgrade {
         WebSocketUpgrade upgrade = new WebSocketUpgrade(handler, subprotocol);
         response.getAttributes().put(ATTRIBUTE, upgrade);
         response.getAttributes()
-                .put(NettyConnectionUpgrade.ATTRIBUTE, new NettyWebSocketUpgrader(upgrade));
+                .put(
+                        NettyConnectionUpgrade.ATTRIBUTE,
+                        new NettyWebSocketConnectionUpgrade(upgrade));
         response.setStatus(Status.INFO_SWITCHING_PROTOCOL);
         response.setEntity(null);
     }

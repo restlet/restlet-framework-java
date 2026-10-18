@@ -7,7 +7,7 @@
  * <p>Restlet is a registered trademark of QlikTech International AB.
  */
 /**
- * WebSocket support (experimental): {@link org.restlet.ext.websocket.WebSocketResource} accepts
+ * WebSocket support (experimental): {@link org.restlet.ext.websocket.WebSocketUpgrader} accepts
  * upgrades on the Netty HTTP server connector of the core, {@link
  * org.restlet.ext.websocket.WebSocketClient} opens client sessions, and both use the blocking
  * {@link org.restlet.ext.websocket.WebSocketSession}.

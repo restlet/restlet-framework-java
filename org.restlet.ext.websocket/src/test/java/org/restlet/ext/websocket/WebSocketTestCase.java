@@ -74,8 +74,8 @@ class WebSocketTestCase {
         Engine.register();
     }
 
-    private static WebSocketResource resource(WebSocketHandler handler) {
-        return new WebSocketResource() {
+    private static WebSocketUpgrader upgrader(WebSocketHandler handler) {
+        return new WebSocketUpgrader() {
             @Override
             protected WebSocketHandler accept(Request request, Response response) {
                 return handler;
@@ -104,7 +104,7 @@ class WebSocketTestCase {
 
     @Test
     void echoesTextAndBinaryMessagesWithSubprotocol() throws Exception {
-        String base = start(resource(ECHO), new Context());
+        String base = start(upgrader(ECHO), new Context());
 
         try (WebSocketSession session =
                 client.connect(URI.create(base + "/echo"), List.of("other", "chat"), Map.of())) {
@@ -126,7 +126,7 @@ class WebSocketTestCase {
     void serverHandlerReturningClosesTheSessionNormally() throws Exception {
         String base =
                 start(
-                        resource(
+                        upgrader(
                                 session -> {
                                     session.sendText("bye");
                                 }),
@@ -146,7 +146,7 @@ class WebSocketTestCase {
         CountDownLatch closed = new CountDownLatch(1);
         String base =
                 start(
-                        resource(
+                        upgrader(
                                 session -> {
                                     assertNull(session.receive());
                                     serverCode.set(session.getCloseCode());
@@ -169,7 +169,7 @@ class WebSocketTestCase {
     void largerMessagesThanTheLimitCloseTheSession() throws Exception {
         Context context = new Context();
         context.getParameters().add("websocket.maxMessageSize", "16");
-        String base = start(resource(ECHO), context);
+        String base = start(upgrader(ECHO), context);
 
         WebSocketSession session = client.connect(base + "/");
         session.sendText("x".repeat(64));
@@ -184,7 +184,7 @@ class WebSocketTestCase {
                     @Override
                     public Restlet createInboundRoot() {
                         Router router = new Router(getContext());
-                        router.attach("/echo", resource(ECHO));
+                        router.attach("/echo", upgrader(ECHO));
                         Authenticator guard =
                                 new Authenticator(getContext()) {
                                     @Override
@@ -239,8 +239,8 @@ class WebSocketTestCase {
     }
 
     @Test
-    void plainRequestsToAWebSocketResourceAreRejected() throws Exception {
-        String base = start(resource(ECHO), new Context());
+    void plainRequestsToAWebSocketUpgraderAreRejected() throws Exception {
+        String base = start(upgrader(ECHO), new Context());
         Client http = new Client(Protocol.HTTP);
         http.start();
         try {
@@ -256,7 +256,7 @@ class WebSocketTestCase {
     void enforcesTheOpenSessionLimit() throws Exception {
         Context context = new Context();
         context.getParameters().add("websocket.maxSessions", "1");
-        String base = start(resource(ECHO), context);
+        String base = start(upgrader(ECHO), context);
 
         WebSocketSession first = client.connect(base + "/");
         IOException rejected = assertThrows(IOException.class, () -> client.connect(base + "/"));
@@ -278,7 +278,7 @@ class WebSocketTestCase {
 
     @Test
     void interoperatesWithTheJdkWebSocketClient() throws Exception {
-        String base = start(resource(ECHO), new Context());
+        String base = start(upgrader(ECHO), new Context());
         CompletableFuture<String> reply = new CompletableFuture<>();
         HttpClient jdk = HttpClient.newHttpClient();
         WebSocket ws =
