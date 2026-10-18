@@ -301,25 +301,35 @@ public class MultiPartRepresentation extends InputRepresentation {
     public MultiPartRepresentation(
             MediaType mediaType, InputStream multiPartEntity, Path storageLocation)
             throws IOException {
+        super(null, checkMultipartMediaType(mediaType, multiPartEntity));
+        this.boundary = mediaType.getParameters().getFirstValue(PARAMETER_BOUNDARY);
+
+        try (InputStream in = multiPartEntity) {
+            this.parts = new Parser(in, this.boundary, storageLocation).parse();
+        }
+    }
+
+    /**
+     * Checks the arguments of the parsing constructor, before the representation is created.
+     *
+     * @param mediaType The media type, which must be "multipart/form-data" with a "boundary".
+     * @param multiPartEntity The multipart entity, which must not be null.
+     * @return The media type.
+     */
+    private static MediaType checkMultipartMediaType(
+            MediaType mediaType, InputStream multiPartEntity) {
         if (!MediaType.MULTIPART_FORM_DATA.equals(mediaType, true)) {
             throw new IllegalArgumentException(
                     "The content type must be \"multipart/form-data\" with a \"boundary\" parameter");
         }
-        String parsedBoundary = mediaType.getParameters().getFirstValue(PARAMETER_BOUNDARY);
-        if (parsedBoundary == null) {
+        if (mediaType.getParameters().getFirstValue(PARAMETER_BOUNDARY) == null) {
             throw new IllegalArgumentException(
                     "The content type must have a \"boundary\" parameter");
         }
         if (multiPartEntity == null) {
             throw new IllegalArgumentException("The multipart entity can't be null");
         }
-
-        super(null, mediaType);
-        this.boundary = parsedBoundary;
-
-        try (InputStream in = multiPartEntity) {
-            this.parts = new Parser(in, this.boundary, storageLocation).parse();
-        }
+        return mediaType;
     }
 
     /**
