@@ -30,11 +30,13 @@ import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.client.transport.ClientConnectionFactoryOverHTTP2;
 import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
 import org.eclipse.jetty.http3.client.HTTP3Client;
+import org.eclipse.jetty.http3.client.HTTP3ClientQuicConfiguration;
 import org.eclipse.jetty.http3.client.transport.ClientConnectionFactoryOverHTTP3;
 import org.eclipse.jetty.http3.client.transport.HttpClientTransportOverHTTP3;
 import org.eclipse.jetty.io.ClientConnectionFactory;
 import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.quic.client.ClientQuicConfiguration;
+import org.eclipse.jetty.quic.quiche.client.QuicheClientQuicConfiguration;
+import org.eclipse.jetty.quic.quiche.client.QuicheTransport;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -236,8 +238,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
         this.authenticationStore = null;
-        this.cookieStore =
-                isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
+        this.cookieStore = isCookieSupported()
+                ? new HttpCookieStore.Default()
+                : new HttpCookieStore.Empty();
         this.executor = null;
     }
 
@@ -248,15 +251,10 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      * @return A low-level HTTP client call.
      */
     public ClientCall create(Request request) {
-        ClientCall result = null;
-
-        result =
-                new JettyClientCall(
+        return new JettyClientCall(
                         this,
                         request.getMethod().toString(),
                         ReferenceUtils.update(request.getResourceRef(), request).toString());
-
-        return result;
     }
 
     /**
@@ -280,8 +278,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
                 switch (httpTransportProtocol) {
                     case HTTP1_1 -> getHttpTransportForHttp11();
                     case HTTP2 -> getHttpClientTransportForHttp2();
-                    case HTTP3 -> getHttpClientTransportForHttp3(sslContextFactory);
-                    case DYNAMIC -> getHttpClientTransportForDynamicMode(sslContextFactory);
+                    case HTTP3 -> getHttpClientTransportForHttp3();
+                    case DYNAMIC -> getHttpClientTransportForDynamicMode();
                 };
 
         final HttpClient result = new HttpClient(httpTransport);
@@ -347,25 +345,28 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
     private HttpClientTransport getHttpClientTransportForHttp2() {
         HTTP2Client http2Client = new HTTP2Client();
-        HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(http2Client);
-        http2Transport.setUseALPN(true);
+        http2Client.setUseALPN(true);
 
-        return http2Transport;
+        return new HttpClientTransportOverHTTP2(http2Client);
     }
 
-    private HttpClientTransport getHttpClientTransportForHttp3(
-            SslContextFactory.Client sslContextFactory) {
-        Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
-        ClientQuicConfiguration quicConfiguration =
-                new ClientQuicConfiguration(sslContextFactory, pemWorkDirectory);
+    private HttpClientTransport getHttpClientTransportForHttp3() {
+        QuicheClientQuicConfiguration quicConfiguration = createQuicConfiguration();
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
-        http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
 
-        return new HttpClientTransportOverHTTP3(http3Client);
+        return new HttpClientTransportOverHTTP3(
+                http3Client, new QuicheTransport(quicConfiguration));
     }
 
-    private HttpClientTransport getHttpClientTransportForDynamicMode(
-            SslContextFactory.Client sslContextFactory) {
+    private QuicheClientQuicConfiguration createQuicConfiguration() {
+        QuicheClientQuicConfiguration quicConfiguration =
+                HTTP3ClientQuicConfiguration.configure(
+                        new QuicheClientQuicConfiguration(getHttp3PemWorkDirectoryPath()));
+        quicConfiguration.setSessionMaxData(64 * 1024L * 1024L);
+        return quicConfiguration;
+    }
+
+    private HttpClientTransport getHttpClientTransportForDynamicMode() {
 
         ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
 
@@ -373,11 +374,11 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         ClientConnectionFactoryOverHTTP2.HTTP2 http2 =
                 new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration =
-                new ClientQuicConfiguration(sslContextFactory, getHttp3PemWorkDirectoryPath());
+        QuicheClientQuicConfiguration quicConfiguration = createQuicConfiguration();
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         ClientConnectionFactoryOverHTTP3.HTTP3 http3 =
-                new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
+                new ClientConnectionFactoryOverHTTP3.HTTP3(
+                        http3Client, new QuicheTransport(quicConfiguration));
 
         return new HttpClientTransportDynamic(new ClientConnector(), http1, http2, http3);
     }

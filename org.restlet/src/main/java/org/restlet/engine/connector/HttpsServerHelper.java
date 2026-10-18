@@ -17,8 +17,9 @@ import java.util.logging.Level;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.http3.server.HTTP3ServerConnectionFactory;
-import org.eclipse.jetty.quic.server.QuicServerConnector;
-import org.eclipse.jetty.quic.server.ServerQuicConfiguration;
+import org.eclipse.jetty.http3.server.HTTP3ServerQuicConfiguration;
+import org.eclipse.jetty.quic.quiche.server.QuicheServerConnector;
+import org.eclipse.jetty.quic.quiche.server.QuicheServerQuicConfiguration;
 import org.eclipse.jetty.server.AbstractConnectionFactory;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -97,9 +98,8 @@ public class HttpsServerHelper extends JettyServerHelper {
             ServerConnector connector = createServerConnector(server, configuration);
             result.add(connector);
         } else if (httpTransportProtocols.contains(HttpTransportProtocol.HTTP3)) {
-            ServerQuicConfiguration configuration =
-                    createQuicConfiguration(getQuicServerSslContextFactory());
-            QuicServerConnector connector = createQuicServerConnector(server, configuration);
+            QuicheServerConnector connector =
+                    createQuicServerConnector(server, createHttpConfiguration());
             result.add(connector);
         }
 
@@ -144,11 +144,15 @@ public class HttpsServerHelper extends JettyServerHelper {
                 sslContextFactory, connectionFactories.toArray(new ConnectionFactory[0]));
     }
 
-    private QuicServerConnector createQuicServerConnector(
-            org.eclipse.jetty.server.Server server, ServerQuicConfiguration configuration) {
-        QuicServerConnector connector =
-                new QuicServerConnector(
-                        server, configuration, new HTTP3ServerConnectionFactory(configuration));
+    private QuicheServerConnector createQuicServerConnector(
+            org.eclipse.jetty.server.Server server, HttpConfiguration httpConfiguration) {
+        QuicheServerQuicConfiguration quicConfiguration = createQuicConfiguration();
+        QuicheServerConnector connector =
+                new QuicheServerConnector(
+                        server,
+                        getQuicServerSslContextFactory(),
+                        quicConfiguration,
+                        new HTTP3ServerConnectionFactory(httpConfiguration));
         final String address = getHelped().getAddress();
         if (address != null) {
             connector.setHost(address);
@@ -243,11 +247,10 @@ public class HttpsServerHelper extends JettyServerHelper {
         return sslContextFactory;
     }
 
-    private ServerQuicConfiguration createQuicConfiguration(
-            SslContextFactory.Server sslContextFactory) {
-        Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
-        ServerQuicConfiguration configuration =
-                new ServerQuicConfiguration(sslContextFactory, pemWorkDirectory);
+    private QuicheServerQuicConfiguration createQuicConfiguration() {
+        QuicheServerQuicConfiguration configuration =
+                HTTP3ServerQuicConfiguration.configure(
+                        new QuicheServerQuicConfiguration(getHttp3PemWorkDirectoryPath()));
         configuration.setOutputBufferSize(getHttpOutputBufferSize());
         return configuration;
     }
