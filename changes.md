@@ -72,6 +72,8 @@ Changes log
           continues to be written on a virtual thread.
         - Active client requests can be aborted; HTTP stream failures surface as I/O errors and a
           communication-error response callback.
+        - HTTP/2 and HTTP/3 requests advertise `te: trailers`; stream header names are normalized
+          to lowercase at the HTTP boundary.
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.

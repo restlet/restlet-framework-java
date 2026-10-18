@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.PushbackInputStream;
 import java.net.ConnectException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -590,7 +591,11 @@ class NettyClientCall {
         if (!requestTrailers.isEmpty()) {
             DefaultLastHttpContent withTrailers = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
             for (Header trailer : requestTrailers) {
-                withTrailers.trailingHeaders().add(trailer.getName(), trailer.getValue());
+                String name =
+                        kind.isStream()
+                                ? trailer.getName().toLowerCase(Locale.ROOT)
+                                : trailer.getName();
+                withTrailers.trailingHeaders().add(name, trailer.getValue());
             }
             lastContent = withTrailers;
         }
@@ -620,6 +625,9 @@ class NettyClientCall {
             String name = header.getName();
             if (!HeaderConstants.HEADER_CONTENT_LENGTH.equalsIgnoreCase(name)
                     && !HeaderConstants.HEADER_TRANSFER_ENCODING.equalsIgnoreCase(name)) {
+                if (kind.isStream()) {
+                    name = name.toLowerCase(Locale.ROOT);
+                }
                 headers.add(name, header.getValue());
             }
         }
@@ -632,6 +640,7 @@ class NettyClientCall {
         if (kind.isStream()) {
             headers.remove(HttpHeaderNames.CONNECTION);
             headers.remove("Keep-Alive");
+            headers.set("te", "trailers");
             // The HTTP/2 and HTTP/3 codecs read the ":scheme" pseudo-header from their extension
             // header.
             headers.set(
@@ -715,7 +724,8 @@ class NettyClientCall {
      */
     void onResponseHead(HttpResponse response) {
         for (Map.Entry<String, String> entry : response.headers()) {
-            String name = entry.getKey();
+            String name =
+                    kind.isStream() ? entry.getKey().toLowerCase(Locale.ROOT) : entry.getKey();
             if (!name.regionMatches(true, 0, "x-http2-", 0, 8)
                     && !name.regionMatches(true, 0, "x-http3-", 0, 8)) {
                 responseHeaders.add(name, entry.getValue());
@@ -770,7 +780,11 @@ class NettyClientCall {
         org.restlet.Response currentResponse = response;
         if (currentResponse != null) {
             for (Map.Entry<String, String> trailer : trailers) {
-                currentResponse.getTrailers().add(trailer.getKey(), trailer.getValue());
+                String name =
+                        kind.isStream()
+                                ? trailer.getKey().toLowerCase(Locale.ROOT)
+                                : trailer.getKey();
+                currentResponse.getTrailers().add(name, trailer.getValue());
             }
         }
         ChannelInputStream stream = this.body;
