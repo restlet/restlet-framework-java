@@ -13,6 +13,7 @@ module org.restlet.ext.websocket {
     // Netty is an implementation detail of the extension: required, not re-exported.
     requires io.netty.buffer;
     requires io.netty.codec;
+    requires io.netty.codec.compression;
     requires io.netty.codec.http;
     requires io.netty.common;
     requires io.netty.handler;

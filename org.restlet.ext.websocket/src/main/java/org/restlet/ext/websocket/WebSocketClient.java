@@ -34,6 +34,8 @@ public final class WebSocketClient implements AutoCloseable {
                         builder.connectTimeout.toMillis(),
                         builder.idleTimeout.toMillis(),
                         builder.maxMessageSize,
+                        (builder.maxFrameSize > 0) ? builder.maxFrameSize : builder.maxMessageSize,
+                        builder.compression,
                         builder.hostnameVerification,
                         Logger.getLogger(WebSocketClient.class.getName()));
     }
@@ -101,6 +103,10 @@ public final class WebSocketClient implements AutoCloseable {
 
         private int maxMessageSize = 65536;
 
+        private int maxFrameSize;
+
+        private boolean compression = true;
+
         private boolean hostnameVerification = true;
 
         private Builder() {}
@@ -150,6 +156,33 @@ public final class WebSocketClient implements AutoCloseable {
                 throw new IllegalArgumentException("maxMessageSize must be positive");
             }
             this.maxMessageSize = maxMessageSize;
+            return this;
+        }
+
+        /**
+         * Sets the maximum size in bytes of a received frame. A message may be fragmented in
+         * several frames. Defaults to the maximum message size, and is capped by it.
+         *
+         * @param maxFrameSize The maximum frame size.
+         * @return This builder.
+         */
+        public Builder maxFrameSize(int maxFrameSize) {
+            if (maxFrameSize <= 0) {
+                throw new IllegalArgumentException("maxFrameSize must be positive");
+            }
+            this.maxFrameSize = maxFrameSize;
+            return this;
+        }
+
+        /**
+         * Sets whether "permessage-deflate" compression (RFC 7692) is offered to the server.
+         * Defaults to true; it is used only if the server accepts it.
+         *
+         * @param compression True to offer compression.
+         * @return This builder.
+         */
+        public Builder compression(boolean compression) {
+            this.compression = compression;
             return this;
         }
 

@@ -71,8 +71,10 @@ Changes log
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
           virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
           `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server
-          answers pings, pings idle sessions, and supports the "websocket.maxSessions" and
-          "websocket.maxMessageSize" parameters.
+          answers pings, pings idle sessions, and supports the "websocket.maxSessions",
+          "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
+          parameters. Server and client support "permessage-deflate" compression (RFC 7692),
+          enabled by default.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
