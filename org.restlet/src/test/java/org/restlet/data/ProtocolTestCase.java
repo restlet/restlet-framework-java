@@ -76,7 +76,16 @@ class ProtocolTestCase {
         assertSame(Protocol.JAR, Protocol.valueOf("jar"));
         assertSame(Protocol.JDBC, Protocol.valueOf("jdbc"));
         assertSame(Protocol.RIAP, Protocol.valueOf("riap"));
+        assertSame(Protocol.STDIO, Protocol.valueOf("stdio"));
         assertSame(Protocol.ZIP, Protocol.valueOf("zip"));
+    }
+
+    @Test
+    void stdio_isAnUnknownPortPseudoProtocol() {
+        assertEquals("stdio", Protocol.STDIO.getSchemeName());
+        assertEquals("STDIO", Protocol.STDIO.getName());
+        assertEquals(Protocol.UNKNOWN_PORT, Protocol.STDIO.getDefaultPort());
+        assertFalse(Protocol.STDIO.isConfidential());
     }
 
     @Test
