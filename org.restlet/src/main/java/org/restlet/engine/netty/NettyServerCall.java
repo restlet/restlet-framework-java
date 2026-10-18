@@ -50,6 +50,7 @@ import javax.net.ssl.SSLSession;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.Header;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -124,6 +125,9 @@ class NettyServerCall {
 
     /** The response body stream, if any. */
     private volatile ChannelOutputStream responseBody;
+
+    /** Whether this call holds an open SSE stream permit. */
+    private boolean eventStreamPermit;
 
     /** The "Alt-Svc" header value advertising HTTP/3, or null. */
     private volatile String altSvc;
@@ -354,6 +358,15 @@ class NettyServerCall {
     void commit(Response response) {
         try {
             responseTrailers = response.getTrailers();
+            if (isEventStream(response.getEntity())) {
+                if (helper.tryAcquireEventStream()) {
+                    eventStreamPermit = true;
+                    channel.attr(NettyServerHandler.EVENT_STREAM_ACTIVE).set(true);
+                } else {
+                    response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+                    response.setEntity(null);
+                }
+            }
             prepareEntity(response);
             addResponseHeaders(response);
             sendResponse(response);
@@ -365,6 +378,12 @@ class NettyServerCall {
                 response.getOnSent().handle(response.getRequest(), response);
             }
         }
+    }
+
+    private static boolean isEventStream(Representation entity) {
+        return entity != null
+                && entity.getMediaType() != null
+                && MediaType.TEXT_EVENT_STREAM.includes(entity.getMediaType());
     }
 
     /** Adds the entity headers and drops the entity when the status or method forbids it. */
@@ -604,37 +623,46 @@ class NettyServerCall {
         completed = true;
 
         try {
-            if (!responseHeadWritten) {
-                writeHead(true);
+            try {
+                if (!responseHeadWritten) {
+                    writeHead(true);
+                }
+                if (responseBody != null) {
+                    responseBody.close();
+                }
+            } catch (IOException e) {
+                getLogger().log(Level.FINE, "Unable to complete the response: {0}", e.getMessage());
             }
-            if (responseBody != null) {
-                responseBody.close();
-            }
-        } catch (IOException e) {
-            getLogger().log(Level.FINE, "Unable to complete the response: {0}", e.getMessage());
-        }
 
-        if (!channel.isActive()) {
+            if (!channel.isActive()) {
+                requestBody.close();
+                return;
+            }
+
+            boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
+            LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
+            if (responseTrailersEnabled) {
+                DefaultLastHttpContent withTrailers =
+                        new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
+                copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
+                lastContent = withTrailers;
+            }
+            ChannelFuture future = channel.writeAndFlush(lastContent);
             requestBody.close();
-            return;
-        }
 
-        boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
-        LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
-        if (responseTrailersEnabled) {
-            DefaultLastHttpContent withTrailers = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
-            copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
-            lastContent = withTrailers;
-        }
-        ChannelFuture future = channel.writeAndFlush(lastContent);
-        requestBody.close();
-
-        if (!kind.isStream()) {
-            if (keepAlive) {
-                // Ready for the next request on this connection.
-                future.addListener(f -> channel.read());
-            } else {
-                future.addListener(ChannelFutureListener.CLOSE);
+            if (!kind.isStream()) {
+                if (keepAlive) {
+                    // Ready for the next request on this connection.
+                    future.addListener(f -> channel.read());
+                } else {
+                    future.addListener(ChannelFutureListener.CLOSE);
+                }
+            }
+        } finally {
+            if (eventStreamPermit) {
+                channel.attr(NettyServerHandler.EVENT_STREAM_ACTIVE).set(false);
+                helper.releaseEventStream();
+                eventStreamPermit = false;
             }
         }
     }

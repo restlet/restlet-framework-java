@@ -62,6 +62,10 @@ Changes log
           leftover of the Servlet mode, which is no longer supported. `Protocol.valueOf("war")`
           now returns a new, unknown protocol. Use CLAP or FILE references instead.
     - Enhancements
+        - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
+          streaming and reading Server-Sent Events over the HTTP connectors, including optional
+          comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
+          `server.maxEventStreams` parameter limits concurrent event streams.
         - Added `Response.getProtocol()` and `setProtocol()`: the protocol, with its version,
           used by the server to reply (for example HTTP/1.1, HTTP/2.0 or HTTP/3.0), set by the HTTP
           client connector. When unknown, the protocol of the request is returned.
