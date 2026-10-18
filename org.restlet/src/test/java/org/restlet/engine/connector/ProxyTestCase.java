@@ -197,7 +197,7 @@ class ProxyTestCase {
                     Socket socket = serverSocket.accept();
                     executor.execute(() -> handle(socket));
                 }
-            } catch (IOException e) {
+            } catch (IOException _) {
                 // closed
             }
         }
@@ -242,7 +242,7 @@ class ProxyTestCase {
                         relay(client, in, origin);
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException _) {
                 // connection closed
             }
         }
@@ -255,12 +255,12 @@ class ProxyTestCase {
                                     () -> {
                                         try {
                                             clientIn.transferTo(origin.getOutputStream());
-                                        } catch (IOException e) {
+                                        } catch (IOException _) {
                                             // closed
                                         } finally {
                                             try {
                                                 origin.shutdownOutput();
-                                            } catch (IOException e) {
+                                            } catch (IOException _) {
                                                 // ignore
                                             }
                                         }
@@ -271,7 +271,7 @@ class ProxyTestCase {
                 client.shutdownOutput();
                 try {
                     upstream.join(5000);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                 }
             }

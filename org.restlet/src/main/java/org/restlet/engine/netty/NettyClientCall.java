@@ -113,7 +113,8 @@ class NettyClientCall extends ClientCall {
         this.target = target;
         this.targetHost = resourceRef.getHostDomain();
         int port = resourceRef.getHostPort();
-        this.targetPort = (port == -1) ? (secure ? 443 : 80) : port;
+        int defaultPort = secure ? 443 : 80;
+        this.targetPort = (port == -1) ? defaultPort : port;
         setConfidential(secure);
         setServerAddress(this.targetHost);
         setServerPort(this.targetPort);
@@ -222,48 +223,8 @@ class NettyClientCall extends ClientCall {
 
     private void writeRequest(Representation entity) throws IOException {
         Channel ch = this.channel;
-        boolean http2 = kind.isStream();
-        HttpRequest nettyRequest =
-                new DefaultHttpRequest(
-                        HttpVersion.HTTP_1_1, HttpMethod.valueOf(getMethod()), target);
-        HttpHeaders headers = nettyRequest.headers();
-
-        for (Header header : getRequestHeaders()) {
-            String name = header.getName();
-            if (!HeaderConstants.HEADER_CONTENT_LENGTH.equalsIgnoreCase(name)
-                    && !HeaderConstants.HEADER_TRANSFER_ENCODING.equalsIgnoreCase(name)) {
-                headers.add(name, header.getValue());
-            }
-        }
-
-        String userAgent = helper.getUserAgentField();
-        if (userAgent != null) {
-            headers.set(HttpHeaderNames.USER_AGENT, userAgent);
-        }
-
-        boolean hasBody = (entity != null);
-        if (hasBody && entity.getSize() >= 0) {
-            HttpUtil.setContentLength(nettyRequest, entity.getSize());
-            hasBody = entity.getSize() > 0;
-        } else if (hasBody) {
-            if (!http2) {
-                HttpUtil.setTransferEncodingChunked(nettyRequest, true);
-            }
-        } else if (requiresContentLength(getMethod())) {
-            HttpUtil.setContentLength(nettyRequest, 0);
-        }
-
-        if (http2) {
-            headers.remove(HttpHeaderNames.CONNECTION);
-            headers.remove("Keep-Alive");
-            // The HTTP/2 and HTTP/3 codecs read the ":scheme" pseudo-header from their extension
-            // header.
-            headers.set(
-                    (kind == StreamKind.HTTP3) ? "x-http3-scheme" : "x-http2-scheme",
-                    isConfidential() ? "https" : "http");
-        } else if (!headers.contains(HttpHeaderNames.CONNECTION)) {
-            headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-        }
+        HttpRequest nettyRequest = newRequestHead();
+        boolean hasBody = setBodyHeaders(nettyRequest, entity);
 
         long timeout = helper.getIdleTimeout();
         Writability.await(ch, timeout);
@@ -289,6 +250,68 @@ class NettyClientCall extends ClientCall {
             lock.unlock();
         }
         maybeRelease();
+    }
+
+    /**
+     * Creates the request head with the Restlet request headers, adapted to the transport.
+     *
+     * @return The request head.
+     */
+    private HttpRequest newRequestHead() {
+        HttpRequest result =
+                new DefaultHttpRequest(
+                        HttpVersion.HTTP_1_1, HttpMethod.valueOf(getMethod()), target);
+        HttpHeaders headers = result.headers();
+
+        for (Header header : getRequestHeaders()) {
+            String name = header.getName();
+            if (!HeaderConstants.HEADER_CONTENT_LENGTH.equalsIgnoreCase(name)
+                    && !HeaderConstants.HEADER_TRANSFER_ENCODING.equalsIgnoreCase(name)) {
+                headers.add(name, header.getValue());
+            }
+        }
+
+        String userAgent = helper.getUserAgentField();
+        if (userAgent != null) {
+            headers.set(HttpHeaderNames.USER_AGENT, userAgent);
+        }
+
+        if (kind.isStream()) {
+            headers.remove(HttpHeaderNames.CONNECTION);
+            headers.remove("Keep-Alive");
+            // The HTTP/2 and HTTP/3 codecs read the ":scheme" pseudo-header from their extension
+            // header.
+            headers.set(
+                    (kind == StreamKind.HTTP3) ? "x-http3-scheme" : "x-http2-scheme",
+                    isConfidential() ? "https" : "http");
+        } else if (!headers.contains(HttpHeaderNames.CONNECTION)) {
+            headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        }
+        return result;
+    }
+
+    /**
+     * Sets the headers describing the request body.
+     *
+     * @param request The request head.
+     * @param entity The request entity, or null.
+     * @return True if a body must be written.
+     */
+    private boolean setBodyHeaders(HttpRequest request, Representation entity) {
+        if (entity == null) {
+            if (requiresContentLength(getMethod())) {
+                HttpUtil.setContentLength(request, 0);
+            }
+            return false;
+        }
+        if (entity.getSize() >= 0) {
+            HttpUtil.setContentLength(request, entity.getSize());
+            return entity.getSize() > 0;
+        }
+        if (!kind.isStream()) {
+            HttpUtil.setTransferEncodingChunked(request, true);
+        }
+        return true;
     }
 
     private static boolean requiresContentLength(String method) {
@@ -322,7 +345,7 @@ class NettyClientCall extends ClientCall {
                         ? ioe
                         : new IOException("Unable to receive the response", failure);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new InterruptedIOException("Interrupted while waiting for the response");
         } finally {

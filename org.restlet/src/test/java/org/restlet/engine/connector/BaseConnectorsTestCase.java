@@ -11,7 +11,6 @@ package org.restlet.engine.connector;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -76,8 +75,6 @@ public abstract class BaseConnectorsTestCase {
     }
 
     private void runTest(final HttpServer server, final HttpClient client) throws Exception {
-        if (shouldDebug()) {}
-
         try {
             initEngine(server, client);
             start();
@@ -107,9 +104,6 @@ public abstract class BaseConnectorsTestCase {
     }
 
     private void initEngine(HttpServer server, HttpClient client) {
-        if (shouldDebug()) {
-            Engine.setLogLevel(Level.FINE);
-        }
         Engine.clearThreadLocalVariables();
         Engine nre = Engine.register(false);
         nre.getRegisteredServers().add(server.serverHelper);

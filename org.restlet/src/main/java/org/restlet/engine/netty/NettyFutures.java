@@ -40,7 +40,7 @@ final class NettyFutures {
                 future.cancel(false);
                 throw new ConnectException(message + ": timed out");
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new InterruptedIOException(message + ": interrupted");
         }
@@ -76,7 +76,7 @@ final class NettyFutures {
                 future.channel().close();
                 throw new ConnectException(message + ": timed out");
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             future.channel().close();
             throw new InterruptedIOException(message + ": interrupted");

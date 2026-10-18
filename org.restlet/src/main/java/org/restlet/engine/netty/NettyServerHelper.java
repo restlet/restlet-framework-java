@@ -39,12 +39,18 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.AsciiString;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.engine.adapter.HttpServerHelper;
@@ -188,6 +194,12 @@ public abstract class NettyServerHelper extends HttpServerHelper {
     /** The number of calls in progress. */
     private final AtomicInteger activeCalls = new AtomicInteger();
 
+    /** Guards the wait for the calls in progress to complete, on graceful stop. */
+    private final ReentrantLock activeCallsLock = new ReentrantLock();
+
+    /** Signaled when the last call in progress completes. */
+    private final Condition noActiveCalls = activeCallsLock.newCondition();
+
     /** The application protocols, set on start. */
     private volatile List<String> applicationProtocols = List.of(HTTP_1_1);
 
@@ -211,6 +223,12 @@ public abstract class NettyServerHelper extends HttpServerHelper {
     protected NettyServerHelper(Server server) {
         super(server);
     }
+
+    /** Name of the Restlet handler in a connection pipeline. */
+    private static final String RESTLET_HANDLER = "restlet";
+
+    /** Name of the HTTP/1.1 keep-alive handler in a connection pipeline. */
+    private static final String KEEPALIVE_HANDLER = "http-keepalive";
 
     /** HTTP/1.1 application protocol identifier. */
     protected static final String HTTP_1_1 = "http/1.1";
@@ -246,9 +264,9 @@ public abstract class NettyServerHelper extends HttpServerHelper {
     /**
      * Validates the configuration before starting. Called by {@link #start()}.
      *
-     * @throws Exception If the configuration is invalid.
+     * @throws IllegalArgumentException If the configuration is invalid.
      */
-    protected void validateConfiguration() throws Exception {}
+    protected void validateConfiguration() {}
 
     /**
      * Configures the pipeline of a new connection.
@@ -264,23 +282,7 @@ public abstract class NettyServerHelper extends HttpServerHelper {
         if (ssl != null) {
             pipeline.addLast("ssl", ssl.newHandler(channel.alloc()));
             if (h2) {
-                final boolean http11 = protocols.contains(HTTP_1_1);
-                pipeline.addLast(
-                        "alpn",
-                        new ApplicationProtocolNegotiationHandler(http11 ? HTTP_1_1 : HTTP_2) {
-                            @Override
-                            protected void configurePipeline(
-                                    ChannelHandlerContext ctx, String protocol) {
-                                if (HTTP_2.equals(protocol)) {
-                                    addHttp2Handlers(ctx.pipeline());
-                                } else if (http11 && HTTP_1_1.equals(protocol)) {
-                                    addHttp1Handlers(ctx.pipeline());
-                                } else {
-                                    throw new IllegalStateException(
-                                            "Unsupported application protocol: " + protocol);
-                                }
-                            }
-                        });
+                pipeline.addLast("alpn", newAlpnHandler(protocols.contains(HTTP_1_1)));
             } else {
                 addHttp1Handlers(pipeline);
             }
@@ -289,6 +291,28 @@ public abstract class NettyServerHelper extends HttpServerHelper {
         } else {
             addHttp1Handlers(pipeline);
         }
+    }
+
+    /**
+     * Creates the handler that configures the pipeline once ALPN selected HTTP/2 or HTTP/1.1.
+     *
+     * @param http11 True if HTTP/1.1 is also supported.
+     * @return The ALPN handler.
+     */
+    private ApplicationProtocolNegotiationHandler newAlpnHandler(final boolean http11) {
+        return new ApplicationProtocolNegotiationHandler(http11 ? HTTP_1_1 : HTTP_2) {
+            @Override
+            protected void configurePipeline(ChannelHandlerContext ctx, String protocol) {
+                if (HTTP_2.equals(protocol)) {
+                    addHttp2Handlers(ctx.pipeline());
+                } else if (http11 && HTTP_1_1.equals(protocol)) {
+                    addHttp1Handlers(ctx.pipeline());
+                } else {
+                    throw new IllegalStateException(
+                            "Unsupported application protocol: " + protocol);
+                }
+            }
+        };
     }
 
     /**
@@ -325,9 +349,9 @@ public abstract class NettyServerHelper extends HttpServerHelper {
      */
     private void addHttp1Handlers(ChannelPipeline pipeline) {
         pipeline.addLast("http-codec", newHttpServerCodec());
-        pipeline.addLast("http-keepalive", new HttpServerKeepAliveHandler());
+        pipeline.addLast(KEEPALIVE_HANDLER, new HttpServerKeepAliveHandler());
         pipeline.addLast(
-                "restlet", new NettyServerHandler(this, isConfidential(), StreamKind.HTTP1));
+                RESTLET_HANDLER, new NettyServerHandler(this, isConfidential(), StreamKind.HTTP1));
     }
 
     /**
@@ -380,9 +404,9 @@ public abstract class NettyServerHelper extends HttpServerHelper {
                 new CleartextHttp2ServerUpgradeHandler(
                         sourceCodec, upgradeHandler, priorKnowledge));
         // Requests that are not upgraded stay on HTTP/1.1.
-        pipeline.addLast("http-keepalive", new HttpServerKeepAliveHandler());
+        pipeline.addLast(KEEPALIVE_HANDLER, new HttpServerKeepAliveHandler());
         pipeline.addLast(
-                "restlet", new NettyServerHandler(this, isConfidential(), StreamKind.HTTP1));
+                RESTLET_HANDLER, new NettyServerHandler(this, isConfidential(), StreamKind.HTTP1));
     }
 
     /**
@@ -399,11 +423,11 @@ public abstract class NettyServerHelper extends HttpServerHelper {
                 @Override
                 public void handlerAdded(ChannelHandlerContext ctx) {
                     ChannelPipeline p = ctx.pipeline();
-                    if (p.get("restlet") != null) {
-                        p.remove("restlet");
+                    if (p.get(RESTLET_HANDLER) != null) {
+                        p.remove(RESTLET_HANDLER);
                     }
-                    if (p.get("http-keepalive") != null) {
-                        p.remove("http-keepalive");
+                    if (p.get(KEEPALIVE_HANDLER) != null) {
+                        p.remove(KEEPALIVE_HANDLER);
                     }
                     p.remove(this);
                     ctx.channel().config().setAutoRead(true);
@@ -450,7 +474,14 @@ public abstract class NettyServerHelper extends HttpServerHelper {
 
     /** Releases the permit of a completed call. */
     void releaseCall() {
-        activeCalls.decrementAndGet();
+        if (activeCalls.decrementAndGet() == 0) {
+            activeCallsLock.lock();
+            try {
+                noActiveCalls.signalAll();
+            } finally {
+                activeCallsLock.unlock();
+            }
+        }
         Semaphore permits = callPermits;
         if (permits != null) {
             permits.release();
@@ -471,17 +502,8 @@ public abstract class NettyServerHelper extends HttpServerHelper {
         validateConfiguration();
         List<String> protocols = getApplicationProtocols();
         boolean http3 = protocols.contains(HTTP_3);
-        if (http3) {
-            if (!isConfidential()) {
-                throw new IllegalArgumentException("HTTP/3 requires TLS");
-            }
-            Http3Availability.ensureAvailable();
-        }
         // HTTP/3 is not negotiated on TCP connections.
-        applicationProtocols = protocols.stream().filter(p -> !HTTP_3.equals(p)).toList();
-        if (applicationProtocols.isEmpty()) {
-            throw new IllegalArgumentException("HTTP/3 must be combined with HTTP1_1 or HTTP2");
-        }
+        applicationProtocols = validateProtocols(protocols, http3);
         sslContext = isConfidential() ? createSslContext(applicationProtocols) : null;
         super.start();
         stopping = false;
@@ -513,31 +535,7 @@ public abstract class NettyServerHelper extends HttpServerHelper {
                         .group(bossGroup, workerGroup)
                         .channel(NioServerSocketChannel.class)
                         .childOption(ChannelOption.TCP_NODELAY, true)
-                        .childHandler(
-                                new ChannelInitializer<SocketChannel>() {
-                                    @Override
-                                    protected void initChannel(SocketChannel ch) {
-                                        if (stopping
-                                                || (maxConnections > 0
-                                                        && connections.size() >= maxConnections)) {
-                                            ch.close();
-                                            return;
-                                        }
-                                        connections.add(ch);
-                                        ChannelPipeline p = ch.pipeline();
-                                        if (idleTimeout > 0) {
-                                            p.addLast(
-                                                    "idle",
-                                                    new IdleStateHandler(
-                                                            0,
-                                                            0,
-                                                            idleTimeout,
-                                                            TimeUnit.MILLISECONDS));
-                                        }
-                                        p.addLast("writability", Writability.HANDLER);
-                                        initConnection(ch);
-                                    }
-                                });
+                        .childHandler(newConnectionInitializer(maxConnections, idleTimeout));
 
         int backlog = getConnectorAcceptQueueSize();
         if (backlog > 0) {
@@ -546,63 +544,151 @@ public abstract class NettyServerHelper extends HttpServerHelper {
 
         String address = getHelped().getAddress();
         int port = getHelped().getPort();
-        InetSocketAddress bindAddress =
-                (address != null)
-                        ? new InetSocketAddress(address, port)
-                        : new InetSocketAddress(port);
 
-        getLogger().info("Starting the Netty " + getProtocols() + " server on port " + port);
+        getLogger()
+                .log(
+                        Level.INFO,
+                        "Starting the Netty {0} server on port {1}",
+                        new Object[] {getProtocols(), port});
         try {
-            serverChannel = bootstrap.bind(bindAddress).sync().channel();
-            int actualPort = ((InetSocketAddress) serverChannel.localAddress()).getPort();
-            setEphemeralPort(actualPort);
-            if (http3) {
-                startHttp3(
-                        (address != null)
-                                ? new InetSocketAddress(address, actualPort)
-                                : new InetSocketAddress(actualPort),
-                        maxConnections,
-                        idleTimeout);
-            }
+            bindTcpAndUdp(bootstrap, address, port, http3, maxConnections, idleTimeout);
         } catch (Exception e) {
             shutdownNow();
             throw e;
         }
     }
 
+    /**
+     * Checks the HTTP/3 requirements and returns the protocols negotiated on TCP connections.
+     *
+     * @param protocols The configured application protocols.
+     * @param http3 True if HTTP/3 is configured.
+     * @return The application protocols of the TCP connections.
+     */
+    private List<String> validateProtocols(List<String> protocols, boolean http3) {
+        if (http3) {
+            if (!isConfidential()) {
+                throw new IllegalArgumentException("HTTP/3 requires TLS");
+            }
+            Http3Availability.ensureAvailable();
+        }
+        List<String> result = protocols.stream().filter(p -> !HTTP_3.equals(p)).toList();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("HTTP/3 must be combined with HTTP1_1 or HTTP2");
+        }
+        return result;
+    }
+
+    private static InetSocketAddress newAddress(String address, int port) {
+        return (address != null)
+                ? new InetSocketAddress(address, port)
+                : new InetSocketAddress(port);
+    }
+
+    /**
+     * Creates the initializer of accepted TCP connections, enforcing "server.maxConnections".
+     *
+     * @param maxConnections The maximum number of connections, 0 for no limit.
+     * @param idleTimeout The connection idle timeout in milliseconds, 0 for none.
+     * @return The initializer.
+     */
+    private ChannelInitializer<SocketChannel> newConnectionInitializer(
+            final int maxConnections, final int idleTimeout) {
+        return new ChannelInitializer<>() {
+            @Override
+            protected void initChannel(SocketChannel ch) {
+                if (!admitConnection(ch, maxConnections)) {
+                    ch.close();
+                    return;
+                }
+                ChannelPipeline p = ch.pipeline();
+                if (idleTimeout > 0) {
+                    p.addLast(
+                            "idle", new IdleStateHandler(0, 0, idleTimeout, TimeUnit.MILLISECONDS));
+                }
+                p.addLast("writability", Writability.HANDLER);
+                initConnection(ch);
+            }
+        };
+    }
+
+    /**
+     * Registers a new connection, unless the server is stopping or the connection limit is reached.
+     *
+     * @param connection The new connection.
+     * @param maxConnections The maximum number of connections, 0 for no limit.
+     * @return True if the connection is admitted.
+     */
+    private boolean admitConnection(Channel connection, int maxConnections) {
+        if (stopping || (maxConnections > 0 && connections.size() >= maxConnections)) {
+            return false;
+        }
+        connections.add(connection);
+        return true;
+    }
+
     private void startHttp3(InetSocketAddress address, final int maxConnections, int idleTimeout)
-            throws Exception {
+            throws GeneralSecurityException, IOException, InterruptedException {
         getLogger()
-                .warning(
-                        "HTTP/3 support is experimental. Serving HTTP/3 on UDP port "
-                                + address.getPort());
+                .log(
+                        Level.WARNING,
+                        "HTTP/3 support is experimental. Serving HTTP/3 on UDP port {0}",
+                        address.getPort());
         http3Channel =
                 Http3Support.bindServer(
                         workerGroup,
                         address,
                         SslUtils.getSslContextFactory(this),
                         idleTimeout,
-                        connection -> {
-                            if (stopping
-                                    || (maxConnections > 0
-                                            && connections.size() >= maxConnections)) {
-                                return false;
-                            }
-                            connections.add(connection);
-                            return true;
-                        },
+                        connection -> admitConnection(connection, maxConnections),
                         () -> new NettyServerHandler(this, true, StreamKind.HTTP3));
         altSvc = "h3=\":" + address.getPort() + "\"; ma=86400";
+    }
+
+    /** Attempts to find a free port number for both TCP and UDP, when the port is ephemeral. */
+    private static final int HTTP3_EPHEMERAL_PORT_ATTEMPTS = 5;
+
+    /**
+     * Binds the TCP server channel, and the HTTP/3 UDP channel on the same port number. With an
+     * ephemeral port, the TCP port chosen by the system may already be used over UDP: the binding
+     * is then retried on another ephemeral port.
+     */
+    private void bindTcpAndUdp(
+            ServerBootstrap bootstrap,
+            String address,
+            int port,
+            boolean http3,
+            int maxConnections,
+            int idleTimeout)
+            throws GeneralSecurityException, IOException, InterruptedException {
+        int attempts = (http3 && port == 0) ? HTTP3_EPHEMERAL_PORT_ATTEMPTS : 1;
+        BindException failure = null;
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            serverChannel = bootstrap.bind(newAddress(address, port)).sync().channel();
+            int actualPort = ((InetSocketAddress) serverChannel.localAddress()).getPort();
+            try {
+                if (http3) {
+                    startHttp3(newAddress(address, actualPort), maxConnections, idleTimeout);
+                }
+                setEphemeralPort(actualPort);
+                return;
+            } catch (BindException e) {
+                failure = e;
+                serverChannel.close().awaitUninterruptibly(5, TimeUnit.SECONDS);
+                serverChannel = null;
+                getLogger().log(Level.FINE, "UDP port {0} already in use", actualPort);
+            }
+        }
+        throw failure;
     }
 
     @Override
     public synchronized void stop() throws Exception {
         getLogger()
-                .info(
-                        "Stopping the Netty "
-                                + getProtocols()
-                                + " server on port "
-                                + getHelped().getPort());
+                .log(
+                        Level.INFO,
+                        "Stopping the Netty {0} server on port {1}",
+                        new Object[] {getProtocols(), getHelped().getPort()});
         stopping = true;
 
         if (serverChannel != null) {
@@ -610,14 +696,29 @@ public abstract class NettyServerHelper extends HttpServerHelper {
         }
 
         if (getShutdownGracefully()) {
-            long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(getShutdownTimeout());
-            while (activeCalls.get() > 0 && System.nanoTime() < deadline) {
-                Thread.sleep(10);
-            }
+            awaitActiveCalls(TimeUnit.MILLISECONDS.toNanos(getShutdownTimeout()));
         }
 
         shutdownNow();
         super.stop();
+    }
+
+    /**
+     * Waits for the calls in progress to complete.
+     *
+     * @param timeoutNanos The maximum time to wait.
+     * @throws InterruptedException If the wait is interrupted.
+     */
+    private void awaitActiveCalls(long timeoutNanos) throws InterruptedException {
+        long remaining = timeoutNanos;
+        activeCallsLock.lock();
+        try {
+            while (activeCalls.get() > 0 && remaining > 0) {
+                remaining = noActiveCalls.awaitNanos(remaining);
+            }
+        } finally {
+            activeCallsLock.unlock();
+        }
     }
 
     private void shutdownNow() {

@@ -107,15 +107,7 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         currentBody = body;
 
         NettyServerCall call =
-                new NettyServerCall(
-                        helper.getHelped(),
-                        ctx.channel(),
-                        kind,
-                        request,
-                        body,
-                        confidential,
-                        helper.getHttpOutputBufferSize(),
-                        helper.getConnectorIdleTimeout());
+                new NettyServerCall(helper, ctx.channel(), kind, request, body, confidential);
         if (kind != StreamKind.HTTP3) {
             call.setAltSvc(helper.getAltSvc());
         }
@@ -129,7 +121,7 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
         try {
             helper.getCallExecutor().execute(() -> runCall(call));
-        } catch (RejectedExecutionException e) {
+        } catch (RejectedExecutionException _) {
             helper.releaseCall();
             body.close();
             currentBody = null;
@@ -168,8 +160,10 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void runCall(NettyServerCall call) {
         try {
             helper.handle(call);
-        } catch (Throwable t) {
-            helper.getLogger().log(Level.WARNING, "Error while handling an HTTP server call", t);
+        } catch (RuntimeException | LinkageError | AssertionError e) {
+            // Keep the connection consistent whatever the application throws; other errors
+            // (VirtualMachineError, ...) are left to propagate after the cleanup below.
+            helper.getLogger().log(Level.WARNING, "Error while handling an HTTP server call", e);
             call.abort();
         } finally {
             try {

@@ -32,6 +32,7 @@ import io.netty.util.concurrent.Future;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -108,7 +109,9 @@ final class Http3Support {
      * @param admit Called with each new QUIC connection; returning false closes it.
      * @param streamHandler Supplies the handler of each request stream.
      * @return The bound UDP channel.
-     * @throws Exception If the server can't be bound.
+     * @throws GeneralSecurityException If the TLS settings are invalid.
+     * @throws IOException If the key or trust store can't be read.
+     * @throws InterruptedException If interrupted while binding.
      */
     static Channel bindServer(
             EventLoopGroup group,
@@ -117,9 +120,9 @@ final class Http3Support {
             long idleTimeoutMs,
             final Predicate<Channel> admit,
             final Supplier<ChannelHandler> streamHandler)
-            throws Exception {
+            throws GeneralSecurityException, IOException, InterruptedException {
         DefaultSslContextFactory defaultFactory = toDefaultFactory(factory);
-        KeyManagerFactory kmf = defaultFactory.createKeyManagerFactory();
+        KeyManagerFactory kmf = keyManagerFactory(defaultFactory);
         if (kmf == null) {
             throw new IllegalArgumentException("HTTP/3 requires a key store");
         }
@@ -127,7 +130,7 @@ final class Http3Support {
         QuicSslContextBuilder builder =
                 QuicSslContextBuilder.forServer(kmf, null)
                         .applicationProtocols(Http3.supportedApplicationProtocols());
-        TrustManagerFactory tmf = defaultFactory.createTrustManagerFactory();
+        TrustManagerFactory tmf = trustManagerFactory(defaultFactory);
         if (tmf != null) {
             builder.trustManager(tmf);
         }
@@ -240,16 +243,18 @@ final class Http3Support {
          * @param hostnameVerification Whether to check the server certificate host name.
          * @param idleTimeoutMs The connection idle timeout, 0 for none.
          * @return The client.
-         * @throws Exception If the client can't be created.
+         * @throws GeneralSecurityException If the TLS settings are invalid.
+         * @throws IOException If the key or trust store can't be read.
+         * @throws InterruptedException If interrupted while binding.
          */
         static Client create(
                 EventLoopGroup group,
                 SslContextFactory factory,
                 boolean hostnameVerification,
                 long idleTimeoutMs)
-                throws Exception {
+                throws GeneralSecurityException, IOException, InterruptedException {
             DefaultSslContextFactory defaultFactory = toDefaultFactory(factory);
-            TrustManagerFactory tmf = defaultFactory.createTrustManagerFactory();
+            TrustManagerFactory tmf = trustManagerFactory(defaultFactory);
             if (tmf == null) {
                 tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 tmf.init((KeyStore) null);
@@ -259,7 +264,7 @@ final class Http3Support {
                     QuicSslContextBuilder.forClient()
                             .trustManager(tmf)
                             .applicationProtocols(Http3.supportedApplicationProtocols());
-            KeyManagerFactory kmf = defaultFactory.createKeyManagerFactory();
+            KeyManagerFactory kmf = keyManagerFactory(defaultFactory);
             if (kmf != null) {
                 builder.keyManager(kmf, null);
             }
@@ -371,5 +376,45 @@ final class Http3Support {
         throw new IllegalArgumentException(
                 "HTTP/3 only supports the DefaultSslContextFactory, not "
                         + factory.getClass().getName());
+    }
+
+    private static KeyManagerFactory keyManagerFactory(DefaultSslContextFactory factory)
+            throws GeneralSecurityException, IOException {
+        try {
+            return factory.createKeyManagerFactory();
+        } catch (Exception e) {
+            throw asSslException(e, "Unable to load the key store");
+        }
+    }
+
+    private static TrustManagerFactory trustManagerFactory(DefaultSslContextFactory factory)
+            throws GeneralSecurityException, IOException {
+        try {
+            return factory.createTrustManagerFactory();
+        } catch (Exception e) {
+            throw asSslException(e, "Unable to load the trust store");
+        }
+    }
+
+    /**
+     * Rethrows the specific exceptions of the key store loading, and wraps the others.
+     *
+     * @param e The exception.
+     * @param message The message of the wrapping exception.
+     * @return The IOException wrapping an unexpected checked exception.
+     * @throws GeneralSecurityException If e is one.
+     */
+    private static IOException asSslException(Exception e, String message)
+            throws GeneralSecurityException {
+        if (e instanceof RuntimeException re) {
+            throw re;
+        }
+        if (e instanceof GeneralSecurityException gse) {
+            throw gse;
+        }
+        if (e instanceof IOException ioe) {
+            return ioe;
+        }
+        return new IOException(message, e);
     }
 }

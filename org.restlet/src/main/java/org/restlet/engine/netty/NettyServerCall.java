@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
-import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.header.HeaderConstants;
@@ -93,33 +92,29 @@ class NettyServerCall extends ServerCall {
     /**
      * Constructor.
      *
-     * @param server The parent server.
+     * @param helper The parent server helper, providing the server and the output settings.
      * @param channel The channel carrying the exchange.
      * @param kind The kind of channel carrying the exchange.
      * @param request The Netty request head.
      * @param requestBody The request body stream.
      * @param confidential Whether the connection is secured with TLS.
-     * @param outputBufferSize The response output buffer size.
-     * @param writeTimeoutMs The write timeout in milliseconds.
      */
     NettyServerCall(
-            Server server,
+            NettyServerHelper helper,
             Channel channel,
             StreamKind kind,
             HttpRequest request,
             ChannelInputStream requestBody,
-            boolean confidential,
-            int outputBufferSize,
-            long writeTimeoutMs) {
-        super(server);
+            boolean confidential) {
+        super(helper.getHelped());
         this.channel = channel;
         this.kind = kind;
         this.http2 = kind.isStream();
         this.connection = this.http2 ? channel.parent() : channel;
         this.request = request;
         this.requestBody = requestBody;
-        this.outputBufferSize = outputBufferSize;
-        this.writeTimeoutMs = writeTimeoutMs;
+        this.outputBufferSize = helper.getHttpOutputBufferSize();
+        this.writeTimeoutMs = helper.getConnectorIdleTimeout();
         setConfidential(confidential);
         setMethod(request.method().name());
         setRequestUri(request.uri());
@@ -220,7 +215,7 @@ class NettyServerCall extends ServerCall {
         if (session != null) {
             try {
                 return Arrays.asList(session.getPeerCertificates());
-            } catch (SSLPeerUnverifiedException e) {
+            } catch (SSLPeerUnverifiedException _) {
                 return List.of();
             }
         }

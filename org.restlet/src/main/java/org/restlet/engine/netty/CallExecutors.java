@@ -51,7 +51,7 @@ final class CallExecutors {
         }
 
         int max = Math.max(1, maxThreads);
-        int core = Math.max(1, Math.min(minThreads, max));
+        int core = Math.clamp(minThreads, 1, max);
         AtomicInteger counter = new AtomicInteger();
         ThreadFactory factory =
                 runnable -> {
