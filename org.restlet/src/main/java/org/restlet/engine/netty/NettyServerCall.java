@@ -13,13 +13,16 @@ import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE
 import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID;
 import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_VERSION;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -96,6 +99,15 @@ class NettyServerCall {
 
     /** The response headers. */
     private final Series<Header> responseHeaders = new Series<>(Header.class);
+
+    /** The trailing headers received with the request entity. */
+    private final Series<Header> requestTrailers = new Series<>(Header.class);
+
+    /** The trailing headers to send with the response entity. */
+    private Series<Header> responseTrailers = new Series<>(Header.class);
+
+    /** Indicates whether response trailers are valid for the response being sent. */
+    private boolean responseTrailersEnabled;
 
     /** The response status code. */
     private volatile int statusCode = 200;
@@ -246,6 +258,18 @@ class NettyServerCall {
         return requestHeaders;
     }
 
+    /** The trailing headers received with the request entity. */
+    Series<Header> getRequestTrailers() {
+        return requestTrailers;
+    }
+
+    /** Copies the request trailing headers before the body stream is ended. */
+    void setRequestTrailers(HttpHeaders trailers) {
+        for (Map.Entry<String, String> trailer : trailers) {
+            requestTrailers.add(trailer.getKey(), trailer.getValue());
+        }
+    }
+
     /** The exact protocol (HTTP or HTTPS). */
     Protocol getProtocol() {
         return confidential ? Protocol.HTTPS : Protocol.HTTP;
@@ -320,6 +344,7 @@ class NettyServerCall {
      */
     void commit(Response response) {
         try {
+            responseTrailers = response.getTrailers();
             prepareEntity(response);
             addResponseHeaders(response);
             sendResponse(response);
@@ -521,8 +546,14 @@ class NettyServerCall {
             head.headers().set("Alt-Svc", altSvc);
         }
 
+        boolean hasTrailers = !responseTrailers.isEmpty();
         boolean hasLength = head.headers().contains(HttpHeaderNames.CONTENT_LENGTH);
         boolean noBodyStatus = code == 204 || code == 304 || code < 200;
+
+        if (noBodyStatus || "HEAD".equals(getMethod())) {
+            hasTrailers = false;
+        }
+        responseTrailersEnabled = hasTrailers;
 
         if (kind.isStream()) {
             // Connection-specific headers are forbidden in HTTP/2 and HTTP/3.
@@ -531,11 +562,20 @@ class NettyServerCall {
             head.headers().remove("Keep-Alive");
         } else {
             if (emptyBody) {
-                if (!hasLength && !noBodyStatus && !"HEAD".equals(getMethod())) {
+                if (hasTrailers) {
+                    head.headers().remove(HttpHeaderNames.CONTENT_LENGTH);
+                    HttpUtil.setTransferEncodingChunked(head, true);
+                } else if (!hasLength && !noBodyStatus && !"HEAD".equals(getMethod())) {
                     head.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
                 }
+            } else if (hasTrailers) {
+                head.headers().remove(HttpHeaderNames.CONTENT_LENGTH);
+                HttpUtil.setTransferEncodingChunked(head, true);
             } else if (!hasLength) {
                 head.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+            }
+            if (hasTrailers) {
+                setTrailerNames(head.headers(), responseTrailers);
             }
             if (!HttpUtil.isKeepAlive(request)) {
                 head.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
@@ -569,7 +609,13 @@ class NettyServerCall {
         }
 
         boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
-        ChannelFuture future = channel.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+        LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
+        if (responseTrailersEnabled) {
+            DefaultLastHttpContent withTrailers = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
+            copyHeaders(responseTrailers, withTrailers.trailingHeaders());
+            lastContent = withTrailers;
+        }
+        ChannelFuture future = channel.writeAndFlush(lastContent);
         requestBody.close();
 
         if (!kind.isStream()) {
@@ -579,6 +625,23 @@ class NettyServerCall {
             } else {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
+        }
+    }
+
+    static void setTrailerNames(
+            io.netty.handler.codec.http.HttpHeaders headers, Series<Header> trailers) {
+        String names =
+                trailers.stream()
+                        .map(Header::getName)
+                        .distinct()
+                        .collect(java.util.stream.Collectors.joining(", "));
+        headers.set("Trailer", names);
+    }
+
+    private static void copyHeaders(
+            Series<Header> source, io.netty.handler.codec.http.HttpHeaders target) {
+        for (Header header : source) {
+            target.add(header.getName(), header.getValue());
         }
     }
 

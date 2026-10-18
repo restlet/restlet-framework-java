@@ -18,6 +18,7 @@ import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -120,6 +121,9 @@ public class Response extends Message {
 
     /** The cookie settings provided by the server. */
     private volatile Series<CookieSetting> cookieSettings;
+
+    /** The trailing headers sent with the response entity. */
+    private volatile Series<Header> trailers;
 
     /** The set of dimensions on which the response entity may vary. */
     private volatile Set<Dimension> dimensions;
@@ -407,6 +411,24 @@ public class Response extends Message {
             }
         }
         return c;
+    }
+
+    /**
+     * Returns the modifiable series of trailing headers to send with the response entity.
+     *
+     * @return The trailing headers.
+     */
+    public Series<Header> getTrailers() {
+        Series<Header> result = this.trailers;
+        if (result == null) {
+            synchronized (this) {
+                result = this.trailers;
+                if (result == null) {
+                    this.trailers = result = new Series<>(Header.class);
+                }
+            }
+        }
+        return result;
     }
 
     /**
