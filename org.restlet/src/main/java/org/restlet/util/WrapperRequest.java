@@ -11,6 +11,7 @@ package org.restlet.util;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BooleanSupplier;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -49,6 +50,11 @@ public class WrapperRequest extends Request {
     @Override
     public boolean abort() {
         return wrappedRequest.abort();
+    }
+
+    @Override
+    public void setAbortAction(BooleanSupplier action) {
+        wrappedRequest.setAbortAction(action);
     }
 
     @Override

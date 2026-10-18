@@ -92,6 +92,8 @@ class NettyClientCall {
 
     private final Condition requestSentCondition = lock.newCondition();
 
+    private final ReentrantLock responseCallbackLock = new ReentrantLock();
+
     /** The kind of channel carrying the exchange, set by the helper when it is acquired. */
     private volatile StreamKind kind = StreamKind.HTTP1;
 
@@ -103,6 +105,8 @@ class NettyClientCall {
 
     /** The response being updated by this exchange. */
     private volatile org.restlet.Response response;
+
+    private volatile org.restlet.Request currentRequest;
 
     /** The request trailers to send after the request entity. */
     private volatile Series<Header> requestTrailers = new Series<>(Header.class);
@@ -129,6 +133,14 @@ class NettyClientCall {
     private volatile CompletableFuture<Boolean> releaseRequestEntity;
 
     private final AtomicBoolean forceEntityRelease = new AtomicBoolean();
+
+    private final AtomicBoolean cancelled = new AtomicBoolean();
+
+    private boolean responseCallbackDispatched;
+
+    private boolean responseFailureCallbackDispatched;
+
+    private Throwable responseFailure;
 
     /** Indicates whether the request was fully sent. */
     private boolean requestSent;
@@ -197,6 +209,8 @@ class NettyClientCall {
      */
     void handle(org.restlet.Request request, org.restlet.Response response) {
         this.response = response;
+        this.currentRequest = request;
+        request.setAbortAction(this::cancel);
         this.requestTrailers = request.getTrailers();
         HeaderUtils.addGeneralHeaders(request, requestHeaders);
         if (request.getEntity() != null) {
@@ -214,18 +228,75 @@ class NettyClientCall {
             if (onSent != null) {
                 onSent.handle(request, response);
             }
-            Uniform onResponse = request.getOnResponse();
-            if (onResponse != null) {
-                try {
-                    onResponse.handle(request, response);
-                } catch (RuntimeException e) {
-                    helper.getLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "Unexpected error or exception inside the user call back",
-                                    e);
-                }
+            dispatchInitialResponseCallback(request, response);
+        }
+    }
+
+    private void dispatchInitialResponseCallback(
+            org.restlet.Request request, org.restlet.Response response) {
+        Uniform callback = request.getOnResponse();
+        if (callback == null) {
+            return;
+        }
+        responseCallbackLock.lock();
+        try {
+            Throwable failureAfterHead = getResponseFailure();
+            if (failureAfterHead != null) {
+                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, failureAfterHead);
+                responseFailureCallbackDispatched = true;
             }
+            responseCallbackDispatched = true;
+            invokeResponseCallback(callback, request, response);
+        } finally {
+            responseCallbackLock.unlock();
+        }
+    }
+
+    private void dispatchResponseFailureCallback(Throwable cause) {
+        org.restlet.Request request = currentRequest;
+        org.restlet.Response currentResponse = response;
+        if (request == null || currentResponse == null) {
+            return;
+        }
+        currentResponse.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, cause);
+        Uniform callback = request.getOnResponse();
+        if (callback == null) {
+            return;
+        }
+        if (responseCallbackLock.isHeldByCurrentThread()) {
+            Thread.startVirtualThread(() -> dispatchResponseFailureCallback(cause));
+            return;
+        }
+        responseCallbackLock.lock();
+        try {
+            if (responseCallbackDispatched && !responseFailureCallbackDispatched) {
+                responseFailureCallbackDispatched = true;
+                invokeResponseCallback(callback, request, currentResponse);
+            }
+        } finally {
+            responseCallbackLock.unlock();
+        }
+    }
+
+    private void invokeResponseCallback(
+            Uniform callback, org.restlet.Request request, org.restlet.Response response) {
+        try {
+            callback.handle(request, response);
+        } catch (RuntimeException e) {
+            helper.getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Unexpected error or exception inside the user call back",
+                            e);
+        }
+    }
+
+    private Throwable getResponseFailure() {
+        lock.lock();
+        try {
+            return responseFailure;
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -246,6 +317,9 @@ class NettyClientCall {
         boolean backgroundWriterStarted = false;
         try {
             this.channel = helper.acquire(this);
+            if (cancelled.get()) {
+                throw new IOException("Request cancelled by client");
+            }
             boolean fullDuplex =
                     kind == StreamKind.HTTP2 && entity != null && entity.getSize() != 0;
             if (fullDuplex) {
@@ -691,20 +765,26 @@ class NettyClientCall {
      * @param cause The failure cause.
      */
     void onFailure(Throwable cause) {
+        boolean notifyResponseFailure = false;
+        boolean responseHeadReceived;
         lock.lock();
         try {
             if (!requestSent) {
                 requestFailure = cause;
                 requestSentCondition.signalAll();
             }
-            if (responseComplete) {
+            if (responseComplete && requestSent) {
                 return;
             }
             reusable = false;
             if (!head) {
                 failure = cause;
                 headReceived.signalAll();
+            } else if (responseFailure == null) {
+                responseFailure = cause;
+                notifyResponseFailure = true;
             }
+            responseHeadReceived = head;
         } finally {
             lock.unlock();
         }
@@ -712,7 +792,26 @@ class NettyClientCall {
         if (stream != null) {
             stream.fail(cause);
         }
+        if (responseHeadReceived && notifyResponseFailure) {
+            dispatchResponseFailureCallback(cause);
+        }
         abort();
+    }
+
+    private boolean cancel() {
+        lock.lock();
+        try {
+            if (released
+                    || (responseComplete && requestSent)
+                    || !cancelled.compareAndSet(false, true)) {
+                return false;
+            }
+        } finally {
+            lock.unlock();
+        }
+        completeEntityRelease();
+        onFailure(new IOException("Request cancelled by client"));
+        return true;
     }
 
     // ------------------------------------------------------------------ connection release
@@ -746,6 +845,7 @@ class NettyClientCall {
         }
         Channel ch = this.channel;
         if (ch != null) {
+            clearAbortAction();
             helper.release(ch, reuse);
         }
     }
@@ -762,9 +862,17 @@ class NettyClientCall {
         } finally {
             lock.unlock();
         }
+        clearAbortAction();
         Channel ch = this.channel;
         if (ch != null) {
             helper.release(ch, false);
+        }
+    }
+
+    private void clearAbortAction() {
+        org.restlet.Request request = currentRequest;
+        if (request != null) {
+            request.setAbortAction(null);
         }
     }
 }
