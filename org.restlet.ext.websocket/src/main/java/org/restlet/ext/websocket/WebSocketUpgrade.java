@@ -18,6 +18,7 @@ import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.netty.NettyConnectionUpgrade;
+import org.restlet.ext.websocket.internal.NettyWebSocketConnectionUpgrade;
 
 /**
  * Accepts a WebSocket upgrade on a Restlet response. The upgrade request goes through the normal

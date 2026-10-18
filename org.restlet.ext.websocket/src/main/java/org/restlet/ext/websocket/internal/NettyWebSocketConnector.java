@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.websocket;
+package org.restlet.ext.websocket.internal;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -50,13 +50,15 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
+import org.restlet.ext.websocket.WebSocketSession;
 
 /**
  * Netty implementation of the WebSocket client: one connection per session, HTTP/1.1 upgrade.
  *
- * <p>This class is internal to the extension; use {@link WebSocketClient}.
+ * <p>This class is internal to the extension; use {@link
+ * org.restlet.ext.websocket.WebSocketClient}.
  */
-final class NettyWebSocketConnector implements AutoCloseable {
+public final class NettyWebSocketConnector implements AutoCloseable {
 
     private final EventLoopGroup group;
 
@@ -84,7 +86,7 @@ final class NettyWebSocketConnector implements AutoCloseable {
      * @param logger The logger.
      * @throws IOException If the SSL context cannot be created.
      */
-    NettyWebSocketConnector(
+    public NettyWebSocketConnector(
             SSLContext sslContext,
             long connectTimeoutMs,
             long idleTimeoutMs,
@@ -124,7 +126,7 @@ final class NettyWebSocketConnector implements AutoCloseable {
      * @return The open session.
      * @throws IOException If the connection or the handshake fails.
      */
-    WebSocketSession connect(URI uri, List<String> subprotocols, Map<String, String> headers)
+    public WebSocketSession connect(URI uri, List<String> subprotocols, Map<String, String> headers)
             throws IOException {
         String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
         boolean secure;

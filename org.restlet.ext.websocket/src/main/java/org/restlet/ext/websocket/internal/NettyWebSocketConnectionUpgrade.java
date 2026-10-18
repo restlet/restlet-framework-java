@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.websocket;
+package org.restlet.ext.websocket.internal;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -32,13 +32,16 @@ import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
 import org.restlet.engine.netty.NettyConnectionUpgrade;
 import org.restlet.engine.netty.NettyUpgradeContext;
+import org.restlet.ext.websocket.WebSocketHandler;
+import org.restlet.ext.websocket.WebSocketSession;
+import org.restlet.ext.websocket.WebSocketUpgrade;
 import org.restlet.util.Series;
 
 /**
  * Switches an HTTP/1.1 server connection to WebSocket after a Restlet accepted the upgrade, then
  * runs the session handler on its own virtual thread.
  */
-final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpgrade {
+public final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpgrade {
 
     /** Name of the server connector attribute holding the session permits. */
     private static final String PERMITS_ATTRIBUTE = "org.restlet.ext.websocket.permits";
@@ -53,7 +56,7 @@ final class NettyWebSocketConnectionUpgrade implements NettyConnectionUpgrade {
      *
      * @param upgrade The accepted upgrade.
      */
-    NettyWebSocketConnectionUpgrade(WebSocketUpgrade upgrade) {
+    public NettyWebSocketConnectionUpgrade(WebSocketUpgrade upgrade) {
         this.upgrade = upgrade;
     }
 
