@@ -20,6 +20,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
@@ -190,6 +191,11 @@ public class WrapperResponse extends Response {
     @Override
     public Date getRetryAfter() {
         return wrappedResponse.getRetryAfter();
+    }
+
+    @Override
+    public Protocol getProtocol() {
+        return getWrappedResponse().getProtocol();
     }
 
     /**
@@ -440,6 +446,11 @@ public class WrapperResponse extends Response {
     @Override
     public void setRetryAfter(Date retryAfter) {
         wrappedResponse.setRetryAfter(retryAfter);
+    }
+
+    @Override
+    public void setProtocol(Protocol protocol) {
+        getWrappedResponse().setProtocol(protocol);
     }
 
     @Override

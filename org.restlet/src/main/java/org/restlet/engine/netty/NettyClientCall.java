@@ -26,32 +26,41 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.net.ConnectException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import org.restlet.Uniform;
 import org.restlet.data.Header;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderUtils;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
+import org.restlet.util.Series;
 
 /**
- * HTTP client call based on Netty. The calling thread blocks while the request is written and until
- * the response head is received; the response body is then streamed from the connection.
+ * HTTP client exchange based on Netty, mapping a Restlet request and response to Netty messages.
+ * The calling thread blocks while the request is written and until the response head is received;
+ * the response body is then streamed from the connection.
  *
  * <p>This class is internal to the Netty connectors.
  */
-class NettyClientCall extends ClientCall {
+class NettyClientCall {
 
     /** The parent helper. */
     private final NettyClientHelper helper;
+
+    /** The request method name. */
+    private final String method;
 
     /** The request target (origin form, or absolute form for a forward proxy). */
     private final String target;
@@ -61,6 +70,15 @@ class NettyClientCall extends ClientCall {
 
     /** The target port. */
     private final int targetPort;
+
+    /** Indicates whether the exchange is secured with TLS. */
+    private final boolean secure;
+
+    /** The request headers. */
+    private final Series<Header> requestHeaders = new Series<>(Header.class);
+
+    /** The response headers. */
+    private final Series<Header> responseHeaders = new Series<>(Header.class);
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -74,6 +92,15 @@ class NettyClientCall extends ClientCall {
 
     /** The response body stream. */
     private volatile ChannelInputStream body;
+
+    /** The response status code. */
+    private volatile int statusCode;
+
+    /** The response reason phrase. */
+    private volatile String reasonPhrase;
+
+    /** The HTTP version of the response (for example "1.1" or "2.0"), or null. */
+    private volatile String responseVersion;
 
     /** Indicates whether the response head was received. */
     private boolean head;
@@ -108,16 +135,14 @@ class NettyClientCall extends ClientCall {
             Reference resourceRef,
             String target,
             boolean secure) {
-        super(helper, method, resourceRef.toString());
         this.helper = helper;
+        this.method = method;
         this.target = target;
         this.targetHost = resourceRef.getHostDomain();
         int port = resourceRef.getHostPort();
         int defaultPort = secure ? 443 : 80;
         this.targetPort = (port == -1) ? defaultPort : port;
-        setConfidential(secure);
-        setServerAddress(this.targetHost);
-        setServerPort(this.targetPort);
+        this.secure = secure;
     }
 
     /**
@@ -137,33 +162,56 @@ class NettyClientCall extends ClientCall {
         return targetPort;
     }
 
-    @Override
-    public OutputStream getRequestEntityStream() {
-        return null;
+    boolean isConfidential() {
+        return secure;
     }
 
-    @Override
-    public OutputStream getRequestHeadStream() {
-        return null;
-    }
-
-    @Override
-    public InputStream getResponseEntityStream(long size) {
-        final ChannelInputStream stream = this.body;
-        if (stream == null) {
-            return null;
+    /**
+     * Sends the request and updates the response. Asynchronous requests invoke their "onSent" and
+     * "onResponse" callbacks once the response is updated.
+     *
+     * @param request The Restlet request.
+     * @param response The Restlet response to update.
+     */
+    void handle(org.restlet.Request request, org.restlet.Response response) {
+        HeaderUtils.addGeneralHeaders(request, requestHeaders);
+        if (request.getEntity() != null) {
+            HeaderUtils.addEntityHeaders(request.getEntity(), requestHeaders);
         }
-        return new FilterInputStream(stream) {
-            @Override
-            public void close() throws IOException {
-                super.close();
-                onBodyClosed();
+        // NOTE: This must stay at the end because the AWS challenge scheme requires access to all
+        // HTTP headers
+        HeaderUtils.addRequestHeaders(request, requestHeaders);
+
+        Status status = sendRequest(request);
+        updateResponse(response, status);
+
+        if (request.isAsynchronous()) {
+            Uniform onSent = request.getOnSent();
+            if (onSent != null) {
+                onSent.handle(request, response);
             }
-        };
+            Uniform onResponse = request.getOnResponse();
+            if (onResponse != null) {
+                try {
+                    onResponse.handle(request, response);
+                } catch (RuntimeException e) {
+                    helper.getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unexpected error or exception inside the user call back",
+                                    e);
+                }
+            }
+        }
     }
 
-    @Override
-    public Status sendRequest(org.restlet.Request request) {
+    /**
+     * Sends the request and waits for the response head.
+     *
+     * @param request The Restlet request.
+     * @return The response status, or a connector error status.
+     */
+    private Status sendRequest(org.restlet.Request request) {
         Status result;
         Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
         ConnectorService connectorService = ConnectorHelper.getConnectorService();
@@ -175,7 +223,7 @@ class NettyClientCall extends ClientCall {
             this.channel = helper.acquire(this);
             writeRequest(entity);
             awaitHead();
-            result = new Status(getStatusCode(), getReasonPhrase());
+            result = new Status(statusCode, reasonPhrase);
         } catch (ConnectException e) {
             helper.logFailure("Unable to connect to the remote HTTP server", e);
             abort();
@@ -206,19 +254,109 @@ class NettyClientCall extends ClientCall {
         return result;
     }
 
-    @Override
-    public void sendRequest(
-            org.restlet.Request request, org.restlet.Response response, Uniform callback) {
-        sendRequest(request);
+    /**
+     * Updates the Restlet response with the status, headers and entity received.
+     *
+     * @param response The Restlet response.
+     * @param status The response status.
+     */
+    private void updateResponse(org.restlet.Response response, Status status) {
+        response.setStatus(status);
+        response.getServerInfo().setAddress(targetHost);
+        response.getServerInfo().setPort(targetPort);
+        if (responseVersion != null) {
+            response.setProtocol(Protocol.valueOf(secure ? "https" : "http", responseVersion));
+        }
+        response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, responseHeaders);
 
-        final Uniform onSent = request.getOnSent();
-        if (onSent != null) {
-            onSent.handle(request, response);
+        try {
+            HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
+        } catch (RuntimeException e) {
+            helper.getLogger()
+                    .log(Level.FINE, "Unable to process the headers of the HTTP response.", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
 
-        if (callback != null) {
-            callback.handle(request, response);
+        Representation entity = getResponseEntity(response.getStatus());
+        response.setEntity(entity);
+
+        if (entity != null && (entity.isEmpty() || !hasBody(response.getStatus()))) {
+            entity.release();
+            if (Status.SUCCESS_RESET_CONTENT.equals(response.getStatus())
+                    || response.getStatus().isInformational()) {
+                response.setEntity(null);
+            }
         }
+    }
+
+    /** Indicates whether a response with the given status to this request has a body. */
+    private boolean hasBody(Status status) {
+        return !Method.HEAD.getName().equals(method)
+                && !status.isInformational()
+                && !Status.REDIRECTION_NOT_MODIFIED.equals(status)
+                && !Status.SUCCESS_NO_CONTENT.equals(status)
+                && !Status.SUCCESS_RESET_CONTENT.equals(status);
+    }
+
+    /**
+     * Returns the response entity, with the metadata of the entity headers, or null.
+     *
+     * @param status The response status.
+     * @return The response entity, or null.
+     */
+    private Representation getResponseEntity(Status status) {
+        Representation result = null;
+        String transferEncoding =
+                responseHeaders.getFirstValue(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        long size =
+                (transferEncoding != null && !"identity".equalsIgnoreCase(transferEncoding))
+                        ? Representation.UNKNOWN_SIZE
+                        : HeaderUtils.getContentLength(responseHeaders);
+
+        if (hasBody(status)) {
+            InputStream stream = nonEmpty(getResponseEntityStream());
+            if (stream != null) {
+                result = new InputRepresentation(stream, null);
+                result.setSize(size);
+            }
+        }
+
+        return HeaderUtils.extractEntityHeaders(responseHeaders, result);
+    }
+
+    /** Returns a stream equivalent to the given one, or null if it is null or empty. */
+    private static InputStream nonEmpty(InputStream stream) {
+        if (stream == null) {
+            return null;
+        }
+        try {
+            if (stream.available() > 0) {
+                return stream;
+            }
+            PushbackInputStream result = new PushbackInputStream(stream);
+            int next = result.read();
+            if (next >= 0) {
+                result.unread(next);
+                return result;
+            }
+        } catch (IOException _) {
+            // End of the response entity stream.
+        }
+        return null;
+    }
+
+    private InputStream getResponseEntityStream() {
+        final ChannelInputStream stream = this.body;
+        if (stream == null) {
+            return null;
+        }
+        return new FilterInputStream(stream) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                onBodyClosed();
+            }
+        };
     }
 
     private void writeRequest(Representation entity) throws IOException {
@@ -259,11 +397,10 @@ class NettyClientCall extends ClientCall {
      */
     private HttpRequest newRequestHead() {
         HttpRequest result =
-                new DefaultHttpRequest(
-                        HttpVersion.HTTP_1_1, HttpMethod.valueOf(getMethod()), target);
+                new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.valueOf(method), target);
         HttpHeaders headers = result.headers();
 
-        for (Header header : getRequestHeaders()) {
+        for (Header header : requestHeaders) {
             String name = header.getName();
             if (!HeaderConstants.HEADER_CONTENT_LENGTH.equalsIgnoreCase(name)
                     && !HeaderConstants.HEADER_TRANSFER_ENCODING.equalsIgnoreCase(name)) {
@@ -283,7 +420,7 @@ class NettyClientCall extends ClientCall {
             // header.
             headers.set(
                     (kind == StreamKind.HTTP3) ? "x-http3-scheme" : "x-http2-scheme",
-                    isConfidential() ? "https" : "http");
+                    secure ? "https" : "http");
         } else if (!headers.contains(HttpHeaderNames.CONNECTION)) {
             headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
@@ -299,7 +436,7 @@ class NettyClientCall extends ClientCall {
      */
     private boolean setBodyHeaders(HttpRequest request, Representation entity) {
         if (entity == null) {
-            if (requiresContentLength(getMethod())) {
+            if (requiresContentLength(method)) {
                 HttpUtil.setContentLength(request, 0);
             }
             return false;
@@ -365,7 +502,7 @@ class NettyClientCall extends ClientCall {
             String name = entry.getKey();
             if (!name.regionMatches(true, 0, "x-http2-", 0, 8)
                     && !name.regionMatches(true, 0, "x-http3-", 0, 8)) {
-                getResponseHeaders().add(name, entry.getValue());
+                responseHeaders.add(name, entry.getValue());
             }
         }
         if (!HttpUtil.isKeepAlive(response)) {
@@ -377,9 +514,15 @@ class NettyClientCall extends ClientCall {
             }
         }
 
-        setStatusCode(response.status().code());
-        setReasonPhrase(response.status().reasonPhrase());
-        setVersion(response.protocolVersion().text());
+        this.statusCode = response.status().code();
+        this.reasonPhrase = response.status().reasonPhrase();
+        // The HTTP/2 and HTTP/3 codecs convert stream frames to HTTP/1.1 objects.
+        this.responseVersion =
+                kind.isStream()
+                        ? kind.version().substring(kind.version().indexOf('/') + 1)
+                        : response.protocolVersion().majorVersion()
+                                + "."
+                                + response.protocolVersion().minorVersion();
         this.body = new ChannelInputStream(channel, helper.getIdleTimeout());
 
         lock.lock();

@@ -164,6 +164,8 @@ class Http3TestCase {
         Response get = client.handle(new Request(Method.GET, uri("/a")));
         assertEquals(Status.SUCCESS_OK, get.getStatus());
         assertEquals("GET /a", get.getEntityAsText());
+        assertEquals(Protocol.HTTPS, get.getProtocol());
+        assertEquals("3.0", get.getProtocol().getVersion());
 
         Response put =
                 client.handle(new Request(Method.PUT, uri("/b"), new StringRepresentation("x")));

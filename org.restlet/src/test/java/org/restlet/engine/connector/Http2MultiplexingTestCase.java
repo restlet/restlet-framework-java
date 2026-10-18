@@ -131,6 +131,7 @@ class Http2MultiplexingTestCase {
                                                     new Request(
                                                             Method.GET, baseUri + "/?i=" + item));
                                     assertEquals(Status.SUCCESS_OK, response.getStatus());
+                                    assertEquals("2.0", response.getProtocol().getVersion());
                                     return response.getEntityAsText();
                                 }));
             }

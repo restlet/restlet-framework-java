@@ -33,7 +33,6 @@ module org.restlet {
     exports org.restlet;
     exports org.restlet.data;
     exports org.restlet.engine;
-    exports org.restlet.engine.adapter;
     exports org.restlet.engine.application;
     exports org.restlet.engine.component;
     exports org.restlet.engine.connector;
