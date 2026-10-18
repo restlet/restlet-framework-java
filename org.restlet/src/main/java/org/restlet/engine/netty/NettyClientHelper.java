@@ -66,8 +66,7 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.adapter.ClientCall;
-import org.restlet.engine.adapter.HttpClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.representation.Representation;
@@ -197,7 +196,7 @@ import org.restlet.representation.Representation;
  *
  * @author Jerome Louvel
  */
-public abstract class NettyClientHelper extends HttpClientHelper {
+public abstract class NettyClientHelper extends ClientHelper {
 
     /** The negotiated application protocol of a new connection. */
     private static final AttributeKey<Promise<String>> READY =
@@ -271,8 +270,13 @@ public abstract class NettyClientHelper extends HttpClientHelper {
         super(client);
     }
 
-    @Override
-    public ClientCall create(Request request) {
+    /**
+     * Creates the exchange of a request.
+     *
+     * @param request The Restlet request.
+     * @return The exchange.
+     */
+    NettyClientCall create(Request request) {
         Reference ref = ReferenceUtils.update(request.getResourceRef(), request);
         String scheme = ref.getSchemeProtocol() == null ? null : ref.getScheme();
 
@@ -289,7 +293,7 @@ public abstract class NettyClientHelper extends HttpClientHelper {
     @Override
     public void handle(Request request, Response response) {
         if (!isFollowRedirects() || request.isAsynchronous()) {
-            super.handle(request, response);
+            handleOnce(request, response);
             return;
         }
 
@@ -300,7 +304,7 @@ public abstract class NettyClientHelper extends HttpClientHelper {
             Request next = current;
             while (next != null) {
                 current = next;
-                super.handle(current, response);
+                handleOnce(current, response);
                 next = (redirects < getMaxRedirects()) ? nextRedirect(current, response) : null;
                 if (next != null) {
                     if (response.getEntity() != null) {
@@ -318,6 +322,21 @@ public abstract class NettyClientHelper extends HttpClientHelper {
         }
 
         response.setRequest(request);
+    }
+
+    /**
+     * Handles one exchange, without following redirects.
+     *
+     * @param request The Restlet request.
+     * @param response The Restlet response.
+     */
+    private void handleOnce(Request request, Response response) {
+        try {
+            create(request).handle(request, response);
+        } catch (RuntimeException e) {
+            getLogger().log(Level.INFO, "Error while handling an HTTP client call", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+        }
     }
 
     /**

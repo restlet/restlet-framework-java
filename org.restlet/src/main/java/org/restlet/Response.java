@@ -19,6 +19,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
@@ -135,6 +136,9 @@ public class Response extends Message {
     /** Indicates how long the service is expected to be unavailable to the requesting client. */
     private volatile Date retryAfter;
 
+    /** The protocol, with its version, used by the server to reply. */
+    private volatile Protocol protocol;
+
     /** The server-specific information. */
     private volatile ServerInfo serverInfo;
 
@@ -162,6 +166,7 @@ public class Response extends Message {
         this.locationRef = null;
         this.proxyChallengeRequests = null;
         this.request = request;
+        this.protocol = null;
         this.retryAfter = null;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
@@ -474,6 +479,18 @@ public class Response extends Message {
      */
     public Date getRetryAfter() {
         return retryAfter;
+    }
+
+    /**
+     * Returns the protocol, with its version, used by the server to reply, if known. For example,
+     * the HTTP client connector sets "HTTP/1.1", "HTTP/2.0" or "HTTP/3.0" (secure exchanges use the
+     * HTTPS protocol). When unknown, returns the protocol of the request.
+     *
+     * @return The protocol used by the server to reply.
+     */
+    public Protocol getProtocol() {
+        Protocol result = this.protocol;
+        return (result == null && getRequest() != null) ? getRequest().getProtocol() : result;
     }
 
     /**
@@ -933,6 +950,15 @@ public class Response extends Message {
     }
 
     /**
+     * Sets the protocol, with its version, used by the server to reply.
+     *
+     * @param protocol The protocol used by the server to reply.
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
      * Sets the server-specific information.
      *
      * @param serverInfo The server-specific information.
@@ -987,6 +1013,7 @@ public class Response extends Message {
      * @return A synthesis of the response like an HTTP status line.
      */
     public String toString() {
-        return ((getRequest() == null) ? "?" : getRequest().getProtocol()) + " - " + getStatus();
+        Protocol p = getProtocol();
+        return ((p == null) ? "?" : p) + " - " + getStatus();
     }
 }

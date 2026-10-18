@@ -43,6 +43,13 @@ Changes log
           the connector for synchronous calls, without leaking credentials to other origins.
         - Removed `JettyServerHelper`, `JettyServerCall`, `JettyClientCall`, `JettyHandler`,
           `RestletSslContextFactoryClient` and `RestletSslContextFactoryServer`.
+        - Removed the `org.restlet.engine.adapter` package (`Adapter`, `Call`, `ClientAdapter`,
+          `ClientCall`, `HttpClientHelper`, `HttpRequest`, `HttpResponse`, `HttpServerHelper`,
+          `ServerAdapter`, `ServerCall`) and the "adapter" connector parameter. The Netty
+          connectors now map Netty messages directly to Restlet requests and responses, and
+          `NettyServerHelper` and `NettyClientHelper` extend `ServerHelper` and `ClientHelper`.
+          Custom HTTP connectors should extend those classes. Request headers remain available
+          with `Message.getHeaders()`.
         - `MultiPartRepresentation` no longer exposes Jetty types: parts are instances of the new
           `MultiPartRepresentation.Part` class (name, file name, headers, content
           representation), parsing takes an optional storage directory instead of a Jetty
@@ -54,6 +61,11 @@ Changes log
         - Removed the `Protocol.WAR` constant ("war" scheme, Web Archive Access Protocol), a
           leftover of the Servlet mode, which is no longer supported. `Protocol.valueOf("war")`
           now returns a new, unknown protocol. Use CLAP or FILE references instead.
+    - Enhancements
+        - Added `Response.getProtocol()` and `setProtocol()`: the protocol, with its version,
+          used by the server to reply (for example HTTP/1.1, HTTP/2.0 or HTTP/3.0), set by the HTTP
+          client connector. When unknown, the protocol of the request is returned.
+          `Response.toString()` now shows it.
     - Bugs fixed
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.

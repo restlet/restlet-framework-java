@@ -8,6 +8,11 @@
  */
 package org.restlet.engine.netty;
 
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_VERSION;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -25,6 +30,7 @@ import io.netty.handler.ssl.SslHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
@@ -33,22 +39,39 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
+import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.Header;
-import org.restlet.engine.adapter.ServerCall;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.ssl.SslUtils;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
- * Server call bridging a Netty HTTP exchange (HTTP/1.1, or one HTTP/2 stream converted to HTTP/1
- * objects) to the Restlet engine. The request body is exposed as a blocking stream fed by the event
- * loop; the response body is written through a blocking stream with back-pressure.
+ * Server exchange bridging a Netty HTTP request (HTTP/1.1, or one HTTP/2 or HTTP/3 stream converted
+ * to HTTP/1 objects) to a Restlet {@link org.restlet.Request} and {@link Response}. The request
+ * body is exposed as a blocking stream fed by the event loop; the response body is written through
+ * a blocking stream with back-pressure.
  *
  * @author Jerome Louvel
  */
-class NettyServerCall extends ServerCall {
+class NettyServerCall {
+
+    /** The parent helper. */
+    private final NettyServerHelper helper;
 
     /** The channel carrying this exchange (a child stream channel for HTTP/2 and HTTP/3). */
     private final Channel channel;
@@ -59,23 +82,26 @@ class NettyServerCall extends ServerCall {
     /** The kind of channel carrying the exchange. */
     private final StreamKind kind;
 
-    /** Indicates whether the exchange is carried by a stream of a multiplexed connection. */
-    private final boolean http2;
-
     /** The Netty request head. */
     private final HttpRequest request;
 
     /** The request body stream fed by the event loop. */
     private final ChannelInputStream requestBody;
 
-    /** The response output buffer size. */
-    private final int outputBufferSize;
+    /** Indicates whether the connection is secured with TLS. */
+    private final boolean confidential;
 
-    /** The write timeout in milliseconds. */
-    private final long writeTimeoutMs;
+    /** The request headers, copied once from the Netty request head. */
+    private final Series<Header> requestHeaders;
 
-    /** Indicates whether the request headers were copied. */
-    private volatile boolean requestHeadersAdded;
+    /** The response headers. */
+    private final Series<Header> responseHeaders = new Series<>(Header.class);
+
+    /** The response status code. */
+    private volatile int statusCode = 200;
+
+    /** The response reason phrase. */
+    private volatile String reasonPhrase;
 
     /** Indicates whether the response head was written. */
     private volatile boolean responseHeadWritten;
@@ -106,47 +132,34 @@ class NettyServerCall extends ServerCall {
             HttpRequest request,
             ChannelInputStream requestBody,
             boolean confidential) {
-        super(helper.getHelped());
+        this.helper = helper;
         this.channel = channel;
         this.kind = kind;
-        this.http2 = kind.isStream();
-        this.connection = this.http2 ? channel.parent() : channel;
+        this.connection = kind.isStream() ? channel.parent() : channel;
         this.request = request;
         this.requestBody = requestBody;
-        this.outputBufferSize = helper.getHttpOutputBufferSize();
-        this.writeTimeoutMs = helper.getConnectorIdleTimeout();
-        setConfidential(confidential);
-        setMethod(request.method().name());
-        setRequestUri(request.uri());
-        setVersion(kind.version());
+        this.confidential = confidential;
+        this.requestHeaders = copyHeaders(request);
+    }
 
-        InetSocketAddress remote = toInet(remoteAddress());
-        if (remote != null) {
-            setClientAddress(remote.getAddress().getHostAddress());
-            setClientPort(remote.getPort());
+    /**
+     * Copies the Netty request headers, except the HTTP/2 pseudo-headers. HTTP/2 and HTTP/3 carry
+     * the host in the ":authority" pseudo-header, mapped to a "Host" header when absent.
+     */
+    private static Series<Header> copyHeaders(HttpRequest request) {
+        Series<Header> result = new Series<>(Header.class);
+        for (Map.Entry<String, String> header : request.headers()) {
+            if (!header.getKey().startsWith(":")) {
+                result.add(header.getKey(), header.getValue());
+            }
         }
-        InetSocketAddress local = toInet(localAddress());
-        if (local != null) {
-            setServerAddress(local.getAddress().getHostAddress());
-            setServerPort(local.getPort());
+        if (result.getFirstValue(HeaderConstants.HEADER_HOST, true) == null) {
+            String authority = request.headers().get(":authority");
+            if (authority != null) {
+                result.add(HeaderConstants.HEADER_HOST, authority);
+            }
         }
-    }
-
-    /** The UDP address of a QUIC connection, or the TCP address of other connections. */
-    private SocketAddress remoteAddress() {
-        return (kind == StreamKind.HTTP3)
-                ? Http3Support.remoteSocketAddress(connection)
-                : connection.remoteAddress();
-    }
-
-    private SocketAddress localAddress() {
-        return (kind == StreamKind.HTTP3)
-                ? Http3Support.localSocketAddress(connection)
-                : connection.localAddress();
-    }
-
-    private static InetSocketAddress toInet(SocketAddress address) {
-        return (address instanceof InetSocketAddress inet) ? inet : null;
+        return result;
     }
 
     /**
@@ -159,155 +172,326 @@ class NettyServerCall extends ServerCall {
         this.altSvc = altSvc;
     }
 
-    @Override
-    public boolean abort() {
-        connection.close();
-        return true;
+    private Logger getLogger() {
+        return helper.getLogger();
     }
 
-    @Override
-    public void complete() {
-        if (completed) {
-            return;
-        }
-        completed = true;
+    // ------------------------------------------------------------------ request side
 
-        try {
-            if (!responseHeadWritten) {
-                writeHead(true);
+    /**
+     * Creates the Restlet request of this exchange.
+     *
+     * @param context The context of the server connector.
+     * @return The Restlet request.
+     */
+    NettyRequest toRequest(Context context) {
+        NettyRequest result = new NettyRequest(context, this);
+        result.getAttributes().put(ATTRIBUTE_HEADERS, requestHeaders);
+        result.getAttributes().put(ATTRIBUTE_VERSION, kind.version());
+
+        if (confidential) {
+            List<Certificate> certificates = getCertificates();
+            if (!certificates.isEmpty()) {
+                result.getClientInfo().setCertificates(certificates);
             }
-            if (responseBody != null) {
-                responseBody.close();
-            }
-        } catch (IOException e) {
-            getLogger().fine("Unable to complete the response: " + e.getMessage());
-        }
 
-        if (!channel.isActive()) {
-            requestBody.close();
-            return;
-        }
-
-        boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
-        ChannelFuture future = channel.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-        requestBody.close();
-
-        if (!http2 && !keepAlive) {
-            future.addListener(ChannelFutureListener.CLOSE);
-        } else if (!http2) {
-            // Ready for the next request on this connection.
-            future.addListener(f -> channel.read());
-        }
-    }
-
-    @Override
-    public void flushBuffers() throws IOException {
-        if (responseBody != null) {
-            responseBody.flush();
-        } else {
-            channel.flush();
-        }
-    }
-
-    @Override
-    public List<Certificate> getCertificates() {
-        SSLSession session = sslSession();
-        if (session != null) {
-            try {
-                return Arrays.asList(session.getPeerCertificates());
-            } catch (SSLPeerUnverifiedException _) {
-                return List.of();
-            }
-        }
-        return List.of();
-    }
-
-    @Override
-    public String getCipherSuite() {
-        SSLSession session = sslSession();
-        return (session != null) ? session.getCipherSuite() : null;
-    }
-
-    @Override
-    public InputStream getRequestEntityStream(long size) {
-        return requestBody;
-    }
-
-    @Override
-    public Series<Header> getRequestHeaders() {
-        final Series<Header> result = super.getRequestHeaders();
-
-        if (!this.requestHeadersAdded) {
-            for (Map.Entry<String, String> header : request.headers()) {
-                String name = header.getKey();
-                // HTTP/2 pseudo-headers are not HTTP headers.
-                if (!name.startsWith(":")) {
-                    result.add(name, header.getValue());
+            String cipherSuite = getCipherSuite();
+            if (cipherSuite != null) {
+                result.getClientInfo().setCipherSuite(cipherSuite);
+                Integer keySize = SslUtils.extractKeySize(cipherSuite);
+                if (keySize != null) {
+                    result.getAttributes().put(ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
                 }
             }
-            // HTTP/2 carries the host in the :authority pseudo-header, which the codec maps to a
-            // regular "host" header only when absent; make sure Restlet sees a Host header.
-            if (result.getFirstValue(HeaderConstants.HEADER_HOST, true) == null) {
-                String authority = request.headers().get(":authority");
-                if (authority != null) {
-                    result.add(HeaderConstants.HEADER_HOST, authority);
-                }
+
+            String sslSessionId = getSslSessionId();
+            if (sslSessionId != null) {
+                result.getAttributes().put(ATTRIBUTE_HTTPS_SSL_SESSION_ID, sslSessionId);
             }
-            this.requestHeadersAdded = true;
         }
 
         return result;
     }
 
-    @Override
-    public InputStream getRequestHeadStream() {
+    /**
+     * Creates the Restlet response of this exchange.
+     *
+     * @param request The Restlet request.
+     * @return The Restlet response.
+     */
+    Response toResponse(NettyRequest request) {
+        Response result = new Response(request);
+        InetSocketAddress local = getLocalAddress();
+        if (local != null) {
+            result.getServerInfo().setAddress(local.getAddress().getHostAddress());
+            result.getServerInfo().setPort(local.getPort());
+        }
+        result.getServerInfo().setAgent(Engine.VERSION_HEADER);
+        return result;
+    }
+
+    /** The request method name. */
+    String getMethod() {
+        return request.method().name();
+    }
+
+    /** The request target, "/" when empty. */
+    String getRequestUri() {
+        String uri = request.uri();
+        return (uri == null || uri.isEmpty()) ? "/" : uri;
+    }
+
+    /** The request headers. */
+    Series<Header> getRequestHeaders() {
+        return requestHeaders;
+    }
+
+    /** The exact protocol (HTTP or HTTPS). */
+    Protocol getProtocol() {
+        return confidential ? Protocol.HTTPS : Protocol.HTTP;
+    }
+
+    /** The remote address, or null. */
+    InetSocketAddress getRemoteAddress() {
+        SocketAddress address =
+                (kind == StreamKind.HTTP3)
+                        ? Http3Support.remoteSocketAddress(connection)
+                        : connection.remoteAddress();
+        return (address instanceof InetSocketAddress inet) ? inet : null;
+    }
+
+    /** The local address, or null. */
+    InetSocketAddress getLocalAddress() {
+        SocketAddress address =
+                (kind == StreamKind.HTTP3)
+                        ? Http3Support.localSocketAddress(connection)
+                        : connection.localAddress();
+        return (address instanceof InetSocketAddress inet) ? inet : null;
+    }
+
+    /**
+     * Returns the request entity, if the request declares a length, a chunked transfer coding, or a
+     * connection close (in which case the stream is peeked to detect a body).
+     *
+     * @return The request entity.
+     */
+    Representation getRequestEntity() {
+        long contentLength = HeaderUtils.getContentLength(requestHeaders);
+        boolean chunked = HeaderUtils.isChunkedEncoding(requestHeaders);
+        boolean connectionClosed = HeaderUtils.isConnectionClose(requestHeaders);
+        Representation result = null;
+
+        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0) || chunked) {
+            result = new InputRepresentation(requestBody, null, contentLength);
+        } else if (connectionClosed) {
+            InputStream stream = peek(requestBody);
+            if (stream != null) {
+                result = new InputRepresentation(stream, null, contentLength);
+            }
+        }
+
+        if (result == null) {
+            result = new EmptyRepresentation();
+        }
+        return HeaderUtils.extractEntityHeaders(requestHeaders, result);
+    }
+
+    /** Returns a stream equivalent to the given one, or null if it is empty. */
+    private InputStream peek(InputStream stream) {
+        PushbackInputStream result = new PushbackInputStream(stream);
+        try {
+            int next = result.read();
+            if (next != -1) {
+                result.unread(next);
+                return result;
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.FINE, "Unable to read the request entity", e);
+        }
         return null;
     }
 
-    @Override
-    public OutputStream getResponseEntityStream() {
-        if (responseBody == null) {
-            responseBody =
-                    new ChannelOutputStream(
-                            channel, DefaultHttpContent::new, outputBufferSize, writeTimeoutMs);
+    // ------------------------------------------------------------------ response side
+
+    /**
+     * Commits the Restlet response: adds the response headers and sends the head and the entity.
+     *
+     * @param response The Restlet response.
+     */
+    void commit(Response response) {
+        try {
+            prepareEntity(response);
+            addResponseHeaders(response);
+            sendResponse(response);
+        } catch (IOException | RuntimeException e) {
+            handleException(response, e);
+        } finally {
+            complete();
+            if (response.getOnSent() != null) {
+                response.getOnSent().handle(response.getRequest(), response);
+            }
         }
-        return responseBody;
     }
 
-    @Override
-    public Integer getSslKeySize() {
-        String cipherSuite = getCipherSuite();
-        return (cipherSuite != null) ? SslUtils.extractKeySize(cipherSuite) : null;
+    /** Adds the entity headers and drops the entity when the status or method forbids it. */
+    private void prepareEntity(Response response) {
+        Status status = response.getStatus();
+        Method method = response.getRequest().getMethod();
+
+        if (Method.HEAD.equals(method)) {
+            HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
+            response.setEntity(null);
+        } else if (Method.GET.equals(method)
+                && Status.SUCCESS_OK.equals(status)
+                && !response.isEntityAvailable()) {
+            HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "A response with a 200 (Ok) status should have an entity. Make sure"
+                                    + " that resource \"{0}\" returns one or sets the status to"
+                                    + " 204 (No content).",
+                            response.getRequest().getResourceRef());
+        } else if (Status.SUCCESS_NO_CONTENT.equals(status)) {
+            HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
+            dropEntity(response, Level.FINE, "204 (No content)");
+        } else if (Status.REDIRECTION_NOT_MODIFIED.equals(status)) {
+            if (response.getEntity() != null) {
+                HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(), responseHeaders);
+                response.setEntity(null);
+            }
+        } else if (Status.SUCCESS_RESET_CONTENT.equals(status)) {
+            dropEntity(response, Level.WARNING, "205 (Reset content)");
+        } else if (status.isInformational()) {
+            dropEntity(response, Level.WARNING, "informational (1xx)");
+        } else {
+            HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
+            if (!response.isEntityAvailable()) {
+                if (response.getEntity() != null && response.getEntity().getSize() != 0) {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "A response with an unavailable and potentially non empty"
+                                            + " entity was returned. Ignoring the entity for"
+                                            + " resource \"{0}\".",
+                                    response.getRequest().getResourceRef());
+                }
+                response.setEntity(null);
+            }
+        }
     }
 
-    @Override
-    protected byte[] getSslSessionIdBytes() {
-        SSLSession session = sslSession();
-        return (session != null) ? session.getId() : null;
+    private void dropEntity(Response response, Level level, String status) {
+        if (response.isEntityAvailable()) {
+            getLogger()
+                    .log(
+                            level,
+                            "Responses with a {0} status can''t have an entity. Ignoring the"
+                                    + " entity for resource \"{1}\".",
+                            new Object[] {status, response.getRequest().getResourceRef()});
+        }
+        response.setEntity(null);
     }
 
-    @Override
-    public String getSslSessionId() {
-        byte[] id = getSslSessionIdBytes();
-        return (id != null && id.length > 0) ? HexFormat.of().formatHex(id) : null;
+    private void addResponseHeaders(Response response) {
+        try {
+            HeaderUtils.addGeneralHeaders(response, responseHeaders);
+            HeaderUtils.addResponseHeaders(response, responseHeaders);
+            if (response.getStatus() != null) {
+                setStatus(response.getStatus().getCode(), response.getStatus().getReasonPhrase());
+            }
+        } catch (RuntimeException e) {
+            getLogger().log(Level.WARNING, "Unable to add the response headers", e);
+            setStatus(
+                    Status.SERVER_ERROR_INTERNAL.getCode(),
+                    Status.SERVER_ERROR_INTERNAL.getReasonPhrase());
+        }
     }
 
-    @Override
-    public boolean isConnectionBroken(Throwable exception) {
-        return (exception instanceof ClosedChannelException)
-                || !channel.isActive()
-                || super.isConnectionBroken(exception);
+    private void setStatus(int code, String reason) {
+        this.statusCode = code;
+        this.reasonPhrase = reason;
     }
 
-    @Override
-    public void sendResponse(org.restlet.Response response) throws IOException {
+    private void handleException(Response response, Exception exception) {
+        if (isConnectionBroken(exception)) {
+            getLogger()
+                    .log(
+                            Level.INFO,
+                            "The connection was broken. It was probably closed by the client."
+                                    + " Reason: {0}",
+                            exception.getMessage());
+        } else if (!responseHeadWritten) {
+            getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "An exception occurred writing the response entity",
+                            exception);
+            setStatus(
+                    Status.SERVER_ERROR_INTERNAL.getCode(),
+                    "An exception occurred writing the response entity");
+            response.setEntity(null);
+            try {
+                sendResponse(response);
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING, "Unable to send the error response", ioe);
+            }
+        } else {
+            // The head is already on the wire: the response can only be cut short.
+            getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "An exception occurred writing the response entity",
+                            exception);
+            abort();
+        }
+    }
+
+    /**
+     * Sends the response head and entity.
+     *
+     * @param response The Restlet response.
+     * @throws IOException If the response could not be written.
+     */
+    private void sendResponse(Response response) throws IOException {
         if (!channel.isActive()) {
             throw new IOException("Connection closed by peer");
         }
 
-        boolean hasEntity = (response != null) && (response.getEntity() != null);
-        writeHead(!hasEntity);
-        super.sendResponse(response);
+        Representation entity = response.getEntity();
+        ConnectorService connectorService = ConnectorHelper.getConnectorService();
+        if (connectorService != null) {
+            connectorService.beforeSend(entity);
+        }
+
+        try {
+            writeHead(entity == null);
+            if (entity != null) {
+                OutputStream out = getResponseEntityStream();
+                entity.write(out);
+                out.flush();
+                out.close();
+            }
+        } finally {
+            if (entity != null) {
+                entity.release();
+            }
+            if (connectorService != null) {
+                connectorService.afterSend(entity);
+            }
+        }
+    }
+
+    private OutputStream getResponseEntityStream() {
+        if (responseBody == null) {
+            responseBody =
+                    new ChannelOutputStream(
+                            channel,
+                            DefaultHttpContent::new,
+                            helper.getHttpOutputBufferSize(),
+                            helper.getConnectorIdleTimeout());
+        }
+        return responseBody;
     }
 
     /**
@@ -321,13 +505,15 @@ class NettyServerCall extends ServerCall {
         }
         responseHeadWritten = true;
 
+        int code = statusCode;
+        String reason = reasonPhrase;
         HttpResponseStatus status =
-                (getReasonPhrase() != null && !getReasonPhrase().isEmpty())
-                        ? new HttpResponseStatus(getStatusCode(), getReasonPhrase())
-                        : HttpResponseStatus.valueOf(getStatusCode());
+                (reason != null && !reason.isEmpty())
+                        ? new HttpResponseStatus(code, reason)
+                        : HttpResponseStatus.valueOf(code);
         HttpResponse head = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 
-        for (Header header : getResponseHeaders()) {
+        for (Header header : responseHeaders) {
             head.headers().add(header.getName(), header.getValue());
         }
 
@@ -336,28 +522,116 @@ class NettyServerCall extends ServerCall {
         }
 
         boolean hasLength = head.headers().contains(HttpHeaderNames.CONTENT_LENGTH);
-        boolean noBodyStatus =
-                getStatusCode() == 204 || getStatusCode() == 304 || getStatusCode() < 200;
+        boolean noBodyStatus = code == 204 || code == 304 || code < 200;
 
-        if (http2) {
-            // Connection-specific headers are forbidden in HTTP/2.
+        if (kind.isStream()) {
+            // Connection-specific headers are forbidden in HTTP/2 and HTTP/3.
             head.headers().remove(HttpHeaderNames.CONNECTION);
             head.headers().remove(HttpHeaderNames.TRANSFER_ENCODING);
             head.headers().remove("Keep-Alive");
-        } else if (emptyBody) {
-            if (!hasLength && !noBodyStatus && !"HEAD".equals(getMethod())) {
-                head.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
+        } else {
+            if (emptyBody) {
+                if (!hasLength && !noBodyStatus && !"HEAD".equals(getMethod())) {
+                    head.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
+                }
+            } else if (!hasLength) {
+                head.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
             }
-        } else if (!hasLength) {
-            head.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-        }
-
-        if (!http2 && !HttpUtil.isKeepAlive(request)) {
-            head.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+            if (!HttpUtil.isKeepAlive(request)) {
+                head.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+            }
         }
 
         channel.write(head);
     }
+
+    /** Completes the exchange: ends the response and frees the connection for the next request. */
+    void complete() {
+        if (completed) {
+            return;
+        }
+        completed = true;
+
+        try {
+            if (!responseHeadWritten) {
+                writeHead(true);
+            }
+            if (responseBody != null) {
+                responseBody.close();
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.FINE, "Unable to complete the response: {0}", e.getMessage());
+        }
+
+        if (!channel.isActive()) {
+            requestBody.close();
+            return;
+        }
+
+        boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
+        ChannelFuture future = channel.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+        requestBody.close();
+
+        if (!kind.isStream()) {
+            if (keepAlive) {
+                // Ready for the next request on this connection.
+                future.addListener(f -> channel.read());
+            } else {
+                future.addListener(ChannelFutureListener.CLOSE);
+            }
+        }
+    }
+
+    /**
+     * Aborts the exchange by closing the connection.
+     *
+     * @return True.
+     */
+    boolean abort() {
+        connection.close();
+        return true;
+    }
+
+    /**
+     * Flushes the response head, and the buffered response body if any.
+     *
+     * @throws IOException If the flush fails.
+     */
+    void flushBuffers() throws IOException {
+        if (responseBody != null) {
+            responseBody.flush();
+        } else {
+            channel.flush();
+        }
+    }
+
+    /**
+     * Indicates whether the given failure is caused by a broken connection.
+     *
+     * @param exception The failure.
+     * @return True if the failure is caused by a broken connection.
+     */
+    boolean isConnectionBroken(Throwable exception) {
+        return (exception instanceof ClosedChannelException)
+                || !channel.isActive()
+                || isBroken(exception);
+    }
+
+    private static boolean isBroken(Throwable exception) {
+        for (Throwable t = exception; t != null; t = t.getCause()) {
+            String message = t.getMessage();
+            if ((t instanceof IOException
+                            && t.getClass().getName().endsWith("ClientAbortException"))
+                    || (message != null
+                            && (message.contains("Broken pipe")
+                                    || message.contains("Connection reset")))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------ TLS
 
     private SSLSession sslSession() {
         if (kind == StreamKind.HTTP3) {
@@ -365,5 +639,28 @@ class NettyServerCall extends ServerCall {
         }
         SslHandler ssl = connection.pipeline().get(SslHandler.class);
         return (ssl != null) ? ssl.engine().getSession() : null;
+    }
+
+    private List<Certificate> getCertificates() {
+        SSLSession session = sslSession();
+        if (session != null) {
+            try {
+                return Arrays.asList(session.getPeerCertificates());
+            } catch (SSLPeerUnverifiedException _) {
+                return List.of();
+            }
+        }
+        return List.of();
+    }
+
+    private String getCipherSuite() {
+        SSLSession session = sslSession();
+        return (session != null) ? session.getCipherSuite() : null;
+    }
+
+    private String getSslSessionId() {
+        SSLSession session = sslSession();
+        byte[] id = (session != null) ? session.getId() : null;
+        return (id != null && id.length > 0) ? HexFormat.of().formatHex(id) : null;
     }
 }
