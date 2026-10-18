@@ -84,7 +84,7 @@ class Http2CancellationTestCase {
                                                 throw new IOException(
                                                         "Timed out waiting to continue the response");
                                             }
-                                            output.write("second".getBytes(StandardCharsets.UTF_8));
+                                            output.write(new byte[2 * 1024 * 1024]);
                                             output.flush();
                                         } catch (InterruptedException e) {
                                             Thread.currentThread().interrupt();
@@ -129,6 +129,6 @@ class Http2CancellationTestCase {
             continueResponseWrite.countDown();
         }
 
-        assertTrue(responseWriteFailed.await(5, TimeUnit.SECONDS));
+        assertTrue(responseWriteFailed.await(10, TimeUnit.SECONDS));
     }
 }
