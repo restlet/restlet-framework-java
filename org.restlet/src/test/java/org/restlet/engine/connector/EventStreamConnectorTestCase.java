@@ -185,7 +185,11 @@ class EventStreamConnectorTestCase {
                                 new EventStreamRepresentation(
                                         sink -> {
                                             try {
-                                                Thread.sleep(350);
+                                                // Waits past the idle timeout before sending.
+                                                boolean released =
+                                                        new CountDownLatch(1)
+                                                                .await(350, TimeUnit.MILLISECONDS);
+                                                assertFalse(released);
                                             } catch (InterruptedException e) {
                                                 Thread.currentThread().interrupt();
                                                 throw new java.io.IOException(

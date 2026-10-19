@@ -9,6 +9,7 @@
 package org.restlet.representation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.ServerSentEvent;
@@ -49,13 +52,15 @@ class EventStreamTestCase {
         assertEquals(MediaType.TEXT_EVENT_STREAM, representation.getMediaType());
         assertEquals(StandardCharsets.UTF_8.name(), representation.getCharacterSet().getName());
         assertEquals(
-                "id: 42\n"
-                        + "event: message\n"
-                        + "data:  héllo\n"
-                        + "data: world \n"
-                        + "retry: 250\n"
-                        + ": heartbeat\n"
-                        + "\n",
+                """
+                id: 42
+                event: message
+                data:  héllo
+                data: world\s
+                retry: 250
+                : heartbeat
+
+                """,
                 output.toString(StandardCharsets.UTF_8));
     }
 
@@ -66,7 +71,10 @@ class EventStreamTestCase {
                 new EventStreamRepresentation(
                         sink -> {
                             try {
-                                Thread.sleep(Duration.ofMillis(60));
+                                // Keeps the writer idle long enough for several heartbeats.
+                                boolean released =
+                                        new CountDownLatch(1).await(60, TimeUnit.MILLISECONDS);
+                                assertFalse(released);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                                 throw new IOException("Interrupted while awaiting an event", e);
@@ -87,14 +95,18 @@ class EventStreamTestCase {
         EventStreamReader reader =
                 new EventStreamReader(
                         new StringReader(
-                                "\uFEFFid:cursor-1\r\n"
-                                        + "event:update\r\n"
-                                        + "data:first\r\n"
-                                        + "data:second\r\n"
-                                        + "retry:5\r\n"
-                                        + "\r\n"
-                                        + ":keepalive\n\n"
-                                        + "data:\n\n"));
+                                """
+                                \uFEFFid:cursor-1\r
+                                event:update\r
+                                data:first\r
+                                data:second\r
+                                retry:5\r
+                                \r
+                                :keepalive
+
+                                data:
+
+                                """));
 
         ServerSentEvent event = reader.readEvent();
         assertEquals("cursor-1", event.getId());
@@ -138,11 +150,10 @@ class EventStreamTestCase {
 
     @Test
     void validatesEventFields() {
-        assertThrows(IllegalArgumentException.class, () -> ServerSentEvent.builder().id("bad\nid"));
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> ServerSentEvent.builder().event("bad\nevent"));
-        assertThrows(IllegalArgumentException.class, () -> ServerSentEvent.builder().retry(-1L));
+        ServerSentEvent.Builder builder = ServerSentEvent.builder();
+        assertThrows(IllegalArgumentException.class, () -> builder.id("bad\nid"));
+        assertThrows(IllegalArgumentException.class, () -> builder.event("bad\nevent"));
+        assertThrows(IllegalArgumentException.class, () -> builder.retry(-1L));
     }
 
     private static InputStream stream(String content) {

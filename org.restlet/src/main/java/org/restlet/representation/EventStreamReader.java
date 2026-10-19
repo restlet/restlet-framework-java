@@ -89,13 +89,6 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
         }
     }
 
-    private EventStreamReader(InputStream inputStream, EventStreamSource source) {
-        this(
-                new InputStreamReader(
-                        Objects.requireNonNull(inputStream, "inputStream"), StandardCharsets.UTF_8),
-                source);
-    }
-
     private EventStreamReader(Reader reader, EventStreamSource source) {
         this.reader = new BufferedReader(Objects.requireNonNull(reader, "reader"));
         this.source = source;
@@ -165,133 +158,84 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
     }
 
     private ServerSentEvent readCurrentEvent() throws IOException {
-        String id = null;
-        String event = null;
-        Long retry = null;
-        StringBuilder data = new StringBuilder();
-        StringBuilder comment = new StringBuilder();
-        boolean hasData = false;
-        boolean hasComment = false;
-
-        while (!closed) {
+        PendingEvent pending = new PendingEvent();
+        ServerSentEvent result = null;
+        while (result == null && !closed) {
             String line = reader.readLine();
             if (line == null) {
                 currentEof = true;
-                return hasData || hasComment
-                        ? buildEvent(id, event, retry, data, comment, hasData, hasComment)
-                        : null;
+                return pending.build();
             }
-            if (beginning) {
-                beginning = false;
-                if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
-                    line = line.substring(1);
-                }
-            }
-            if (line.isEmpty()) {
-                if (hasData || hasComment) {
-                    return buildEvent(id, event, retry, data, comment, hasData, hasComment);
-                }
-                id = null;
-                event = null;
-                retry = null;
-                continue;
-            }
-            if (line.charAt(0) == ':') {
-                if (hasComment) {
-                    comment.append('\n');
-                }
-                String value = line.substring(1);
-                if (value.startsWith(" ")) {
-                    value = value.substring(1);
-                }
-                comment.append(value);
-                hasComment = true;
-                continue;
-            }
+            result = processLine(stripBom(line), pending);
+        }
+        return result;
+    }
 
-            int separator = line.indexOf(':');
-            String field = separator < 0 ? line : line.substring(0, separator);
-            String value = separator < 0 ? "" : line.substring(separator + 1);
-            if (value.startsWith(" ")) {
-                value = value.substring(1);
+    private String stripBom(String line) {
+        if (beginning) {
+            beginning = false;
+            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
+                return line.substring(1);
             }
-            switch (field) {
-                case "data" -> {
-                    if (hasData) {
-                        data.append('\n');
-                    }
-                    data.append(value);
-                    hasData = true;
-                }
-                case "event" -> event = value;
-                case "id" -> {
-                    if (value.indexOf('\0') < 0) {
-                        id = value;
-                        lastEventId = value;
-                    }
-                }
-                case "retry" -> {
-                    if (isDigits(value)) {
-                        try {
-                            retry = Long.parseLong(value);
-                            retryDelayMs = retry;
-                        } catch (NumberFormatException _) {
-                            // An out-of-range retry value is ignored by the SSE parsing rules.
-                        }
-                    }
-                }
-                default -> {
-                    // Unknown fields are ignored by the SSE protocol.
-                }
+        }
+        return line;
+    }
+
+    private ServerSentEvent processLine(String line, PendingEvent pending) {
+        if (line.isEmpty()) {
+            ServerSentEvent event = pending.build();
+            if (event == null) {
+                pending.resetFields();
+            }
+            return event;
+        }
+        if (line.charAt(0) == ':') {
+            pending.appendComment(stripLeadingSpace(line.substring(1)));
+            return null;
+        }
+
+        int separator = line.indexOf(':');
+        String field = separator < 0 ? line : line.substring(0, separator);
+        String value = separator < 0 ? "" : stripLeadingSpace(line.substring(separator + 1));
+        switch (field) {
+            case "data" -> pending.appendData(value);
+            case "event" -> pending.event = value;
+            case "id" -> applyId(value, pending);
+            case "retry" -> applyRetry(value, pending);
+            default -> {
+                // Unknown fields are ignored by the SSE protocol.
             }
         }
         return null;
     }
 
-    private ServerSentEvent buildEvent(
-            String id,
-            String event,
-            Long retry,
-            StringBuilder data,
-            StringBuilder comment,
-            boolean hasData,
-            boolean hasComment) {
-        ServerSentEvent.Builder builder = ServerSentEvent.builder();
-        if (id != null) {
-            builder.id(id);
+    private void applyId(String value, PendingEvent pending) {
+        if (value.indexOf('\0') < 0) {
+            pending.id = value;
+            lastEventId = value;
         }
-        if (event != null) {
-            builder.event(event);
+    }
+
+    private void applyRetry(String value, PendingEvent pending) {
+        if (!isDigits(value)) {
+            return;
         }
-        if (retry != null) {
-            builder.retry(retry);
+        try {
+            long retry = Long.parseLong(value);
+            pending.retry = retry;
+            retryDelayMs = retry;
+        } catch (NumberFormatException _) {
+            // An out-of-range retry value is ignored by the SSE parsing rules.
         }
-        if (hasData) {
-            builder.data(data.toString());
-        }
-        if (hasComment) {
-            builder.comment(comment.toString());
-        }
-        return builder.build();
+    }
+
+    private static String stripLeadingSpace(String value) {
+        return value.startsWith(" ") ? value.substring(1) : value;
     }
 
     private boolean reconnect() throws IOException {
-        synchronized (reconnectLock) {
-            if (closed) {
-                return false;
-            }
-            if (retryDelayMs > 0) {
-                try {
-                    reconnectLock.wait(retryDelayMs);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new IOException(
-                            "Interrupted while waiting to reconnect to the event stream", e);
-                }
-            }
-            if (closed) {
-                return false;
-            }
+        if (!awaitReconnectDelay()) {
+            return false;
         }
         reader.close();
         InputStream inputStream;
@@ -311,6 +255,24 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
         return true;
     }
 
+    private boolean awaitReconnectDelay() throws IOException {
+        synchronized (reconnectLock) {
+            long deadline = System.nanoTime() + retryDelayMs * 1_000_000L;
+            long remainingMs = retryDelayMs;
+            while (!closed && remainingMs > 0) {
+                try {
+                    reconnectLock.wait(remainingMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException(
+                            "Interrupted while waiting to reconnect to the event stream", e);
+                }
+                remainingMs = (deadline - System.nanoTime()) / 1_000_000L;
+            }
+            return !closed;
+        }
+    }
+
     private static boolean isDigits(String value) {
         if (value.isEmpty()) {
             return false;
@@ -321,6 +283,69 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
             }
         }
         return true;
+    }
+
+    /** Accumulates the fields of the event being parsed. */
+    private static final class PendingEvent {
+
+        private final StringBuilder data = new StringBuilder();
+
+        private final StringBuilder comment = new StringBuilder();
+
+        private String id;
+
+        private String event;
+
+        private Long retry;
+
+        private boolean hasData;
+
+        private boolean hasComment;
+
+        private void appendData(String value) {
+            if (hasData) {
+                data.append('\n');
+            }
+            data.append(value);
+            hasData = true;
+        }
+
+        private void appendComment(String value) {
+            if (hasComment) {
+                comment.append('\n');
+            }
+            comment.append(value);
+            hasComment = true;
+        }
+
+        private void resetFields() {
+            id = null;
+            event = null;
+            retry = null;
+        }
+
+        private ServerSentEvent build() {
+            if (!hasData && !hasComment) {
+                return null;
+            }
+            ServerSentEvent.Builder builder = ServerSentEvent.builder();
+            if (id != null) {
+                builder.id(id);
+            }
+            if (event != null) {
+                builder.event(event);
+            }
+            if (retry != null) {
+                builder.retry(retry);
+            }
+            if (hasData) {
+                builder.data(data.toString());
+            }
+            if (hasComment) {
+                builder.comment(comment.toString());
+            }
+            return builder.build();
+        }
     }
 
     /** Opens a new stream using the latest event ID. */
