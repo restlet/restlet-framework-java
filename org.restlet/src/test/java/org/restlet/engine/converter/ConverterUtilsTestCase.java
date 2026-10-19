@@ -14,15 +14,22 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 
 class ConverterUtilsTestCase {
+
+    @BeforeEach
+    void setUp() {
+        Engine.register();
+    }
 
     @Test
     void getBestHelper_objectSource_findsMatchingConverter() {
