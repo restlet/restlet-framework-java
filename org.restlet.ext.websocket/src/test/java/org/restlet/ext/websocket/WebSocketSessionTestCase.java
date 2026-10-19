@@ -168,12 +168,10 @@ class WebSocketSessionTestCase {
         }
         try (WebSocketClient client =
                 WebSocketClient.builder().connectTimeout(Duration.ofSeconds(2)).build()) {
-            assertThrows(
-                    ConnectException.class,
-                    () -> client.connect("ws://localhost:" + freePort + "/"));
-            assertThrows(
-                    IllegalArgumentException.class,
-                    () -> client.connect("http://localhost:" + freePort + "/"));
+            String refusedUri = "ws://localhost:" + freePort + "/";
+            String httpUri = "http://localhost:" + freePort + "/";
+            assertThrows(ConnectException.class, () -> client.connect(refusedUri));
+            assertThrows(IllegalArgumentException.class, () -> client.connect(httpUri));
             assertThrows(IllegalArgumentException.class, () -> client.connect("ws:///nohost"));
         }
     }
@@ -194,7 +192,7 @@ class WebSocketSessionTestCase {
         assertEquals(WebSocketMessage.text("a"), WebSocketMessage.text("a"));
         assertEquals(WebSocketMessage.text("a").hashCode(), WebSocketMessage.text("a").hashCode());
         assertNotEquals(WebSocketMessage.text("a"), WebSocketMessage.binary(new byte[] {'a'}));
-        assertNotEquals(WebSocketMessage.text("a"), "a");
+        assertNotEquals(new Object(), WebSocketMessage.text("a"));
         assertEquals("text[1 chars]", WebSocketMessage.text("a").toString());
     }
 

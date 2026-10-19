@@ -268,7 +268,7 @@ class WebSocketTestCase {
         for (int i = 0; i < 50 && second == null; i++) {
             try {
                 second = client.connect(base + "/");
-            } catch (IOException e) {
+            } catch (IOException _) {
                 Thread.sleep(50);
             }
         }

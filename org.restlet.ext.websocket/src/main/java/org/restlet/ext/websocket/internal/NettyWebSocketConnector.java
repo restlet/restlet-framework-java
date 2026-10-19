@@ -155,7 +155,8 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         if (host == null) {
             throw new IllegalArgumentException("The WebSocket URI has no host: " + uri);
         }
-        int port = (uri.getPort() > 0) ? uri.getPort() : (secure ? 443 : 80);
+        int defaultPort = secure ? 443 : 80;
+        int port = (uri.getPort() > 0) ? uri.getPort() : defaultPort;
 
         HttpHeaders extraHeaders = new DefaultHttpHeaders();
         headers.forEach(extraHeaders::add);
