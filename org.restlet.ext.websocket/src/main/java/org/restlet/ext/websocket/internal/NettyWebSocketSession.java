@@ -151,7 +151,7 @@ final class NettyWebSocketSession implements WebSocketSession {
             throw new InterruptedIOException("Interrupted while receiving a WebSocket message");
         }
         if (next == END) {
-            inbound.offer(END);
+            inbound.add(END);
             return null;
         }
         if (inbound.size() < MAX_QUEUED_MESSAGES && readPaused.compareAndSet(true, false)) {
@@ -224,15 +224,6 @@ final class NettyWebSocketSession implements WebSocketSession {
         }
     }
 
-    private void signalWritability() {
-        writabilityLock.lock();
-        try {
-            writable.signalAll();
-        } finally {
-            writabilityLock.unlock();
-        }
-    }
-
     @Override
     public void close(int code, String reason) throws IOException {
         if (closeSent.compareAndSet(false, true) && channel.isActive()) {
@@ -264,40 +255,51 @@ final class NettyWebSocketSession implements WebSocketSession {
         return closeReason;
     }
 
-    private void enqueue(WebSocketMessage message) {
-        inbound.offer(message);
-    }
-
-    private void onClose(ChannelHandlerContext ctx, int status, String reason) {
-        closeCode = (status < 0) ? NO_STATUS : status;
-        closeReason = (reason == null || reason.isEmpty()) ? null : reason;
-        closeReceived = true;
-        if (closeSent.compareAndSet(false, true)) {
-            int echo =
-                    WebSocketCloseStatus.isValidStatusCode(closeCode) ? closeCode : NORMAL_CLOSURE;
-            ctx.writeAndFlush(new CloseWebSocketFrame(echo, null))
-                    .addListener(ChannelFutureListener.CLOSE);
-        } else {
-            ctx.close();
-        }
-        inbound.offer(END);
-    }
-
-    private void failSession(ChannelHandlerContext ctx, int code) {
-        if (!closeReceived) {
-            closeCode = code;
-            closeReceived = true;
-        }
-        if (closeSent.compareAndSet(false, true) && ctx.channel().isActive()) {
-            ctx.writeAndFlush(new CloseWebSocketFrame(code, null))
-                    .addListener(ChannelFutureListener.CLOSE);
-        } else {
-            ctx.close();
-        }
-    }
-
     /** Converts frames into queued messages and handles the control frames. */
     private final class Handler extends ChannelInboundHandlerAdapter {
+
+        private void signalWritability() {
+            writabilityLock.lock();
+            try {
+                writable.signalAll();
+            } finally {
+                writabilityLock.unlock();
+            }
+        }
+
+        private void enqueue(WebSocketMessage message) {
+            inbound.add(message);
+        }
+
+        private void onClose(ChannelHandlerContext ctx, int status, String reason) {
+            closeCode = (status < 0) ? NO_STATUS : status;
+            closeReason = (reason == null || reason.isEmpty()) ? null : reason;
+            closeReceived = true;
+            if (closeSent.compareAndSet(false, true)) {
+                int echo =
+                        WebSocketCloseStatus.isValidStatusCode(closeCode)
+                                ? closeCode
+                                : NORMAL_CLOSURE;
+                ctx.writeAndFlush(new CloseWebSocketFrame(echo, null))
+                        .addListener(ChannelFutureListener.CLOSE);
+            } else {
+                ctx.close();
+            }
+            inbound.add(END);
+        }
+
+        private void failSession(ChannelHandlerContext ctx, int code) {
+            if (!closeReceived) {
+                closeCode = code;
+                closeReceived = true;
+            }
+            if (closeSent.compareAndSet(false, true) && ctx.channel().isActive()) {
+                ctx.writeAndFlush(new CloseWebSocketFrame(code, null))
+                        .addListener(ChannelFutureListener.CLOSE);
+            } else {
+                ctx.close();
+            }
+        }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -352,7 +354,7 @@ final class NettyWebSocketSession implements WebSocketSession {
                 closeCode = ABNORMAL_CLOSURE;
                 closeReceived = true;
             }
-            inbound.offer(END);
+            inbound.add(END);
             super.channelInactive(ctx);
         }
 

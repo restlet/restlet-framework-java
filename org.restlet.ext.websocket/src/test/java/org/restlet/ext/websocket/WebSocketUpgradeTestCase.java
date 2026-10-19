@@ -69,18 +69,14 @@ class WebSocketUpgradeTestCase {
 
     @Test
     void acceptRejectsInvalidUpgrades() {
+        Response plain = new Response(new Request(Method.GET, "http://localhost/"));
+        WebSocketHandler handler = session -> {};
         assertThrows(
-                IllegalStateException.class,
-                () ->
-                        WebSocketUpgrade.accept(
-                                new Response(new Request(Method.GET, "http://localhost/")),
-                                session -> {},
-                                null));
+                IllegalStateException.class, () -> WebSocketUpgrade.accept(plain, handler, null));
+        Response chat = new Response(upgradeRequest("chat"));
         assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        WebSocketUpgrade.accept(
-                                new Response(upgradeRequest("chat")), session -> {}, "other"));
+                () -> WebSocketUpgrade.accept(chat, handler, "other"));
         assertNull(WebSocketUpgrade.get(new Response(upgradeRequest())));
     }
 

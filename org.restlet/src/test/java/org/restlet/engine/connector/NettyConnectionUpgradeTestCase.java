@@ -10,6 +10,7 @@ package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.netty.buffer.Unpooled;
@@ -84,10 +85,15 @@ class NettyConnectionUpgradeTestCase {
     private static String exchange(int port) throws Exception {
         try (Socket socket = new Socket("localhost", port)) {
             OutputStream out = socket.getOutputStream();
-            out.write(
-                    ("GET /up HTTP/1.1\r\nHost: localhost\r\nConnection: Upgrade\r\n"
-                                    + "Upgrade: test\r\n\r\n")
-                            .getBytes(StandardCharsets.US_ASCII));
+            String request =
+                    """
+                    GET /up HTTP/1.1\r
+                    Host: localhost\r
+                    Connection: Upgrade\r
+                    Upgrade: test\r
+                    \r
+                    """;
+            out.write(request.getBytes(StandardCharsets.US_ASCII));
             out.flush();
             BufferedReader in =
                     new BufferedReader(
@@ -130,7 +136,7 @@ class NettyConnectionUpgradeTestCase {
         assertEquals(30000, context.getIdleTimeout());
         assertTrue(context.getParameters().isEmpty());
         context.getAttributes().put("seen", true);
-        assertTrue(context.getLogger() != null);
+        assertNotNull(context.getLogger());
     }
 
     @Test

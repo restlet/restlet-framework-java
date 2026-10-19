@@ -15,13 +15,11 @@ import java.util.Objects;
 /** An immutable, complete WebSocket data message: either text or binary. */
 public final class WebSocketMessage {
 
-    private final String text;
+    /** Either a {@link String} or a {@code byte[]}, never null. */
+    private final Object payload;
 
-    private final byte[] data;
-
-    private WebSocketMessage(String text, byte[] data) {
-        this.text = text;
-        this.data = data;
+    private WebSocketMessage(Object payload) {
+        this.payload = payload;
     }
 
     /**
@@ -31,7 +29,7 @@ public final class WebSocketMessage {
      * @return The message.
      */
     public static WebSocketMessage text(String text) {
-        return new WebSocketMessage(Objects.requireNonNull(text, "text"), null);
+        return new WebSocketMessage(Objects.requireNonNull(text, "text"));
     }
 
     /**
@@ -41,7 +39,7 @@ public final class WebSocketMessage {
      * @return The message.
      */
     public static WebSocketMessage binary(byte[] data) {
-        return new WebSocketMessage(null, Objects.requireNonNull(data, "data").clone());
+        return new WebSocketMessage(Objects.requireNonNull(data, "data").clone());
     }
 
     /**
@@ -50,7 +48,7 @@ public final class WebSocketMessage {
      * @return True for a text message.
      */
     public boolean isText() {
-        return text != null;
+        return payload instanceof String;
     }
 
     /**
@@ -59,7 +57,7 @@ public final class WebSocketMessage {
      * @return True for a binary message.
      */
     public boolean isBinary() {
-        return data != null;
+        return payload instanceof byte[];
     }
 
     /**
@@ -68,7 +66,9 @@ public final class WebSocketMessage {
      * @return The text.
      */
     public String getText() {
-        return isText() ? text : new String(data, StandardCharsets.UTF_8);
+        return (payload instanceof String text)
+                ? text
+                : new String((byte[]) payload, StandardCharsets.UTF_8);
     }
 
     /**
@@ -77,23 +77,31 @@ public final class WebSocketMessage {
      * @return A copy of the bytes.
      */
     public byte[] getData() {
-        return isBinary() ? data.clone() : text.getBytes(StandardCharsets.UTF_8);
+        return (payload instanceof byte[] data)
+                ? data.clone()
+                : ((String) payload).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof WebSocketMessage that
-                && Objects.equals(text, that.text)
-                && Arrays.equals(data, that.data);
+        if (!(obj instanceof WebSocketMessage that)) {
+            return false;
+        }
+        if (payload instanceof byte[] data) {
+            return that.payload instanceof byte[] other && Arrays.equals(data, other);
+        }
+        return payload.equals(that.payload);
     }
 
     @Override
     public int hashCode() {
-        return 31 * Objects.hashCode(text) + Arrays.hashCode(data);
+        return (payload instanceof byte[] data) ? Arrays.hashCode(data) : payload.hashCode();
     }
 
     @Override
     public String toString() {
-        return isText() ? "text[" + text.length() + " chars]" : "binary[" + data.length + " bytes]";
+        return (payload instanceof String text)
+                ? "text[" + text.length() + " chars]"
+                : "binary[" + ((byte[]) payload).length + " bytes]";
     }
 }
