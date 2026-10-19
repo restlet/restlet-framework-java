@@ -45,12 +45,13 @@ public final class EventStreamRepresentation extends OutputRepresentation {
      * @param heartbeatInterval The heartbeat interval, or null to disable automatic heartbeats.
      */
     public EventStreamRepresentation(EventWriter writer, Duration heartbeatInterval) {
-        super(MediaType.TEXT_EVENT_STREAM);
-        this.writer = Objects.requireNonNull(writer, "writer");
+        Objects.requireNonNull(writer, "writer");
         if (heartbeatInterval != null
                 && (heartbeatInterval.isZero() || heartbeatInterval.isNegative())) {
             throw new IllegalArgumentException("The heartbeat interval must be positive");
         }
+        super(MediaType.TEXT_EVENT_STREAM);
+        this.writer = writer;
         this.heartbeatInterval = heartbeatInterval;
         setCharacterSet(CharacterSet.UTF_8);
         setTransient(true);
@@ -74,32 +75,39 @@ public final class EventStreamRepresentation extends OutputRepresentation {
                                     () ->
                                             writeHeartbeats(
                                                     sink, stopped, heartbeatFailure, writerThread));
-            Throwable writerFailure = null;
             try {
                 writer.write(sink);
-            } catch (IOException | RuntimeException | Error e) {
-                writerFailure = e;
+            } catch (IOException | RuntimeException e) {
+                stopHeartbeats(stopped, heartbeatThread, e);
                 throw e;
             } finally {
+                // Ensures the heartbeat thread stops even when the writer fails with an Error.
                 stopped.set(true);
                 heartbeatThread.interrupt();
-                try {
-                    heartbeatThread.join();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    IOException interrupted =
-                            new IOException("Interrupted while stopping SSE heartbeats", e);
-                    if (writerFailure != null) {
-                        writerFailure.addSuppressed(interrupted);
-                    } else {
-                        throw interrupted;
-                    }
-                }
             }
+            stopHeartbeats(stopped, heartbeatThread, null);
             IOException failure = heartbeatFailure.get();
             if (failure != null) {
                 throw failure;
             }
+        }
+    }
+
+    private static void stopHeartbeats(
+            AtomicBoolean stopped, Thread heartbeatThread, Exception writerFailure)
+            throws IOException {
+        stopped.set(true);
+        heartbeatThread.interrupt();
+        try {
+            heartbeatThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            IOException interrupted =
+                    new IOException("Interrupted while stopping SSE heartbeats", e);
+            if (writerFailure == null) {
+                throw interrupted;
+            }
+            writerFailure.addSuppressed(interrupted);
         }
     }
 
@@ -111,7 +119,7 @@ public final class EventStreamRepresentation extends OutputRepresentation {
         while (!stopped.get()) {
             try {
                 Thread.sleep(heartbeatInterval);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 if (!stopped.get()) {
                     Thread.currentThread().interrupt();
                 }
