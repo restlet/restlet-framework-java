@@ -14,16 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.service.StatusService;
 
 class StatusFilterTestCase {
+
+    @BeforeEach
+    void setUp() {
+        Engine.register();
+    }
 
     private Response newResponse() {
         Request request = new Request(Method.GET, "http://localhost/test");
