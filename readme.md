@@ -16,7 +16,7 @@ Restlet applications run directly in JVMs with minimal dependencies, resulting i
 
 To learn more about Restlet Framework, please have a look at the following resources:
 
-* [Getting Started](https://restlet.talend.com/documentation/user-guide/2.7/introduction/overview/)
+* [Getting Started](https://restlet.github.io/documentation/user-guide/2.7/introduction/overview/)
 * [User Guide](https://restlet.github.io/documentation/user-guide/2.7/core/overview/)
 * [JavaDocs](https://restlet.github.io/documentation/javadocs/2.7/java/)
 * [Change Log](https://github.com/restlet/restlet-framework-java/blob/2.7/changes.md)
