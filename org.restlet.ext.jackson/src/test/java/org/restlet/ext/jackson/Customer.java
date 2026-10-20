@@ -8,16 +8,20 @@
  */
 package org.restlet.ext.jackson;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Customer {
+public class Customer implements Serializable {
+
+    @Serial private static final long serialVersionUID = 1L;
 
     private String firstName;
 
     private String lastName;
 
-    private List<Invoice> invoices = new CopyOnWriteArrayList<Invoice>();
+    private CopyOnWriteArrayList<Invoice> invoices = new CopyOnWriteArrayList<Invoice>();
 
     public String getFirstName() {
         return firstName;

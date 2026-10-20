@@ -134,8 +134,34 @@
         </plugins>
     </build>
 
-    <!-- Native QUIC library of the build platform, used by the experimental HTTP/3 tests. -->
     <profiles>
+        <profile>
+            <id>m2e-test-modules</id>
+            <activation>
+                <property><name>m2e.version</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <configuration>
+                                    <!-- JDT patches tests into the main module; Maven uses the
+                                         classpath and must not receive these module-only flags. -->
+                                    <compilerArgs combine.children="append">
+                                        <arg>--add-reads</arg>
+                                        <arg>org.restlet=java.net.http</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Native QUIC library of the build platform, used by the experimental HTTP/3 tests. -->
         <profile>
             <id>quic-linux-x86_64</id>
             <activation>

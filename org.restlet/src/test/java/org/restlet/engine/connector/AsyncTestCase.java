@@ -65,7 +65,7 @@ class AsyncTestCase {
                     String item = request.getResourceRef().getQueryAsForm().getFirstValue("item");
 
                     try {
-                        assertEquals(item, Integer.toString(response.getAge()));
+                        assertEquals(item, response.getHeaders().getFirstValue("X-Test-Item"));
                         if (responseEntityExpected(request.getMethod())) {
                             assertEquals(Status.SUCCESS_OK, response.getStatus());
                             assertTrue(response.isEntityAvailable());
@@ -109,12 +109,12 @@ class AsyncTestCase {
                 new Restlet(originComponent.getContext().createChildContext()) {
                     @Override
                     public void handle(Request request, Response response) {
-                        // let's set the item number as age ;-)
-                        response.setAge(
-                                Integer.parseInt(
+                        response.getHeaders()
+                                .add(
+                                        "X-Test-Item",
                                         request.getResourceRef()
                                                 .getQueryAsForm()
-                                                .getFirstValue("item")));
+                                                .getFirstValue("item"));
 
                         if (responseEntityExpected(request.getMethod())) {
                             // Print the requested URI path

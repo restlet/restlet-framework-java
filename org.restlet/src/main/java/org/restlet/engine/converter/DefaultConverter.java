@@ -129,17 +129,17 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public float score(Object source, Variant target, Resource resource) {
         return switch (source) {
-            case String s -> 1.0F;
-            case File f -> 1.0F;
-            case InputStream is -> 1.0F;
-            case Reader r -> 1.0F;
-            case Representation rep -> 1.0F;
-            case Form form
+            case String _ -> 1.0F;
+            case File _ -> 1.0F;
+            case InputStream _ -> 1.0F;
+            case Reader _ -> 1.0F;
+            case Representation _ -> 1.0F;
+            case Form _
                     when target != null
                             && MediaType.APPLICATION_WWW_FORM.isCompatible(target.getMediaType()) ->
                     1.0F;
-            case Form form -> 0.6F;
-            case Serializable s -> scoreSerializable(target);
+            case Form _ -> 0.6F;
+            case Serializable _ -> scoreSerializable(target);
             case null, default -> -1.0F;
         };
     }

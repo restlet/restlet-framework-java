@@ -6,7 +6,7 @@
  *
  * <p>Restlet is a registered trademark of QlikTech International AB.
  */
-@SuppressWarnings({"module", "requires-automatic", "requires-transitive-automatic"})
+@SuppressWarnings({"requires-automatic", "requires-transitive-automatic"})
 module org.restlet.ext.crypto {
     requires transitive org.restlet;
 

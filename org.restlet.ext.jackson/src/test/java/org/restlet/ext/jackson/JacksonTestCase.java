@@ -10,6 +10,10 @@ package org.restlet.ext.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -87,6 +91,25 @@ class JacksonTestCase {
                         new StringRepresentation(rep.getText(), rep.getMediaType()),
                         MyException.class);
         assertEquals(me, rep.getObject());
+    }
+
+    @Test
+    void testExceptionJavaSerialization() throws Exception {
+        MyException exception = new MyException(createCustomer(), "CUST-1234");
+        exception.setStackTrace(new StackTraceElement[0]);
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
+            output.writeObject(exception);
+        }
+
+        MyException copy;
+        try (ObjectInputStream input =
+                new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
+            copy = (MyException) input.readObject();
+        }
+
+        assertEquals(exception, copy);
     }
 
     @Test
