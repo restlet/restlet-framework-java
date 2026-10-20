@@ -18,6 +18,7 @@ import io.netty.handler.codec.quic.Quic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
@@ -173,6 +174,32 @@ class Http3TestCase {
         assertEquals("PUT /b x", put.getEntityAsText());
 
         assertEquals(Set.of("HTTP/3.0"), versions);
+    }
+
+    @Test
+    void exchangesTrailersAddedAfterTheFirstBodyFlushOverHttp3() throws Exception {
+        Restlet streaming =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity(
+                                new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM) {
+                                    @Override
+                                    public void write(OutputStream output) throws IOException {
+                                        output.write("first".getBytes(StandardCharsets.UTF_8));
+                                        output.flush();
+                                        response.getTrailers().add("X-Response-Trailer", "late");
+                                        output.write("second".getBytes(StandardCharsets.UTF_8));
+                                    }
+                                });
+                    }
+                };
+        startServer("HTTP1_1,HTTP3", streaming);
+        startClient("HTTP3");
+
+        Response response = client.handle(new Request(Method.GET, uri("/")));
+        assertEquals("firstsecond", response.getEntityAsText());
+        assertEquals("late", response.getTrailers().getFirstValue("X-Response-Trailer", true));
     }
 
     @Test

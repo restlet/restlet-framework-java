@@ -10,6 +10,9 @@ package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +28,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.StringRepresentation;
 
 class HttpTrailersTestCase {
@@ -106,5 +110,39 @@ class HttpTrailersTestCase {
     @Test
     void exchangesTrailersOverHttp2() throws Exception {
         roundTrip("HTTP2", "HTTP2");
+    }
+
+    @Test
+    void exchangesHttp2TrailersAddedAfterTheFirstBodyFlush() throws Exception {
+        Restlet streaming =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity(
+                                new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM) {
+                                    @Override
+                                    public void write(OutputStream output) throws IOException {
+                                        output.write("first".getBytes(StandardCharsets.UTF_8));
+                                        output.flush();
+                                        response.getTrailers().add(RESPONSE_TRAILER, "late");
+                                        output.write("second".getBytes(StandardCharsets.UTF_8));
+                                    }
+                                });
+                    }
+                };
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        server = new Server(serverContext, Protocol.HTTP, 0, streaming);
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(clientContext, Protocol.HTTP);
+        client.start();
+
+        Response response =
+                client.handle(
+                        new Request(Method.GET, "http://localhost:" + server.getActualPort()));
+        assertEquals("firstsecond", response.getEntityAsText());
+        assertEquals("late", response.getTrailers().getFirstValue(RESPONSE_TRAILER, true));
     }
 }

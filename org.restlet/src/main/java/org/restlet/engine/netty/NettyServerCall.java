@@ -632,7 +632,8 @@ class NettyServerCall {
         if (noBodyStatus || "HEAD".equals(getMethod())) {
             hasTrailers = false;
         }
-        responseTrailersEnabled = hasTrailers;
+        responseTrailersEnabled =
+                hasTrailers || (kind.isStream() && !noBodyStatus && !"HEAD".equals(getMethod()));
 
         if (kind.isStream()) {
             // Connection-specific headers are forbidden in HTTP/2 and HTTP/3.
