@@ -199,10 +199,11 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             helper.getLogger().log(Level.WARNING, "Error while handling an HTTP server call", e);
             call.abort();
         } finally {
+            helper.releaseCallPermit();
             try {
                 call.complete();
             } finally {
-                helper.releaseCall();
+                helper.endCall();
                 Engine.clearThreadLocalVariables();
             }
         }

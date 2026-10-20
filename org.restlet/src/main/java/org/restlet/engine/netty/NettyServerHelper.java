@@ -492,8 +492,25 @@ public abstract class NettyServerHelper extends ServerHelper {
         return true;
     }
 
-    /** Releases the permit of a completed call. */
+    /** Releases the permit and ends a call that was admitted but not run. */
     void releaseCall() {
+        releaseCallPermit();
+        endCall();
+    }
+
+    /**
+     * Releases the concurrency permit of a call whose processing is done. Must be called before the
+     * response is completed, so that a client reacting to the response is not rejected.
+     */
+    void releaseCallPermit() {
+        Semaphore permits = callPermits;
+        if (permits != null) {
+            permits.release();
+        }
+    }
+
+    /** Ends a call once its response is completed. */
+    void endCall() {
         if (activeCalls.decrementAndGet() == 0) {
             activeCallsLock.lock();
             try {
@@ -501,10 +518,6 @@ public abstract class NettyServerHelper extends ServerHelper {
             } finally {
                 activeCallsLock.unlock();
             }
-        }
-        Semaphore permits = callPermits;
-        if (permits != null) {
-            permits.release();
         }
     }
 
