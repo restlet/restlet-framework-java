@@ -96,11 +96,13 @@ public class DecodeRepresentation extends WrapperRepresentation {
             } else if (encoding.equals(Encoding.DEFLATE)) {
                 result = new InflaterInputStream(encodedStream);
             } else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
-                result = new InflaterInputStream(encodedStream, new Inflater(true));
+                result = new OwnedInflaterInputStream(encodedStream, new Inflater(true));
             } else if (encoding.equals(Encoding.ZIP)) {
                 final ZipInputStream stream = new ZipInputStream(encodedStream);
                 if (stream.getNextEntry() != null) {
                     result = stream;
+                } else {
+                    stream.close();
                 }
             } else if (encoding.equals(Encoding.IDENTITY)) {
                 throw new IOException("Decoder unnecessary for identity decoding");
@@ -108,6 +110,24 @@ public class DecodeRepresentation extends WrapperRepresentation {
         }
 
         return result;
+    }
+
+    private static final class OwnedInflaterInputStream extends InflaterInputStream {
+        private final Inflater ownedInflater;
+
+        private OwnedInflaterInputStream(InputStream inputStream, Inflater inflater) {
+            super(inputStream, inflater);
+            this.ownedInflater = inflater;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            } finally {
+                this.ownedInflater.close();
+            }
+        }
     }
 
     /**

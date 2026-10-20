@@ -16,7 +16,6 @@ public class MyException extends Exception {
 
     @Serial private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("serial")
     private Customer customer;
 
     private String errorCode;

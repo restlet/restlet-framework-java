@@ -173,9 +173,10 @@ public class EncodeRepresentation extends WrapperRepresentation {
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.DEFLATE_NOWRAP)) {
-                encoderOutputStream =
-                        new DeflaterOutputStream(
-                                outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
+                try (Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true)) {
+                    writeEncoded(new DeflaterOutputStream(outputStream, deflater));
+                }
+                return;
             } else if (this.encoding.equals(Encoding.ZIP)) {
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
@@ -193,15 +194,19 @@ public class EncodeRepresentation extends WrapperRepresentation {
             }
 
             if (encoderOutputStream != null) {
-                getWrappedRepresentation().write(encoderOutputStream);
-                encoderOutputStream.flush();
-                encoderOutputStream.finish();
+                writeEncoded(encoderOutputStream);
             } else {
                 getWrappedRepresentation().write(outputStream);
             }
         } else {
             getWrappedRepresentation().write(outputStream);
         }
+    }
+
+    private void writeEncoded(DeflaterOutputStream encoderOutputStream) throws IOException {
+        getWrappedRepresentation().write(encoderOutputStream);
+        encoderOutputStream.flush();
+        encoderOutputStream.finish();
     }
 
     @Override

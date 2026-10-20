@@ -165,7 +165,6 @@ class TaskServiceTestCase {
     void invokeAll_executesAllTasks() throws Exception {
         taskService = new TaskService();
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
         List<Future<String>> futures =
                 taskService.invokeAll(
                         List.of((Callable<String>) () -> "a", (Callable<String>) () -> "b"));
@@ -179,7 +178,6 @@ class TaskServiceTestCase {
     void invokeAny_returnsOneResult() throws Exception {
         taskService = new TaskService();
 
-        @SuppressWarnings("unchecked")
         Object result = taskService.invokeAny(List.of((Callable<String>) () -> "only"));
 
         assertEquals("only", result);

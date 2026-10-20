@@ -22,9 +22,9 @@ class WriterOutputStreamTestCase {
     @Test
     void writeByteArray_decodesUsingGivenCharacterSet() throws IOException {
         StringWriter writer = new StringWriter();
-        WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8);
-
-        out.write("hello".getBytes(StandardCharsets.UTF_8));
+        try (WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8)) {
+            out.write("hello".getBytes(StandardCharsets.UTF_8));
+        }
 
         assertEquals("hello", writer.toString());
     }
@@ -32,9 +32,9 @@ class WriterOutputStreamTestCase {
     @Test
     void writeByteArray_nullCharacterSet_defaultsToIso88591() throws IOException {
         StringWriter writer = new StringWriter();
-        WriterOutputStream out = new WriterOutputStream(writer, null);
-
-        out.write("abc".getBytes(StandardCharsets.ISO_8859_1));
+        try (WriterOutputStream out = new WriterOutputStream(writer, null)) {
+            out.write("abc".getBytes(StandardCharsets.ISO_8859_1));
+        }
 
         assertEquals("abc", writer.toString());
     }
@@ -42,9 +42,9 @@ class WriterOutputStreamTestCase {
     @Test
     void writeSingleByte_delegatesToWriter() throws IOException {
         StringWriter writer = new StringWriter();
-        WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8);
-
-        out.write('a');
+        try (WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8)) {
+            out.write('a');
+        }
 
         assertEquals("a", writer.toString());
     }
@@ -52,10 +52,10 @@ class WriterOutputStreamTestCase {
     @Test
     void writeByteArrayWithOffsetAndLength_writesOnlyThatSlice() throws IOException {
         StringWriter writer = new StringWriter();
-        WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8);
         byte[] data = "xxhelloxx".getBytes(StandardCharsets.UTF_8);
-
-        out.write(data, 2, 5);
+        try (WriterOutputStream out = new WriterOutputStream(writer, CharacterSet.UTF_8)) {
+            out.write(data, 2, 5);
+        }
 
         assertEquals("hello", writer.toString());
     }
@@ -72,9 +72,9 @@ class WriterOutputStreamTestCase {
                         super.flush();
                     }
                 };
-        WriterOutputStream out = new WriterOutputStream(tracker, CharacterSet.UTF_8);
-
-        out.flush();
+        try (WriterOutputStream out = new WriterOutputStream(tracker, CharacterSet.UTF_8)) {
+            out.flush();
+        }
 
         assertTrue(flushed.get());
     }
@@ -91,9 +91,9 @@ class WriterOutputStreamTestCase {
                         super.close();
                     }
                 };
-        WriterOutputStream out = new WriterOutputStream(tracker, CharacterSet.UTF_8);
-
-        out.close();
+        try (WriterOutputStream out = new WriterOutputStream(tracker, CharacterSet.UTF_8)) {
+            out.flush();
+        }
 
         assertTrue(closed.get());
     }

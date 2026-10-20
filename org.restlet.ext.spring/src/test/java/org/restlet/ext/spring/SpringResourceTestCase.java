@@ -100,6 +100,7 @@ class SpringResourceTestCase {
         assertEquals(resource1, resource2);
         assertEquals(resource1.hashCode(), resource2.hashCode());
         assertNotEquals(resource1, resource3);
-        assertFalse(resource1.equals("not a resource"));
+        Object notAResource = "not a resource";
+        assertFalse(resource1.equals(notAResource));
     }
 }

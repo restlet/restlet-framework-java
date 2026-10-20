@@ -14,7 +14,6 @@ import static org.restlet.ext.openapi.OpenApiApplication.OPENAPI_SPECIFICATION_D
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,19 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 class OpenApiGenerationTest {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper OBJECT_MAPPER = createYamlMapper();
+
+    private static ObjectMapper createYamlMapper() {
+        try {
+            var yamlFactory =
+                    Class.forName("com.fasterxml.jackson.dataformat.yaml.YAMLFactory")
+                            .getConstructor()
+                            .newInstance();
+            return new ObjectMapper((com.fasterxml.jackson.core.JsonFactory) yamlFactory);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to initialize the YAML parser", e);
+        }
+    }
 
     Component component;
     Server server;

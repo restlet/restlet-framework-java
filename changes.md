@@ -80,9 +80,12 @@ Changes log
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
     - Bugs fixed
+        - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
     - Misc
+        - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
+          without adding a production module dependency.
         - Pinned the Maven Deploy plugin to version 3.2.0 (avoids resolving incompatible Maven 4 beta versions).
         - Added Netty 4.2.19 (imported with the `netty-bom`). CI builds with Java 25.
         - The `dangling-doc-comments` lint, new in Java 23, is disabled because license headers

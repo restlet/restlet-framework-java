@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.Test;
@@ -125,10 +126,10 @@ class EncodeRepresentationTestCase {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         representation.write(out);
 
-        try (InflaterInputStream inflater =
-                new InflaterInputStream(
-                        new java.io.ByteArrayInputStream(out.toByteArray()),
-                        new java.util.zip.Inflater(true))) {
+        try (Inflater deflater = new Inflater(true);
+                InflaterInputStream inflater =
+                        new InflaterInputStream(
+                                new java.io.ByteArrayInputStream(out.toByteArray()), deflater)) {
             assertEquals("hello", IoUtils.toString(inflater));
         }
     }

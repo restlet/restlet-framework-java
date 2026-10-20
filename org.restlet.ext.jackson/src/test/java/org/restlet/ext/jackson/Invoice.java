@@ -8,9 +8,13 @@
  */
 package org.restlet.ext.jackson;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
-public class Invoice {
+public class Invoice implements Serializable {
+
+    @Serial private static final long serialVersionUID = 1L;
 
     private Date date;
 

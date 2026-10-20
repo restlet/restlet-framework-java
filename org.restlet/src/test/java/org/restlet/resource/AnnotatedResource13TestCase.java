@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Jerome Louvel
  */
-class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
+public class AnnotatedResource13TestCase extends AbstractAnnotatedResourceWithFinderTestCase {
 
     private MyResource13 myResource;
 

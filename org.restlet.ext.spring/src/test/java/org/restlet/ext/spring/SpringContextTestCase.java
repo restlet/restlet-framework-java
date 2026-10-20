@@ -30,56 +30,60 @@ class SpringContextTestCase {
     @Test
     void getRestletContext_returnsConstructorArgument() {
         Context restletContext = new Context();
-        SpringContext springContext = new SpringContext(restletContext);
-        assertSame(restletContext, springContext.getRestletContext());
+        try (SpringContext springContext = new SpringContext(restletContext)) {
+            assertSame(restletContext, springContext.getRestletContext());
+        }
     }
 
     @Test
     void getPropertyConfigRefs_lazyInitializesToEmptyModifiableList() {
-        SpringContext springContext = new SpringContext(new Context());
-        assertNotNull(springContext.getPropertyConfigRefs());
-        assertTrue(springContext.getPropertyConfigRefs().isEmpty());
-        springContext.getPropertyConfigRefs().add("some-ref");
-        assertEquals(1, springContext.getPropertyConfigRefs().size());
+        try (SpringContext springContext = new SpringContext(new Context())) {
+            assertNotNull(springContext.getPropertyConfigRefs());
+            assertTrue(springContext.getPropertyConfigRefs().isEmpty());
+            springContext.getPropertyConfigRefs().add("some-ref");
+            assertEquals(1, springContext.getPropertyConfigRefs().size());
+        }
     }
 
     @Test
     void getXmlConfigRefs_lazyInitializesToEmptyModifiableList() {
-        SpringContext springContext = new SpringContext(new Context());
-        assertNotNull(springContext.getXmlConfigRefs());
-        assertTrue(springContext.getXmlConfigRefs().isEmpty());
-        springContext.getXmlConfigRefs().add("some-ref");
-        assertEquals(1, springContext.getXmlConfigRefs().size());
+        try (SpringContext springContext = new SpringContext(new Context())) {
+            assertNotNull(springContext.getXmlConfigRefs());
+            assertTrue(springContext.getXmlConfigRefs().isEmpty());
+            springContext.getXmlConfigRefs().add("some-ref");
+            assertEquals(1, springContext.getXmlConfigRefs().size());
+        }
     }
 
     @Test
     void refresh_withoutConfigRefs_refreshesEmptyContext() {
-        SpringContext springContext = new SpringContext(new Context());
-        springContext.refresh();
-        assertTrue(springContext.isActive());
+        try (SpringContext springContext = new SpringContext(new Context())) {
+            springContext.refresh();
+            assertTrue(springContext.isActive());
+        }
     }
 
     @Test
     void refresh_withPropertyConfigRef_loadsBeanDefinitionsFromProperties() {
-        SpringContext springContext = new SpringContext(restletContextWithClapDispatcher());
-        springContext
-                .getPropertyConfigRefs()
-                .add("clap://class/org/restlet/ext/spring/SpringContextTestCase.properties");
+        try (SpringContext springContext = new SpringContext(restletContextWithClapDispatcher())) {
+            springContext
+                    .getPropertyConfigRefs()
+                    .add("clap://class/org/restlet/ext/spring/SpringContextTestCase.properties");
+            springContext.refresh();
 
-        springContext.refresh();
-
-        assertNotNull(springContext.getBean("myPropertyBean"));
+            assertNotNull(springContext.getBean("myPropertyBean"));
+        }
     }
 
     @Test
     void refresh_withXmlConfigRef_loadsBeanDefinitionsFromXml() {
-        SpringContext springContext = new SpringContext(restletContextWithClapDispatcher());
-        springContext
-                .getXmlConfigRefs()
-                .add("clap://class/org/restlet/ext/spring/SpringContextTestCase.xml");
+        try (SpringContext springContext = new SpringContext(restletContextWithClapDispatcher())) {
+            springContext
+                    .getXmlConfigRefs()
+                    .add("clap://class/org/restlet/ext/spring/SpringContextTestCase.xml");
+            springContext.refresh();
 
-        springContext.refresh();
-
-        assertNotNull(springContext.getBean("myXmlBean"));
+            assertNotNull(springContext.getBean("myXmlBean"));
+        }
     }
 }
