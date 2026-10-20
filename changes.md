@@ -72,6 +72,8 @@ Changes log
           `Response.toString()` now shows it.
         - Added request and response trailers to the HTTP connectors, supporting HTTP/1.1 chunked
           transfers and HTTP/2 trailing headers.
+        - HTTP/2 and HTTP/3 responses can add trailers after streaming the response head and body;
+          HTTP/1.1 still requires trailer names to be known before the response head is sent.
         - HTTP/2 clients receive a response as soon as its headers arrive, while the request entity
           continues to be written on a virtual thread.
         - Active client requests can be aborted; HTTP stream failures surface as I/O errors and a
