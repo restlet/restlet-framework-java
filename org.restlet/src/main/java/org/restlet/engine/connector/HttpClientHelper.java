@@ -238,9 +238,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
         this.authenticationStore = null;
-        this.cookieStore = isCookieSupported()
-                ? new HttpCookieStore.Default()
-                : new HttpCookieStore.Empty();
+        this.cookieStore =
+                isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
         this.executor = null;
     }
 
@@ -252,9 +251,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      */
     public ClientCall create(Request request) {
         return new JettyClientCall(
-                        this,
-                        request.getMethod().toString(),
-                        ReferenceUtils.update(request.getResourceRef(), request).toString());
+                this,
+                request.getMethod().toString(),
+                ReferenceUtils.update(request.getResourceRef(), request).toString());
     }
 
     /**
