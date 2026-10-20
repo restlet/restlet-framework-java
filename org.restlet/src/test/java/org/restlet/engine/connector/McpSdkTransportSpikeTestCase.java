@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.transport.ServerParameters;
+import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
@@ -24,6 +26,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStatelessServerTransport;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,6 +60,8 @@ class McpSdkTransportSpikeTestCase {
 
     private McpStatelessAsyncServer sdkServer;
 
+    private McpAsyncClient stdioClient;
+
     private Server server;
 
     @BeforeEach
@@ -70,6 +76,9 @@ class McpSdkTransportSpikeTestCase {
     void tearDown() throws Exception {
         if (sdkServer != null) {
             sdkServer.close();
+        }
+        if (stdioClient != null) {
+            stdioClient.close();
         }
         if (sdkClient != null) {
             sdkClient.close();
@@ -158,6 +167,46 @@ class McpSdkTransportSpikeTestCase {
         assertTrue(listedTools.tools().stream().anyMatch(item -> item.name().equals("echo")));
         assertEquals("echo:hello", ((McpSchema.TextContent) result.content().getFirst()).text());
         assertEquals("2.0", clientTransport.lastResponseProtocol.get().getVersion());
+    }
+
+    @Test
+    void dispatchesMcpSdkClientAndServerThroughOfficialStdioTransports() throws Exception {
+        McpJsonMapper mapper = McpJsonDefaults.getMapper();
+        String javaExecutable =
+                Path.of(
+                                System.getProperty("java.home"),
+                                "bin",
+                                System.getProperty("os.name").toLowerCase().contains("win")
+                                        ? "java.exe"
+                                        : "java")
+                        .toString();
+        String classPath =
+                System.getProperty(
+                        "surefire.test.class.path", System.getProperty("java.class.path"));
+        assertTrue(Files.isRegularFile(Path.of(javaExecutable)));
+        assertTrue(classPath.contains("test-classes") || classPath.contains("surefire"));
+        ServerParameters parameters =
+                ServerParameters.builder(javaExecutable)
+                        .args("-cp", classPath, McpStdioSdkServerProcess.class.getName())
+                        .build();
+        StdioClientTransport transport = new StdioClientTransport(parameters, mapper);
+        stdioClient =
+                McpClient.async(transport)
+                        .requestTimeout(REQUEST_TIMEOUT)
+                        .initializationTimeout(REQUEST_TIMEOUT)
+                        .build();
+
+        stdioClient.initialize().block(REQUEST_TIMEOUT);
+        McpSchema.ListToolsResult listedTools = stdioClient.listTools().block(REQUEST_TIMEOUT);
+        McpSchema.CallToolResult result =
+                stdioClient
+                        .callTool(
+                                new McpSchema.CallToolRequest(
+                                        "echo", Map.of("text", "stdio"), null))
+                        .block(REQUEST_TIMEOUT);
+
+        assertTrue(listedTools.tools().stream().anyMatch(item -> item.name().equals("echo")));
+        assertEquals("echo:stdio", ((McpSchema.TextContent) result.content().getFirst()).text());
     }
 
     private static final class RestletHttpTransport extends Restlet
