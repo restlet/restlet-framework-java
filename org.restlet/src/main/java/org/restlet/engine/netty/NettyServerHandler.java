@@ -115,6 +115,11 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         ChannelInputStream body =
                 new ChannelInputStream(ctx.channel(), helper.getConnectorIdleTimeout());
         currentBody = body;
+        if (kind == StreamKind.HTTP1 && !hasBody(request)) {
+            // End the body now: the call could otherwise complete before the last (empty) content
+            // is delivered, and close a connection that the response announced as kept alive.
+            body.end();
+        }
 
         NettyServerCall call =
                 new NettyServerCall(helper, ctx.channel(), kind, request, body, confidential);
@@ -188,6 +193,12 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             ctx.read();
         }
         // Otherwise the body stream requests the next read once the consumer catches up.
+    }
+
+    /** Indicates whether an HTTP/1.1 request has a body, according to its framing headers. */
+    private static boolean hasBody(HttpRequest request) {
+        return HttpUtil.isTransferEncodingChunked(request)
+                || HttpUtil.getContentLength(request, 0L) != 0;
     }
 
     private void runCall(NettyServerCall call) {

@@ -12,7 +12,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
@@ -41,6 +46,16 @@ final class ChannelOutputStream extends OutputStream {
     private ByteBuf buffer;
 
     private boolean closed;
+
+    /** Bytes written to the channel whose write has not completed yet. */
+    private final AtomicLong inFlightBytes = new AtomicLong();
+
+    private final ReentrantLock inFlightLock = new ReentrantLock();
+
+    private final Condition inFlightChanged = inFlightLock.newCondition();
+
+    /** The cause of the first failed write, if any. */
+    private volatile Throwable writeFailure;
 
     /**
      * Constructor.
@@ -75,8 +90,8 @@ final class ChannelOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        ensureOpen();
         while (len > 0) {
+            ensureOpen();
             ensureBuffer();
             int n = Math.min(len, buffer.writableBytes());
             buffer.writeBytes(b, off, n);
@@ -131,19 +146,88 @@ final class ChannelOutputStream extends OutputStream {
         if (closed) {
             throw new IOException("Stream closed");
         }
+        checkWriteFailure();
         if (!channel.isActive()) {
             throw new IOException("Connection closed by peer");
         }
     }
 
+    private void checkWriteFailure() throws IOException {
+        Throwable cause = writeFailure;
+        if (cause != null) {
+            throw new IOException("Unable to write to the connection", cause);
+        }
+    }
+
     private void send(boolean flush) throws IOException {
         Writability.await(channel, writeTimeoutMs);
+        awaitInFlightBytes();
         ByteBuf chunk = buffer;
         buffer = null;
+        int size = chunk.readableBytes();
+        inFlightBytes.addAndGet(size);
         Object msg = contentFactory.apply(chunk);
         ChannelFuture future = flush ? channel.writeAndFlush(msg) : channel.write(msg);
+        future.addListener(f -> onWriteDone(size, f.cause()));
         if (future.isDone() && !future.isSuccess()) {
             throw new IOException("Unable to write to the connection", future.cause());
         }
+    }
+
+    /** Called when a write completes, possibly on the event loop. */
+    private void onWriteDone(int size, Throwable cause) {
+        inFlightLock.lock();
+        try {
+            inFlightBytes.addAndGet(-size);
+            if (cause != null && writeFailure == null) {
+                writeFailure = cause;
+            }
+            inFlightChanged.signalAll();
+        } finally {
+            inFlightLock.unlock();
+        }
+    }
+
+    /**
+     * Waits until the bytes written but not yet sent fall below the channel high water mark. Writes
+     * made outside the event loop only update the channel writability once the event loop has
+     * processed them, so a fast producer could otherwise queue unbounded data, and miss the failure
+     * of writes to a connection closed in the meantime.
+     */
+    private void awaitInFlightBytes() throws IOException {
+        int limit = Math.max(bufferSize, channel.config().getWriteBufferHighWaterMark());
+        if (inFlightBytes.get() <= limit || channel.eventLoop().inEventLoop()) {
+            checkWriteFailure();
+            return;
+        }
+
+        channel.flush();
+        long remaining =
+                (writeTimeoutMs > 0)
+                        ? TimeUnit.MILLISECONDS.toNanos(writeTimeoutMs)
+                        : Long.MAX_VALUE;
+        inFlightLock.lock();
+        try {
+            while (inFlightBytes.get() > limit && writeFailure == null) {
+                if (!channel.isActive()) {
+                    throw new IOException("Connection closed by peer");
+                }
+                if (remaining <= 0) {
+                    throw new InterruptedIOException("Write timed out");
+                }
+                // Wake up periodically in case the channel closes without failing a write.
+                long slice = Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(100));
+                long left = inFlightChanged.awaitNanos(slice);
+                if (writeTimeoutMs > 0) {
+                    remaining -= (slice - Math.max(0, left));
+                }
+            }
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while writing");
+        } finally {
+            inFlightLock.unlock();
+        }
+        checkWriteFailure();
     }
 }
