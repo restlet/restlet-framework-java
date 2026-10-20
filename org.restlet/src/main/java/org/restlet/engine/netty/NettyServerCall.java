@@ -608,6 +608,27 @@ class NettyServerCall {
         responseHeadWritten = true;
 
         int code = statusCode;
+        HttpResponse head = newResponseHead(code);
+        boolean bodyAllowed =
+                code != 204 && code != 304 && code >= 200 && !"HEAD".equals(getMethod());
+        boolean hasTrailers = bodyAllowed && !responseTrailers.isEmpty();
+        // Streams can carry trailers added after the head was written.
+        responseTrailersEnabled = hasTrailers || (kind.isStream() && bodyAllowed);
+
+        if (kind.isStream()) {
+            // Connection-specific headers are forbidden in HTTP/2 and HTTP/3.
+            head.headers().remove(HttpHeaderNames.CONNECTION);
+            head.headers().remove(HttpHeaderNames.TRANSFER_ENCODING);
+            head.headers().remove("Keep-Alive");
+        } else {
+            setHttp1Framing(head, emptyBody, hasTrailers, bodyAllowed);
+        }
+
+        channel.write(head);
+    }
+
+    /** Creates the response head with the status and the response headers. */
+    private HttpResponse newResponseHead(int code) {
         String reason = reasonPhrase;
         HttpResponseStatus status =
                 (reason != null && !reason.isEmpty())
@@ -624,45 +645,27 @@ class NettyServerCall {
         if (altSvc != null && !head.headers().contains("Alt-Svc")) {
             head.headers().set(kind.isStream() ? "alt-svc" : "Alt-Svc", altSvc);
         }
+        return head;
+    }
 
-        boolean hasTrailers = !responseTrailers.isEmpty();
-        boolean hasLength = head.headers().contains(HttpHeaderNames.CONTENT_LENGTH);
-        boolean noBodyStatus = code == 204 || code == 304 || code < 200;
-
-        if (noBodyStatus || "HEAD".equals(getMethod())) {
-            hasTrailers = false;
-        }
-        responseTrailersEnabled =
-                hasTrailers || (kind.isStream() && !noBodyStatus && !"HEAD".equals(getMethod()));
-
-        if (kind.isStream()) {
-            // Connection-specific headers are forbidden in HTTP/2 and HTTP/3.
-            head.headers().remove(HttpHeaderNames.CONNECTION);
-            head.headers().remove(HttpHeaderNames.TRANSFER_ENCODING);
-            head.headers().remove("Keep-Alive");
-        } else {
-            if (emptyBody) {
-                if (hasTrailers) {
-                    head.headers().remove(HttpHeaderNames.CONTENT_LENGTH);
-                    HttpUtil.setTransferEncodingChunked(head, true);
-                } else if (!hasLength && !noBodyStatus && !"HEAD".equals(getMethod())) {
-                    head.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
-                }
-            } else if (hasTrailers) {
-                head.headers().remove(HttpHeaderNames.CONTENT_LENGTH);
-                HttpUtil.setTransferEncodingChunked(head, true);
-            } else if (!hasLength) {
-                head.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-            }
-            if (hasTrailers) {
-                setTrailerNames(head.headers(), responseTrailers);
-            }
-            if (!HttpUtil.isKeepAlive(request)) {
-                head.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+    /** Sets the HTTP/1.1 message framing and connection headers of the response head. */
+    private void setHttp1Framing(
+            HttpResponse head, boolean emptyBody, boolean hasTrailers, boolean bodyAllowed) {
+        HttpHeaders headers = head.headers();
+        if (hasTrailers) {
+            headers.remove(HttpHeaderNames.CONTENT_LENGTH);
+            HttpUtil.setTransferEncodingChunked(head, true);
+            setTrailerNames(headers, responseTrailers);
+        } else if (!headers.contains(HttpHeaderNames.CONTENT_LENGTH)) {
+            if (!emptyBody) {
+                headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+            } else if (bodyAllowed) {
+                headers.set(HttpHeaderNames.CONTENT_LENGTH, 0);
             }
         }
-
-        channel.write(head);
+        if (!HttpUtil.isKeepAlive(request)) {
+            headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        }
     }
 
     /** Completes the exchange: ends the response and frees the connection for the next request. */
