@@ -55,6 +55,9 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /** The call receiving the current request body. */
     private NettyServerCall currentCall;
 
+    /** Whether to read the rest of the current HTTP/1.1 request once the channel read completes. */
+    private boolean readRequestBody;
+
     NettyServerHandler(NettyServerHelper helper, boolean confidential, StreamKind kind) {
         this.helper = helper;
         this.confidential = confidential;
@@ -136,11 +139,29 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             sendError(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE);
         }
 
-        // Keep reading the body of this request (if any) without waiting for the call.
-        ctx.read();
+        // Keep reading the body of this request (if any) without waiting for the call. On HTTP/1.1,
+        // the read is deferred to channelReadComplete: the decoder may already have produced the
+        // whole request, and reading now could take the next request before this response is
+        // complete.
+        if (kind.isStream()) {
+            ctx.read();
+        } else {
+            readRequestBody = true;
+        }
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        if (readRequestBody) {
+            readRequestBody = false;
+            ctx.read();
+        }
+        super.channelReadComplete(ctx);
     }
 
     private void onContent(ChannelHandlerContext ctx, HttpContent content) {
+        // Request content drives the next reads from now on.
+        readRequestBody = false;
         ChannelInputStream body = currentBody;
         if (body == null) {
             content.release();
