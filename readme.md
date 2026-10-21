@@ -64,8 +64,10 @@ and half-closes. The Restlet-backed client streams request frames from a bounded
 the HTTP/2 response, and the Restlet-hosted server reads request frames concurrently with writing
 queued responses. This validates finite full-duplex message exchange through Restlet's current
 HTTP/2 client/server connectors and the SDK APIs. The transport adapters and gRPC framing remain
-test-only; gRPC demand semantics, fine-grained flow control, cancellation, and long-lived stream
-lifecycle are not covered.
+test-only. The client bridge honors SDK receive credits and the probe confirms the second response
+is withheld until another message is requested; both bridge directions hold at most one already
+framed message beyond the available credit. This is a bounded SDK-demand probe, not complete HTTP/2
+or gRPC flow-control conformance. Cancellation and long-lived stream lifecycle remain untested.
 
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):

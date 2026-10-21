@@ -9,6 +9,7 @@
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,6 +19,7 @@ import com.google.protobuf.StringValue;
 import io.grpc.Attributes;
 import io.grpc.CallOptions;
 import io.grpc.ChannelLogger;
+import io.grpc.ClientCall;
 import io.grpc.Deadline;
 import io.grpc.InternalChannelz;
 import io.grpc.InternalLogId;
@@ -316,6 +318,7 @@ class GrpcSdkTransportSpikeTestCase {
 
         assertClientStreaming(channel);
         assertFullDuplexBidirectionalStreaming(channel);
+        assertBidirectionalResponseDemand(channel);
     }
 
     @Test
@@ -449,6 +452,7 @@ class GrpcSdkTransportSpikeTestCase {
 
         assertClientStreaming(grpcClientChannel);
         assertFullDuplexBidirectionalStreaming(grpcClientChannel);
+        assertBidirectionalResponseDemand(grpcClientChannel);
     }
 
     private static void assertClientStreaming(ManagedChannel channel) throws InterruptedException {
@@ -534,6 +538,51 @@ class GrpcSdkTransportSpikeTestCase {
         assertEquals(List.of("echo:first", "echo:second"), responses);
     }
 
+    private static void assertBidirectionalResponseDemand(ManagedChannel channel)
+            throws InterruptedException {
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch secondResponse = new CountDownLatch(1);
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        AtomicInteger responses = new AtomicInteger();
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        if (responses.incrementAndGet() == 1) {
+                            firstResponse.countDown();
+                        } else {
+                            secondResponse.countDown();
+                        }
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        if (!status.isOk()) {
+                            failure.set(status.asRuntimeException(trailers));
+                        }
+                        closed.countDown();
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        call.sendMessage(StringValue.of("first"));
+        assertTrue(firstResponse.await(5, TimeUnit.SECONDS));
+        call.sendMessage(StringValue.of("second"));
+        assertFalse(
+                secondResponse.await(200, TimeUnit.MILLISECONDS),
+                "A second response must wait for additional receive demand");
+        call.request(1);
+        assertTrue(secondResponse.await(5, TimeUnit.SECONDS));
+        call.halfClose();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        if (failure.get() != null) {
+            throw new AssertionError("gRPC demand probe failed", failure.get());
+        }
+    }
+
     private static final class RestletGrpcServer extends org.restlet.Restlet {
 
         private final ServerServiceDefinition service;
@@ -606,7 +655,14 @@ class GrpcSdkTransportSpikeTestCase {
                         try (InputStream input = request.getEntity().getStream()) {
                             byte[] payload;
                             long requestBytes = 0;
-                            while ((payload = readGrpcMessage(input, MAX_MESSAGE_BYTES)) != null) {
+                            while (true) {
+                                payload = readGrpcMessage(input, MAX_MESSAGE_BYTES);
+                                if (payload == null) {
+                                    break;
+                                }
+                                if (!serverCall.awaitRequestDemand()) {
+                                    return;
+                                }
                                 requestBytes += payload.length + 5L;
                                 if (requestBytes > MAX_STREAM_BYTES) {
                                     throw new IOException(
@@ -673,6 +729,8 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final CountDownLatch closed = new CountDownLatch(1);
 
+        private final MessageDemand requestDemand = new MessageDemand();
+
         private volatile Status status;
 
         private volatile Metadata trailers = new Metadata();
@@ -689,7 +747,9 @@ class GrpcSdkTransportSpikeTestCase {
         }
 
         @Override
-        public void request(int numMessages) {}
+        public void request(int numMessages) {
+            requestDemand.request(numMessages);
+        }
 
         @Override
         public void sendHeaders(Metadata headers) {
@@ -724,6 +784,7 @@ class GrpcSdkTransportSpikeTestCase {
             }
             this.status = status;
             this.trailers = trailers;
+            requestDemand.close();
             closed.countDown();
         }
 
@@ -744,6 +805,10 @@ class GrpcSdkTransportSpikeTestCase {
                 Thread.currentThread().interrupt();
                 throw new IOException("Interrupted while waiting for gRPC call completion", e);
             }
+        }
+
+        private boolean awaitRequestDemand() throws IOException {
+            return requestDemand.acquire();
         }
 
         private void writeResponse(Response response) throws IOException {
@@ -835,6 +900,44 @@ class GrpcSdkTransportSpikeTestCase {
         response.setStatus(org.restlet.data.Status.SUCCESS_OK);
         response.setEntity(new ByteArrayRepresentation(new byte[0], GRPC_MEDIA_TYPE));
         response.getTrailers().add("grpc-status", Integer.toString(status.getCode().value()));
+    }
+
+    private static final class MessageDemand {
+
+        private long permits;
+
+        private boolean closed;
+
+        private synchronized void request(int count) {
+            if (count <= 0) {
+                throw new IllegalArgumentException("numMessages must be positive");
+            }
+            if (!closed) {
+                permits = Math.min(Integer.MAX_VALUE, permits + (long) count);
+                notifyAll();
+            }
+        }
+
+        private synchronized boolean acquire() throws IOException {
+            while (permits == 0 && !closed) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted waiting for gRPC message demand", e);
+                }
+            }
+            if (closed) {
+                return false;
+            }
+            permits--;
+            return true;
+        }
+
+        private synchronized void close() {
+            closed = true;
+            notifyAll();
+        }
     }
 
     private static final class RestletSocketAddress extends SocketAddress {
@@ -1070,6 +1173,8 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final List<byte[]> requestPayloads = new ArrayList<>();
 
+        private final MessageDemand responseDemand = new MessageDemand();
+
         private volatile PipedInputStream bidirectionalRequestInput;
 
         private volatile PipedOutputStream bidirectionalRequestOutput;
@@ -1124,6 +1229,7 @@ class GrpcSdkTransportSpikeTestCase {
             if (numMessages <= 0) {
                 throw new IllegalArgumentException("numMessages must be positive");
             }
+            responseDemand.request(numMessages);
         }
 
         @Override
@@ -1246,7 +1352,14 @@ class GrpcSdkTransportSpikeTestCase {
                 if (response.getEntity() != null) {
                     try (InputStream input = response.getEntity().getStream()) {
                         byte[] payload;
-                        while ((payload = readGrpcMessage(input, maxInboundMessageSize)) != null) {
+                        while (true) {
+                            payload = readGrpcMessage(input, maxInboundMessageSize);
+                            if (payload == null) {
+                                break;
+                            }
+                            if (!responseDemand.acquire()) {
+                                return;
+                            }
                             byte[] messagePayload = payload;
                             listener.messagesAvailable(
                                     new StreamListener.MessageProducer() {
@@ -1423,6 +1536,7 @@ class GrpcSdkTransportSpikeTestCase {
                 Status status, ClientStreamListener.RpcProgress progress, Metadata trailers) {
             if (!closed && listener != null) {
                 closed = true;
+                responseDemand.close();
                 try {
                     listener.closed(status, progress, trailers);
                 } finally {
