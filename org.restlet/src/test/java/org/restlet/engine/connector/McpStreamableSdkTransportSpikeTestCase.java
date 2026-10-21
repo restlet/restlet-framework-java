@@ -154,6 +154,7 @@ class McpStreamableSdkTransportSpikeTestCase {
                 "echo:streamable", ((McpSchema.TextContent) result.content().getFirst()).text());
         assertEquals(3, transport.postCount.get());
         assertEquals("2.0", clientTransport.lastResponseProtocol.get().getVersion());
+        assertTrue(clientTransport.sawEventStreamResponse.get());
     }
 
     private static final class RestletStreamableTransport extends Restlet
@@ -252,7 +253,7 @@ class McpStreamableSdkTransportSpikeTestCase {
                     if (reply == null) {
                         response.setStatus(org.restlet.data.Status.SERVER_ERROR_INTERNAL);
                     } else {
-                        writeJsonResponse(response, reply);
+                        writeEventStreamResponse(response, reply);
                     }
                 } else if (message instanceof McpSchema.JSONRPCNotification notification) {
                     session.accept(notification).block(REQUEST_TIMEOUT);
@@ -305,6 +306,13 @@ class McpStreamableSdkTransportSpikeTestCase {
                 throws IOException {
             response.setEntity(jsonMapper.writeValueAsString(message), MediaType.APPLICATION_JSON);
         }
+
+        private void writeEventStreamResponse(Response response, McpSchema.JSONRPCMessage message)
+                throws IOException {
+            response.setEntity(
+                    "event: message\ndata: " + jsonMapper.writeValueAsString(message) + "\n\n",
+                    new MediaType("text/event-stream"));
+        }
     }
 
     private static final class JsonResponseTransport implements McpStreamableServerTransport {
@@ -350,6 +358,9 @@ class McpStreamableSdkTransportSpikeTestCase {
         private final String target;
 
         private final AtomicReference<Protocol> lastResponseProtocol = new AtomicReference<>();
+
+        private final AtomicReference<Boolean> sawEventStreamResponse =
+                new AtomicReference<>(false);
 
         private volatile java.util.function.Function<
                         Mono<McpSchema.JSONRPCMessage>, Mono<McpSchema.JSONRPCMessage>>
@@ -447,10 +458,22 @@ class McpStreamableSdkTransportSpikeTestCase {
                             throw new IllegalStateException(
                                     "MCP streamable response exceeds the configured size limit");
                         }
+                        String payload = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                        if ("text/event-stream"
+                                .equalsIgnoreCase(response.getEntity().getMediaType().getName())) {
+                            sawEventStreamResponse.set(true);
+                            payload =
+                                    payload.lines()
+                                            .filter(line -> line.startsWith("data:"))
+                                            .map(line -> line.substring("data:".length()).strip())
+                                            .findFirst()
+                                            .orElseThrow(
+                                                    () ->
+                                                            new IllegalStateException(
+                                                                    "MCP SSE response has no data event"));
+                        }
                         McpSchema.JSONRPCMessage reply =
-                                McpSchema.deserializeJsonRpcMessage(
-                                        jsonMapper,
-                                        new String(bytes, java.nio.charset.StandardCharsets.UTF_8));
+                                McpSchema.deserializeJsonRpcMessage(jsonMapper, payload);
                         if (reply instanceof McpSchema.JSONRPCResponse rpcResponse
                                 && rpcResponse.result() != null
                                 && message instanceof McpSchema.JSONRPCRequest requestMessage
