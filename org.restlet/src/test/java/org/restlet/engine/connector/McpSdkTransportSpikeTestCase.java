@@ -9,6 +9,8 @@
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
@@ -18,6 +20,7 @@ import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpStatelessAsyncServer;
 import io.modelcontextprotocol.server.McpStatelessServerHandler;
@@ -26,10 +29,16 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStatelessServerTransport;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +52,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
@@ -63,6 +73,8 @@ class McpSdkTransportSpikeTestCase {
     private McpAsyncClient stdioClient;
 
     private Server server;
+
+    private final AtomicInteger toolCalls = new AtomicInteger();
 
     @BeforeEach
     void setUp() {
@@ -92,10 +104,9 @@ class McpSdkTransportSpikeTestCase {
         Engine.clearThreadLocalVariables();
     }
 
-    @Test
-    void dispatchesMcpSdkClientAndServerThroughRestletHttp2() throws Exception {
+    private void startHttpServer(boolean ikanosProfile) throws Exception {
         McpJsonMapper mapper = McpJsonDefaults.getMapper();
-        McpStatelessServerTransport transport = new RestletHttpTransport(mapper);
+        RestletHttpTransport transport = new RestletHttpTransport(mapper, ikanosProfile);
         var tool =
                 new McpSchema.Tool(
                         "echo",
@@ -117,26 +128,36 @@ class McpSdkTransportSpikeTestCase {
                         .serverInfo("restlet-r0-spike", "1")
                         .toolCall(
                                 tool,
-                                (context, call) ->
-                                        Mono.just(
-                                                McpSchema.CallToolResult.builder()
-                                                        .addTextContent(
-                                                                "echo:"
-                                                                        + call.arguments()
-                                                                                .get("text"))
-                                                        .build()))
+                                (context, call) -> {
+                                    toolCalls.incrementAndGet();
+                                    return Mono.just(
+                                            McpSchema.CallToolResult.builder()
+                                                    .isError(
+                                                            "fail"
+                                                                    .equals(
+                                                                            call.arguments()
+                                                                                    .get("text")))
+                                                    .addTextContent(
+                                                            "echo:" + call.arguments().get("text"))
+                                                    .build());
+                                })
                         .build();
 
-        RestletHttpTransport restlet = (RestletHttpTransport) transport;
         Context serverContext = new Context();
         serverContext.getParameters().add("http.transport.protocol", "HTTP2");
-        server = new Server(serverContext, Protocol.HTTP, 0, restlet);
+        server = new Server(serverContext, Protocol.HTTP, 0, transport);
         server.start();
 
         Context clientContext = new Context();
         clientContext.getParameters().add("httpClientTransportMode", "HTTP2");
         client = new Client(clientContext, Protocol.HTTP);
         client.start();
+    }
+
+    @Test
+    void dispatchesMcpSdkClientAndServerThroughRestletHttp2() throws Exception {
+        startHttpServer(false);
+        McpJsonMapper mapper = McpJsonDefaults.getMapper();
         RestletHttpClientTransport clientTransport =
                 new RestletHttpClientTransport(
                         client, mapper, "http://localhost:" + server.getActualPort() + "/mcp");
@@ -190,6 +211,152 @@ class McpSdkTransportSpikeTestCase {
     }
 
     @Test
+    void bridgesIkanosToolResultsWithoutAnSdkSession() throws Exception {
+        startHttpServer(true);
+        McpSchema.JSONRPCResponse listed = profileRequest("tools/list", Map.of(), Map.of());
+        assertNull(listed.error());
+        Map<String, Object> listing = resultMap(listed.result());
+        assertEquals("complete", listing.get("resultType"));
+        assertTrue(
+                listing.get("tools") instanceof List<?> tools
+                        && tools.size() == 1
+                        && tools.getFirst() instanceof Map<?, ?> tool
+                        && "echo".equals(tool.get("name")));
+
+        McpSchema.JSONRPCResponse called =
+                profileRequest(
+                        "tools/call",
+                        Map.of("name", "echo", "arguments", Map.of("text", "profile")),
+                        Map.of("Mcp-Name", "=?base64?ZWNobw==?="));
+        assertNull(called.error());
+        Map<String, Object> result = resultMap(called.result());
+        assertEquals("complete", result.get("resultType"));
+        assertEquals(
+                List.of(Map.of("type", "text", "text", "echo:profile")), result.get("content"));
+        assertEquals(false, result.get("isError"));
+        assertEquals(1, toolCalls.get());
+
+        McpSchema.JSONRPCResponse failed =
+                profileRequest(
+                        "tools/call",
+                        Map.of("name", "echo", "arguments", Map.of("text", "fail")),
+                        Map.of());
+        assertNull(failed.error());
+        Map<String, Object> failedResult = resultMap(failed.result());
+        assertEquals("complete", failedResult.get("resultType"));
+        assertEquals(true, failedResult.get("isError"));
+        assertEquals(
+                List.of(Map.of("type", "text", "text", "echo:fail")), failedResult.get("content"));
+        assertEquals(2, toolCalls.get());
+    }
+
+    @Test
+    void rejectsIkanosProfileMismatchesBeforeToolDispatch() throws Exception {
+        startHttpServer(true);
+        Map<String, Object> params = Map.of("name", "echo", "arguments", Map.of("text", "unused"));
+        for (Map<String, String> headers :
+                List.of(
+                        Map.of("Mcp-Method", ""),
+                        Map.of("Mcp-Method", "tools/list"),
+                        Map.of("MCP-Protocol-Version", ""),
+                        Map.of("MCP-Protocol-Version", "2025-11-25"),
+                        Map.of("Mcp-Name", ""),
+                        Map.of("Mcp-Name", "wrong"),
+                        Map.of("Mcp-Name", "=?base64?%%%?="))) {
+            McpSchema.JSONRPCResponse rejected = profileRequest("tools/call", params, headers);
+            assertEquals(-32020, rejected.error().code());
+            assertNull(rejected.result());
+        }
+        McpSchema.JSONRPCResponse unsupported =
+                profileRequest(
+                        "tools/call",
+                        Map.of(
+                                "name",
+                                "echo",
+                                "_meta",
+                                Map.of("io.modelcontextprotocol/protocolVersion", "2025-11-25")),
+                        Map.of("MCP-Protocol-Version", "2025-11-25"));
+        assertEquals(-32022, unsupported.error().code());
+        assertEquals(
+                Map.of("supported", List.of("2026-07-28"), "requested", "2025-11-25"),
+                unsupported.error().data());
+        assertEquals(0, toolCalls.get());
+        for (Method method : List.of(Method.GET, Method.DELETE)) {
+            Response response = client.handle(new Request(method, endpoint()));
+            try {
+                assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response.getStatus());
+            } finally {
+                if (response.getEntity() != null) {
+                    response.getEntity().release();
+                }
+            }
+        }
+    }
+
+    private String endpoint() {
+        return "http://localhost:" + server.getActualPort() + "/mcp";
+    }
+
+    private static Map<String, Object> resultMap(Object value) {
+        return McpJsonDefaults.getMapper()
+                .convertValue(value, new TypeRef<Map<String, Object>>() {});
+    }
+
+    private McpSchema.JSONRPCResponse profileRequest(
+            String method, Map<String, Object> params, Map<String, String> overrides)
+            throws IOException {
+        Map<String, Object> bodyParams = new LinkedHashMap<>(params);
+        bodyParams.putIfAbsent(
+                "_meta", Map.of("io.modelcontextprotocol/protocolVersion", "2026-07-28"));
+        McpJsonMapper mapper = McpJsonDefaults.getMapper();
+        Request request =
+                new Request(
+                        Method.POST,
+                        endpoint(),
+                        new StringRepresentation(
+                                mapper.writeValueAsString(
+                                        new McpSchema.JSONRPCRequest(method, 17, bodyParams)),
+                                MediaType.APPLICATION_JSON));
+        Map<String, String> headers =
+                new LinkedHashMap<>(
+                        Map.of(
+                                "Mcp-Method",
+                                method,
+                                "MCP-Protocol-Version",
+                                "2026-07-28",
+                                "Mcp-Name",
+                                "echo"));
+        headers.putAll(overrides);
+        headers.forEach(
+                (name, value) -> {
+                    if (!value.isEmpty()) {
+                        request.getHeaders().add(name.toLowerCase(Locale.ROOT), value);
+                    }
+                });
+        Response response = client.handle(request);
+        try (InputStream input = response.getEntity().getStream()) {
+            assertEquals("2.0", response.getProtocol().getVersion());
+            assertNull(response.getHeaders().getFirstValue("Mcp-Session-Id", true));
+            byte[] bytes = input.readNBytes(MAX_MESSAGE_BYTES + 1);
+            assertTrue(bytes.length <= MAX_MESSAGE_BYTES);
+            McpSchema.JSONRPCMessage message =
+                    McpSchema.deserializeJsonRpcMessage(
+                            mapper, new String(bytes, StandardCharsets.UTF_8));
+            McpSchema.JSONRPCResponse rpcResponse =
+                    assertInstanceOf(McpSchema.JSONRPCResponse.class, message);
+            assertEquals(17, rpcResponse.id());
+            assertEquals(
+                    rpcResponse.error() == null
+                            ? Status.SUCCESS_OK
+                            : Status.CLIENT_ERROR_BAD_REQUEST,
+                    response.getStatus());
+            return rpcResponse;
+        } finally {
+            response.getEntity().release();
+        }
+    }
+
+    @Test
     void dispatchesMcpSdkClientAndServerThroughOfficialStdioTransports() throws Exception {
         McpJsonMapper mapper = McpJsonDefaults.getMapper();
         String javaExecutable =
@@ -236,8 +403,11 @@ class McpSdkTransportSpikeTestCase {
 
         private volatile McpStatelessServerHandler handler;
 
-        private RestletHttpTransport(McpJsonMapper jsonMapper) {
+        private final boolean ikanosProfile;
+
+        private RestletHttpTransport(McpJsonMapper jsonMapper, boolean ikanosProfile) {
             this.jsonMapper = jsonMapper;
+            this.ikanosProfile = ikanosProfile;
         }
 
         @Override
@@ -252,6 +422,10 @@ class McpSdkTransportSpikeTestCase {
 
         @Override
         public void handle(Request request, Response response) {
+            if (ikanosProfile && !Method.POST.equals(request.getMethod())) {
+                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                return;
+            }
             McpStatelessServerHandler currentHandler = handler;
             if (currentHandler == null) {
                 response.setStatus(org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
@@ -274,6 +448,15 @@ class McpSdkTransportSpikeTestCase {
                                 jsonMapper,
                                 new String(message, java.nio.charset.StandardCharsets.UTF_8));
                 if (parsed instanceof McpSchema.JSONRPCRequest rpcRequest) {
+                    McpSchema.JSONRPCResponse profileError =
+                            ikanosProfile ? validateProfile(request, rpcRequest) : null;
+                    if (profileError != null) {
+                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                        response.setEntity(
+                                jsonMapper.writeValueAsString(profileError),
+                                MediaType.APPLICATION_JSON);
+                        return;
+                    }
                     McpSchema.JSONRPCResponse rpcResponse =
                             currentHandler
                                     .handleRequest(McpTransportContext.EMPTY, rpcRequest)
@@ -281,6 +464,14 @@ class McpSdkTransportSpikeTestCase {
                     if (rpcResponse == null) {
                         response.setStatus(org.restlet.data.Status.SERVER_ERROR_INTERNAL);
                         return;
+                    }
+                    if (ikanosProfile
+                            && rpcResponse.error() == null
+                            && List.of("tools/list", "tools/call").contains(rpcRequest.method())) {
+                        Map<String, Object> result =
+                                new LinkedHashMap<>(resultMap(rpcResponse.result()));
+                        result.put("resultType", "complete");
+                        rpcResponse = McpSchema.JSONRPCResponse.result(rpcResponse.id(), result);
                     }
                     response.setEntity(
                             jsonMapper.writeValueAsString(rpcResponse), MediaType.APPLICATION_JSON);
@@ -296,6 +487,76 @@ class McpSdkTransportSpikeTestCase {
                 response.setStatus(org.restlet.data.Status.SERVER_ERROR_INTERNAL);
                 getLogger().warning("Unable to read MCP spike request: " + e.getMessage());
             }
+        }
+
+        // A tools-only compatibility experiment, not an implementation of the Ikanos profile.
+        private static McpSchema.JSONRPCResponse validateProfile(
+                Request request, McpSchema.JSONRPCRequest rpcRequest) {
+            Map<String, Object> params = resultMap(rpcRequest.params());
+            Object version =
+                    params.get("_meta") instanceof Map<?, ?> meta
+                            ? meta.get("io.modelcontextprotocol/protocolVersion")
+                            : null;
+            Map<String, Object> expected = new LinkedHashMap<>();
+            expected.put("Mcp-Method", rpcRequest.method());
+            expected.put("MCP-Protocol-Version", version);
+            if ("tools/call".equals(rpcRequest.method())) {
+                expected.put("Mcp-Name", params.get("name"));
+            }
+            for (var header : expected.entrySet()) {
+                String value = request.getHeaders().getFirstValue(header.getKey(), true);
+                if ("Mcp-Name".equals(header.getKey())
+                        && value != null
+                        && value.startsWith("=?base64?")
+                        && value.endsWith("?=")) {
+                    try {
+                        value =
+                                new String(
+                                        Base64.getDecoder()
+                                                .decode(value.substring(9, value.length() - 2)),
+                                        StandardCharsets.UTF_8);
+                    } catch (IllegalArgumentException e) {
+                        return profileError(
+                                rpcRequest,
+                                -32020,
+                                "The value of the header Mcp-Name contains invalid characters",
+                                null);
+                    }
+                }
+                if (value == null) {
+                    return profileError(
+                            rpcRequest,
+                            -32020,
+                            "Missing mandatory header: " + header.getKey(),
+                            null);
+                }
+                if (!value.equals(header.getValue())) {
+                    return profileError(
+                            rpcRequest,
+                            -32020,
+                            "Header mismatch: %s header value '%s' does not match body value '%s'"
+                                    .formatted(header.getKey(), value, header.getValue()),
+                            null);
+                }
+            }
+            if (!"2026-07-28".equals(version)) {
+                return profileError(
+                        rpcRequest,
+                        -32022,
+                        "Unsupported protocol version",
+                        Map.of(
+                                "supported",
+                                List.of("2026-07-28"),
+                                "requested",
+                                version == null ? "" : version));
+            }
+            return null;
+        }
+
+        private static McpSchema.JSONRPCResponse profileError(
+                McpSchema.JSONRPCRequest request, int code, String message, Object data) {
+            return McpSchema.JSONRPCResponse.error(
+                    request.id(), new McpSchema.JSONRPCResponse.JSONRPCError(code, message, data));
         }
     }
 
