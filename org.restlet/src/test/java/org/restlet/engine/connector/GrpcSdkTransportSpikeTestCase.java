@@ -45,6 +45,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,6 +59,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,6 +79,7 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.util.Series;
 
 class GrpcSdkTransportSpikeTestCase {
@@ -82,6 +87,8 @@ class GrpcSdkTransportSpikeTestCase {
     private static final int MAX_MESSAGE_BYTES = 1024 * 1024;
 
     private static final int MAX_STREAM_BYTES = 4 * MAX_MESSAGE_BYTES;
+
+    private static final int STREAM_PIPE_BUFFER_BYTES = 64 * 1024;
 
     private static final MediaType GRPC_MEDIA_TYPE = new MediaType("application/grpc");
 
@@ -308,7 +315,7 @@ class GrpcSdkTransportSpikeTestCase {
                         .toList());
 
         assertClientStreaming(channel);
-        assertBufferedBidirectionalStreaming(channel);
+        assertFullDuplexBidirectionalStreaming(channel);
     }
 
     @Test
@@ -441,7 +448,7 @@ class GrpcSdkTransportSpikeTestCase {
                         .toList());
 
         assertClientStreaming(grpcClientChannel);
-        assertBufferedBidirectionalStreaming(grpcClientChannel);
+        assertFullDuplexBidirectionalStreaming(grpcClientChannel);
     }
 
     private static void assertClientStreaming(ManagedChannel channel) throws InterruptedException {
@@ -478,11 +485,14 @@ class GrpcSdkTransportSpikeTestCase {
         assertEquals("first,second", response.get().getValue());
     }
 
-    private static void assertBufferedBidirectionalStreaming(ManagedChannel channel)
+    private static void assertFullDuplexBidirectionalStreaming(ManagedChannel channel)
             throws InterruptedException {
         CountDownLatch closed = new CountDownLatch(1);
-        List<String> responses = new ArrayList<>();
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch secondResponse = new CountDownLatch(1);
+        List<String> responses = java.util.Collections.synchronizedList(new ArrayList<>());
         AtomicReference<Throwable> failure = new AtomicReference<>();
+        AtomicInteger responseCount = new AtomicInteger();
         var request =
                 ClientCalls.asyncBidiStreamingCall(
                         channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT),
@@ -490,6 +500,11 @@ class GrpcSdkTransportSpikeTestCase {
                             @Override
                             public void onNext(StringValue value) {
                                 responses.add(value.getValue());
+                                if (responseCount.incrementAndGet() == 1) {
+                                    firstResponse.countDown();
+                                } else {
+                                    secondResponse.countDown();
+                                }
                             }
 
                             @Override
@@ -504,7 +519,13 @@ class GrpcSdkTransportSpikeTestCase {
                             }
                         });
         request.onNext(StringValue.of("first"));
+        assertTrue(
+                firstResponse.await(5, TimeUnit.SECONDS),
+                "The first response must arrive while the request stream remains open");
         request.onNext(StringValue.of("second"));
+        assertTrue(
+                secondResponse.await(5, TimeUnit.SECONDS),
+                "The second response must arrive before request half-close");
         request.onCompleted();
         assertTrue(closed.await(5, TimeUnit.SECONDS));
         if (failure.get() != null) {
@@ -545,6 +566,12 @@ class GrpcSdkTransportSpikeTestCase {
                     return;
                 }
 
+                if (definition.getMethodDescriptor().getType()
+                        == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                    dispatchBidirectional(definition, request, response);
+                    return;
+                }
+
                 byte[] frames;
                 try (InputStream input = request.getEntity().getStream()) {
                     frames = input.readNBytes(MAX_STREAM_BYTES + 1);
@@ -557,6 +584,52 @@ class GrpcSdkTransportSpikeTestCase {
             } catch (Exception e) {
                 setGrpcStatus(response, Status.fromThrowable(e));
             }
+        }
+
+        private <RequestT, ResponseT> void dispatchBidirectional(
+                ServerMethodDefinition<RequestT, ResponseT> definition,
+                Request request,
+                Response response)
+                throws IOException {
+            MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
+            SpikeServerCall<RequestT, ResponseT> serverCall = new SpikeServerCall<>(method, true);
+            ServerCall.Listener<RequestT> listener =
+                    definition
+                            .getServerCallHandler()
+                            .startCall(serverCall, readMetadata(request.getHeaders()));
+            if (listener == null) {
+                throw new IOException("gRPC SDK returned no call listener");
+            }
+            serverCall.writeResponseHeaders(response);
+            Thread.startVirtualThread(
+                    () -> {
+                        try (InputStream input = request.getEntity().getStream()) {
+                            byte[] payload;
+                            long requestBytes = 0;
+                            while ((payload = readGrpcMessage(input, MAX_MESSAGE_BYTES)) != null) {
+                                requestBytes += payload.length + 5L;
+                                if (requestBytes > MAX_STREAM_BYTES) {
+                                    throw new IOException(
+                                            "gRPC request stream exceeds "
+                                                    + MAX_STREAM_BYTES
+                                                    + " bytes");
+                                }
+                                listener.onMessage(
+                                        method.parseRequest(new ByteArrayInputStream(payload)));
+                            }
+                            listener.onHalfClose();
+                        } catch (Exception e) {
+                            listener.onCancel();
+                            serverCall.close(Status.fromThrowable(e), new Metadata());
+                        }
+                    });
+            response.setEntity(
+                    new OutputRepresentation(GRPC_MEDIA_TYPE) {
+                        @Override
+                        public void write(OutputStream output) throws IOException {
+                            serverCall.writeStreamingResponse(response, output);
+                        }
+                    });
         }
 
         private <RequestT, ResponseT> void dispatch(
@@ -587,20 +660,32 @@ class GrpcSdkTransportSpikeTestCase {
     private static final class SpikeServerCall<RequestT, ResponseT>
             extends ServerCall<RequestT, ResponseT> {
 
+        private static final int MAX_BUFFERED_RESPONSES = 8;
+
         private final MethodDescriptor<RequestT, ResponseT> method;
 
         private final List<ResponseT> responseMessages = new ArrayList<>();
+
+        private final LinkedBlockingQueue<ResponseT> streamingResponses =
+                new LinkedBlockingQueue<>(MAX_BUFFERED_RESPONSES);
 
         private final Metadata responseHeaders = new Metadata();
 
         private final CountDownLatch closed = new CountDownLatch(1);
 
-        private Status status;
+        private volatile Status status;
 
-        private Metadata trailers = new Metadata();
+        private volatile Metadata trailers = new Metadata();
+
+        private final boolean streaming;
 
         private SpikeServerCall(MethodDescriptor<RequestT, ResponseT> method) {
+            this(method, false);
+        }
+
+        private SpikeServerCall(MethodDescriptor<RequestT, ResponseT> method, boolean streaming) {
             this.method = method;
+            this.streaming = streaming;
         }
 
         @Override
@@ -613,11 +698,30 @@ class GrpcSdkTransportSpikeTestCase {
 
         @Override
         public void sendMessage(ResponseT message) {
-            responseMessages.add(message);
+            if (streaming) {
+                try {
+                    if (!streamingResponses.offer(message, 5, TimeUnit.SECONDS)) {
+                        close(
+                                Status.RESOURCE_EXHAUSTED.withDescription(
+                                        "Timed out waiting for the bounded gRPC response queue"),
+                                new Metadata());
+                        throw new IllegalStateException(
+                                "Timed out waiting for the bounded gRPC response queue");
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted writing a gRPC response", e);
+                }
+            } else {
+                responseMessages.add(message);
+            }
         }
 
         @Override
-        public void close(Status status, Metadata trailers) {
+        public synchronized void close(Status status, Metadata trailers) {
+            if (closed.getCount() == 0) {
+                return;
+            }
             this.status = status;
             this.trailers = trailers;
             closed.countDown();
@@ -675,6 +779,55 @@ class GrpcSdkTransportSpikeTestCase {
                 response.getTrailers().add("grpc-message", status.getDescription());
             }
             writeMetadata(trailers, response.getTrailers());
+        }
+
+        private void writeResponseHeaders(Response response) {
+            response.setStatus(org.restlet.data.Status.SUCCESS_OK);
+            writeMetadata(responseHeaders, response.getHeaders());
+        }
+
+        private void writeStreamingResponse(Response response, OutputStream output)
+                throws IOException {
+            long responseBytes = 0;
+            try {
+                while (closed.getCount() != 0 || !streamingResponses.isEmpty()) {
+                    ResponseT message;
+                    try {
+                        message = streamingResponses.poll(100, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("Interrupted reading gRPC response queue", e);
+                    }
+                    if (message == null) {
+                        continue;
+                    }
+                    try (InputStream payload = method.streamResponse(message)) {
+                        byte[] bytes = payload.readNBytes(MAX_MESSAGE_BYTES + 1);
+                        if (bytes.length > MAX_MESSAGE_BYTES) {
+                            throw new IOException(
+                                    "gRPC response exceeds " + MAX_MESSAGE_BYTES + " bytes");
+                        }
+                        responseBytes += bytes.length + 5L;
+                        if (responseBytes > MAX_STREAM_BYTES) {
+                            throw new IOException(
+                                    "gRPC response stream exceeds " + MAX_STREAM_BYTES + " bytes");
+                        }
+                        output.write(frame(bytes));
+                        output.flush();
+                    }
+                }
+            } finally {
+                if (status == null) {
+                    status = Status.INTERNAL.withDescription("SDK call did not close");
+                    trailers = new Metadata();
+                }
+                if (status.getDescription() != null) {
+                    response.getTrailers().add("grpc-message", status.getDescription());
+                }
+                response.getTrailers()
+                        .add("grpc-status", Integer.toString(status.getCode().value()));
+                writeMetadata(trailers, response.getTrailers());
+            }
         }
     }
 
@@ -917,6 +1070,10 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final List<byte[]> requestPayloads = new ArrayList<>();
 
+        private volatile PipedInputStream bidirectionalRequestInput;
+
+        private volatile PipedOutputStream bidirectionalRequestOutput;
+
         private int requestStreamBytes;
 
         private int maxInboundMessageSize = MAX_MESSAGE_BYTES;
@@ -948,6 +1105,17 @@ class GrpcSdkTransportSpikeTestCase {
         public void start(ClientStreamListener listener) {
             this.listener = listener;
             onStart.run();
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                try {
+                    PipedInputStream input = new PipedInputStream(STREAM_PIPE_BUFFER_BYTES);
+                    bidirectionalRequestInput = input;
+                    bidirectionalRequestOutput = new PipedOutputStream(input);
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                    return;
+                }
+                Thread.startVirtualThread(this::executeBidirectionalRequest);
+            }
             listener.onReady();
         }
 
@@ -960,17 +1128,30 @@ class GrpcSdkTransportSpikeTestCase {
 
         @Override
         public void cancel(Status reason) {
+            Status cancellation = reason;
+            PipedOutputStream requestOutput = bidirectionalRequestOutput;
+            if (requestOutput != null) {
+                try {
+                    requestOutput.close();
+                } catch (IOException e) {
+                    cancellation = reason.withCause(e);
+                }
+            }
             Request request = activeRequest;
             if (request != null) {
                 request.abort();
             }
-            close(reason, new Metadata());
+            close(cancellation, new Metadata());
         }
 
         @Override
         public void writeMessage(InputStream message) {
             if (closed) {
                 throw new IllegalStateException("gRPC stream is already closed");
+            }
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                writeBidirectionalMessage(message);
+                return;
             }
             if (method.getType() == MethodDescriptor.MethodType.UNARY
                     && !requestPayloads.isEmpty()) {
@@ -1001,9 +1182,146 @@ class GrpcSdkTransportSpikeTestCase {
             requestPayloads.add(payload);
         }
 
+        private synchronized void writeBidirectionalMessage(InputStream message) {
+            byte[] payload;
+            try (InputStream input = message) {
+                payload = input.readNBytes(maxOutboundMessageSize + 1);
+            } catch (IOException e) {
+                close(Status.INTERNAL.withCause(e), new Metadata());
+                return;
+            }
+            if (payload.length > maxOutboundMessageSize) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request exceeds " + maxOutboundMessageSize + " bytes"),
+                        new Metadata());
+                return;
+            }
+            requestStreamBytes += payload.length + 5;
+            if (requestStreamBytes > MAX_STREAM_BYTES) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request stream exceeds " + MAX_STREAM_BYTES + " bytes"),
+                        new Metadata());
+                return;
+            }
+            try {
+                bidirectionalRequestOutput.write(frame(payload));
+                bidirectionalRequestOutput.flush();
+            } catch (IOException e) {
+                close(Status.UNAVAILABLE.withCause(e), new Metadata());
+            }
+        }
+
+        private void executeBidirectionalRequest() {
+            Response response = null;
+            try {
+                OutputRepresentation requestEntity =
+                        new OutputRepresentation(GRPC_MEDIA_TYPE) {
+                            @Override
+                            public void write(OutputStream output) throws IOException {
+                                byte[] payload;
+                                while ((payload =
+                                                readGrpcMessage(
+                                                        bidirectionalRequestInput,
+                                                        maxOutboundMessageSize))
+                                        != null) {
+                                    output.write(frame(payload));
+                                    output.flush();
+                                }
+                            }
+                        };
+                Request request =
+                        new Request(
+                                Method.POST,
+                                address.target + "/" + method.getFullMethodName(),
+                                requestEntity);
+                activeRequest = request;
+                request.getHeaders().add("te", "trailers");
+                writeMetadata(requestMetadata, request.getHeaders());
+                response = client.handle(request);
+                lastResponseProtocol.set(response.getProtocol());
+
+                listener.headersRead(readMetadata(response.getHeaders()));
+                if (response.getEntity() != null) {
+                    try (InputStream input = response.getEntity().getStream()) {
+                        byte[] payload;
+                        while ((payload = readGrpcMessage(input, maxInboundMessageSize)) != null) {
+                            byte[] messagePayload = payload;
+                            listener.messagesAvailable(
+                                    new StreamListener.MessageProducer() {
+                                        private boolean consumed;
+
+                                        @Override
+                                        public InputStream next() {
+                                            if (consumed) {
+                                                return null;
+                                            }
+                                            consumed = true;
+                                            return new ByteArrayInputStream(messagePayload);
+                                        }
+                                    });
+                        }
+                    }
+                }
+
+                Metadata trailers = readMetadata(response.getTrailers());
+                String statusText = response.getTrailers().getFirstValue("grpc-status", true);
+                if (statusText == null) {
+                    statusText = response.getHeaders().getFirstValue("grpc-status", true);
+                }
+                if (statusText == null) {
+                    close(Status.UNKNOWN.withDescription("Missing grpc-status"), trailers);
+                    return;
+                }
+                Status status;
+                try {
+                    status = Status.fromCodeValue(Integer.parseInt(statusText));
+                } catch (NumberFormatException e) {
+                    status = Status.UNKNOWN.withDescription("Invalid grpc-status: " + statusText);
+                }
+                String statusMessage = response.getTrailers().getFirstValue("grpc-message", true);
+                if (statusMessage == null) {
+                    statusMessage = response.getHeaders().getFirstValue("grpc-message", true);
+                }
+                if (statusMessage != null) {
+                    status = status.withDescription(statusMessage);
+                }
+                if (!response.getStatus().isSuccess() || !status.isOk()) {
+                    close(status, trailers);
+                    return;
+                }
+                close(status, ClientStreamListener.RpcProgress.PROCESSED, trailers);
+            } catch (Exception e) {
+                close(
+                        Status.UNAVAILABLE.withCause(e),
+                        ClientStreamListener.RpcProgress.PROCESSED,
+                        new Metadata());
+            } finally {
+                try {
+                    bidirectionalRequestInput.close();
+                } catch (IOException e) {
+                    if (!closed) {
+                        close(Status.UNAVAILABLE.withCause(e), new Metadata());
+                    }
+                }
+                if (response != null && response.getEntity() != null) {
+                    response.getEntity().release();
+                }
+            }
+        }
+
         @Override
         public void halfClose() {
             if (closed) {
+                return;
+            }
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                try {
+                    bidirectionalRequestOutput.close();
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                }
                 return;
             }
             if (method.getType() == MethodDescriptor.MethodType.UNARY
@@ -1114,7 +1432,16 @@ class GrpcSdkTransportSpikeTestCase {
         }
 
         @Override
-        public void flush() {}
+        public void flush() {
+            PipedOutputStream requestOutput = bidirectionalRequestOutput;
+            if (requestOutput != null && !closed) {
+                try {
+                    requestOutput.flush();
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                }
+            }
+        }
 
         @Override
         public boolean isReady() {
@@ -1206,6 +1533,30 @@ class GrpcSdkTransportSpikeTestCase {
             throw new IOException("Invalid gRPC message length: " + length);
         }
         return java.util.Arrays.copyOfRange(frame, 5, frame.length);
+    }
+
+    private static byte[] readGrpcMessage(InputStream input, int maxMessageSize)
+            throws IOException {
+        int compressionFlag = input.read();
+        if (compressionFlag == -1) {
+            return null;
+        }
+        if (compressionFlag != 0) {
+            throw new IOException("Compressed gRPC messages are not supported");
+        }
+        byte[] lengthBytes = input.readNBytes(4);
+        if (lengthBytes.length != 4) {
+            throw new IOException("Truncated gRPC message length");
+        }
+        int length = ByteBuffer.wrap(lengthBytes).order(ByteOrder.BIG_ENDIAN).getInt();
+        if (length < 0 || length > maxMessageSize) {
+            throw new IOException("Invalid gRPC message length: " + length);
+        }
+        byte[] payload = input.readNBytes(length);
+        if (payload.length != length) {
+            throw new IOException("Truncated gRPC message payload");
+        }
+        return payload;
     }
 
     private static List<byte[]> unframeMessages(byte[] bytes, int maxMessageSize)
