@@ -517,7 +517,11 @@ class NettyClientCall {
                         : HeaderUtils.getContentLength(responseHeaders);
 
         if (hasBody(status)) {
-            InputStream stream = nonEmpty(getResponseEntityStream());
+            InputStream stream = getResponseEntityStream();
+            // Multiplexed streams may remain idle after their response headers arrive.
+            if (!kind.isStream()) {
+                stream = nonEmpty(stream);
+            }
             if (stream != null) {
                 result = new InputRepresentation(stream, null);
                 result.setSize(size);

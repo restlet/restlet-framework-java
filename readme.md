@@ -15,10 +15,13 @@ Restlet applications run directly in JVMs with minimal dependencies, resulting i
 ## R0 SDK interoperability probes
 
 The MCP and gRPC interoperability spikes are **test-only**, not production RPC extensions.
+R0 is a feasibility/decision phase, not delivery of all features in R1-R6. Its outcome is
+to proceed with narrowly scoped SDK integrations and defer unsupported profiles/features,
+not to promote these fixtures into production adapters.
 Run the focused suite from the repository root:
 
 ```powershell
-.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' test
+.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,GrpcSdkServerHostSpikeTestCase,RpcSdkBoundaryTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' test
 ```
 
 The MCP suite compares a 20-request corpus with
@@ -74,8 +77,85 @@ request stream remains open. The client observes `CANCELLED` once, the remote SD
 handler runs once, both bridge I/O workers finish, and a subsequent unary call succeeds on the same
 channel. The client bridge records cancellation before aborting HTTP I/O so an abort failure cannot
 replace the cancellation status. A separate regression verifies that closing demand wakes a blocked
-receiver and does not reopen on later credits. Pre-header cancellation races, server-initiated
-cancellation, and long-lived stream lifecycle remain outside this bounded probe.
+receiver and does not reopen on later credits. Additional probes cancel before response headers
+and shut down a channel with two active calls, checking remote cancellation, terminal callbacks,
+I/O completion and borrowed-connector ownership. Server-side completion is observed through
+`Response.onSent`, including cancellation before the response writer starts. Cancellation before
+HTTP request registration, server-initiated cancellation and long-lived stream lifecycle are
+not exhaustively covered.
+
+### SDK-owned server runtime and measured core fixes
+
+`GrpcSdkServerHostSpikeTestCase` separately hosts the real `ServerImplBuilder` runtime over
+Restlet, using `AbstractServerStream` for **SDK-owned framing and deframing**, dispatch,
+interceptors, status encoding and half-close. The official Netty client verifies unary success,
+client-streaming aggregation, a trailers-only SDK error with a percent/non-ASCII description,
+and SDK `UNIMPLEMENTED` dispatch for an unknown method. It verifies SDK/executor termination
+without stopping the borrowed Restlet server. No SDK listener is bound. This initial host
+buffers at most 1 MiB per direction and models each HTTP call as a logical SDK transport;
+it is not a connection-aware, streaming production host.
+
+The older bidirectional fixture still implements frames and directly invokes SDK handlers.
+It is useful transport/demand/cancellation evidence, **not** proof that the complete SDK
+server runtime supports full-duplex over the proposed production seam. In particular, neither
+fixture is a production fallback for SDK framing/flow control.
+
+The closing probes reproduced and fixed two protocol-neutral core gaps:
+
+- HTTP/2 clients previously peeked at the body before delivering headers. Multiplexed responses
+  now expose headers without waiting for data; HTTP/1.1 keeps its existing empty-body handling.
+  A regression withholds the first body byte until after the caller receives the headers.
+- Empty multiplexed server responses with no entity/trailers now end with their initial
+  HEADERS, rather than a later empty DATA frame. The native SDK client previously reported
+  `INTERNAL` instead of the trailers-only SDK error. The same test now preserves its exact
+  status and description. Responses with late trailers retain the existing streaming path.
+
+Both paths also serve HTTP/3, but native HTTP/3 validation remains platform-dependent.
+Late first trailers were already supported and have an existing core regression.
+
+### R0 supported-feature matrix and decisions
+
+| Area | Measured result | Decision / boundary |
+|---|---|---|
+| gRPC client internal SPI | Pinned `ManagedChannelImplBuilder` transport compiles and interoperates over Restlet HTTP/2 | Proceed with unary extension work; keep the version pinned |
+| gRPC SDK server host | Real SDK runtime, codecs, interceptors, unary, client half-close and trailers-only errors | Socket-less hosting is feasible; bounded buffering is not the production design |
+| gRPC metadata/status | Repeated ASCII, binary metadata and `grpc-status-details-bin`, empty success, errors after a delivered message, exactly one observed terminal callback, in both directions | Preserve native metadata/status; do not drop messages preceding errors |
+| gRPC demand/cancellation | Finite bidi exchange, receive-credit withholding, established/pre-header cancellation, active channel shutdown and worker completion | Bounded diagnostic evidence only; full SDK readiness, byte-budget and long-lived conformance remain R6 |
+| gRPC addressing | Exact origin authority reaches the SDK service; mismatched authorities and ordinary resolved socket addresses are rejected | No claim of TLS/SNI override, DNS/LB/subchannel or connection-aware integration |
+| gRPC connection controls | PING reports `UNIMPLEMENTED`; deadlines, compression and authority overrides throw explicitly in the prototype | Unsupported, not silently emulated; connection draining/GOAWAY/keepalive need a supported core seam |
+| MCP SDK-supported profiles | Stateless HTTP/2, Streamable initialize/POST SSE, bounded GET notifications/replay and official STDIO subprocess round-trip | Proceed with SDK-backed extension work; production STDIO mechanics and lifecycle belong to R1/R2 |
+| MCP Ikanos profile | 19/20 exact corpus responses; revision/session mismatch, null-ID SDK restriction and one parser diagnostic difference are explicit | **Do not migrate Ikanos** or advertise full profile equivalence; fixture compatibility code is not a second dispatcher |
+| MCP ownership | Client/server SDK closure leaves borrowed connectors started; Streamable DELETE removes session, replay history and listening state | Bounded ownership proof, not indefinite SSE/process lifecycle certification |
+| SDK module path | Actual named layer resolves Restlet, gRPC and MCP without `grpc-netty-shaded`; Jackson mapper service loads there; no default SDK gRPC channel provider remains | No production RPC dependency/module added; extension module/API delivery remains R1 |
+| Smithy | Not part of spikes A/B; `1.7.0` is still an unvalidated candidate | Pin and prototype client/server APIs in R5/R6 before accepting the proposed API shape |
+
+The pinned automatic module names are `io.grpc`, `io.grpc.internal`, `io.grpc.protobuf`,
+`io.grpc.stub`, `io.modelcontextprotocol.sdk.mcp.core` and
+`io.modelcontextprotocol.sdk.mcp.json.jackson2`. `RpcSdkBoundaryTestCase` checks the actual
+jar descriptors, loads SDK classes from the named layer and instantiates the MCP mapper supplier.
+This is not an extension module-path test: those modules do not exist yet.
+
+R0 authorizes the next **implementation phase**, not release or Ikanos migration. Keep independent
+protocol APIs, explicit connector ownership and finite limits; do not add a shared RPC layer or
+an SDK-owned HTTP engine. Generated gRPC stubs, SDK-owned streaming transports, complete HTTP
+validation, idle disconnect notification, connection policies, native-image behavior and production
+lifecycle remain delivery/conformance gates. Ikanos still targets Java 21 while this Restlet build
+requires Java 25, so runtime/build/container migration is a separate adoption prerequisite.
+No Ikanos source was copied into these new probes; existing attribution is retained.
+
+Delivery tracking: [MCP #1558](https://github.com/restlet/restlet-framework-java/issues/1558),
+[gRPC #1561](https://github.com/restlet/restlet-framework-java/issues/1561),
+[Smithy #1559](https://github.com/restlet/restlet-framework-java/issues/1559) and
+[core seams #1560](https://github.com/restlet/restlet-framework-java/issues/1560).
+Separate Ikanos adoption gates are
+[MCP #838](https://github.com/naftiko/ikanos/issues/838),
+[gRPC #837](https://github.com/naftiko/ikanos/issues/837) and
+[Smithy #839](https://github.com/naftiko/ikanos/issues/839).
+
+Closing validation on Java 25: the live-enabled SDK suite combined with
+`*Http*TestCase,*EventStream*TestCase` passed **107 tests, zero failures/errors/skips**.
+This includes native HTTP/3 tests on this host, TLS/HTTP transport selection, the STDIO
+subprocess and the actual Ikanos comparison. It is not a full-repository test run.
 
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):
@@ -85,7 +165,7 @@ $ikanos = (Resolve-Path '..\ikanos').Path
 $classpath = Join-Path (Get-Location) 'org.restlet\target\ikanos-classpath.txt'
 mvn -f "$ikanos\pom.xml" -pl modules\ikanos-engine -am compile
 mvn -f "$ikanos\pom.xml" -pl modules\ikanos-engine dependency:build-classpath "-Dmdep.outputFile=$classpath" -DincludeScope=test
-.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' "-Drestlet.mcp.ikanos.home=$ikanos" "-Drestlet.mcp.ikanos.classpathFile=$classpath" test
+.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,GrpcSdkServerHostSpikeTestCase,RpcSdkBoundaryTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' "-Drestlet.mcp.ikanos.home=$ikanos" "-Drestlet.mcp.ikanos.classpathFile=$classpath" test
 ```
 
 The opt-in test source-launches a separate JVM with Ikanos' classpath. It boots a real capability
@@ -95,9 +175,16 @@ prototype over Restlet HTTP/2; this compares MCP semantics, not transport implem
 The reference process is stopped after the test. Startup failures fail the test rather than
 falling back to recorded responses.
 
-Without the opt-in properties, twelve tests pass and the live comparison is skipped; with them,
-all thirteen run. Add `Http2FullDuplexTestCase,Http2CancellationTestCase` to the selector to include
-the two core connector regressions. Recorded and live reports are written separately under `org.restlet/target` as
+The SDK-focused selector contains twenty tests: eight transport gRPC cases, one native SDK-host
+case, one module-boundary case, seven MCP stateless/STDIO/profile cases and three MCP Streamable
+cases. Without opt-in properties the live comparison is skipped. Add
+`Http2FullDuplexTestCase,Http2CancellationTestCase,HttpTrailersTestCase,Http2TrailerHeadersTestCase`
+to include seven connector regression cases; add `*Http*TestCase,*EventStream*TestCase` instead for
+broader HTTP/TLS/SSE coverage. The official STDIO subprocess has a five-second initialization
+budget and has intermittently timed out in combined runs; an isolated pass does not turn a failed
+combined run into a clean one.
+
+Recorded and live reports are written separately under `org.restlet/target` as
 `mcp-ikanos-recorded.json` and `mcp-ikanos-differential.json`; reference-process logs are kept in
 per-run `mcp-ikanos-*` directories there. Review changed observations explicitly before updating
 the checked-in baseline. No Ikanos or additional production dependency is added to Restlet.

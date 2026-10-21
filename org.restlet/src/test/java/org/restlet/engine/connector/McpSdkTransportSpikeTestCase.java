@@ -190,6 +190,10 @@ class McpSdkTransportSpikeTestCase {
         assertTrue(listedTools.tools().stream().anyMatch(item -> item.name().equals("echo")));
         assertEquals("echo:hello", ((McpSchema.TextContent) result.content().getFirst()).text());
         assertEquals("2.0", clientTransport.lastResponseProtocol.get().getVersion());
+        sdkClient.closeGracefully().block(REQUEST_TIMEOUT);
+        sdkClient = null;
+        assertTrue(client.isStarted());
+        assertTrue(server.isStarted());
 
         String profileRequestBody =
                 "{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"tools/list\",\"params\":{\"_meta\":{\"io.modelcontextprotocol/protocolVersion\":\"2026-07-28\"}}}";
@@ -210,6 +214,10 @@ class McpSdkTransportSpikeTestCase {
                             java.nio.charset.StandardCharsets.UTF_8);
             assertTrue(body.contains("\"echo\""));
         }
+        sdkServer.closeGracefully().block(REQUEST_TIMEOUT);
+        sdkServer = null;
+        assertTrue(client.isStarted());
+        assertTrue(server.isStarted());
     }
 
     @Test

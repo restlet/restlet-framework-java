@@ -59,6 +59,61 @@ class Http2FullDuplexTestCase {
     }
 
     @Test
+    void receivesResponseHeadersBeforeTheFirstBodyByte() throws Exception {
+        CountDownLatch headFlushed = new CountDownLatch(1);
+        CountDownLatch sendBody = new CountDownLatch(1);
+        Restlet delayedBody =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.getHeaders().add("x-response-phase", "headers");
+                        response.setEntity(
+                                new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM) {
+                                    @Override
+                                    public void write(OutputStream output) throws IOException {
+                                        output.flush();
+                                        headFlushed.countDown();
+                                        try {
+                                            if (!sendBody.await(10, TimeUnit.SECONDS)) {
+                                                throw new IOException(
+                                                        "Timed out waiting to send body");
+                                            }
+                                        } catch (InterruptedException e) {
+                                            Thread.currentThread().interrupt();
+                                            throw new IOException(
+                                                    "Interrupted waiting to send body", e);
+                                        }
+                                        output.write("late".getBytes(StandardCharsets.UTF_8));
+                                    }
+                                });
+                    }
+                };
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        server = new Server(serverContext, Protocol.HTTP, 0, delayedBody);
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(clientContext, Protocol.HTTP);
+        client.start();
+        Request request = new Request(Method.GET, "http://localhost:" + server.getActualPort());
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var responseFuture = executor.submit(() -> client.handle(request));
+            try {
+                assertTrue(headFlushed.await(5, TimeUnit.SECONDS));
+                Response response = responseFuture.get(2, TimeUnit.SECONDS);
+                assertEquals(
+                        "headers", response.getHeaders().getFirstValue("x-response-phase", true));
+                sendBody.countDown();
+                assertEquals("late", response.getEntityAsText());
+            } finally {
+                sendBody.countDown();
+                request.abort();
+            }
+        }
+    }
+
+    @Test
     void receivesResponseWhileRequestEntityIsStillBeingWritten() throws Exception {
         CountDownLatch requestWriteStarted = new CountDownLatch(1);
         CountDownLatch continueRequestWrite = new CountDownLatch(1);
