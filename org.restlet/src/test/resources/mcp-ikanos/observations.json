@@ -1,23 +1,23 @@
 {
   "list": {
     "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"tools":[{"name":"echo","description":"Returns the supplied text","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"tools":[{"name":"echo","description":"Returns the supplied text","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}}],"resultType":"complete"}}},
-    "differences": ["/body/result/_meta","/body/result/cacheScope","/body/result/ttlMs"]
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"tools":[{"name":"echo","description":"Returns the supplied text","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
   },
   "call": {
     "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete"}}},
-    "differences": ["/body/result/_meta"]
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
   },
   "tool-error": {
     "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:fail"}],"isError":true,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:fail"}],"isError":true,"resultType":"complete"}}},
-    "differences": ["/body/result/_meta"]
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:fail"}],"isError":true,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
   },
   "encoded-name": {
     "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete"}}},
-    "differences": ["/body/result/_meta"]
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
   },
   "missing-method": {
     "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Method"}}},
@@ -61,42 +61,42 @@
   },
   "unknown-tool": {
     "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32602,"message":"Invalid params: Unknown tool: missing"}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32602,"message":"Unknown tool: invalid_tool_name","data":"Tool not found: missing"}}},
-    "differences": ["/body/error/data","/body/error/message","/status"]
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32602,"message":"Invalid params: Unknown tool: missing"}}},
+    "differences": []
   },
   "unknown-method": {
     "reference": {"status":404,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: unknown"}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: unknown"}}},
-    "differences": ["/status"]
+    "prototype": {"status":404,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: unknown"}}},
+    "differences": []
   },
   "discovery": {
     "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"supportedVersions":["2026-07-28"],"capabilities":{"tools":{}},"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
-    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: server/discover"}}},
-    "differences": ["/body/error","/body/result"]
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"supportedVersions":["2026-07-28"],"capabilities":{"tools":{}},"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
   },
   "legacy-initialize": {
     "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version 2025-11-25: this server supports only MCP 2026-07-28, which has no initialize handshake","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
-    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Method"}}},
-    "differences": ["/body/error/code","/body/error/data","/body/error/message"]
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version 2025-11-25: this server supports only MCP 2026-07-28, which has no initialize handshake","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
+    "differences": []
   },
   "malformed-json": {
     "reference": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN]"}}},
-    "prototype": {"status":500,"body":""},
-    "differences": ["/body","/status"]
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]"}}},
+    "differences": ["/body/error/message"]
   },
   "empty-body": {
     "reference": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: empty body"}}},
-    "prototype": {"status":400,"body":""},
-    "differences": ["/body"]
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: empty body"}}},
+    "differences": []
   },
   "GET": {
     "reference": {"status":405,"body":"GET not supported"},
-    "prototype": {"status":405,"body":""},
-    "differences": ["/body"]
+    "prototype": {"status":405,"body":"GET not supported"},
+    "differences": []
   },
   "DELETE": {
     "reference": {"status":405,"body":"DELETE not supported"},
-    "prototype": {"status":405,"body":""},
-    "differences": ["/body"]
+    "prototype": {"status":405,"body":"DELETE not supported"},
+    "differences": []
   }
 }
