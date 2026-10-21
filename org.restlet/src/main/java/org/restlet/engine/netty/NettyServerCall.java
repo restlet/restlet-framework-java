@@ -19,6 +19,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.DefaultLastHttpContent;
@@ -123,6 +124,9 @@ class NettyServerCall {
 
     /** Indicates whether the response head was written. */
     private volatile boolean responseHeadWritten;
+
+    /** Indicates that an empty multiplexed response ended with its initial headers. */
+    private boolean responseEndedWithHead;
 
     /** Indicates whether the exchange was completed. */
     private volatile boolean completed;
@@ -608,7 +612,8 @@ class NettyServerCall {
         responseHeadWritten = true;
 
         int code = statusCode;
-        HttpResponse head = newResponseHead(code);
+        responseEndedWithHead = kind.isStream() && emptyBody && responseTrailers.isEmpty();
+        HttpResponse head = newResponseHead(code, responseEndedWithHead);
         boolean bodyAllowed =
                 code != 204 && code != 304 && code >= 200 && !"HEAD".equals(getMethod());
         boolean hasTrailers = bodyAllowed && !responseTrailers.isEmpty();
@@ -628,13 +633,17 @@ class NettyServerCall {
     }
 
     /** Creates the response head with the status and the response headers. */
-    private HttpResponse newResponseHead(int code) {
+    private HttpResponse newResponseHead(int code, boolean endWithHead) {
         String reason = reasonPhrase;
         HttpResponseStatus status =
                 (reason != null && !reason.isEmpty())
                         ? new HttpResponseStatus(code, reason)
                         : HttpResponseStatus.valueOf(code);
-        HttpResponse head = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
+        HttpResponse head =
+                endWithHead
+                        ? new DefaultFullHttpResponse(
+                                HttpVersion.HTTP_1_1, status, Unpooled.EMPTY_BUFFER)
+                        : new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 
         for (Header header : responseHeaders) {
             String name =
@@ -688,6 +697,11 @@ class NettyServerCall {
             }
 
             if (!channel.isActive()) {
+                requestBody.close();
+                return;
+            }
+            if (responseEndedWithHead) {
+                channel.flush();
                 requestBody.close();
                 return;
             }

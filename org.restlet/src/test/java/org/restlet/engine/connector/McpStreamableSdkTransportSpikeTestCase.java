@@ -174,6 +174,17 @@ class McpStreamableSdkTransportSpikeTestCase {
         assertEquals(
                 org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST,
                 expiredReplayResponse.getStatus());
+        sdkClient.closeGracefully().block(REQUEST_TIMEOUT);
+        sdkClient = null;
+        assertTrue(transport.sessions.isEmpty());
+        assertTrue(transport.eventHistory.isEmpty());
+        assertTrue(transport.listeningTransports.isEmpty());
+        assertTrue(client.isStarted());
+        assertTrue(server.isStarted());
+        sdkServer.closeGracefully().block(REQUEST_TIMEOUT);
+        sdkServer = null;
+        assertTrue(client.isStarted());
+        assertTrue(server.isStarted());
     }
 
     @BeforeEach

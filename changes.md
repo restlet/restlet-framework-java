@@ -78,6 +78,13 @@ Changes log
         - CORS: `CorsFilter` now applies configuration changes made after the first request (the
           internal `CorsResponseHelper` is rebuilt by the setters). Issue #1611.
     - Enhancements
+        - HTTP/2 and HTTP/3 clients deliver response headers without waiting for the first
+          response body byte. This allows idle duplex and SSE responses to expose their
+          headers before the peer sends a message.
+        - Empty HTTP/2 and HTTP/3 server responses with no entity or trailers end with their
+          initial headers, rather than a subsequent empty DATA frame.
+        - Added test-only MCP and gRPC SDK feasibility probes over the Restlet HTTP/2
+          connectors. These do not introduce production RPC extensions.
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The

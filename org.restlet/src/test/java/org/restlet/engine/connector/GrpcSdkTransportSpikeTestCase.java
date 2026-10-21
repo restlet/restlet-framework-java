@@ -10,6 +10,7 @@ package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,6 +70,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -126,6 +129,24 @@ class GrpcSdkTransportSpikeTestCase {
                     .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
                     .build();
 
+    private static final MethodDescriptor<StringValue, StringValue> CONTROL_METHOD =
+            ECHO_METHOD.toBuilder()
+                    .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/Control")
+                    .build();
+
+    private static final Metadata.Key<String> TEXT_METADATA =
+            Metadata.Key.of("x-r0-text", Metadata.ASCII_STRING_MARSHALLER);
+
+    private static final Metadata.Key<byte[]> BINARY_METADATA =
+            Metadata.Key.of("x-r0-bin", Metadata.BINARY_BYTE_MARSHALLER);
+
+    private static final Metadata.Key<byte[]> STATUS_DETAILS =
+            Metadata.Key.of("grpc-status-details-bin", Metadata.BINARY_BYTE_MARSHALLER);
+
+    private static final Metadata.Key<String> AUTHORITY_METADATA =
+            Metadata.Key.of("x-r0-authority", Metadata.ASCII_STRING_MARSHALLER);
+
     private Client client;
 
     private io.grpc.Server grpcServer;
@@ -141,6 +162,10 @@ class GrpcSdkTransportSpikeTestCase {
     private final CountDownLatch remoteCancellation = new CountDownLatch(1);
 
     private final AtomicInteger remoteCancellationCount = new AtomicInteger();
+
+    private RestletTransportFactory interopFactory;
+
+    private RestletGrpcServer interopServer;
 
     @BeforeEach
     void setUp() {
@@ -168,6 +193,362 @@ class GrpcSdkTransportSpikeTestCase {
             grpcServer.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
         }
         Engine.clearThreadLocalVariables();
+    }
+
+    @Test
+    void rejectsUnsupportedTransportControlsExplicitly() throws Exception {
+        client = new Client(Protocol.HTTP);
+        RestletTransportFactory factory =
+                new RestletTransportFactory(client, lastGrpcResponseProtocol);
+        try {
+            var transport =
+                    factory.newClientTransport(
+                            new RestletSocketAddress("http://localhost:1"),
+                            new ClientTransportFactory.ClientTransportOptions()
+                                    .setAuthority("localhost:1"),
+                            null);
+            var stream =
+                    transport.newStream(
+                            ECHO_METHOD,
+                            new Metadata(),
+                            CallOptions.DEFAULT,
+                            new io.grpc.ClientStreamTracer[0]);
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setAuthority("other.example"));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setDeadline(Deadline.after(1, TimeUnit.SECONDS)));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setCompressor(new io.grpc.Codec.Gzip()));
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () ->
+                            factory.newClientTransport(
+                                    new java.net.InetSocketAddress("localhost", 1),
+                                    new ClientTransportFactory.ClientTransportOptions(),
+                                    null));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () ->
+                            factory.newClientTransport(
+                                    new RestletSocketAddress("http://localhost:1"),
+                                    new ClientTransportFactory.ClientTransportOptions()
+                                            .setAuthority("virtual.example:1"),
+                                    null));
+            AtomicReference<Status> pingFailure = new AtomicReference<>();
+            transport.ping(
+                    new io.grpc.internal.ClientTransport.PingCallback() {
+                        @Override
+                        public void onSuccess(long roundTripTimeNanos) {
+                            throw new AssertionError("The probe must not pretend to support PING");
+                        }
+
+                        @Override
+                        public void onFailure(Status cause) {
+                            pingFailure.set(cause);
+                        }
+                    },
+                    Runnable::run);
+            assertEquals(Status.Code.UNIMPLEMENTED, pingFailure.get().getCode());
+        } finally {
+            factory.close();
+            assertTrue(factory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
+            assertFalse(client.isStarted(), "Borrowed connectors must not be started or stopped");
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void preservesMetadataAndTerminalStatus(boolean restletHosted) throws Exception {
+        openInteropChannel(controlService(), restletHosted);
+        for (String mode : List.of("success", "trailers-only", "late-error", "empty")) {
+            Metadata headers = new Metadata();
+            headers.put(TEXT_METADATA, "first");
+            headers.put(TEXT_METADATA, "second");
+            headers.put(BINARY_METADATA, new byte[] {0, 1, (byte) 255});
+            CallObservation observed = observeCall(channel, mode, headers);
+            assertEquals(1, observed.terminals());
+            assertEquals(
+                    mode.equals("trailers-only") || mode.equals("late-error")
+                            ? Status.Code.PERMISSION_DENIED
+                            : Status.Code.OK,
+                    observed.status().getCode(),
+                    mode + ": " + observed.status());
+            assertEquals(List.of("first", "second"), metadataValues(observed.trailers()));
+            assertEquals(channel.authority(), observed.trailers().get(AUTHORITY_METADATA));
+            org.junit.jupiter.api.Assertions.assertArrayEquals(
+                    new byte[] {0, 1, (byte) 255}, observed.trailers().get(STATUS_DETAILS));
+            assertEquals(
+                    mode.equals("success") || mode.equals("late-error")
+                            ? List.of("delivered")
+                            : List.of(),
+                    observed.messages());
+            if (!mode.equals("trailers-only")) {
+                assertEquals(List.of("first", "second"), metadataValues(observed.headers()));
+                org.junit.jupiter.api.Assertions.assertArrayEquals(
+                        new byte[] {0, 1, (byte) 255}, observed.headers().get(BINARY_METADATA));
+            }
+        }
+        channel.shutdown();
+        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
+        if (client != null) {
+            assertTrue(client.isStarted(), "Channel shutdown must not stop its borrowed connector");
+        }
+    }
+
+    private void openInteropChannel(ServerServiceDefinition service, boolean restletHosted)
+            throws Exception {
+        if (restletHosted) {
+            Context context = new Context();
+            context.getParameters().add("http.transport.protocol", "HTTP2");
+            interopServer = new RestletGrpcServer(service);
+            restletServer = new Server(context, Protocol.HTTP, 0, interopServer);
+            restletServer.start();
+            channel =
+                    NettyChannelBuilder.forAddress("localhost", restletServer.getActualPort())
+                            .usePlaintext()
+                            .build();
+        } else {
+            grpcServer = NettyServerBuilder.forPort(0).addService(service).build().start();
+            Context context = new Context();
+            context.getParameters().add("httpClientTransportMode", "HTTP2");
+            client = new Client(context, Protocol.HTTP);
+            client.start();
+            String target = "http://localhost:" + grpcServer.getPort();
+            interopFactory = new RestletTransportFactory(client, lastGrpcResponseProtocol);
+            channel =
+                    new ManagedChannelImplBuilder(
+                                    new RestletSocketAddress(target),
+                                    "localhost:" + grpcServer.getPort(),
+                                    () -> interopFactory,
+                                    () -> 0)
+                            .build();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void cancelsBeforeHeadersAndShutsDownActiveCalls(boolean restletHosted) throws Exception {
+        CountDownLatch received = new CountDownLatch(2);
+        CountDownLatch cancelled = new CountDownLatch(2);
+        AtomicInteger cancellationCount = new AtomicInteger();
+        AtomicReference<Throwable> unexpectedError = new AtomicReference<>();
+        ServerServiceDefinition service =
+                ServerServiceDefinition.builder("restlet.r0.Echo")
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        result -> {
+                                            if (!(result
+                                                    instanceof
+                                                    io.grpc.stub.ServerCallStreamObserver<?>
+                                                            observer)) {
+                                                throw new IllegalStateException(
+                                                        "The SDK did not supply a server call observer");
+                                            }
+                                            observer.setOnCancelHandler(
+                                                    () -> {
+                                                        cancellationCount.incrementAndGet();
+                                                        cancelled.countDown();
+                                                    });
+                                            return new io.grpc.stub.StreamObserver<StringValue>() {
+                                                @Override
+                                                public void onNext(StringValue value) {
+                                                    received.countDown();
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable error) {
+                                                    if (Status.fromThrowable(error).getCode()
+                                                            != Status.Code.CANCELLED) {
+                                                        unexpectedError.set(error);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    result.onCompleted();
+                                                }
+                                            };
+                                        }))
+                        .build();
+        openInteropChannel(service, restletHosted);
+        List<ClientCall<StringValue, StringValue>> calls = new ArrayList<>();
+        CountDownLatch closed = new CountDownLatch(2);
+        AtomicInteger terminalCount = new AtomicInteger();
+        AtomicInteger headerCount = new AtomicInteger();
+        AtomicReference<Status.Code> explicitCancellation = new AtomicReference<>();
+        List<Status.Code> statuses = new java.util.concurrent.CopyOnWriteArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            boolean cancelDirectly = i == 0;
+            var call = channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+            calls.add(call);
+            call.start(
+                    new ClientCall.Listener<>() {
+                        @Override
+                        public void onHeaders(Metadata headers) {
+                            headerCount.incrementAndGet();
+                        }
+
+                        @Override
+                        public void onClose(Status status, Metadata trailers) {
+                            if (cancelDirectly) {
+                                explicitCancellation.set(status.getCode());
+                            }
+                            statuses.add(status.getCode());
+                            terminalCount.incrementAndGet();
+                            closed.countDown();
+                        }
+                    },
+                    new Metadata());
+            call.request(1);
+            call.sendMessage(StringValue.of("hold-before-headers"));
+        }
+        assertTrue(received.await(5, TimeUnit.SECONDS));
+        assertEquals(0, headerCount.get(), "The SDK must not report headers before they are sent");
+        calls.getFirst().cancel("pre-header cancellation", null);
+        channel.shutdownNow();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelled.await(5, TimeUnit.SECONDS));
+        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
+        assertEquals(2, terminalCount.get());
+        assertEquals(2, cancellationCount.get());
+        assertEquals(Status.Code.CANCELLED, explicitCancellation.get());
+        assertNull(unexpectedError.get());
+        assertTrue(
+                statuses.stream()
+                        .allMatch(
+                                status ->
+                                        status == Status.Code.CANCELLED
+                                                || status == Status.Code.UNAVAILABLE),
+                statuses.toString());
+        if (interopFactory != null) {
+            assertTrue(
+                    interopFactory.transport.lastBidirectionalStream.responseReaderFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(
+                    interopFactory.transport.lastBidirectionalStream.requestWriterFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(interopFactory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
+            assertTrue(client.isStarted());
+        } else {
+            assertTrue(
+                    interopServer.lastBidirectionalCall.requestReaderFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(
+                    interopServer.lastBidirectionalCall.responseWriterFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(restletServer.isStarted());
+        }
+    }
+
+    private static ServerServiceDefinition controlService() {
+        return ServerServiceDefinition.builder("restlet.r0.Echo")
+                .addMethod(
+                        CONTROL_METHOD,
+                        (call, headers) -> {
+                            call.request(1);
+                            return new ServerCall.Listener<StringValue>() {
+                                private String mode;
+
+                                @Override
+                                public void onMessage(StringValue request) {
+                                    mode = request.getValue();
+                                }
+
+                                @Override
+                                public void onHalfClose() {
+                                    Metadata trailers = new Metadata();
+                                    trailers.put(AUTHORITY_METADATA, call.getAuthority());
+                                    for (String value : metadataValues(headers)) {
+                                        trailers.put(TEXT_METADATA, value);
+                                    }
+                                    trailers.put(STATUS_DETAILS, headers.get(BINARY_METADATA));
+                                    if (!"trailers-only".equals(mode)) {
+                                        Metadata responseHeaders = new Metadata();
+                                        for (String value : metadataValues(headers)) {
+                                            responseHeaders.put(TEXT_METADATA, value);
+                                        }
+                                        responseHeaders.put(
+                                                BINARY_METADATA, headers.get(BINARY_METADATA));
+                                        call.sendHeaders(responseHeaders);
+                                    }
+                                    if ("success".equals(mode) || "late-error".equals(mode)) {
+                                        call.sendMessage(StringValue.of("delivered"));
+                                    }
+                                    call.close(
+                                            "trailers-only".equals(mode)
+                                                            || "late-error".equals(mode)
+                                                    ? Status.PERMISSION_DENIED.withDescription(
+                                                            "native-error")
+                                                    : Status.OK,
+                                            trailers);
+                                }
+                            };
+                        })
+                .build();
+    }
+
+    private static List<String> metadataValues(Metadata metadata) {
+        Iterable<String> values = metadata.getAll(TEXT_METADATA);
+        return values == null
+                ? List.of()
+                : java.util.stream.StreamSupport.stream(values.spliterator(), false).toList();
+    }
+
+    private record CallObservation(
+            List<String> messages,
+            Metadata headers,
+            Metadata trailers,
+            Status status,
+            int terminals) {}
+
+    private static CallObservation observeCall(
+            ManagedChannel channel, String mode, Metadata headers) throws InterruptedException {
+        var call = channel.newCall(CONTROL_METHOD, CallOptions.DEFAULT);
+        List<String> messages = new java.util.concurrent.CopyOnWriteArrayList<>();
+        AtomicReference<Metadata> initial = new AtomicReference<>(new Metadata());
+        AtomicReference<Metadata> trailers = new AtomicReference<>();
+        AtomicReference<Status> status = new AtomicReference<>();
+        AtomicInteger terminals = new AtomicInteger();
+        CountDownLatch done = new CountDownLatch(1);
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onHeaders(Metadata value) {
+                        initial.set(value);
+                    }
+
+                    @Override
+                    public void onMessage(StringValue message) {
+                        messages.add(message.getValue());
+                    }
+
+                    @Override
+                    public void onClose(Status value, Metadata metadata) {
+                        terminals.incrementAndGet();
+                        status.set(value);
+                        trailers.set(metadata);
+                        done.countDown();
+                    }
+                },
+                headers);
+        try {
+            call.request(2);
+            call.sendMessage(StringValue.of(mode));
+            call.halfClose();
+            assertTrue(done.await(5, TimeUnit.SECONDS), mode);
+            return new CallObservation(
+                    List.copyOf(messages),
+                    initial.get(),
+                    trailers.get(),
+                    status.get(),
+                    terminals.get());
+        } finally {
+            call.cancel("probe cleanup", null);
+        }
     }
 
     @Test
@@ -284,7 +665,10 @@ class GrpcSdkTransportSpikeTestCase {
                                         ECHO_METHOD,
                                         CallOptions.DEFAULT,
                                         StringValue.of("bad")));
-        assertEquals(Status.Code.INVALID_ARGUMENT, failure.getStatus().getCode());
+        assertEquals(
+                Status.Code.INVALID_ARGUMENT,
+                failure.getStatus().getCode(),
+                failure.getStatus().toString());
         assertEquals("2.0", lastGrpcResponseProtocol.get().getVersion());
 
         var stream =
@@ -708,8 +1092,11 @@ class GrpcSdkTransportSpikeTestCase {
                 Response response)
                 throws IOException {
             MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
-            SpikeServerCall<RequestT, ResponseT> serverCall = new SpikeServerCall<>(method, true);
+            SpikeServerCall<RequestT, ResponseT> serverCall =
+                    new SpikeServerCall<>(method, true, request.getHostRef().getAuthority());
             lastBidirectionalCall = serverCall;
+            response.setOnSent(
+                    (sentRequest, sentResponse) -> serverCall.responseWriterFinished.countDown());
             ServerCall.Listener<RequestT> listener =
                     definition
                             .getServerCallHandler()
@@ -754,11 +1141,7 @@ class GrpcSdkTransportSpikeTestCase {
                     new OutputRepresentation(GRPC_MEDIA_TYPE) {
                         @Override
                         public void write(OutputStream output) throws IOException {
-                            try {
-                                serverCall.writeStreamingResponse(response, output);
-                            } finally {
-                                serverCall.responseWriterFinished.countDown();
-                            }
+                            serverCall.writeStreamingResponse(response, output);
                         }
                     });
         }
@@ -771,7 +1154,8 @@ class GrpcSdkTransportSpikeTestCase {
                 throws IOException {
             MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
             Metadata requestHeaders = readMetadata(request.getHeaders());
-            SpikeServerCall<RequestT, ResponseT> serverCall = new SpikeServerCall<>(method);
+            SpikeServerCall<RequestT, ResponseT> serverCall =
+                    new SpikeServerCall<>(method, false, request.getHostRef().getAuthority());
             ServerCall.Listener<RequestT> listener =
                     definition.getServerCallHandler().startCall(serverCall, requestHeaders);
             if (listener == null) {
@@ -818,13 +1202,18 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final boolean streaming;
 
-        private SpikeServerCall(MethodDescriptor<RequestT, ResponseT> method) {
-            this(method, false);
-        }
+        private final String authority;
 
-        private SpikeServerCall(MethodDescriptor<RequestT, ResponseT> method, boolean streaming) {
+        private SpikeServerCall(
+                MethodDescriptor<RequestT, ResponseT> method, boolean streaming, String authority) {
             this.method = method;
             this.streaming = streaming;
+            this.authority = authority;
+        }
+
+        @Override
+        public String getAuthority() {
+            return authority;
         }
 
         @Override
@@ -899,7 +1288,7 @@ class GrpcSdkTransportSpikeTestCase {
             }
             response.setStatus(org.restlet.data.Status.SUCCESS_OK);
             writeMetadata(responseHeaders, response.getHeaders());
-            if (!responseMessages.isEmpty() && status.isOk()) {
+            if (!responseMessages.isEmpty()) {
                 ByteArrayOutputStream framedMessages = new ByteArrayOutputStream();
                 for (ResponseT responseMessage : responseMessages) {
                     try (InputStream payload = method.streamResponse(responseMessage)) {
@@ -1065,6 +1454,12 @@ class GrpcSdkTransportSpikeTestCase {
             if (!(address instanceof RestletSocketAddress restletAddress)) {
                 throw new IllegalArgumentException("Unsupported address: " + address);
             }
+            if (!new org.restlet.data.Reference(restletAddress.target)
+                    .getAuthority()
+                    .equals(options.getAuthority())) {
+                throw new UnsupportedOperationException(
+                        "R0 spike cannot separate connection address from HTTP/TLS authority");
+            }
             transport =
                     new RestletClientTransport(
                             client, restletAddress, options.getAuthority(), lastResponseProtocol);
@@ -1111,6 +1506,9 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final AtomicInteger activeStreams = new AtomicInteger();
 
+        private final Set<RestletClientStream> streams =
+                java.util.concurrent.ConcurrentHashMap.newKeySet();
+
         private final java.util.concurrent.atomic.AtomicBoolean terminated =
                 new java.util.concurrent.atomic.AtomicBoolean();
 
@@ -1150,6 +1548,9 @@ class GrpcSdkTransportSpikeTestCase {
         @Override
         public void shutdownNow(Status status) {
             shutdown(status);
+            for (RestletClientStream stream : Set.copyOf(streams)) {
+                stream.cancel(status);
+            }
         }
 
         @Override
@@ -1214,16 +1615,21 @@ class GrpcSdkTransportSpikeTestCase {
             return Attributes.EMPTY;
         }
 
-        private void streamStarted() {
+        private synchronized void streamStarted(RestletClientStream stream) {
+            streams.add(stream);
             if (activeStreams.getAndIncrement() == 0) {
                 Listener currentListener = listener;
                 if (currentListener != null) {
                     currentListener.transportInUse(true);
                 }
             }
+            if (shutdown) {
+                stream.cancel(Status.UNAVAILABLE.withDescription("Transport is shut down"));
+            }
         }
 
-        private void streamFinished() {
+        private synchronized void streamFinished(RestletClientStream stream) {
+            streams.remove(stream);
             if (activeStreams.decrementAndGet() == 0) {
                 Listener currentListener = listener;
                 if (currentListener != null) {
@@ -1258,9 +1664,9 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final AtomicReference<Protocol> lastResponseProtocol;
 
-        private final Runnable onStart;
+        private final java.util.function.Consumer<RestletClientStream> onStart;
 
-        private final Runnable onClose;
+        private final java.util.function.Consumer<RestletClientStream> onClose;
 
         private volatile ClientStreamListener listener;
 
@@ -1293,8 +1699,8 @@ class GrpcSdkTransportSpikeTestCase {
                 MethodDescriptor<?, ?> method,
                 Metadata requestMetadata,
                 AtomicReference<Protocol> lastResponseProtocol,
-                Runnable onStart,
-                Runnable onClose) {
+                java.util.function.Consumer<RestletClientStream> onStart,
+                java.util.function.Consumer<RestletClientStream> onClose) {
             this.client = client;
             this.address = address;
             this.authority = authority;
@@ -1308,7 +1714,10 @@ class GrpcSdkTransportSpikeTestCase {
         @Override
         public void start(ClientStreamListener listener) {
             this.listener = listener;
-            onStart.run();
+            onStart.accept(this);
+            if (closed) {
+                return;
+            }
             if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
                 try {
                     PipedInputStream input = new PipedInputStream(STREAM_PIPE_BUFFER_BYTES);
@@ -1605,27 +2014,29 @@ class GrpcSdkTransportSpikeTestCase {
                 if (statusMessage != null) {
                     status = status.withDescription(statusMessage);
                 }
-                if (!status.isOk()) {
-                    close(status, trailers);
-                    return;
+                if (response.getHeaders().getFirstValue("grpc-status", true) != null) {
+                    trailers.merge(readMetadata(response.getHeaders()));
+                } else {
+                    listener.headersRead(readMetadata(response.getHeaders()));
                 }
-                if (responsePayload == null) {
-                    throw new IOException("gRPC response did not contain a message");
-                }
-                listener.headersRead(readMetadata(response.getHeaders()));
-                List<byte[]> messages = unframeMessages(responsePayload, maxInboundMessageSize);
-                listener.messagesAvailable(
-                        new StreamListener.MessageProducer() {
-                            private int next;
+                List<byte[]> messages =
+                        responsePayload == null
+                                ? List.of()
+                                : unframeMessages(responsePayload, maxInboundMessageSize);
+                if (!messages.isEmpty()) {
+                    listener.messagesAvailable(
+                            new StreamListener.MessageProducer() {
+                                private int next;
 
-                            @Override
-                            public InputStream next() {
-                                if (next == messages.size()) {
-                                    return null;
+                                @Override
+                                public InputStream next() {
+                                    if (next == messages.size()) {
+                                        return null;
+                                    }
+                                    return new ByteArrayInputStream(messages.get(next++));
                                 }
-                                return new ByteArrayInputStream(messages.get(next++));
-                            }
-                        });
+                            });
+                }
                 close(status, ClientStreamListener.RpcProgress.PROCESSED, trailers);
             } catch (Exception e) {
                 close(
@@ -1647,7 +2058,7 @@ class GrpcSdkTransportSpikeTestCase {
                 try {
                     listener.closed(status, progress, trailers);
                 } finally {
-                    onClose.run();
+                    onClose.accept(this);
                 }
             }
         }
@@ -1800,7 +2211,7 @@ class GrpcSdkTransportSpikeTestCase {
 
     private static void writeMetadata(Metadata metadata, Series<Header> headers) {
         for (String name : metadata.keys()) {
-            if (name.startsWith("grpc-")) {
+            if (name.startsWith("grpc-") && !"grpc-status-details-bin".equals(name)) {
                 continue;
             }
             if (name.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
@@ -1838,7 +2249,8 @@ class GrpcSdkTransportSpikeTestCase {
                         "grpc-accept-encoding");
         for (Header header : headers) {
             String name = header.getName().toLowerCase(java.util.Locale.ROOT);
-            if (excluded.contains(name) || name.startsWith("grpc-")) {
+            if (excluded.contains(name)
+                    || (name.startsWith("grpc-") && !"grpc-status-details-bin".equals(name))) {
                 continue;
             }
             if (name.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
