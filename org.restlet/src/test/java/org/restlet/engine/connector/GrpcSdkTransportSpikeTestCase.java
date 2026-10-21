@@ -138,6 +138,10 @@ class GrpcSdkTransportSpikeTestCase {
 
     private final AtomicReference<Protocol> lastGrpcResponseProtocol = new AtomicReference<>();
 
+    private final CountDownLatch remoteCancellation = new CountDownLatch(1);
+
+    private final AtomicInteger remoteCancellationCount = new AtomicInteger();
+
     @BeforeEach
     void setUp() {
         Engine.clearThreadLocalVariables();
@@ -245,28 +249,7 @@ class GrpcSdkTransportSpikeTestCase {
                                                 }))
                         .addMethod(
                                 BIDI_STREAM_METHOD,
-                                ServerCalls.asyncBidiStreamingCall(
-                                        result ->
-                                                new io.grpc.stub.StreamObserver<>() {
-                                                    @Override
-                                                    public void onNext(StringValue value) {
-                                                        result.onNext(
-                                                                StringValue.of(
-                                                                        "echo:"
-                                                                                + value
-                                                                                        .getValue()));
-                                                    }
-
-                                                    @Override
-                                                    public void onError(Throwable error) {
-                                                        result.onError(error);
-                                                    }
-
-                                                    @Override
-                                                    public void onCompleted() {
-                                                        result.onCompleted();
-                                                    }
-                                                }))
+                                ServerCalls.asyncBidiStreamingCall(this::echoBidirectional))
                         .build();
         grpcServer = NettyServerBuilder.forPort(0).addService(service).build().start();
 
@@ -319,6 +302,10 @@ class GrpcSdkTransportSpikeTestCase {
         assertClientStreaming(channel);
         assertFullDuplexBidirectionalStreaming(channel);
         assertBidirectionalResponseDemand(channel);
+        assertActiveCancellation(channel);
+        RestletClientStream cancelledStream = transportFactory.transport.lastBidirectionalStream;
+        assertTrue(cancelledStream.responseReaderFinished.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelledStream.requestWriterFinished.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -383,28 +370,7 @@ class GrpcSdkTransportSpikeTestCase {
                                                 }))
                         .addMethod(
                                 BIDI_STREAM_METHOD,
-                                ServerCalls.asyncBidiStreamingCall(
-                                        result ->
-                                                new io.grpc.stub.StreamObserver<>() {
-                                                    @Override
-                                                    public void onNext(StringValue value) {
-                                                        result.onNext(
-                                                                StringValue.of(
-                                                                        "echo:"
-                                                                                + value
-                                                                                        .getValue()));
-                                                    }
-
-                                                    @Override
-                                                    public void onError(Throwable error) {
-                                                        result.onError(error);
-                                                    }
-
-                                                    @Override
-                                                    public void onCompleted() {
-                                                        result.onCompleted();
-                                                    }
-                                                }))
+                                ServerCalls.asyncBidiStreamingCall(this::echoBidirectional))
                         .build();
         Context serverContext = new Context();
         serverContext.getParameters().add("http.transport.protocol", "HTTP2");
@@ -453,6 +419,105 @@ class GrpcSdkTransportSpikeTestCase {
         assertClientStreaming(grpcClientChannel);
         assertFullDuplexBidirectionalStreaming(grpcClientChannel);
         assertBidirectionalResponseDemand(grpcClientChannel);
+        assertActiveCancellation(grpcClientChannel);
+        SpikeServerCall<?, ?> cancelledCall = adapter.lastBidirectionalCall;
+        assertTrue(cancelledCall.requestReaderFinished.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelledCall.responseWriterFinished.await(5, TimeUnit.SECONDS));
+    }
+
+    private io.grpc.stub.StreamObserver<StringValue> echoBidirectional(
+            io.grpc.stub.StreamObserver<StringValue> result) {
+        if (!(result instanceof io.grpc.stub.ServerCallStreamObserver<?> serverObserver)) {
+            throw new IllegalStateException("The SDK did not supply a server call observer");
+        }
+        serverObserver.setOnCancelHandler(
+                () -> {
+                    remoteCancellationCount.incrementAndGet();
+                    remoteCancellation.countDown();
+                });
+        return new io.grpc.stub.StreamObserver<>() {
+            @Override
+            public void onNext(StringValue value) {
+                result.onNext(StringValue.of("echo:" + value.getValue()));
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                if (!serverObserver.isCancelled()) {
+                    result.onError(error);
+                }
+            }
+
+            @Override
+            public void onCompleted() {
+                result.onCompleted();
+            }
+        };
+    }
+
+    private void assertActiveCancellation(ManagedChannel channel) throws InterruptedException {
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicInteger terminalCount = new AtomicInteger();
+        AtomicReference<Status> terminalStatus = new AtomicReference<>();
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        firstResponse.countDown();
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        terminalStatus.set(status);
+                        terminalCount.incrementAndGet();
+                        closed.countDown();
+                    }
+                },
+                new Metadata());
+        try {
+            call.request(1);
+            call.sendMessage(StringValue.of("cancel-me"));
+            assertTrue(firstResponse.await(5, TimeUnit.SECONDS));
+            call.cancel("R0 active-stream cancellation", null);
+            assertTrue(closed.await(5, TimeUnit.SECONDS));
+            assertEquals(Status.Code.CANCELLED, terminalStatus.get().getCode());
+            assertTrue(
+                    remoteCancellation.await(5, TimeUnit.SECONDS),
+                    "Cancellation must reach the remote SDK service without request half-close");
+            call.cancel("Repeated R0 cancellation", null);
+            assertEquals(
+                    "echo:after-cancel",
+                    ClientCalls.blockingUnaryCall(
+                                    channel,
+                                    ECHO_METHOD,
+                                    CallOptions.DEFAULT,
+                                    StringValue.of("after-cancel"))
+                            .getValue());
+            assertEquals(1, terminalCount.get());
+            assertEquals(1, remoteCancellationCount.get());
+        } finally {
+            call.cancel("R0 cancellation probe cleanup", null);
+        }
+    }
+
+    @Test
+    void closingDemandReleasesBlockedReceiver() throws Exception {
+        MessageDemand demand = new MessageDemand();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var receiver = executor.submit(demand::acquire);
+            try {
+                assertTrue(demand.waiting.await(5, TimeUnit.SECONDS));
+                assertFalse(receiver.isDone());
+            } finally {
+                demand.close();
+            }
+            assertFalse(receiver.get(5, TimeUnit.SECONDS));
+            demand.request(1);
+            assertFalse(demand.acquire(), "Closed demand must not reopen after another request");
+        }
     }
 
     private static void assertClientStreaming(ManagedChannel channel) throws InterruptedException {
@@ -587,6 +652,8 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final ServerServiceDefinition service;
 
+        private volatile SpikeServerCall<?, ?> lastBidirectionalCall;
+
         private final java.util.concurrent.atomic.AtomicReference<String> lastRequestProtocol =
                 new java.util.concurrent.atomic.AtomicReference<>();
 
@@ -642,6 +709,7 @@ class GrpcSdkTransportSpikeTestCase {
                 throws IOException {
             MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
             SpikeServerCall<RequestT, ResponseT> serverCall = new SpikeServerCall<>(method, true);
+            lastBidirectionalCall = serverCall;
             ServerCall.Listener<RequestT> listener =
                     definition
                             .getServerCallHandler()
@@ -675,15 +743,22 @@ class GrpcSdkTransportSpikeTestCase {
                             }
                             listener.onHalfClose();
                         } catch (Exception e) {
-                            listener.onCancel();
+                            serverCall.cancelled = true;
                             serverCall.close(Status.fromThrowable(e), new Metadata());
+                            listener.onCancel();
+                        } finally {
+                            serverCall.requestReaderFinished.countDown();
                         }
                     });
             response.setEntity(
                     new OutputRepresentation(GRPC_MEDIA_TYPE) {
                         @Override
                         public void write(OutputStream output) throws IOException {
-                            serverCall.writeStreamingResponse(response, output);
+                            try {
+                                serverCall.writeStreamingResponse(response, output);
+                            } finally {
+                                serverCall.responseWriterFinished.countDown();
+                            }
                         }
                     });
         }
@@ -729,9 +804,15 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final CountDownLatch closed = new CountDownLatch(1);
 
+        private final CountDownLatch requestReaderFinished = new CountDownLatch(1);
+
+        private final CountDownLatch responseWriterFinished = new CountDownLatch(1);
+
         private final MessageDemand requestDemand = new MessageDemand();
 
         private volatile Status status;
+
+        private volatile boolean cancelled;
 
         private volatile Metadata trailers = new Metadata();
 
@@ -790,7 +871,7 @@ class GrpcSdkTransportSpikeTestCase {
 
         @Override
         public boolean isCancelled() {
-            return false;
+            return cancelled;
         }
 
         @Override
@@ -904,6 +985,8 @@ class GrpcSdkTransportSpikeTestCase {
 
     private static final class MessageDemand {
 
+        private final CountDownLatch waiting = new CountDownLatch(1);
+
         private long permits;
 
         private boolean closed;
@@ -921,6 +1004,7 @@ class GrpcSdkTransportSpikeTestCase {
         private synchronized boolean acquire() throws IOException {
             while (permits == 0 && !closed) {
                 try {
+                    waiting.countDown();
                     wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -953,6 +1037,8 @@ class GrpcSdkTransportSpikeTestCase {
 
     private static final class RestletTransportFactory implements ClientTransportFactory {
 
+        private volatile RestletClientTransport transport;
+
         private final Client client;
 
         private final AtomicReference<Protocol> lastResponseProtocol;
@@ -979,8 +1065,10 @@ class GrpcSdkTransportSpikeTestCase {
             if (!(address instanceof RestletSocketAddress restletAddress)) {
                 throw new IllegalArgumentException("Unsupported address: " + address);
             }
-            return new RestletClientTransport(
-                    client, restletAddress, options.getAuthority(), lastResponseProtocol);
+            transport =
+                    new RestletClientTransport(
+                            client, restletAddress, options.getAuthority(), lastResponseProtocol);
+            return transport;
         }
 
         @Override
@@ -1007,6 +1095,8 @@ class GrpcSdkTransportSpikeTestCase {
     }
 
     private static final class RestletClientTransport implements ConnectionClientTransport {
+
+        private volatile RestletClientStream lastBidirectionalStream;
 
         private final Client client;
 
@@ -1082,15 +1172,20 @@ class GrpcSdkTransportSpikeTestCase {
                 throw new UnsupportedOperationException(
                         "R0 SPI probe does not support call credentials or compression");
             }
-            return new RestletClientStream(
-                    client,
-                    address,
-                    authority,
-                    method,
-                    headers,
-                    lastResponseProtocol,
-                    this::streamStarted,
-                    this::streamFinished);
+            RestletClientStream stream =
+                    new RestletClientStream(
+                            client,
+                            address,
+                            authority,
+                            method,
+                            headers,
+                            lastResponseProtocol,
+                            this::streamStarted,
+                            this::streamFinished);
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                lastBidirectionalStream = stream;
+            }
+            return stream;
         }
 
         @Override
@@ -1175,6 +1270,10 @@ class GrpcSdkTransportSpikeTestCase {
 
         private final MessageDemand responseDemand = new MessageDemand();
 
+        private final CountDownLatch requestWriterFinished = new CountDownLatch(1);
+
+        private final CountDownLatch responseReaderFinished = new CountDownLatch(1);
+
         private volatile PipedInputStream bidirectionalRequestInput;
 
         private volatile PipedOutputStream bidirectionalRequestOutput;
@@ -1234,20 +1333,20 @@ class GrpcSdkTransportSpikeTestCase {
 
         @Override
         public void cancel(Status reason) {
-            Status cancellation = reason;
+            close(reason, new Metadata());
+            Request request = activeRequest;
+            if (request != null) {
+                request.abort();
+            }
             PipedOutputStream requestOutput = bidirectionalRequestOutput;
             if (requestOutput != null) {
                 try {
                     requestOutput.close();
                 } catch (IOException e) {
-                    cancellation = reason.withCause(e);
+                    throw new IllegalStateException(
+                            "Unable to close cancelled gRPC request pipe", e);
                 }
             }
-            Request request = activeRequest;
-            if (request != null) {
-                request.abort();
-            }
-            close(cancellation, new Metadata());
         }
 
         @Override
@@ -1326,14 +1425,18 @@ class GrpcSdkTransportSpikeTestCase {
                         new OutputRepresentation(GRPC_MEDIA_TYPE) {
                             @Override
                             public void write(OutputStream output) throws IOException {
-                                byte[] payload;
-                                while ((payload =
-                                                readGrpcMessage(
-                                                        bidirectionalRequestInput,
-                                                        maxOutboundMessageSize))
-                                        != null) {
-                                    output.write(frame(payload));
-                                    output.flush();
+                                try {
+                                    byte[] payload;
+                                    while ((payload =
+                                                    readGrpcMessage(
+                                                            bidirectionalRequestInput,
+                                                            maxOutboundMessageSize))
+                                            != null) {
+                                        output.write(frame(payload));
+                                        output.flush();
+                                    }
+                                } finally {
+                                    requestWriterFinished.countDown();
                                 }
                             }
                         };
@@ -1343,6 +1446,9 @@ class GrpcSdkTransportSpikeTestCase {
                                 address.target + "/" + method.getFullMethodName(),
                                 requestEntity);
                 activeRequest = request;
+                if (closed) {
+                    return;
+                }
                 request.getHeaders().add("te", "trailers");
                 writeMetadata(requestMetadata, request.getHeaders());
                 response = client.handle(request);
@@ -1421,6 +1527,7 @@ class GrpcSdkTransportSpikeTestCase {
                 if (response != null && response.getEntity() != null) {
                     response.getEntity().release();
                 }
+                responseReaderFinished.countDown();
             }
         }
 

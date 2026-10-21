@@ -67,7 +67,15 @@ HTTP/2 client/server connectors and the SDK APIs. The transport adapters and gRP
 test-only. The client bridge honors SDK receive credits and the probe confirms the second response
 is withheld until another message is requested; both bridge directions hold at most one already
 framed message beyond the available credit. This is a bounded SDK-demand probe, not complete HTTP/2
-or gRPC flow-control conformance. Cancellation and long-lived stream lifecycle remain untested.
+or gRPC flow-control conformance.
+
+Active bidi cancellation is now exercised in both directions after the first response, while the
+request stream remains open. The client observes `CANCELLED` once, the remote SDK cancellation
+handler runs once, both bridge I/O workers finish, and a subsequent unary call succeeds on the same
+channel. The client bridge records cancellation before aborting HTTP I/O so an abort failure cannot
+replace the cancellation status. A separate regression verifies that closing demand wakes a blocked
+receiver and does not reopen on later credits. Pre-header cancellation races, server-initiated
+cancellation, and long-lived stream lifecycle remain outside this bounded probe.
 
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):
@@ -87,8 +95,9 @@ prototype over Restlet HTTP/2; this compares MCP semantics, not transport implem
 The reference process is stopped after the test. Startup failures fail the test rather than
 falling back to recorded responses.
 
-Without the opt-in properties, eleven tests pass and the live comparison is skipped; with them,
-all twelve run. Recorded and live reports are written separately under `org.restlet/target` as
+Without the opt-in properties, twelve tests pass and the live comparison is skipped; with them,
+all thirteen run. Add `Http2FullDuplexTestCase,Http2CancellationTestCase` to the selector to include
+the two core connector regressions. Recorded and live reports are written separately under `org.restlet/target` as
 `mcp-ikanos-recorded.json` and `mcp-ikanos-differential.json`; reference-process logs are kept in
 per-run `mcp-ikanos-*` directories there. Review changed observations explicitly before updating
 the checked-in baseline. No Ikanos or additional production dependency is added to Restlet.
