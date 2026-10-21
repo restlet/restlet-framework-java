@@ -12,6 +12,55 @@ Restlet applications run directly in JVMs with minimal dependencies, resulting i
 
 ![](https://avatars.githubusercontent.com/u/374452?s=400&u=191f2eada671b2a07f61782cf638bdda0ccb6d3f&v=4)
 
+## R0 SDK interoperability probes
+
+The MCP and gRPC interoperability spikes are **test-only**, not production RPC extensions.
+Run the focused suite from the repository root:
+
+```powershell
+.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' test
+```
+
+The MCP suite compares a 20-request corpus with
+[recorded Ikanos responses](org.restlet/src/test/resources/mcp-ikanos/observations.json).
+These observations were verified against Ikanos commit
+`3f4532efebd237498f6e253f0277e213d5995623` with its own dependencies.
+Full status/body snapshots and JSON-pointer difference paths are asserted, not just error codes.
+JSON object ordering is ignored; response fields, error messages and absent fields are not removed.
+All cases assert that neither endpoint creates an MCP session.
+
+Eight header/version rejection cases match exactly. Twelve cases have explicit differences:
+Ikanos adds server metadata and list-cache fields, has different unknown-tool error details and
+dispatch-error HTTP statuses, implements discovery and legacy-initialize rejection, and emits
+JSON-RPC parse errors and GET/DELETE response text that the prototype lacks.
+Tool content, `isError` and `resultType` match, but the complete tool responses do not.
+A passing differential test means these observations are unchanged, **not** that the endpoints
+are equivalent. Ikanos migration remains deferred.
+
+To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
+reference revision, then run the following PowerShell commands (adjust the checkout path):
+
+```powershell
+$ikanos = (Resolve-Path '..\ikanos').Path
+$classpath = Join-Path (Get-Location) 'org.restlet\target\ikanos-classpath.txt'
+mvn -f "$ikanos\pom.xml" -pl modules\ikanos-engine -am compile
+mvn -f "$ikanos\pom.xml" -pl modules\ikanos-engine dependency:build-classpath "-Dmdep.outputFile=$classpath" -DincludeScope=test
+.\mvnw.cmd -pl org.restlet '-Dtest=GrpcSdkTransportSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase' "-Drestlet.mcp.ikanos.home=$ikanos" "-Drestlet.mcp.ikanos.classpathFile=$classpath" test
+```
+
+The opt-in test source-launches a separate JVM with Ikanos' classpath. It boots a real capability
+and MCP HTTP endpoint plus a deterministic loopback upstream; it does not replace Ikanos'
+resource, dispatcher or tool handler with mocks. The reference is called over HTTP/1.1 and the
+prototype over Restlet HTTP/2; this compares MCP semantics, not transport implementation parity.
+The reference process is stopped after the test. Startup failures fail the test rather than
+falling back to recorded responses.
+
+Without the opt-in properties, nine tests pass and the live comparison is skipped; with them,
+all ten run. Recorded and live reports are written separately under `org.restlet/target` as
+`mcp-ikanos-recorded.json` and `mcp-ikanos-differential.json`; reference-process logs are kept in
+per-run `mcp-ikanos-*` directories there. Review changed observations explicitly before updating
+the checked-in baseline. No Ikanos or additional production dependency is added to Restlet.
+
 ## Learn more
 
 To learn more about Restlet Framework, please have a look at the following resources:
