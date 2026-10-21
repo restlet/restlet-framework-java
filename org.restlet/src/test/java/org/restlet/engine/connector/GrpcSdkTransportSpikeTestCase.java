@@ -109,6 +109,14 @@ class GrpcSdkTransportSpikeTestCase {
                     .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
                     .build();
 
+    private static final MethodDescriptor<StringValue, StringValue> BIDI_STREAM_METHOD =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/BidiStream")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+
     private Client client;
 
     private io.grpc.Server grpcServer;
@@ -226,6 +234,30 @@ class GrpcSdkTransportSpikeTestCase {
                                                         result.onCompleted();
                                                     }
                                                 }))
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        result ->
+                                                new io.grpc.stub.StreamObserver<>() {
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        result.onNext(
+                                                                StringValue.of(
+                                                                        "echo:"
+                                                                                + value
+                                                                                        .getValue()));
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable error) {
+                                                        result.onError(error);
+                                                    }
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        result.onCompleted();
+                                                    }
+                                                }))
                         .build();
         grpcServer = NettyServerBuilder.forPort(0).addService(service).build().start();
 
@@ -276,6 +308,7 @@ class GrpcSdkTransportSpikeTestCase {
                         .toList());
 
         assertClientStreaming(channel);
+        assertBufferedBidirectionalStreaming(channel);
     }
 
     @Test
@@ -338,6 +371,30 @@ class GrpcSdkTransportSpikeTestCase {
                                                         result.onCompleted();
                                                     }
                                                 }))
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        result ->
+                                                new io.grpc.stub.StreamObserver<>() {
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        result.onNext(
+                                                                StringValue.of(
+                                                                        "echo:"
+                                                                                + value
+                                                                                        .getValue()));
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable error) {
+                                                        result.onError(error);
+                                                    }
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        result.onCompleted();
+                                                    }
+                                                }))
                         .build();
         Context serverContext = new Context();
         serverContext.getParameters().add("http.transport.protocol", "HTTP2");
@@ -384,6 +441,7 @@ class GrpcSdkTransportSpikeTestCase {
                         .toList());
 
         assertClientStreaming(grpcClientChannel);
+        assertBufferedBidirectionalStreaming(grpcClientChannel);
     }
 
     private static void assertClientStreaming(ManagedChannel channel) throws InterruptedException {
@@ -418,6 +476,41 @@ class GrpcSdkTransportSpikeTestCase {
             throw new AssertionError("gRPC client-streaming request failed", failure.get());
         }
         assertEquals("first,second", response.get().getValue());
+    }
+
+    private static void assertBufferedBidirectionalStreaming(ManagedChannel channel)
+            throws InterruptedException {
+        CountDownLatch closed = new CountDownLatch(1);
+        List<String> responses = new ArrayList<>();
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        var request =
+                ClientCalls.asyncBidiStreamingCall(
+                        channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT),
+                        new io.grpc.stub.StreamObserver<>() {
+                            @Override
+                            public void onNext(StringValue value) {
+                                responses.add(value.getValue());
+                            }
+
+                            @Override
+                            public void onError(Throwable error) {
+                                failure.set(error);
+                                closed.countDown();
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                closed.countDown();
+                            }
+                        });
+        request.onNext(StringValue.of("first"));
+        request.onNext(StringValue.of("second"));
+        request.onCompleted();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        if (failure.get() != null) {
+            throw new AssertionError("gRPC bidirectional streaming request failed", failure.get());
+        }
+        assertEquals(List.of("echo:first", "echo:second"), responses);
     }
 
     private static final class RestletGrpcServer extends org.restlet.Restlet {
@@ -724,9 +817,10 @@ class GrpcSdkTransportSpikeTestCase {
             }
             if (method.getType() != MethodDescriptor.MethodType.UNARY
                     && method.getType() != MethodDescriptor.MethodType.SERVER_STREAMING
-                    && method.getType() != MethodDescriptor.MethodType.CLIENT_STREAMING) {
+                    && method.getType() != MethodDescriptor.MethodType.CLIENT_STREAMING
+                    && method.getType() != MethodDescriptor.MethodType.BIDI_STREAMING) {
                 throw new UnsupportedOperationException(
-                        "R0 SPI probe does not support bidirectional streaming");
+                        "Unsupported gRPC method type: " + method.getType());
             }
             if (callOptions.getCredentials() != null || callOptions.getCompressor() != null) {
                 throw new UnsupportedOperationException(

@@ -58,6 +58,12 @@ compatibility seam, not SDK replay: `McpStreamableServerSession.replay` is empty
 The probe does not establish production SSE lifecycle, reconnection, or full Streamable HTTP
 conformance.
 
+The gRPC probes now also invoke SDK `BIDI_STREAMING` methods in both directions and exchange two
+request/response messages. This validates SDK service/method handling and framing for the finite
+exchange only. The Restlet-backed client buffers request messages until half-close, and the
+Restlet-hosted server dispatches buffered requests before writing responses; this is **not**
+full-duplex streaming or evidence of gRPC flow control, demand, or cancellation.
+
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):
 
