@@ -9,10 +9,12 @@
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
@@ -22,6 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransport;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
+import io.modelcontextprotocol.spec.ProtocolVersions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -155,6 +158,20 @@ class McpStreamableSdkTransportSpikeTestCase {
         assertEquals(3, transport.postCount.get());
         assertEquals("2.0", clientTransport.lastResponseProtocol.get().getVersion());
         assertTrue(clientTransport.sawEventStreamResponse.get());
+    }
+
+    @Test
+    void pinnedSdkDoesNotAdvertiseIkanosProtocolRevision() {
+        HttpClientStreamableHttpTransport transport =
+                HttpClientStreamableHttpTransport.builder("http://localhost/mcp")
+                        .jsonMapper(McpJsonDefaults.getMapper())
+                        .build();
+        try {
+            assertTrue(transport.protocolVersions().contains(ProtocolVersions.MCP_2025_11_25));
+            assertFalse(transport.protocolVersions().contains("2026-07-28"));
+        } finally {
+            transport.closeGracefully().block(REQUEST_TIMEOUT);
+        }
     }
 
     private static final class RestletStreamableTransport extends Restlet
