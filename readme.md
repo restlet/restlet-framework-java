@@ -24,18 +24,31 @@ Run the focused suite from the repository root:
 The MCP suite compares a 20-request corpus with
 [recorded Ikanos responses](org.restlet/src/test/resources/mcp-ikanos/observations.json).
 These observations were verified against Ikanos commit
-`3f4532efebd237498f6e253f0277e213d5995623` with its own dependencies.
+`3f4532efebd237498f6e253f0277e213d5995623`, then revalidated at
+`932f2322d7dcf4ec973f650f3daf5e9ddf1b4c71`, with its own dependencies.
 Full status/body snapshots and JSON-pointer difference paths are asserted, not just error codes.
 JSON object ordering is ignored; response fields, error messages and absent fields are not removed.
 All cases assert that neither endpoint creates an MCP session.
 
-Eight header/version rejection cases match exactly. Twelve cases have explicit differences:
-Ikanos adds server metadata and list-cache fields, has different unknown-tool error details and
-dispatch-error HTTP statuses, implements discovery and legacy-initialize rejection, and emits
-JSON-RPC parse errors and GET/DELETE response text that the prototype lacks.
-Tool content, `isError` and `resultType` match, but the complete tool responses do not.
-A passing differential test means these observations are unchanged, **not** that the endpoints
-are equivalent. Ikanos migration remains deferred.
+After the compatibility follow-up, **19 cases match exactly**. The test-only bridge adds
+fixture-specific server/cache metadata, discovery, legacy-initialize rejection, unknown-tool
+error adaptation, dispatch-error HTTP mapping, parse-error envelopes, and GET/DELETE response
+text. Normal tools still dispatch through the SDK; only the profile-specific discovery and
+legacy-initialize behavior bypass it. Unknown-tool adaptation matches only the pinned SDK's
+specific error data, not every invalid-params failure.
+
+**One explicit difference remains:** malformed-JSON diagnostic text from Jackson 2 versus
+Ikanos' Jackson 3. Both responses now use HTTP 400, `-32700` and `id: null`; only
+`/body/error/message` differs. The snapshots assert both exact messages and do not normalize
+them or synthesize Jackson 3 diagnostics.
+
+A regression test demonstrates that SDK 2.1.0's `JSONRPCResponse` rejects null IDs. The parse-error
+path therefore uses an explicit null-ID envelope with the SDK's error type and JSON mapper.
+This is a measured compatibility exception, not a general replacement codec or dispatcher.
+A passing differential test means these bounded observations are unchanged, **not** full profile
+equivalence. Metadata/discovery are specific to the tools fixture; other methods, notifications,
+identity/capability checks and production lifecycle are not validated. Ikanos migration remains
+deferred.
 
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):
@@ -55,8 +68,8 @@ prototype over Restlet HTTP/2; this compares MCP semantics, not transport implem
 The reference process is stopped after the test. Startup failures fail the test rather than
 falling back to recorded responses.
 
-Without the opt-in properties, nine tests pass and the live comparison is skipped; with them,
-all ten run. Recorded and live reports are written separately under `org.restlet/target` as
+Without the opt-in properties, ten tests pass and the live comparison is skipped; with them,
+all eleven run. Recorded and live reports are written separately under `org.restlet/target` as
 `mcp-ikanos-recorded.json` and `mcp-ikanos-differential.json`; reference-process logs are kept in
 per-run `mcp-ikanos-*` directories there. Review changed observations explicitly before updating
 the checked-in baseline. No Ikanos or additional production dependency is added to Restlet.
