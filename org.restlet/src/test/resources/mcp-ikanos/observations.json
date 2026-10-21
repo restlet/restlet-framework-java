@@ -1,0 +1,102 @@
+{
+  "list": {
+    "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"tools":[{"name":"echo","description":"Returns the supplied text","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"tools":[{"name":"echo","description":"Returns the supplied text","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
+  },
+  "call": {
+    "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
+  },
+  "tool-error": {
+    "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:fail"}],"isError":true,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:fail"}],"isError":true,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
+  },
+  "encoded-name": {
+    "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"echo:profile"}],"isError":false,"resultType":"complete","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
+  },
+  "missing-method": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Method"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Method"}}},
+    "differences": []
+  },
+  "mismatched-method": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: Mcp-Method header value 'tools/list' does not match body value 'tools/call'"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: Mcp-Method header value 'tools/list' does not match body value 'tools/call'"}}},
+    "differences": []
+  },
+  "missing-version": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: MCP-Protocol-Version"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: MCP-Protocol-Version"}}},
+    "differences": []
+  },
+  "mismatched-version": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: MCP-Protocol-Version header value '2025-11-25' does not match body value '2026-07-28'"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: MCP-Protocol-Version header value '2025-11-25' does not match body value '2026-07-28'"}}},
+    "differences": []
+  },
+  "missing-name": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Name"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Missing mandatory header: Mcp-Name"}}},
+    "differences": []
+  },
+  "mismatched-name": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: Mcp-Name header value 'other' does not match body value 'echo'"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"Header mismatch: Mcp-Name header value 'other' does not match body value 'echo'"}}},
+    "differences": []
+  },
+  "invalid-base64": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"The value of the header Mcp-Name contains invalid characters"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32020,"message":"The value of the header Mcp-Name contains invalid characters"}}},
+    "differences": []
+  },
+  "unsupported-version": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
+    "differences": []
+  },
+  "unknown-tool": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32602,"message":"Invalid params: Unknown tool: missing"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32602,"message":"Invalid params: Unknown tool: missing"}}},
+    "differences": []
+  },
+  "unknown-method": {
+    "reference": {"status":404,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: unknown"}}},
+    "prototype": {"status":404,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32601,"message":"Method not found: unknown"}}},
+    "differences": []
+  },
+  "discovery": {
+    "reference": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"supportedVersions":["2026-07-28"],"capabilities":{"tools":{}},"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "prototype": {"status":200,"body":{"jsonrpc":"2.0","id":17,"result":{"supportedVersions":["2026-07-28"],"capabilities":{"tools":{}},"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"restlet-r0-reference","version":"unspecified"}}}}},
+    "differences": []
+  },
+  "legacy-initialize": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version 2025-11-25: this server supports only MCP 2026-07-28, which has no initialize handshake","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":17,"error":{"code":-32022,"message":"Unsupported protocol version 2025-11-25: this server supports only MCP 2026-07-28, which has no initialize handshake","data":{"supported":["2026-07-28"],"requested":"2025-11-25"}}}},
+    "differences": []
+  },
+  "malformed-json": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN]"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]"}}},
+    "differences": ["/body/error/message"]
+  },
+  "empty-body": {
+    "reference": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: empty body"}}},
+    "prototype": {"status":400,"body":{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error: empty body"}}},
+    "differences": []
+  },
+  "GET": {
+    "reference": {"status":405,"body":"GET not supported"},
+    "prototype": {"status":405,"body":"GET not supported"},
+    "differences": []
+  },
+  "DELETE": {
+    "reference": {"status":405,"body":"DELETE not supported"},
+    "prototype": {"status":405,"body":"DELETE not supported"},
+    "differences": []
+  }
+}

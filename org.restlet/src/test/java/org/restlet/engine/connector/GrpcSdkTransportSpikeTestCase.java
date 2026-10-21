@@ -1,0 +1,2269 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+package org.restlet.engine.connector;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.protobuf.StringValue;
+import io.grpc.Attributes;
+import io.grpc.CallOptions;
+import io.grpc.ChannelLogger;
+import io.grpc.ClientCall;
+import io.grpc.Deadline;
+import io.grpc.InternalChannelz;
+import io.grpc.InternalLogId;
+import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
+import io.grpc.ServerCall;
+import io.grpc.ServerMethodDefinition;
+import io.grpc.ServerServiceDefinition;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.internal.ClientStream;
+import io.grpc.internal.ClientStreamListener;
+import io.grpc.internal.ClientTransportFactory;
+import io.grpc.internal.ConnectionClientTransport;
+import io.grpc.internal.InsightBuilder;
+import io.grpc.internal.ManagedChannelImplBuilder;
+import io.grpc.internal.StreamListener;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.protobuf.ProtoUtils;
+import io.grpc.stub.ClientCalls;
+import io.grpc.stub.ServerCalls;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Server;
+import org.restlet.data.Header;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.util.Series;
+
+class GrpcSdkTransportSpikeTestCase {
+
+    private static final int MAX_MESSAGE_BYTES = 1024 * 1024;
+
+    private static final int MAX_STREAM_BYTES = 4 * MAX_MESSAGE_BYTES;
+
+    private static final int STREAM_PIPE_BUFFER_BYTES = 64 * 1024;
+
+    private static final MediaType GRPC_MEDIA_TYPE = new MediaType("application/grpc");
+
+    private static final MethodDescriptor<StringValue, StringValue> ECHO_METHOD =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.UNARY)
+                    .setFullMethodName("restlet.r0.Echo/Echo")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+
+    private static final MethodDescriptor<StringValue, StringValue> STREAM_METHOD =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/Stream")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+
+    private static final MethodDescriptor<StringValue, StringValue> CLIENT_STREAM_METHOD =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.CLIENT_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/ClientStream")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+
+    private static final MethodDescriptor<StringValue, StringValue> BIDI_STREAM_METHOD =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/BidiStream")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+
+    private static final MethodDescriptor<StringValue, StringValue> CONTROL_METHOD =
+            ECHO_METHOD.toBuilder()
+                    .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
+                    .setFullMethodName("restlet.r0.Echo/Control")
+                    .build();
+
+    private static final Metadata.Key<String> TEXT_METADATA =
+            Metadata.Key.of("x-r0-text", Metadata.ASCII_STRING_MARSHALLER);
+
+    private static final Metadata.Key<byte[]> BINARY_METADATA =
+            Metadata.Key.of("x-r0-bin", Metadata.BINARY_BYTE_MARSHALLER);
+
+    private static final Metadata.Key<byte[]> STATUS_DETAILS =
+            Metadata.Key.of("grpc-status-details-bin", Metadata.BINARY_BYTE_MARSHALLER);
+
+    private static final Metadata.Key<String> AUTHORITY_METADATA =
+            Metadata.Key.of("x-r0-authority", Metadata.ASCII_STRING_MARSHALLER);
+
+    private Client client;
+
+    private io.grpc.Server grpcServer;
+
+    private ManagedChannel grpcClientChannel;
+
+    private Server restletServer;
+
+    private ManagedChannel channel;
+
+    private final AtomicReference<Protocol> lastGrpcResponseProtocol = new AtomicReference<>();
+
+    private final CountDownLatch remoteCancellation = new CountDownLatch(1);
+
+    private final AtomicInteger remoteCancellationCount = new AtomicInteger();
+
+    private RestletTransportFactory interopFactory;
+
+    private RestletGrpcServer interopServer;
+
+    @BeforeEach
+    void setUp() {
+        Engine.clearThreadLocalVariables();
+        Engine.register(false);
+        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
+        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (channel != null) {
+            channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
+        if (client != null) {
+            client.stop();
+        }
+        if (grpcClientChannel != null) {
+            grpcClientChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
+        if (restletServer != null) {
+            restletServer.stop();
+        }
+        if (grpcServer != null) {
+            grpcServer.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
+        Engine.clearThreadLocalVariables();
+    }
+
+    @Test
+    void rejectsUnsupportedTransportControlsExplicitly() throws Exception {
+        client = new Client(Protocol.HTTP);
+        RestletTransportFactory factory =
+                new RestletTransportFactory(client, lastGrpcResponseProtocol);
+        try {
+            var transport =
+                    factory.newClientTransport(
+                            new RestletSocketAddress("http://localhost:1"),
+                            new ClientTransportFactory.ClientTransportOptions()
+                                    .setAuthority("localhost:1"),
+                            null);
+            var stream =
+                    transport.newStream(
+                            ECHO_METHOD,
+                            new Metadata(),
+                            CallOptions.DEFAULT,
+                            new io.grpc.ClientStreamTracer[0]);
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setAuthority("other.example"));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setDeadline(Deadline.after(1, TimeUnit.SECONDS)));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> stream.setCompressor(new io.grpc.Codec.Gzip()));
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () ->
+                            factory.newClientTransport(
+                                    new java.net.InetSocketAddress("localhost", 1),
+                                    new ClientTransportFactory.ClientTransportOptions(),
+                                    null));
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () ->
+                            factory.newClientTransport(
+                                    new RestletSocketAddress("http://localhost:1"),
+                                    new ClientTransportFactory.ClientTransportOptions()
+                                            .setAuthority("virtual.example:1"),
+                                    null));
+            AtomicReference<Status> pingFailure = new AtomicReference<>();
+            transport.ping(
+                    new io.grpc.internal.ClientTransport.PingCallback() {
+                        @Override
+                        public void onSuccess(long roundTripTimeNanos) {
+                            throw new AssertionError("The probe must not pretend to support PING");
+                        }
+
+                        @Override
+                        public void onFailure(Status cause) {
+                            pingFailure.set(cause);
+                        }
+                    },
+                    Runnable::run);
+            assertEquals(Status.Code.UNIMPLEMENTED, pingFailure.get().getCode());
+        } finally {
+            factory.close();
+            assertTrue(factory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
+            assertFalse(client.isStarted(), "Borrowed connectors must not be started or stopped");
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void preservesMetadataAndTerminalStatus(boolean restletHosted) throws Exception {
+        openInteropChannel(controlService(), restletHosted);
+        for (String mode : List.of("success", "trailers-only", "late-error", "empty")) {
+            Metadata headers = new Metadata();
+            headers.put(TEXT_METADATA, "first");
+            headers.put(TEXT_METADATA, "second");
+            headers.put(BINARY_METADATA, new byte[] {0, 1, (byte) 255});
+            CallObservation observed = observeCall(channel, mode, headers);
+            assertEquals(1, observed.terminals());
+            assertEquals(
+                    mode.equals("trailers-only") || mode.equals("late-error")
+                            ? Status.Code.PERMISSION_DENIED
+                            : Status.Code.OK,
+                    observed.status().getCode(),
+                    mode + ": " + observed.status());
+            assertEquals(List.of("first", "second"), metadataValues(observed.trailers()));
+            assertEquals(channel.authority(), observed.trailers().get(AUTHORITY_METADATA));
+            org.junit.jupiter.api.Assertions.assertArrayEquals(
+                    new byte[] {0, 1, (byte) 255}, observed.trailers().get(STATUS_DETAILS));
+            assertEquals(
+                    mode.equals("success") || mode.equals("late-error")
+                            ? List.of("delivered")
+                            : List.of(),
+                    observed.messages());
+            if (!mode.equals("trailers-only")) {
+                assertEquals(List.of("first", "second"), metadataValues(observed.headers()));
+                org.junit.jupiter.api.Assertions.assertArrayEquals(
+                        new byte[] {0, 1, (byte) 255}, observed.headers().get(BINARY_METADATA));
+            }
+        }
+        channel.shutdown();
+        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
+        if (client != null) {
+            assertTrue(client.isStarted(), "Channel shutdown must not stop its borrowed connector");
+        }
+    }
+
+    private void openInteropChannel(ServerServiceDefinition service, boolean restletHosted)
+            throws Exception {
+        if (restletHosted) {
+            Context context = new Context();
+            context.getParameters().add("http.transport.protocol", "HTTP2");
+            interopServer = new RestletGrpcServer(service);
+            restletServer = new Server(context, Protocol.HTTP, 0, interopServer);
+            restletServer.start();
+            channel =
+                    NettyChannelBuilder.forAddress("localhost", restletServer.getActualPort())
+                            .usePlaintext()
+                            .build();
+        } else {
+            grpcServer = NettyServerBuilder.forPort(0).addService(service).build().start();
+            Context context = new Context();
+            context.getParameters().add("httpClientTransportMode", "HTTP2");
+            client = new Client(context, Protocol.HTTP);
+            client.start();
+            String target = "http://localhost:" + grpcServer.getPort();
+            interopFactory = new RestletTransportFactory(client, lastGrpcResponseProtocol);
+            channel =
+                    new ManagedChannelImplBuilder(
+                                    new RestletSocketAddress(target),
+                                    "localhost:" + grpcServer.getPort(),
+                                    () -> interopFactory,
+                                    () -> 0)
+                            .build();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void cancelsBeforeHeadersAndShutsDownActiveCalls(boolean restletHosted) throws Exception {
+        CountDownLatch received = new CountDownLatch(2);
+        CountDownLatch cancelled = new CountDownLatch(2);
+        AtomicInteger cancellationCount = new AtomicInteger();
+        AtomicReference<Throwable> unexpectedError = new AtomicReference<>();
+        ServerServiceDefinition service =
+                ServerServiceDefinition.builder("restlet.r0.Echo")
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        result -> {
+                                            if (!(result
+                                                    instanceof
+                                                    io.grpc.stub.ServerCallStreamObserver<?>
+                                                            observer)) {
+                                                throw new IllegalStateException(
+                                                        "The SDK did not supply a server call observer");
+                                            }
+                                            observer.setOnCancelHandler(
+                                                    () -> {
+                                                        cancellationCount.incrementAndGet();
+                                                        cancelled.countDown();
+                                                    });
+                                            return new io.grpc.stub.StreamObserver<StringValue>() {
+                                                @Override
+                                                public void onNext(StringValue value) {
+                                                    received.countDown();
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable error) {
+                                                    if (Status.fromThrowable(error).getCode()
+                                                            != Status.Code.CANCELLED) {
+                                                        unexpectedError.set(error);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    result.onCompleted();
+                                                }
+                                            };
+                                        }))
+                        .build();
+        openInteropChannel(service, restletHosted);
+        List<ClientCall<StringValue, StringValue>> calls = new ArrayList<>();
+        CountDownLatch closed = new CountDownLatch(2);
+        AtomicInteger terminalCount = new AtomicInteger();
+        AtomicInteger headerCount = new AtomicInteger();
+        AtomicReference<Status.Code> explicitCancellation = new AtomicReference<>();
+        List<Status.Code> statuses = new java.util.concurrent.CopyOnWriteArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            boolean cancelDirectly = i == 0;
+            var call = channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+            calls.add(call);
+            call.start(
+                    new ClientCall.Listener<>() {
+                        @Override
+                        public void onHeaders(Metadata headers) {
+                            headerCount.incrementAndGet();
+                        }
+
+                        @Override
+                        public void onClose(Status status, Metadata trailers) {
+                            if (cancelDirectly) {
+                                explicitCancellation.set(status.getCode());
+                            }
+                            statuses.add(status.getCode());
+                            terminalCount.incrementAndGet();
+                            closed.countDown();
+                        }
+                    },
+                    new Metadata());
+            call.request(1);
+            call.sendMessage(StringValue.of("hold-before-headers"));
+        }
+        assertTrue(received.await(5, TimeUnit.SECONDS));
+        assertEquals(0, headerCount.get(), "The SDK must not report headers before they are sent");
+        calls.getFirst().cancel("pre-header cancellation", null);
+        channel.shutdownNow();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelled.await(5, TimeUnit.SECONDS));
+        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
+        assertEquals(2, terminalCount.get());
+        assertEquals(2, cancellationCount.get());
+        assertEquals(Status.Code.CANCELLED, explicitCancellation.get());
+        assertNull(unexpectedError.get());
+        assertTrue(
+                statuses.stream()
+                        .allMatch(
+                                status ->
+                                        status == Status.Code.CANCELLED
+                                                || status == Status.Code.UNAVAILABLE),
+                statuses.toString());
+        if (interopFactory != null) {
+            assertTrue(
+                    interopFactory.transport.lastBidirectionalStream.responseReaderFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(
+                    interopFactory.transport.lastBidirectionalStream.requestWriterFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(interopFactory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
+            assertTrue(client.isStarted());
+        } else {
+            assertTrue(
+                    interopServer.lastBidirectionalCall.requestReaderFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(
+                    interopServer.lastBidirectionalCall.responseWriterFinished.await(
+                            5, TimeUnit.SECONDS));
+            assertTrue(restletServer.isStarted());
+        }
+    }
+
+    private static ServerServiceDefinition controlService() {
+        return ServerServiceDefinition.builder("restlet.r0.Echo")
+                .addMethod(
+                        CONTROL_METHOD,
+                        (call, headers) -> {
+                            call.request(1);
+                            return new ServerCall.Listener<StringValue>() {
+                                private String mode;
+
+                                @Override
+                                public void onMessage(StringValue request) {
+                                    mode = request.getValue();
+                                }
+
+                                @Override
+                                public void onHalfClose() {
+                                    Metadata trailers = new Metadata();
+                                    trailers.put(AUTHORITY_METADATA, call.getAuthority());
+                                    for (String value : metadataValues(headers)) {
+                                        trailers.put(TEXT_METADATA, value);
+                                    }
+                                    trailers.put(STATUS_DETAILS, headers.get(BINARY_METADATA));
+                                    if (!"trailers-only".equals(mode)) {
+                                        Metadata responseHeaders = new Metadata();
+                                        for (String value : metadataValues(headers)) {
+                                            responseHeaders.put(TEXT_METADATA, value);
+                                        }
+                                        responseHeaders.put(
+                                                BINARY_METADATA, headers.get(BINARY_METADATA));
+                                        call.sendHeaders(responseHeaders);
+                                    }
+                                    if ("success".equals(mode) || "late-error".equals(mode)) {
+                                        call.sendMessage(StringValue.of("delivered"));
+                                    }
+                                    call.close(
+                                            "trailers-only".equals(mode)
+                                                            || "late-error".equals(mode)
+                                                    ? Status.PERMISSION_DENIED.withDescription(
+                                                            "native-error")
+                                                    : Status.OK,
+                                            trailers);
+                                }
+                            };
+                        })
+                .build();
+    }
+
+    private static List<String> metadataValues(Metadata metadata) {
+        Iterable<String> values = metadata.getAll(TEXT_METADATA);
+        return values == null
+                ? List.of()
+                : java.util.stream.StreamSupport.stream(values.spliterator(), false).toList();
+    }
+
+    private record CallObservation(
+            List<String> messages,
+            Metadata headers,
+            Metadata trailers,
+            Status status,
+            int terminals) {}
+
+    private static CallObservation observeCall(
+            ManagedChannel channel, String mode, Metadata headers) throws InterruptedException {
+        var call = channel.newCall(CONTROL_METHOD, CallOptions.DEFAULT);
+        List<String> messages = new java.util.concurrent.CopyOnWriteArrayList<>();
+        AtomicReference<Metadata> initial = new AtomicReference<>(new Metadata());
+        AtomicReference<Metadata> trailers = new AtomicReference<>();
+        AtomicReference<Status> status = new AtomicReference<>();
+        AtomicInteger terminals = new AtomicInteger();
+        CountDownLatch done = new CountDownLatch(1);
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onHeaders(Metadata value) {
+                        initial.set(value);
+                    }
+
+                    @Override
+                    public void onMessage(StringValue message) {
+                        messages.add(message.getValue());
+                    }
+
+                    @Override
+                    public void onClose(Status value, Metadata metadata) {
+                        terminals.incrementAndGet();
+                        status.set(value);
+                        trailers.set(metadata);
+                        done.countDown();
+                    }
+                },
+                headers);
+        try {
+            call.request(2);
+            call.sendMessage(StringValue.of(mode));
+            call.halfClose();
+            assertTrue(done.await(5, TimeUnit.SECONDS), mode);
+            return new CallObservation(
+                    List.copyOf(messages),
+                    initial.get(),
+                    trailers.get(),
+                    status.get(),
+                    terminals.get());
+        } finally {
+            call.cancel("probe cleanup", null);
+        }
+    }
+
+    @Test
+    void invokesOfficialGrpcServerThroughRestletHttp2Client() throws Exception {
+        ServerServiceDefinition service =
+                ServerServiceDefinition.builder("restlet.r0.Echo")
+                        .addMethod(
+                                ECHO_METHOD,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue message,
+                                                io.grpc.stub.StreamObserver<StringValue>
+                                                        result) -> {
+                                            if ("bad".equals(message.getValue())) {
+                                                result.onError(
+                                                        Status.INVALID_ARGUMENT
+                                                                .withDescription("spike-error")
+                                                                .asRuntimeException());
+                                            } else {
+                                                result.onNext(
+                                                        StringValue.of(
+                                                                "echo:" + message.getValue()));
+                                                result.onCompleted();
+                                            }
+                                        }))
+                        .addMethod(
+                                STREAM_METHOD,
+                                ServerCalls.asyncServerStreamingCall(
+                                        (StringValue message,
+                                                io.grpc.stub.StreamObserver<StringValue>
+                                                        result) -> {
+                                            java.util.concurrent.CompletableFuture.runAsync(
+                                                    () -> {
+                                                        try {
+                                                            Thread.sleep(50);
+                                                            result.onNext(
+                                                                    StringValue.of(
+                                                                            message.getValue()
+                                                                                    + ":1"));
+                                                            Thread.sleep(50);
+                                                            result.onNext(
+                                                                    StringValue.of(
+                                                                            message.getValue()
+                                                                                    + ":2"));
+                                                            result.onCompleted();
+                                                        } catch (InterruptedException e) {
+                                                            Thread.currentThread().interrupt();
+                                                            result.onError(
+                                                                    Status.CANCELLED
+                                                                            .withCause(e)
+                                                                            .asRuntimeException());
+                                                        }
+                                                    });
+                                        }))
+                        .addMethod(
+                                CLIENT_STREAM_METHOD,
+                                ServerCalls.asyncClientStreamingCall(
+                                        result ->
+                                                new io.grpc.stub.StreamObserver<>() {
+                                                    private final List<String> values =
+                                                            new ArrayList<>();
+
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        values.add(value.getValue());
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable error) {
+                                                        result.onError(error);
+                                                    }
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        result.onNext(
+                                                                StringValue.of(
+                                                                        String.join(",", values)));
+                                                        result.onCompleted();
+                                                    }
+                                                }))
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(this::echoBidirectional))
+                        .build();
+        grpcServer = NettyServerBuilder.forPort(0).addService(service).build().start();
+
+        Context restletContext = new Context();
+        restletContext.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(restletContext, Protocol.HTTP);
+        client.start();
+
+        String target = "http://localhost:" + grpcServer.getPort();
+        String authority = "localhost:" + grpcServer.getPort();
+        RestletTransportFactory transportFactory =
+                new RestletTransportFactory(client, lastGrpcResponseProtocol);
+        channel =
+                new ManagedChannelImplBuilder(
+                                new RestletSocketAddress(target),
+                                authority,
+                                () -> transportFactory,
+                                () -> 0)
+                        .build();
+
+        assertEquals(
+                "echo:hello",
+                ClientCalls.blockingUnaryCall(
+                                channel, ECHO_METHOD, CallOptions.DEFAULT, StringValue.of("hello"))
+                        .getValue());
+        StatusRuntimeException failure =
+                assertThrows(
+                        StatusRuntimeException.class,
+                        () ->
+                                ClientCalls.blockingUnaryCall(
+                                        channel,
+                                        ECHO_METHOD,
+                                        CallOptions.DEFAULT,
+                                        StringValue.of("bad")));
+        assertEquals(
+                Status.Code.INVALID_ARGUMENT,
+                failure.getStatus().getCode(),
+                failure.getStatus().toString());
+        assertEquals("2.0", lastGrpcResponseProtocol.get().getVersion());
+
+        var stream =
+                ClientCalls.blockingServerStreamingCall(
+                        channel, STREAM_METHOD, CallOptions.DEFAULT, StringValue.of("delayed"));
+        assertEquals(
+                List.of("delayed:1", "delayed:2"),
+                java.util.stream.StreamSupport.stream(
+                                java.util.Spliterators.spliteratorUnknownSize(
+                                        stream, java.util.Spliterator.ORDERED),
+                                false)
+                        .map(StringValue::getValue)
+                        .toList());
+
+        assertClientStreaming(channel);
+        assertFullDuplexBidirectionalStreaming(channel);
+        assertBidirectionalResponseDemand(channel);
+        assertActiveCancellation(channel);
+        RestletClientStream cancelledStream = transportFactory.transport.lastBidirectionalStream;
+        assertTrue(cancelledStream.responseReaderFinished.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelledStream.requestWriterFinished.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void hostsOfficialGrpcServiceThroughRestletHttp2Server() throws Exception {
+        ServerServiceDefinition service =
+                ServerServiceDefinition.builder("restlet.r0.Echo")
+                        .addMethod(
+                                ECHO_METHOD,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue message,
+                                                io.grpc.stub.StreamObserver<StringValue>
+                                                        result) -> {
+                                            if ("bad".equals(message.getValue())) {
+                                                result.onError(
+                                                        Status.INVALID_ARGUMENT
+                                                                .withDescription("spike-error")
+                                                                .asRuntimeException());
+                                            } else {
+                                                result.onNext(
+                                                        StringValue.of(
+                                                                "echo:" + message.getValue()));
+                                                result.onCompleted();
+                                            }
+                                        }))
+                        .addMethod(
+                                STREAM_METHOD,
+                                ServerCalls.asyncServerStreamingCall(
+                                        (StringValue message,
+                                                io.grpc.stub.StreamObserver<StringValue>
+                                                        result) -> {
+                                            result.onNext(
+                                                    StringValue.of(message.getValue() + ":1"));
+                                            result.onNext(
+                                                    StringValue.of(message.getValue() + ":2"));
+                                            result.onCompleted();
+                                        }))
+                        .addMethod(
+                                CLIENT_STREAM_METHOD,
+                                ServerCalls.asyncClientStreamingCall(
+                                        result ->
+                                                new io.grpc.stub.StreamObserver<>() {
+                                                    private final List<String> values =
+                                                            new ArrayList<>();
+
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        values.add(value.getValue());
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable error) {
+                                                        result.onError(error);
+                                                    }
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        result.onNext(
+                                                                StringValue.of(
+                                                                        String.join(",", values)));
+                                                        result.onCompleted();
+                                                    }
+                                                }))
+                        .addMethod(
+                                BIDI_STREAM_METHOD,
+                                ServerCalls.asyncBidiStreamingCall(this::echoBidirectional))
+                        .build();
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        RestletGrpcServer adapter = new RestletGrpcServer(service);
+        restletServer = new Server(serverContext, Protocol.HTTP, 0, adapter);
+        restletServer.start();
+        grpcClientChannel =
+                NettyChannelBuilder.forAddress("localhost", restletServer.getActualPort())
+                        .usePlaintext()
+                        .build();
+
+        assertEquals(
+                "echo:hello",
+                ClientCalls.blockingUnaryCall(
+                                grpcClientChannel,
+                                ECHO_METHOD,
+                                CallOptions.DEFAULT,
+                                StringValue.of("hello"))
+                        .getValue());
+        assertEquals("HTTP/2.0", adapter.lastRequestProtocol.get());
+        StatusRuntimeException failure =
+                assertThrows(
+                        StatusRuntimeException.class,
+                        () ->
+                                ClientCalls.blockingUnaryCall(
+                                        grpcClientChannel,
+                                        ECHO_METHOD,
+                                        CallOptions.DEFAULT,
+                                        StringValue.of("bad")));
+        assertEquals(Status.Code.INVALID_ARGUMENT, failure.getStatus().getCode());
+        var stream =
+                ClientCalls.blockingServerStreamingCall(
+                        grpcClientChannel,
+                        STREAM_METHOD,
+                        CallOptions.DEFAULT,
+                        StringValue.of("stream"));
+        assertEquals(
+                List.of("stream:1", "stream:2"),
+                java.util.stream.StreamSupport.stream(
+                                java.util.Spliterators.spliteratorUnknownSize(
+                                        stream, java.util.Spliterator.ORDERED),
+                                false)
+                        .map(StringValue::getValue)
+                        .toList());
+
+        assertClientStreaming(grpcClientChannel);
+        assertFullDuplexBidirectionalStreaming(grpcClientChannel);
+        assertBidirectionalResponseDemand(grpcClientChannel);
+        assertActiveCancellation(grpcClientChannel);
+        SpikeServerCall<?, ?> cancelledCall = adapter.lastBidirectionalCall;
+        assertTrue(cancelledCall.requestReaderFinished.await(5, TimeUnit.SECONDS));
+        assertTrue(cancelledCall.responseWriterFinished.await(5, TimeUnit.SECONDS));
+    }
+
+    private io.grpc.stub.StreamObserver<StringValue> echoBidirectional(
+            io.grpc.stub.StreamObserver<StringValue> result) {
+        if (!(result instanceof io.grpc.stub.ServerCallStreamObserver<?> serverObserver)) {
+            throw new IllegalStateException("The SDK did not supply a server call observer");
+        }
+        serverObserver.setOnCancelHandler(
+                () -> {
+                    remoteCancellationCount.incrementAndGet();
+                    remoteCancellation.countDown();
+                });
+        return new io.grpc.stub.StreamObserver<>() {
+            @Override
+            public void onNext(StringValue value) {
+                result.onNext(StringValue.of("echo:" + value.getValue()));
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                if (!serverObserver.isCancelled()) {
+                    result.onError(error);
+                }
+            }
+
+            @Override
+            public void onCompleted() {
+                result.onCompleted();
+            }
+        };
+    }
+
+    private void assertActiveCancellation(ManagedChannel channel) throws InterruptedException {
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicInteger terminalCount = new AtomicInteger();
+        AtomicReference<Status> terminalStatus = new AtomicReference<>();
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        firstResponse.countDown();
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        terminalStatus.set(status);
+                        terminalCount.incrementAndGet();
+                        closed.countDown();
+                    }
+                },
+                new Metadata());
+        try {
+            call.request(1);
+            call.sendMessage(StringValue.of("cancel-me"));
+            assertTrue(firstResponse.await(5, TimeUnit.SECONDS));
+            call.cancel("R0 active-stream cancellation", null);
+            assertTrue(closed.await(5, TimeUnit.SECONDS));
+            assertEquals(Status.Code.CANCELLED, terminalStatus.get().getCode());
+            assertTrue(
+                    remoteCancellation.await(5, TimeUnit.SECONDS),
+                    "Cancellation must reach the remote SDK service without request half-close");
+            call.cancel("Repeated R0 cancellation", null);
+            assertEquals(
+                    "echo:after-cancel",
+                    ClientCalls.blockingUnaryCall(
+                                    channel,
+                                    ECHO_METHOD,
+                                    CallOptions.DEFAULT,
+                                    StringValue.of("after-cancel"))
+                            .getValue());
+            assertEquals(1, terminalCount.get());
+            assertEquals(1, remoteCancellationCount.get());
+        } finally {
+            call.cancel("R0 cancellation probe cleanup", null);
+        }
+    }
+
+    @Test
+    void closingDemandReleasesBlockedReceiver() throws Exception {
+        MessageDemand demand = new MessageDemand();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var receiver = executor.submit(demand::acquire);
+            try {
+                assertTrue(demand.waiting.await(5, TimeUnit.SECONDS));
+                assertFalse(receiver.isDone());
+            } finally {
+                demand.close();
+            }
+            assertFalse(receiver.get(5, TimeUnit.SECONDS));
+            demand.request(1);
+            assertFalse(demand.acquire(), "Closed demand must not reopen after another request");
+        }
+    }
+
+    private static void assertClientStreaming(ManagedChannel channel) throws InterruptedException {
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicReference<StringValue> response = new AtomicReference<>();
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        var request =
+                ClientCalls.asyncClientStreamingCall(
+                        channel.newCall(CLIENT_STREAM_METHOD, CallOptions.DEFAULT),
+                        new io.grpc.stub.StreamObserver<>() {
+                            @Override
+                            public void onNext(StringValue value) {
+                                response.set(value);
+                            }
+
+                            @Override
+                            public void onError(Throwable error) {
+                                failure.set(error);
+                                closed.countDown();
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                closed.countDown();
+                            }
+                        });
+        request.onNext(StringValue.of("first"));
+        request.onNext(StringValue.of("second"));
+        request.onCompleted();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        if (failure.get() != null) {
+            throw new AssertionError("gRPC client-streaming request failed", failure.get());
+        }
+        assertEquals("first,second", response.get().getValue());
+    }
+
+    private static void assertFullDuplexBidirectionalStreaming(ManagedChannel channel)
+            throws InterruptedException {
+        CountDownLatch closed = new CountDownLatch(1);
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch secondResponse = new CountDownLatch(1);
+        List<String> responses = java.util.Collections.synchronizedList(new ArrayList<>());
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        AtomicInteger responseCount = new AtomicInteger();
+        var request =
+                ClientCalls.asyncBidiStreamingCall(
+                        channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT),
+                        new io.grpc.stub.StreamObserver<>() {
+                            @Override
+                            public void onNext(StringValue value) {
+                                responses.add(value.getValue());
+                                if (responseCount.incrementAndGet() == 1) {
+                                    firstResponse.countDown();
+                                } else {
+                                    secondResponse.countDown();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable error) {
+                                failure.set(error);
+                                closed.countDown();
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                closed.countDown();
+                            }
+                        });
+        request.onNext(StringValue.of("first"));
+        assertTrue(
+                firstResponse.await(5, TimeUnit.SECONDS),
+                "The first response must arrive while the request stream remains open");
+        request.onNext(StringValue.of("second"));
+        assertTrue(
+                secondResponse.await(5, TimeUnit.SECONDS),
+                "The second response must arrive before request half-close");
+        request.onCompleted();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        if (failure.get() != null) {
+            throw new AssertionError("gRPC bidirectional streaming request failed", failure.get());
+        }
+        assertEquals(List.of("echo:first", "echo:second"), responses);
+    }
+
+    private static void assertBidirectionalResponseDemand(ManagedChannel channel)
+            throws InterruptedException {
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
+        CountDownLatch firstResponse = new CountDownLatch(1);
+        CountDownLatch secondResponse = new CountDownLatch(1);
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        AtomicInteger responses = new AtomicInteger();
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        if (responses.incrementAndGet() == 1) {
+                            firstResponse.countDown();
+                        } else {
+                            secondResponse.countDown();
+                        }
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        if (!status.isOk()) {
+                            failure.set(status.asRuntimeException(trailers));
+                        }
+                        closed.countDown();
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        call.sendMessage(StringValue.of("first"));
+        assertTrue(firstResponse.await(5, TimeUnit.SECONDS));
+        call.sendMessage(StringValue.of("second"));
+        assertFalse(
+                secondResponse.await(200, TimeUnit.MILLISECONDS),
+                "A second response must wait for additional receive demand");
+        call.request(1);
+        assertTrue(secondResponse.await(5, TimeUnit.SECONDS));
+        call.halfClose();
+        assertTrue(closed.await(5, TimeUnit.SECONDS));
+        if (failure.get() != null) {
+            throw new AssertionError("gRPC demand probe failed", failure.get());
+        }
+    }
+
+    private static final class RestletGrpcServer extends org.restlet.Restlet {
+
+        private final ServerServiceDefinition service;
+
+        private volatile SpikeServerCall<?, ?> lastBidirectionalCall;
+
+        private final java.util.concurrent.atomic.AtomicReference<String> lastRequestProtocol =
+                new java.util.concurrent.atomic.AtomicReference<>();
+
+        private RestletGrpcServer(ServerServiceDefinition service) {
+            this.service = service;
+        }
+
+        @Override
+        public void handle(Request request, Response response) {
+            try {
+                lastRequestProtocol.set(
+                        (String) request.getAttributes().get(HeaderConstants.ATTRIBUTE_VERSION));
+                if (!Method.POST.equals(request.getMethod())) {
+                    response.setStatus(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                    return;
+                }
+                String path = request.getResourceRef().getPath();
+                String fullMethodName = path.startsWith("/") ? path.substring(1) : path;
+                ServerMethodDefinition<?, ?> definition = service.getMethod(fullMethodName);
+                if (definition == null) {
+                    setGrpcStatus(response, Status.UNIMPLEMENTED);
+                    return;
+                }
+                if (!request.isEntityAvailable()) {
+                    setGrpcStatus(response, Status.INVALID_ARGUMENT);
+                    return;
+                }
+
+                if (definition.getMethodDescriptor().getType()
+                        == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                    dispatchBidirectional(definition, request, response);
+                    return;
+                }
+
+                byte[] frames;
+                try (InputStream input = request.getEntity().getStream()) {
+                    frames = input.readNBytes(MAX_STREAM_BYTES + 1);
+                }
+                if (frames.length > MAX_STREAM_BYTES) {
+                    throw new IOException(
+                            "gRPC request stream exceeds " + MAX_STREAM_BYTES + " bytes");
+                }
+                dispatch(definition, request, response, unframeMessages(frames, MAX_MESSAGE_BYTES));
+            } catch (Exception e) {
+                setGrpcStatus(response, Status.fromThrowable(e));
+            }
+        }
+
+        private <RequestT, ResponseT> void dispatchBidirectional(
+                ServerMethodDefinition<RequestT, ResponseT> definition,
+                Request request,
+                Response response)
+                throws IOException {
+            MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
+            SpikeServerCall<RequestT, ResponseT> serverCall =
+                    new SpikeServerCall<>(method, true, request.getHostRef().getAuthority());
+            lastBidirectionalCall = serverCall;
+            response.setOnSent(
+                    (sentRequest, sentResponse) -> serverCall.responseWriterFinished.countDown());
+            ServerCall.Listener<RequestT> listener =
+                    definition
+                            .getServerCallHandler()
+                            .startCall(serverCall, readMetadata(request.getHeaders()));
+            if (listener == null) {
+                throw new IOException("gRPC SDK returned no call listener");
+            }
+            serverCall.writeResponseHeaders(response);
+            Thread.startVirtualThread(
+                    () -> {
+                        try (InputStream input = request.getEntity().getStream()) {
+                            byte[] payload;
+                            long requestBytes = 0;
+                            while (true) {
+                                payload = readGrpcMessage(input, MAX_MESSAGE_BYTES);
+                                if (payload == null) {
+                                    break;
+                                }
+                                if (!serverCall.awaitRequestDemand()) {
+                                    return;
+                                }
+                                requestBytes += payload.length + 5L;
+                                if (requestBytes > MAX_STREAM_BYTES) {
+                                    throw new IOException(
+                                            "gRPC request stream exceeds "
+                                                    + MAX_STREAM_BYTES
+                                                    + " bytes");
+                                }
+                                listener.onMessage(
+                                        method.parseRequest(new ByteArrayInputStream(payload)));
+                            }
+                            listener.onHalfClose();
+                        } catch (Exception e) {
+                            serverCall.cancelled = true;
+                            serverCall.close(Status.fromThrowable(e), new Metadata());
+                            listener.onCancel();
+                        } finally {
+                            serverCall.requestReaderFinished.countDown();
+                        }
+                    });
+            response.setEntity(
+                    new OutputRepresentation(GRPC_MEDIA_TYPE) {
+                        @Override
+                        public void write(OutputStream output) throws IOException {
+                            serverCall.writeStreamingResponse(response, output);
+                        }
+                    });
+        }
+
+        private <RequestT, ResponseT> void dispatch(
+                ServerMethodDefinition<RequestT, ResponseT> definition,
+                Request request,
+                Response response,
+                List<byte[]> payloads)
+                throws IOException {
+            MethodDescriptor<RequestT, ResponseT> method = definition.getMethodDescriptor();
+            Metadata requestHeaders = readMetadata(request.getHeaders());
+            SpikeServerCall<RequestT, ResponseT> serverCall =
+                    new SpikeServerCall<>(method, false, request.getHostRef().getAuthority());
+            ServerCall.Listener<RequestT> listener =
+                    definition.getServerCallHandler().startCall(serverCall, requestHeaders);
+            if (listener == null) {
+                throw new IOException("gRPC SDK returned no call listener");
+            }
+            for (byte[] payload : payloads) {
+                listener.onMessage(method.parseRequest(new ByteArrayInputStream(payload)));
+            }
+            listener.onHalfClose();
+            if (!serverCall.awaitClose()) {
+                throw new IOException("Timed out waiting for SDK gRPC server call to close");
+            }
+            serverCall.writeResponse(response);
+        }
+    }
+
+    private static final class SpikeServerCall<RequestT, ResponseT>
+            extends ServerCall<RequestT, ResponseT> {
+
+        private static final int MAX_BUFFERED_RESPONSES = 8;
+
+        private final MethodDescriptor<RequestT, ResponseT> method;
+
+        private final List<ResponseT> responseMessages = new ArrayList<>();
+
+        private final LinkedBlockingQueue<ResponseT> streamingResponses =
+                new LinkedBlockingQueue<>(MAX_BUFFERED_RESPONSES);
+
+        private final Metadata responseHeaders = new Metadata();
+
+        private final CountDownLatch closed = new CountDownLatch(1);
+
+        private final CountDownLatch requestReaderFinished = new CountDownLatch(1);
+
+        private final CountDownLatch responseWriterFinished = new CountDownLatch(1);
+
+        private final MessageDemand requestDemand = new MessageDemand();
+
+        private volatile Status status;
+
+        private volatile boolean cancelled;
+
+        private volatile Metadata trailers = new Metadata();
+
+        private final boolean streaming;
+
+        private final String authority;
+
+        private SpikeServerCall(
+                MethodDescriptor<RequestT, ResponseT> method, boolean streaming, String authority) {
+            this.method = method;
+            this.streaming = streaming;
+            this.authority = authority;
+        }
+
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
+
+        @Override
+        public void request(int numMessages) {
+            requestDemand.request(numMessages);
+        }
+
+        @Override
+        public void sendHeaders(Metadata headers) {
+            responseHeaders.merge(headers);
+        }
+
+        @Override
+        public void sendMessage(ResponseT message) {
+            if (streaming) {
+                try {
+                    if (!streamingResponses.offer(message, 5, TimeUnit.SECONDS)) {
+                        close(
+                                Status.RESOURCE_EXHAUSTED.withDescription(
+                                        "Timed out waiting for the bounded gRPC response queue"),
+                                new Metadata());
+                        throw new IllegalStateException(
+                                "Timed out waiting for the bounded gRPC response queue");
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted writing a gRPC response", e);
+                }
+            } else {
+                responseMessages.add(message);
+            }
+        }
+
+        @Override
+        public synchronized void close(Status status, Metadata trailers) {
+            if (closed.getCount() == 0) {
+                return;
+            }
+            this.status = status;
+            this.trailers = trailers;
+            requestDemand.close();
+            closed.countDown();
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        @Override
+        public MethodDescriptor<RequestT, ResponseT> getMethodDescriptor() {
+            return method;
+        }
+
+        private boolean awaitClose() throws IOException {
+            try {
+                return closed.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Interrupted while waiting for gRPC call completion", e);
+            }
+        }
+
+        private boolean awaitRequestDemand() throws IOException {
+            return requestDemand.acquire();
+        }
+
+        private void writeResponse(Response response) throws IOException {
+            if (status == null) {
+                status = Status.INTERNAL.withDescription("SDK call did not close");
+                trailers = new Metadata();
+            }
+            response.setStatus(org.restlet.data.Status.SUCCESS_OK);
+            writeMetadata(responseHeaders, response.getHeaders());
+            if (!responseMessages.isEmpty()) {
+                ByteArrayOutputStream framedMessages = new ByteArrayOutputStream();
+                for (ResponseT responseMessage : responseMessages) {
+                    try (InputStream payload = method.streamResponse(responseMessage)) {
+                        byte[] bytes = payload.readNBytes(MAX_MESSAGE_BYTES + 1);
+                        if (bytes.length > MAX_MESSAGE_BYTES) {
+                            throw new IOException(
+                                    "gRPC response exceeds " + MAX_MESSAGE_BYTES + " bytes");
+                        }
+                        framedMessages.write(frame(bytes));
+                        if (framedMessages.size() > MAX_STREAM_BYTES) {
+                            throw new IOException(
+                                    "gRPC response stream exceeds " + MAX_STREAM_BYTES + " bytes");
+                        }
+                    }
+                }
+                response.setEntity(
+                        new ByteArrayRepresentation(framedMessages.toByteArray(), GRPC_MEDIA_TYPE));
+            } else {
+                response.setEntity(new ByteArrayRepresentation(new byte[0], GRPC_MEDIA_TYPE));
+            }
+            response.getTrailers().add("grpc-status", Integer.toString(status.getCode().value()));
+            if (status.getDescription() != null) {
+                response.getTrailers().add("grpc-message", status.getDescription());
+            }
+            writeMetadata(trailers, response.getTrailers());
+        }
+
+        private void writeResponseHeaders(Response response) {
+            response.setStatus(org.restlet.data.Status.SUCCESS_OK);
+            writeMetadata(responseHeaders, response.getHeaders());
+        }
+
+        private void writeStreamingResponse(Response response, OutputStream output)
+                throws IOException {
+            long responseBytes = 0;
+            try {
+                while (closed.getCount() != 0 || !streamingResponses.isEmpty()) {
+                    ResponseT message;
+                    try {
+                        message = streamingResponses.poll(100, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("Interrupted reading gRPC response queue", e);
+                    }
+                    if (message == null) {
+                        continue;
+                    }
+                    try (InputStream payload = method.streamResponse(message)) {
+                        byte[] bytes = payload.readNBytes(MAX_MESSAGE_BYTES + 1);
+                        if (bytes.length > MAX_MESSAGE_BYTES) {
+                            throw new IOException(
+                                    "gRPC response exceeds " + MAX_MESSAGE_BYTES + " bytes");
+                        }
+                        responseBytes += bytes.length + 5L;
+                        if (responseBytes > MAX_STREAM_BYTES) {
+                            throw new IOException(
+                                    "gRPC response stream exceeds " + MAX_STREAM_BYTES + " bytes");
+                        }
+                        output.write(frame(bytes));
+                        output.flush();
+                    }
+                }
+            } finally {
+                if (status == null) {
+                    status = Status.INTERNAL.withDescription("SDK call did not close");
+                    trailers = new Metadata();
+                }
+                if (status.getDescription() != null) {
+                    response.getTrailers().add("grpc-message", status.getDescription());
+                }
+                response.getTrailers()
+                        .add("grpc-status", Integer.toString(status.getCode().value()));
+                writeMetadata(trailers, response.getTrailers());
+            }
+        }
+    }
+
+    private static void setGrpcStatus(Response response, Status status) {
+        response.setStatus(org.restlet.data.Status.SUCCESS_OK);
+        response.setEntity(new ByteArrayRepresentation(new byte[0], GRPC_MEDIA_TYPE));
+        response.getTrailers().add("grpc-status", Integer.toString(status.getCode().value()));
+    }
+
+    private static final class MessageDemand {
+
+        private final CountDownLatch waiting = new CountDownLatch(1);
+
+        private long permits;
+
+        private boolean closed;
+
+        private synchronized void request(int count) {
+            if (count <= 0) {
+                throw new IllegalArgumentException("numMessages must be positive");
+            }
+            if (!closed) {
+                permits = Math.min(Integer.MAX_VALUE, permits + (long) count);
+                notifyAll();
+            }
+        }
+
+        private synchronized boolean acquire() throws IOException {
+            while (permits == 0 && !closed) {
+                try {
+                    waiting.countDown();
+                    wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted waiting for gRPC message demand", e);
+                }
+            }
+            if (closed) {
+                return false;
+            }
+            permits--;
+            return true;
+        }
+
+        private synchronized void close() {
+            closed = true;
+            notifyAll();
+        }
+    }
+
+    private static final class RestletSocketAddress extends SocketAddress {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String target;
+
+        private RestletSocketAddress(String target) {
+            this.target = target;
+        }
+    }
+
+    private static final class RestletTransportFactory implements ClientTransportFactory {
+
+        private volatile RestletClientTransport transport;
+
+        private final Client client;
+
+        private final AtomicReference<Protocol> lastResponseProtocol;
+
+        private final ScheduledExecutorService scheduledExecutor =
+                Executors.newSingleThreadScheduledExecutor(
+                        runnable -> {
+                            Thread thread = new Thread(runnable, "restlet-grpc-r0-timer");
+                            thread.setDaemon(true);
+                            return thread;
+                        });
+
+        private RestletTransportFactory(
+                Client client, AtomicReference<Protocol> lastResponseProtocol) {
+            this.client = client;
+            this.lastResponseProtocol = lastResponseProtocol;
+        }
+
+        @Override
+        public ConnectionClientTransport newClientTransport(
+                SocketAddress address,
+                ClientTransportOptions options,
+                ChannelLogger channelLogger) {
+            if (!(address instanceof RestletSocketAddress restletAddress)) {
+                throw new IllegalArgumentException("Unsupported address: " + address);
+            }
+            if (!new org.restlet.data.Reference(restletAddress.target)
+                    .getAuthority()
+                    .equals(options.getAuthority())) {
+                throw new UnsupportedOperationException(
+                        "R0 spike cannot separate connection address from HTTP/TLS authority");
+            }
+            transport =
+                    new RestletClientTransport(
+                            client, restletAddress, options.getAuthority(), lastResponseProtocol);
+            return transport;
+        }
+
+        @Override
+        public ScheduledExecutorService getScheduledExecutorService() {
+            return scheduledExecutor;
+        }
+
+        @Override
+        public SwapChannelCredentialsResult swapChannelCredentials(
+                io.grpc.ChannelCredentials channelCredentials) {
+            throw new UnsupportedOperationException(
+                    "R0 spike does not support channel credentials");
+        }
+
+        @Override
+        public void close() {
+            scheduledExecutor.shutdownNow();
+        }
+
+        @Override
+        public Collection<Class<? extends SocketAddress>> getSupportedSocketAddressTypes() {
+            return Set.of(RestletSocketAddress.class);
+        }
+    }
+
+    private static final class RestletClientTransport implements ConnectionClientTransport {
+
+        private volatile RestletClientStream lastBidirectionalStream;
+
+        private final Client client;
+
+        private final RestletSocketAddress address;
+
+        private final String authority;
+
+        private final AtomicReference<Protocol> lastResponseProtocol;
+
+        private final InternalLogId logId =
+                InternalLogId.allocate(RestletClientTransport.class, "Restlet HTTP/2");
+
+        private final AtomicInteger activeStreams = new AtomicInteger();
+
+        private final Set<RestletClientStream> streams =
+                java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+        private final java.util.concurrent.atomic.AtomicBoolean terminated =
+                new java.util.concurrent.atomic.AtomicBoolean();
+
+        private volatile Listener listener;
+
+        private volatile boolean shutdown;
+
+        private RestletClientTransport(
+                Client client,
+                RestletSocketAddress address,
+                String authority,
+                AtomicReference<Protocol> lastResponseProtocol) {
+            this.client = client;
+            this.address = address;
+            this.authority = authority;
+            this.lastResponseProtocol = lastResponseProtocol;
+        }
+
+        @Override
+        public Runnable start(Listener listener) {
+            this.listener = listener;
+            return listener::transportReady;
+        }
+
+        @Override
+        public void shutdown(Status status) {
+            if (!shutdown) {
+                shutdown = true;
+                Listener currentListener = listener;
+                if (currentListener != null) {
+                    currentListener.transportShutdown(status, null);
+                    terminateIfIdle();
+                }
+            }
+        }
+
+        @Override
+        public void shutdownNow(Status status) {
+            shutdown(status);
+            for (RestletClientStream stream : Set.copyOf(streams)) {
+                stream.cancel(status);
+            }
+        }
+
+        @Override
+        public ClientStream newStream(
+                MethodDescriptor<?, ?> method,
+                Metadata headers,
+                CallOptions callOptions,
+                io.grpc.ClientStreamTracer[] tracers) {
+            if (shutdown) {
+                throw new IllegalStateException("gRPC transport is shut down");
+            }
+            if (method.getType() != MethodDescriptor.MethodType.UNARY
+                    && method.getType() != MethodDescriptor.MethodType.SERVER_STREAMING
+                    && method.getType() != MethodDescriptor.MethodType.CLIENT_STREAMING
+                    && method.getType() != MethodDescriptor.MethodType.BIDI_STREAMING) {
+                throw new UnsupportedOperationException(
+                        "Unsupported gRPC method type: " + method.getType());
+            }
+            if (callOptions.getCredentials() != null || callOptions.getCompressor() != null) {
+                throw new UnsupportedOperationException(
+                        "R0 SPI probe does not support call credentials or compression");
+            }
+            RestletClientStream stream =
+                    new RestletClientStream(
+                            client,
+                            address,
+                            authority,
+                            method,
+                            headers,
+                            lastResponseProtocol,
+                            this::streamStarted,
+                            this::streamFinished);
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                lastBidirectionalStream = stream;
+            }
+            return stream;
+        }
+
+        @Override
+        public void ping(PingCallback callback, java.util.concurrent.Executor executor) {
+            executor.execute(
+                    () ->
+                            callback.onFailure(
+                                    Status.UNIMPLEMENTED.withDescription("PING unsupported")));
+        }
+
+        @Override
+        public ListenableFuture<InternalChannelz.SocketStats> getStats() {
+            InternalChannelz.TransportStats transportStats =
+                    new InternalChannelz.TransportStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return Futures.immediateFuture(
+                    new InternalChannelz.SocketStats(transportStats, address, address, null, null));
+        }
+
+        @Override
+        public InternalLogId getLogId() {
+            return logId;
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return Attributes.EMPTY;
+        }
+
+        private synchronized void streamStarted(RestletClientStream stream) {
+            streams.add(stream);
+            if (activeStreams.getAndIncrement() == 0) {
+                Listener currentListener = listener;
+                if (currentListener != null) {
+                    currentListener.transportInUse(true);
+                }
+            }
+            if (shutdown) {
+                stream.cancel(Status.UNAVAILABLE.withDescription("Transport is shut down"));
+            }
+        }
+
+        private synchronized void streamFinished(RestletClientStream stream) {
+            streams.remove(stream);
+            if (activeStreams.decrementAndGet() == 0) {
+                Listener currentListener = listener;
+                if (currentListener != null) {
+                    currentListener.transportInUse(false);
+                }
+                terminateIfIdle();
+            }
+        }
+
+        private void terminateIfIdle() {
+            Listener currentListener = listener;
+            if (shutdown
+                    && activeStreams.get() == 0
+                    && currentListener != null
+                    && terminated.compareAndSet(false, true)) {
+                currentListener.transportTerminated();
+            }
+        }
+    }
+
+    private static final class RestletClientStream implements ClientStream {
+
+        private final Client client;
+
+        private final RestletSocketAddress address;
+
+        private final String authority;
+
+        private final MethodDescriptor<?, ?> method;
+
+        private final Metadata requestMetadata;
+
+        private final AtomicReference<Protocol> lastResponseProtocol;
+
+        private final java.util.function.Consumer<RestletClientStream> onStart;
+
+        private final java.util.function.Consumer<RestletClientStream> onClose;
+
+        private volatile ClientStreamListener listener;
+
+        private volatile Request activeRequest;
+
+        private final List<byte[]> requestPayloads = new ArrayList<>();
+
+        private final MessageDemand responseDemand = new MessageDemand();
+
+        private final CountDownLatch requestWriterFinished = new CountDownLatch(1);
+
+        private final CountDownLatch responseReaderFinished = new CountDownLatch(1);
+
+        private volatile PipedInputStream bidirectionalRequestInput;
+
+        private volatile PipedOutputStream bidirectionalRequestOutput;
+
+        private int requestStreamBytes;
+
+        private int maxInboundMessageSize = MAX_MESSAGE_BYTES;
+
+        private int maxOutboundMessageSize = MAX_MESSAGE_BYTES;
+
+        private volatile boolean closed;
+
+        private RestletClientStream(
+                Client client,
+                RestletSocketAddress address,
+                String authority,
+                MethodDescriptor<?, ?> method,
+                Metadata requestMetadata,
+                AtomicReference<Protocol> lastResponseProtocol,
+                java.util.function.Consumer<RestletClientStream> onStart,
+                java.util.function.Consumer<RestletClientStream> onClose) {
+            this.client = client;
+            this.address = address;
+            this.authority = authority;
+            this.method = method;
+            this.requestMetadata = requestMetadata;
+            this.lastResponseProtocol = lastResponseProtocol;
+            this.onStart = onStart;
+            this.onClose = onClose;
+        }
+
+        @Override
+        public void start(ClientStreamListener listener) {
+            this.listener = listener;
+            onStart.accept(this);
+            if (closed) {
+                return;
+            }
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                try {
+                    PipedInputStream input = new PipedInputStream(STREAM_PIPE_BUFFER_BYTES);
+                    bidirectionalRequestInput = input;
+                    bidirectionalRequestOutput = new PipedOutputStream(input);
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                    return;
+                }
+                Thread.startVirtualThread(this::executeBidirectionalRequest);
+            }
+            listener.onReady();
+        }
+
+        @Override
+        public void request(int numMessages) {
+            if (numMessages <= 0) {
+                throw new IllegalArgumentException("numMessages must be positive");
+            }
+            responseDemand.request(numMessages);
+        }
+
+        @Override
+        public void cancel(Status reason) {
+            close(reason, new Metadata());
+            Request request = activeRequest;
+            if (request != null) {
+                request.abort();
+            }
+            PipedOutputStream requestOutput = bidirectionalRequestOutput;
+            if (requestOutput != null) {
+                try {
+                    requestOutput.close();
+                } catch (IOException e) {
+                    throw new IllegalStateException(
+                            "Unable to close cancelled gRPC request pipe", e);
+                }
+            }
+        }
+
+        @Override
+        public void writeMessage(InputStream message) {
+            if (closed) {
+                throw new IllegalStateException("gRPC stream is already closed");
+            }
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                writeBidirectionalMessage(message);
+                return;
+            }
+            if (method.getType() == MethodDescriptor.MethodType.UNARY
+                    && !requestPayloads.isEmpty()) {
+                throw new IllegalStateException("R0 unary probe accepts one request message");
+            }
+            byte[] payload;
+            try (InputStream input = message) {
+                payload = input.readNBytes(maxOutboundMessageSize + 1);
+            } catch (IOException e) {
+                close(Status.INTERNAL.withCause(e), new Metadata());
+                return;
+            }
+            if (payload.length > maxOutboundMessageSize) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request exceeds " + maxOutboundMessageSize + " bytes"),
+                        new Metadata());
+                return;
+            }
+            requestStreamBytes += payload.length + 5;
+            if (requestStreamBytes > MAX_STREAM_BYTES) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request stream exceeds " + MAX_STREAM_BYTES + " bytes"),
+                        new Metadata());
+                return;
+            }
+            requestPayloads.add(payload);
+        }
+
+        private synchronized void writeBidirectionalMessage(InputStream message) {
+            byte[] payload;
+            try (InputStream input = message) {
+                payload = input.readNBytes(maxOutboundMessageSize + 1);
+            } catch (IOException e) {
+                close(Status.INTERNAL.withCause(e), new Metadata());
+                return;
+            }
+            if (payload.length > maxOutboundMessageSize) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request exceeds " + maxOutboundMessageSize + " bytes"),
+                        new Metadata());
+                return;
+            }
+            requestStreamBytes += payload.length + 5;
+            if (requestStreamBytes > MAX_STREAM_BYTES) {
+                close(
+                        Status.RESOURCE_EXHAUSTED.withDescription(
+                                "gRPC request stream exceeds " + MAX_STREAM_BYTES + " bytes"),
+                        new Metadata());
+                return;
+            }
+            try {
+                bidirectionalRequestOutput.write(frame(payload));
+                bidirectionalRequestOutput.flush();
+            } catch (IOException e) {
+                close(Status.UNAVAILABLE.withCause(e), new Metadata());
+            }
+        }
+
+        private void executeBidirectionalRequest() {
+            Response response = null;
+            try {
+                OutputRepresentation requestEntity =
+                        new OutputRepresentation(GRPC_MEDIA_TYPE) {
+                            @Override
+                            public void write(OutputStream output) throws IOException {
+                                try {
+                                    byte[] payload;
+                                    while ((payload =
+                                                    readGrpcMessage(
+                                                            bidirectionalRequestInput,
+                                                            maxOutboundMessageSize))
+                                            != null) {
+                                        output.write(frame(payload));
+                                        output.flush();
+                                    }
+                                } finally {
+                                    requestWriterFinished.countDown();
+                                }
+                            }
+                        };
+                Request request =
+                        new Request(
+                                Method.POST,
+                                address.target + "/" + method.getFullMethodName(),
+                                requestEntity);
+                activeRequest = request;
+                if (closed) {
+                    return;
+                }
+                request.getHeaders().add("te", "trailers");
+                writeMetadata(requestMetadata, request.getHeaders());
+                response = client.handle(request);
+                lastResponseProtocol.set(response.getProtocol());
+
+                listener.headersRead(readMetadata(response.getHeaders()));
+                if (response.getEntity() != null) {
+                    try (InputStream input = response.getEntity().getStream()) {
+                        byte[] payload;
+                        while (true) {
+                            payload = readGrpcMessage(input, maxInboundMessageSize);
+                            if (payload == null) {
+                                break;
+                            }
+                            if (!responseDemand.acquire()) {
+                                return;
+                            }
+                            byte[] messagePayload = payload;
+                            listener.messagesAvailable(
+                                    new StreamListener.MessageProducer() {
+                                        private boolean consumed;
+
+                                        @Override
+                                        public InputStream next() {
+                                            if (consumed) {
+                                                return null;
+                                            }
+                                            consumed = true;
+                                            return new ByteArrayInputStream(messagePayload);
+                                        }
+                                    });
+                        }
+                    }
+                }
+
+                Metadata trailers = readMetadata(response.getTrailers());
+                String statusText = response.getTrailers().getFirstValue("grpc-status", true);
+                if (statusText == null) {
+                    statusText = response.getHeaders().getFirstValue("grpc-status", true);
+                }
+                if (statusText == null) {
+                    close(Status.UNKNOWN.withDescription("Missing grpc-status"), trailers);
+                    return;
+                }
+                Status status;
+                try {
+                    status = Status.fromCodeValue(Integer.parseInt(statusText));
+                } catch (NumberFormatException e) {
+                    status = Status.UNKNOWN.withDescription("Invalid grpc-status: " + statusText);
+                }
+                String statusMessage = response.getTrailers().getFirstValue("grpc-message", true);
+                if (statusMessage == null) {
+                    statusMessage = response.getHeaders().getFirstValue("grpc-message", true);
+                }
+                if (statusMessage != null) {
+                    status = status.withDescription(statusMessage);
+                }
+                if (!response.getStatus().isSuccess() || !status.isOk()) {
+                    close(status, trailers);
+                    return;
+                }
+                close(status, ClientStreamListener.RpcProgress.PROCESSED, trailers);
+            } catch (Exception e) {
+                close(
+                        Status.UNAVAILABLE.withCause(e),
+                        ClientStreamListener.RpcProgress.PROCESSED,
+                        new Metadata());
+            } finally {
+                try {
+                    bidirectionalRequestInput.close();
+                } catch (IOException e) {
+                    if (!closed) {
+                        close(Status.UNAVAILABLE.withCause(e), new Metadata());
+                    }
+                }
+                if (response != null && response.getEntity() != null) {
+                    response.getEntity().release();
+                }
+                responseReaderFinished.countDown();
+            }
+        }
+
+        @Override
+        public void halfClose() {
+            if (closed) {
+                return;
+            }
+            if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
+                try {
+                    bidirectionalRequestOutput.close();
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                }
+                return;
+            }
+            if (method.getType() == MethodDescriptor.MethodType.UNARY
+                    && requestPayloads.size() != 1) {
+                close(
+                        Status.INTERNAL.withDescription("gRPC unary request message is missing"),
+                        new Metadata());
+                return;
+            }
+            try {
+                ByteArrayOutputStream framedRequest = new ByteArrayOutputStream();
+                for (byte[] payload : requestPayloads) {
+                    framedRequest.write(frame(payload));
+                }
+                Request request =
+                        new Request(
+                                Method.POST,
+                                address.target + "/" + method.getFullMethodName(),
+                                new ByteArrayRepresentation(
+                                        framedRequest.toByteArray(), GRPC_MEDIA_TYPE));
+                activeRequest = request;
+                request.getHeaders().add("te", "trailers");
+                writeMetadata(requestMetadata, request.getHeaders());
+                Response response = client.handle(request);
+                lastResponseProtocol.set(response.getProtocol());
+                byte[] responsePayload = null;
+                if (response.getEntity() != null) {
+                    InputStream responseStream = response.getEntity().getStream();
+                    if (responseStream != null) {
+                        try (InputStream input = responseStream) {
+                            byte[] framedResponse = input.readNBytes(MAX_STREAM_BYTES + 1);
+                            if (framedResponse.length > MAX_STREAM_BYTES) {
+                                throw new IOException(
+                                        "gRPC response stream exceeds "
+                                                + MAX_STREAM_BYTES
+                                                + " bytes");
+                            }
+                            responsePayload = framedResponse;
+                        }
+                    }
+                }
+                Metadata trailers = readMetadata(response.getTrailers());
+                String statusText = response.getTrailers().getFirstValue("grpc-status", true);
+                if (statusText == null) {
+                    statusText = response.getHeaders().getFirstValue("grpc-status", true);
+                }
+                if (statusText == null) {
+                    close(Status.UNKNOWN.withDescription("Missing grpc-status"), trailers);
+                    return;
+                }
+                Status status;
+                try {
+                    status = Status.fromCodeValue(Integer.parseInt(statusText));
+                } catch (NumberFormatException e) {
+                    status = Status.UNKNOWN.withDescription("Invalid grpc-status: " + statusText);
+                }
+                String statusMessage = response.getTrailers().getFirstValue("grpc-message", true);
+                if (statusMessage == null) {
+                    statusMessage = response.getHeaders().getFirstValue("grpc-message", true);
+                }
+                if (statusMessage != null) {
+                    status = status.withDescription(statusMessage);
+                }
+                if (response.getHeaders().getFirstValue("grpc-status", true) != null) {
+                    trailers.merge(readMetadata(response.getHeaders()));
+                } else {
+                    listener.headersRead(readMetadata(response.getHeaders()));
+                }
+                List<byte[]> messages =
+                        responsePayload == null
+                                ? List.of()
+                                : unframeMessages(responsePayload, maxInboundMessageSize);
+                if (!messages.isEmpty()) {
+                    listener.messagesAvailable(
+                            new StreamListener.MessageProducer() {
+                                private int next;
+
+                                @Override
+                                public InputStream next() {
+                                    if (next == messages.size()) {
+                                        return null;
+                                    }
+                                    return new ByteArrayInputStream(messages.get(next++));
+                                }
+                            });
+                }
+                close(status, ClientStreamListener.RpcProgress.PROCESSED, trailers);
+            } catch (Exception e) {
+                close(
+                        Status.UNAVAILABLE.withCause(e),
+                        ClientStreamListener.RpcProgress.PROCESSED,
+                        new Metadata());
+            }
+        }
+
+        private synchronized void close(Status status, Metadata trailers) {
+            close(status, ClientStreamListener.RpcProgress.PROCESSED, trailers);
+        }
+
+        private synchronized void close(
+                Status status, ClientStreamListener.RpcProgress progress, Metadata trailers) {
+            if (!closed && listener != null) {
+                closed = true;
+                responseDemand.close();
+                try {
+                    listener.closed(status, progress, trailers);
+                } finally {
+                    onClose.accept(this);
+                }
+            }
+        }
+
+        @Override
+        public void flush() {
+            PipedOutputStream requestOutput = bidirectionalRequestOutput;
+            if (requestOutput != null && !closed) {
+                try {
+                    requestOutput.flush();
+                } catch (IOException e) {
+                    close(Status.INTERNAL.withCause(e), new Metadata());
+                }
+            }
+        }
+
+        @Override
+        public boolean isReady() {
+            return !closed;
+        }
+
+        @Override
+        public void optimizeForDirectExecutor() {}
+
+        @Override
+        public void setCompressor(io.grpc.Compressor compressor) {
+            if (!"identity".equalsIgnoreCase(compressor.getMessageEncoding())) {
+                throw new UnsupportedOperationException(
+                        "R0 SPI probe does not support compression");
+            }
+        }
+
+        @Override
+        public void setMessageCompression(boolean enabled) {
+            if (enabled) {
+                throw new UnsupportedOperationException(
+                        "R0 SPI probe does not support compression");
+            }
+        }
+
+        @Override
+        public void setAuthority(String authority) {
+            if (authority != null && !authority.equals(this.authority)) {
+                throw new UnsupportedOperationException(
+                        "R0 SPI probe does not support authority overrides");
+            }
+        }
+
+        @Override
+        public void setFullStreamDecompression(boolean enabled) {
+            if (enabled) {
+                throw new UnsupportedOperationException(
+                        "R0 SPI probe does not support decompression");
+            }
+        }
+
+        @Override
+        public void setDecompressorRegistry(io.grpc.DecompressorRegistry registry) {}
+
+        @Override
+        public void setMaxInboundMessageSize(int maxSize) {
+            maxInboundMessageSize = Math.min(maxSize, MAX_MESSAGE_BYTES);
+        }
+
+        @Override
+        public void setMaxOutboundMessageSize(int maxSize) {
+            maxOutboundMessageSize = Math.min(maxSize, MAX_MESSAGE_BYTES);
+        }
+
+        @Override
+        public void setDeadline(Deadline deadline) {
+            if (deadline != null) {
+                throw new UnsupportedOperationException("R0 SPI probe does not support deadlines");
+            }
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return Attributes.EMPTY;
+        }
+
+        @Override
+        public void appendTimeoutInsight(InsightBuilder insight) {}
+    }
+
+    private static byte[] frame(byte[] payload) {
+        ByteBuffer buffer = ByteBuffer.allocate(payload.length + 5).order(ByteOrder.BIG_ENDIAN);
+        buffer.put((byte) 0);
+        buffer.putInt(payload.length);
+        buffer.put(payload);
+        return buffer.array();
+    }
+
+    private static byte[] unframe(byte[] frame) throws IOException {
+        return unframe(frame, MAX_MESSAGE_BYTES);
+    }
+
+    private static byte[] unframe(byte[] frame, int maxMessageSize) throws IOException {
+        if (frame.length < 5 || frame[0] != 0) {
+            throw new IOException("Invalid or compressed gRPC message frame");
+        }
+        int length = ByteBuffer.wrap(frame, 1, 4).order(ByteOrder.BIG_ENDIAN).getInt();
+        if (length < 0 || length > maxMessageSize || frame.length != length + 5) {
+            throw new IOException("Invalid gRPC message length: " + length);
+        }
+        return java.util.Arrays.copyOfRange(frame, 5, frame.length);
+    }
+
+    private static byte[] readGrpcMessage(InputStream input, int maxMessageSize)
+            throws IOException {
+        int compressionFlag = input.read();
+        if (compressionFlag == -1) {
+            return null;
+        }
+        if (compressionFlag != 0) {
+            throw new IOException("Compressed gRPC messages are not supported");
+        }
+        byte[] lengthBytes = input.readNBytes(4);
+        if (lengthBytes.length != 4) {
+            throw new IOException("Truncated gRPC message length");
+        }
+        int length = ByteBuffer.wrap(lengthBytes).order(ByteOrder.BIG_ENDIAN).getInt();
+        if (length < 0 || length > maxMessageSize) {
+            throw new IOException("Invalid gRPC message length: " + length);
+        }
+        byte[] payload = input.readNBytes(length);
+        if (payload.length != length) {
+            throw new IOException("Truncated gRPC message payload");
+        }
+        return payload;
+    }
+
+    private static List<byte[]> unframeMessages(byte[] bytes, int maxMessageSize)
+            throws IOException {
+        List<byte[]> messages = new ArrayList<>();
+        int offset = 0;
+        while (offset < bytes.length) {
+            if (bytes.length - offset < 5 || bytes[offset] != 0) {
+                throw new IOException("Invalid or compressed gRPC message frame");
+            }
+            int length = ByteBuffer.wrap(bytes, offset + 1, 4).order(ByteOrder.BIG_ENDIAN).getInt();
+            if (length < 0 || length > maxMessageSize || bytes.length - offset < length + 5) {
+                throw new IOException("Invalid gRPC message length: " + length);
+            }
+            messages.add(java.util.Arrays.copyOfRange(bytes, offset + 5, offset + length + 5));
+            offset += length + 5;
+        }
+        return messages;
+    }
+
+    private static void writeMetadata(Metadata metadata, Series<Header> headers) {
+        for (String name : metadata.keys()) {
+            if (name.startsWith("grpc-") && !"grpc-status-details-bin".equals(name)) {
+                continue;
+            }
+            if (name.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+                Metadata.Key<byte[]> key = Metadata.Key.of(name, Metadata.BINARY_BYTE_MARSHALLER);
+                Iterable<byte[]> values = metadata.getAll(key);
+                if (values != null) {
+                    for (byte[] value : values) {
+                        headers.add(name, Base64.getEncoder().encodeToString(value));
+                    }
+                }
+            } else {
+                Metadata.Key<String> key = Metadata.Key.of(name, Metadata.ASCII_STRING_MARSHALLER);
+                Iterable<String> values = metadata.getAll(key);
+                if (values != null) {
+                    for (String value : values) {
+                        headers.add(name, value);
+                    }
+                }
+            }
+        }
+    }
+
+    private static Metadata readMetadata(Series<Header> headers) {
+        Metadata metadata = new Metadata();
+        Set<String> excluded =
+                Set.of(
+                        "content-type",
+                        "content-length",
+                        "te",
+                        "date",
+                        "server",
+                        "grpc-status",
+                        "grpc-message",
+                        "grpc-encoding",
+                        "grpc-accept-encoding");
+        for (Header header : headers) {
+            String name = header.getName().toLowerCase(java.util.Locale.ROOT);
+            if (excluded.contains(name)
+                    || (name.startsWith("grpc-") && !"grpc-status-details-bin".equals(name))) {
+                continue;
+            }
+            if (name.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+                Metadata.Key<byte[]> key = Metadata.Key.of(name, Metadata.BINARY_BYTE_MARSHALLER);
+                metadata.put(
+                        key,
+                        Base64.getDecoder()
+                                .decode(header.getValue().getBytes(StandardCharsets.US_ASCII)));
+            } else {
+                Metadata.Key<String> key = Metadata.Key.of(name, Metadata.ASCII_STRING_MARSHALLER);
+                metadata.put(key, header.getValue());
+            }
+        }
+        return metadata;
+    }
+}
