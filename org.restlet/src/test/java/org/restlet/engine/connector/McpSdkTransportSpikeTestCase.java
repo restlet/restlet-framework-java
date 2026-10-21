@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -248,6 +249,19 @@ class McpSdkTransportSpikeTestCase {
         assertEquals(
                 List.of(Map.of("type", "text", "text", "echo:fail")), failedResult.get("content"));
         assertEquals(2, toolCalls.get());
+    }
+
+    @Test
+    void comparesToolsProfileWithRecordedIkanosResponses() throws Exception {
+        startHttpServer(true);
+        McpIkanosDifferentialProbe.runRecorded(client, endpoint());
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "restlet.mcp.ikanos.home", matches = ".+")
+    void comparesToolsProfileWithRealIkanosEndpoint() throws Exception {
+        startHttpServer(true);
+        McpIkanosDifferentialProbe.run(client, endpoint());
     }
 
     @Test
