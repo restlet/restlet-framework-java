@@ -10,6 +10,7 @@ package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
@@ -25,12 +26,21 @@ import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransport;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.ProtocolVersions;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
@@ -47,6 +57,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -54,6 +65,10 @@ import reactor.core.scheduler.Schedulers;
 class McpStreamableSdkTransportSpikeTestCase {
 
     private static final int MAX_MESSAGE_BYTES = 64 * 1024;
+
+    private static final int MAX_REPLAY_EVENTS = 8;
+
+    private static final int MAX_LISTENING_EVENTS = 2;
 
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
 
@@ -64,6 +79,102 @@ class McpStreamableSdkTransportSpikeTestCase {
     private io.modelcontextprotocol.server.McpAsyncServer sdkServer;
 
     private Server server;
+
+    @Test
+    void servesListeningSseAndReplaysEventsAfterLastEventId() throws Exception {
+        McpJsonMapper mapper = McpJsonDefaults.getMapper();
+        RestletStreamableTransport transport = new RestletStreamableTransport(mapper);
+        sdkServer =
+                McpServer.async(transport).serverInfo("restlet-r0-streamable-spike", "1").build();
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        server = new Server(serverContext, Protocol.HTTP, 0, transport);
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(clientContext, Protocol.HTTP);
+        client.start();
+
+        RestletStreamableClientTransport clientTransport =
+                new RestletStreamableClientTransport(
+                        client, mapper, "http://localhost:" + server.getActualPort() + "/mcp");
+        sdkClient =
+                McpClient.async(clientTransport)
+                        .requestTimeout(REQUEST_TIMEOUT)
+                        .initializationTimeout(REQUEST_TIMEOUT)
+                        .build();
+        sdkClient.initialize().block(REQUEST_TIMEOUT);
+        String sessionId = clientTransport.sessionId;
+        assertTrue(sessionId != null && !sessionId.isBlank());
+
+        Request get = new Request(Method.GET, clientTransport.target);
+        get.getHeaders().add("Mcp-Session-Id", sessionId);
+        var responseFuture =
+                java.util.concurrent.CompletableFuture.supplyAsync(() -> client.handle(get));
+        assertTrue(
+                transport.awaitListeningStream(sessionId, REQUEST_TIMEOUT),
+                "GET did not establish an SDK listening stream");
+        transport
+                .notifyClients(
+                        sessionId,
+                        new McpSchema.JSONRPCNotification(
+                                "notifications/message", Map.of("text", "first")))
+                .block(REQUEST_TIMEOUT);
+        transport
+                .notifyClients(
+                        sessionId,
+                        new McpSchema.JSONRPCNotification(
+                                "notifications/message", Map.of("text", "second")))
+                .block(REQUEST_TIMEOUT);
+        Response response = responseFuture.get(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+        assertEquals(org.restlet.data.Status.SUCCESS_OK, response.getStatus());
+        assertEquals("text/event-stream", response.getEntity().getMediaType().getName());
+        assertEquals(sessionId, response.getHeaders().getFirstValue("Mcp-Session-Id", true));
+
+        String firstId;
+        String secondEvent;
+        try (BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(
+                                response.getEntity().getStream(), StandardCharsets.UTF_8))) {
+            String firstEvent = readSseEvent(reader);
+            firstId = sseField(firstEvent, "id");
+            assertTrue(firstId != null && !firstId.isBlank());
+            assertTrue(firstEvent.contains("\"text\":\"first\""));
+
+            secondEvent = readSseEvent(reader);
+            String secondId = sseField(secondEvent, "id");
+            assertTrue(secondId != null && !secondId.isBlank() && !secondId.equals(firstId));
+            assertTrue(secondEvent.contains("\"text\":\"second\""));
+            assertNull(reader.readLine(), "Bounded listening probe should close after two events");
+        } finally {
+            response.getEntity().release();
+        }
+
+        Request replay = new Request(Method.GET, clientTransport.target);
+        replay.getHeaders().add("Mcp-Session-Id", sessionId);
+        replay.getHeaders().add("Last-Event-ID", firstId);
+        Response replayResponse = client.handle(replay);
+        assertEquals(org.restlet.data.Status.SUCCESS_OK, replayResponse.getStatus());
+        try (InputStream input = replayResponse.getEntity().getStream()) {
+            byte[] replayBytes = input.readNBytes(MAX_MESSAGE_BYTES + 1);
+            assertTrue(replayBytes.length <= MAX_MESSAGE_BYTES);
+            String replayBody = new String(replayBytes, StandardCharsets.UTF_8);
+            assertTrue(replayBody.contains("id: " + sseField(secondEvent, "id")));
+            assertTrue(replayBody.contains("\"text\":\"second\""));
+            assertFalse(replayBody.contains("\"text\":\"first\""));
+        } finally {
+            replayResponse.getEntity().release();
+        }
+
+        Request expiredReplay = new Request(Method.GET, clientTransport.target);
+        expiredReplay.getHeaders().add("Mcp-Session-Id", sessionId);
+        expiredReplay.getHeaders().add("Last-Event-ID", "expired-event");
+        Response expiredReplayResponse = client.handle(expiredReplay);
+        assertEquals(
+                org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST,
+                expiredReplayResponse.getStatus());
+    }
 
     @BeforeEach
     void setUp() {
@@ -174,6 +285,31 @@ class McpStreamableSdkTransportSpikeTestCase {
         }
     }
 
+    private static String readSseEvent(BufferedReader reader) throws IOException {
+        StringBuilder event = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.isEmpty()) {
+                if (!event.isEmpty()) {
+                    return event.toString();
+                }
+            } else {
+                event.append(line).append('\n');
+            }
+        }
+        throw new IOException("MCP SSE stream closed before the expected event");
+    }
+
+    private static String sseField(String event, String field) {
+        return event.lines()
+                .filter(line -> line.startsWith(field + ":"))
+                .map(line -> line.substring(field.length() + 1).strip())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private record ServerEvent(String id, String json) {}
+
     private static final class RestletStreamableTransport extends Restlet
             implements McpStreamableServerTransportProvider {
 
@@ -182,6 +318,13 @@ class McpStreamableSdkTransportSpikeTestCase {
         private final Map<String, McpStreamableServerSession> sessions = new ConcurrentHashMap<>();
 
         private final AtomicInteger postCount = new AtomicInteger();
+
+        private final Map<String, ArrayDeque<ServerEvent>> eventHistory = new ConcurrentHashMap<>();
+
+        private final Map<String, ListeningSseTransport> listeningTransports =
+                new ConcurrentHashMap<>();
+
+        private final Map<String, CountDownLatch> listeningStreamReady = new ConcurrentHashMap<>();
 
         private volatile McpStreamableServerSession.Factory sessionFactory;
 
@@ -196,15 +339,64 @@ class McpStreamableSdkTransportSpikeTestCase {
 
         @Override
         public Mono<Void> notifyClients(String sessionId, Object notification) {
-            return Mono.error(
-                    new UnsupportedOperationException(
-                            "The R0 Streamable HTTP probe does not open server-sent streams"));
+            if (!(notification instanceof McpSchema.JSONRPCNotification rpcNotification)) {
+                return Mono.error(
+                        new IllegalArgumentException(
+                                "The R0 probe requires an SDK JSON-RPC notification"));
+            }
+            McpStreamableServerSession session = sessions.get(sessionId);
+            if (session == null) {
+                return Mono.error(new IllegalArgumentException("Unknown MCP session"));
+            }
+            return session.sendNotification(rpcNotification.method(), rpcNotification.params());
+        }
+
+        private boolean awaitListeningStream(String sessionId, Duration timeout)
+                throws InterruptedException {
+            return listeningStreamReady
+                    .computeIfAbsent(sessionId, ignored -> new CountDownLatch(1))
+                    .await(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        }
+
+        private void recordEvent(String sessionId, ServerEvent event) {
+            ArrayDeque<ServerEvent> events =
+                    eventHistory.computeIfAbsent(sessionId, ignored -> new ArrayDeque<>());
+            synchronized (events) {
+                events.addLast(event);
+                while (events.size() > MAX_REPLAY_EVENTS) {
+                    events.removeFirst();
+                }
+            }
+        }
+
+        private List<ServerEvent> eventsAfter(String sessionId, String lastEventId) {
+            ArrayDeque<ServerEvent> events = eventHistory.get(sessionId);
+            if (events == null) {
+                return null;
+            }
+            synchronized (events) {
+                List<ServerEvent> snapshot = new ArrayList<>(events);
+                int lastIndex = -1;
+                for (int index = 0; index < snapshot.size(); index++) {
+                    if (snapshot.get(index).id().equals(lastEventId)) {
+                        lastIndex = index;
+                        break;
+                    }
+                }
+                return lastIndex < 0
+                        ? null
+                        : List.copyOf(snapshot.subList(lastIndex + 1, snapshot.size()));
+            }
         }
 
         @Override
         public Mono<Void> closeGracefully() {
             return Mono.<Void>fromRunnable(
-                            () -> sessions.values().forEach(McpStreamableServerSession::close))
+                            () -> {
+                                sessions.values().forEach(McpStreamableServerSession::close);
+                                listeningTransports.values().forEach(ListeningSseTransport::close);
+                                listeningStreamReady.clear();
+                            })
                     .doFinally(signal -> sessions.clear());
         }
 
@@ -214,9 +406,82 @@ class McpStreamableSdkTransportSpikeTestCase {
                 deleteSession(request, response);
             } else if (request.getMethod().equals(Method.POST)) {
                 postMessage(request, response);
+            } else if (request.getMethod().equals(Method.GET)) {
+                getListeningStream(request, response);
             } else {
                 response.setStatus(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             }
+        }
+
+        private void getListeningStream(Request request, Response response) {
+            String sessionId = request.getHeaders().getFirstValue("Mcp-Session-Id", true);
+            if (sessionId == null || sessionId.isBlank()) {
+                response.setStatus(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST);
+                return;
+            }
+            McpStreamableServerSession session = sessions.get(sessionId);
+            if (session == null) {
+                response.setStatus(org.restlet.data.Status.CLIENT_ERROR_NOT_FOUND);
+                return;
+            }
+            response.getHeaders().add("Mcp-Session-Id", sessionId);
+            String lastEventId = request.getHeaders().getFirstValue("Last-Event-ID", true);
+            if (lastEventId != null) {
+                List<ServerEvent> replay = eventsAfter(sessionId, lastEventId);
+                if (replay == null) {
+                    response.setStatus(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST);
+                    return;
+                }
+                response.setEntity(formatEvents(replay), new MediaType("text/event-stream"));
+                return;
+            }
+
+            ListeningSseTransport listening = new ListeningSseTransport(this, sessionId);
+            listeningTransports.put(sessionId, listening);
+            session.listeningStream(listening);
+            listeningStreamReady
+                    .computeIfAbsent(sessionId, ignored -> new CountDownLatch(1))
+                    .countDown();
+            response.setEntity(
+                    new OutputRepresentation(new MediaType("text/event-stream")) {
+                        @Override
+                        public void write(OutputStream output) throws IOException {
+                            try {
+                                for (int index = 0; index < MAX_LISTENING_EVENTS; index++) {
+                                    ServerEvent event =
+                                            listening.events.poll(
+                                                    REQUEST_TIMEOUT.toMillis(),
+                                                    TimeUnit.MILLISECONDS);
+                                    if (event == null) {
+                                        throw new IOException(
+                                                "Timed out waiting for bounded MCP SSE event");
+                                    }
+                                    if (event.id() == null) {
+                                        break;
+                                    }
+                                    output.write(
+                                            formatEvent(event).getBytes(StandardCharsets.UTF_8));
+                                    output.flush();
+                                }
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                throw new IOException("Interrupted while writing MCP SSE", e);
+                            } finally {
+                                listeningTransports.remove(sessionId, listening);
+                                session.releaseListeningStream();
+                            }
+                        }
+                    });
+        }
+
+        private static String formatEvents(List<ServerEvent> events) {
+            StringBuilder result = new StringBuilder();
+            events.forEach(event -> result.append(formatEvent(event)));
+            return result.toString();
+        }
+
+        private static String formatEvent(ServerEvent event) {
+            return "id: " + event.id() + "\nevent: message\ndata: " + event.json() + "\n\n";
         }
 
         private void postMessage(Request request, Response response) {
@@ -315,6 +580,12 @@ class McpStreamableSdkTransportSpikeTestCase {
                 response.setStatus(org.restlet.data.Status.CLIENT_ERROR_NOT_FOUND);
                 return;
             }
+            eventHistory.remove(sessionId);
+            ListeningSseTransport listening = listeningTransports.remove(sessionId);
+            if (listening != null) {
+                listening.close();
+            }
+            listeningStreamReady.remove(sessionId);
             session.close();
             response.setStatus(org.restlet.data.Status.SUCCESS_NO_CONTENT);
         }
@@ -329,6 +600,66 @@ class McpStreamableSdkTransportSpikeTestCase {
             response.setEntity(
                     "event: message\ndata: " + jsonMapper.writeValueAsString(message) + "\n\n",
                     new MediaType("text/event-stream"));
+        }
+    }
+
+    private static final class ListeningSseTransport implements McpStreamableServerTransport {
+
+        private final RestletStreamableTransport owner;
+
+        private final String sessionId;
+
+        private final LinkedBlockingQueue<ServerEvent> events =
+                new LinkedBlockingQueue<>(MAX_LISTENING_EVENTS);
+
+        private ListeningSseTransport(RestletStreamableTransport owner, String sessionId) {
+            this.owner = owner;
+            this.sessionId = sessionId;
+        }
+
+        @Override
+        public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message, String messageId) {
+            return Mono.fromCallable(
+                            () -> {
+                                if (messageId == null || messageId.isBlank()) {
+                                    throw new IllegalArgumentException(
+                                            "SDK server event omitted its replay ID");
+                                }
+                                ServerEvent event =
+                                        new ServerEvent(
+                                                messageId,
+                                                owner.jsonMapper.writeValueAsString(message));
+                                owner.recordEvent(sessionId, event);
+                                if (!events.offer(event)) {
+                                    throw new IllegalStateException(
+                                            "Bounded MCP listening queue is full");
+                                }
+                                return event;
+                            })
+                    .then();
+        }
+
+        @Override
+        public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
+            return Mono.error(
+                    new IllegalStateException("SDK server event did not include its message ID"));
+        }
+
+        @Override
+        public <T> T unmarshalFrom(Object value, TypeRef<T> typeRef) {
+            return owner.jsonMapper.convertValue(value, typeRef);
+        }
+
+        @Override
+        public void close() {
+            events.clear();
+            events.offer(new ServerEvent(null, null));
+        }
+
+        @Override
+        public Mono<Void> closeGracefully() {
+            close();
+            return Mono.empty();
         }
     }
 

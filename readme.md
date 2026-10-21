@@ -50,6 +50,14 @@ equivalence. Metadata/discovery are specific to the tools fixture; other methods
 identity/capability checks and production lifecycle are not validated. Ikanos migration remains
 deferred.
 
+The Streamable HTTP probe also opens a session-bound GET listening stream, sends two SDK-generated
+notifications, and verifies the returned SSE event IDs and JSON. It replays events after a known
+`Last-Event-ID` from a test-only per-session history capped at eight events; unknown or expired IDs
+are rejected. Each live stream is deliberately bounded to two events. This history is a probe-owned
+compatibility seam, not SDK replay: `McpStreamableServerSession.replay` is empty in MCP SDK 2.1.0.
+The probe does not establish production SSE lifecycle, reconnection, or full Streamable HTTP
+conformance.
+
 To recheck the same corpus against the actual Ikanos endpoint, prepare an Ikanos checkout at the
 reference revision, then run the following PowerShell commands (adjust the checkout path):
 
@@ -68,8 +76,8 @@ prototype over Restlet HTTP/2; this compares MCP semantics, not transport implem
 The reference process is stopped after the test. Startup failures fail the test rather than
 falling back to recorded responses.
 
-Without the opt-in properties, ten tests pass and the live comparison is skipped; with them,
-all eleven run. Recorded and live reports are written separately under `org.restlet/target` as
+Without the opt-in properties, eleven tests pass and the live comparison is skipped; with them,
+all twelve run. Recorded and live reports are written separately under `org.restlet/target` as
 `mcp-ikanos-recorded.json` and `mcp-ikanos-differential.json`; reference-process logs are kept in
 per-run `mcp-ikanos-*` directories there. Review changed observations explicitly before updating
 the checked-in baseline. No Ikanos or additional production dependency is added to Restlet.
