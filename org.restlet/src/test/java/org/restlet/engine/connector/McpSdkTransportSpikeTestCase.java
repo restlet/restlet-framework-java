@@ -167,6 +167,26 @@ class McpSdkTransportSpikeTestCase {
         assertTrue(listedTools.tools().stream().anyMatch(item -> item.name().equals("echo")));
         assertEquals("echo:hello", ((McpSchema.TextContent) result.content().getFirst()).text());
         assertEquals("2.0", clientTransport.lastResponseProtocol.get().getVersion());
+
+        String profileRequestBody =
+                "{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"tools/list\",\"params\":{\"_meta\":{\"io.modelcontextprotocol/protocolVersion\":\"2026-07-28\"}}}";
+        Request statelessRequest =
+                new Request(
+                        Method.POST,
+                        "http://localhost:" + server.getActualPort() + "/mcp",
+                        new StringRepresentation(profileRequestBody, MediaType.APPLICATION_JSON));
+        statelessRequest.getHeaders().add("Mcp-Method", "tools/list");
+        statelessRequest.getHeaders().add("Mcp-Protocol-Version", "2026-07-28");
+        Response statelessResponse = client.handle(statelessRequest);
+        assertEquals(org.restlet.data.Status.SUCCESS_OK, statelessResponse.getStatus());
+        assertEquals("2.0", statelessResponse.getProtocol().getVersion());
+        try (InputStream input = statelessResponse.getEntity().getStream()) {
+            String body =
+                    new String(
+                            input.readNBytes(MAX_MESSAGE_BYTES),
+                            java.nio.charset.StandardCharsets.UTF_8);
+            assertTrue(body.contains("\"echo\""));
+        }
     }
 
     @Test
