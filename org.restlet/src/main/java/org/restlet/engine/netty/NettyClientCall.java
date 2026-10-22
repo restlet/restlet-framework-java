@@ -384,6 +384,7 @@ class NettyClientCall {
     }
 
     private Status handleConnectFailure(ConnectException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure("Unable to connect to the remote HTTP server", cause);
         abort();
@@ -391,6 +392,7 @@ class NettyClientCall {
     }
 
     private Status handleCommunicationFailure(IOException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure(
                 "An error occurred during the communication with the remote HTTP server", cause);
@@ -399,6 +401,7 @@ class NettyClientCall {
     }
 
     private Status handleInternalFailure(RuntimeException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure("An unexpected error occurred while sending the request", cause);
         abort();
@@ -791,15 +794,15 @@ class NettyClientCall {
                 currentResponse.getTrailers().add(name, trailer.getValue());
             }
         }
-        ChannelInputStream stream = this.body;
-        if (stream != null) {
-            stream.end();
-        }
         lock.lock();
         try {
             responseComplete = true;
         } finally {
             lock.unlock();
+        }
+        ChannelInputStream stream = this.body;
+        if (stream != null) {
+            stream.end();
         }
         maybeRelease();
     }
@@ -834,6 +837,10 @@ class NettyClientCall {
             lock.unlock();
         }
         ChannelInputStream stream = this.body;
+        org.restlet.Request request = currentRequest;
+        if (request != null) {
+            request.notifyDisconnect(cause);
+        }
         if (stream != null) {
             stream.fail(cause);
         }

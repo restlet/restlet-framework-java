@@ -131,6 +131,10 @@ class NettyServerCall {
     /** Indicates whether the exchange was completed. */
     private volatile boolean completed;
 
+    private NettyRequest restletRequest;
+
+    private Throwable disconnectCause;
+
     /** The response body stream, if any. */
     private volatile ChannelOutputStream responseBody;
 
@@ -215,8 +219,12 @@ class NettyServerCall {
      * @param context The context of the server connector.
      * @return The Restlet request.
      */
-    NettyRequest toRequest(Context context) {
+    synchronized NettyRequest toRequest(Context context) {
         NettyRequest result = new NettyRequest(context, this);
+        restletRequest = result;
+        if (disconnectCause != null) {
+            result.notifyDisconnect(disconnectCause);
+        }
         result.getAttributes().put(ATTRIBUTE_HEADERS, requestHeaders);
         result.getAttributes().put(ATTRIBUTE_VERSION, kind.version());
 
@@ -242,6 +250,15 @@ class NettyServerCall {
         }
 
         return result;
+    }
+
+    synchronized void onDisconnect(Throwable cause) {
+        if (!completed && disconnectCause == null) {
+            disconnectCause = cause;
+            if (restletRequest != null) {
+                restletRequest.notifyDisconnect(cause);
+            }
+        }
     }
 
     /**
@@ -718,12 +735,7 @@ class NettyServerCall {
             requestBody.close();
 
             if (!kind.isStream()) {
-                if (keepAlive) {
-                    // Ready for the next request on this connection.
-                    future.addListener(f -> channel.read());
-                } else {
-                    future.addListener(ChannelFutureListener.CLOSE);
-                }
+                completeHttp1(future, keepAlive);
             }
         } finally {
             if (eventStreamPermit) {
@@ -732,6 +744,25 @@ class NettyServerCall {
                 eventStreamPermit = false;
             }
         }
+    }
+
+    private void completeHttp1(ChannelFuture future, boolean keepAlive) {
+        if (!keepAlive) {
+            future.addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        future.addListener(
+                f -> {
+                    if (!f.isSuccess()) {
+                        channel.close();
+                        return;
+                    }
+                    var context = channel.pipeline().context(NettyServerHandler.class);
+                    if (context != null
+                            && context.handler() instanceof NettyServerHandler handler) {
+                        handler.responseComplete(context, this);
+                    }
+                });
     }
 
     static void setTrailerNames(
