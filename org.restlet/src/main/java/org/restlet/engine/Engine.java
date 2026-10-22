@@ -476,6 +476,7 @@ public class Engine {
         if (client.getProtocols().isEmpty()) {
             return result;
         }
+        requireUniqueStdioHelper(client.getProtocols(), helperClass, getRegisteredClients());
 
         org.restlet.engine.connector.ConnectorHelper<Client> connector = null;
         for (final Iterator<org.restlet.engine.connector.ConnectorHelper<Client>> iter =
@@ -533,6 +534,7 @@ public class Engine {
         if (server.getProtocols().isEmpty()) {
             return result;
         }
+        requireUniqueStdioHelper(server.getProtocols(), helperClass, getRegisteredServers());
 
         ConnectorHelper<Server> connector = null;
         for (final Iterator<ConnectorHelper<Server>> iter = getRegisteredServers().iterator();
@@ -573,6 +575,34 @@ public class Engine {
         }
 
         return result;
+    }
+
+    private static void requireUniqueStdioHelper(
+            List<Protocol> protocols,
+            String helperClass,
+            List<? extends ConnectorHelper<?>> helpers) {
+        if (!protocols.contains(Protocol.STDIO)) {
+            return;
+        }
+        long matches =
+                helpers.stream()
+                        .filter(
+                                helper ->
+                                        new HashSet<>(helper.getProtocols()).containsAll(protocols))
+                        .filter(
+                                helper ->
+                                        helperClass == null
+                                                || helper.getClass()
+                                                        .getCanonicalName()
+                                                        .equals(helperClass))
+                        .map(Object::getClass)
+                        .distinct()
+                        .count();
+        if (matches != 1) {
+            throw new IllegalStateException(
+                    "STDIO requires one explicitly selected or uniquely registered connector helper; found "
+                            + matches);
+        }
     }
 
     /**

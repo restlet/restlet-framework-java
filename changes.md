@@ -61,7 +61,23 @@ Changes log
         - Removed the `Protocol.WAR` constant ("war" scheme, Web Archive Access Protocol), a
           leftover of the Servlet mode, which is no longer supported. `Protocol.valueOf("war")`
           now returns a new, unknown protocol. Use CLAP or FILE references instead.
+        - STDIO connector construction fails fast without an explicit or uniquely registered
+          supporting helper class. Applications with multiple STDIO protocol helpers must
+          select one explicitly.
     - Enhancements
+        - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
+          bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
+          owned subprocess lifecycle with separate bounded stderr capture. No protocol
+          framing, default STDIO helper or SDK dependency is added to core.
+        - STDIO connector construction now requires an explicit or uniquely registered
+          supporting helper class, rather than implicitly selecting the first protocol helper.
+        - Added `Request.getDisconnectSignal()` and connector notification of abnormal
+          termination independently of entity I/O. Abort requests made before connector
+          registration are remembered; wrappers delegate lifecycle and copies remain independent.
+        - HTTP/1.1 observes idle disconnects after request-body consumption while preserving
+          ordered pipelining with bounded decoded lookahead (1024 messages / 1 MiB accounted
+          content/header storage). Overflow closes the connection; protocol upgrades retain
+          their existing handoff. HTTP/2 and HTTP/3 keep stream-level disconnect notification.
         - HTTP/2 and HTTP/3 clients deliver response headers without waiting for the first
           response body byte. This allows idle duplex and SSE responses to expose their
           headers before the peer sends a message.
