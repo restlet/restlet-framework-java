@@ -12,6 +12,130 @@ Restlet applications run directly in JVMs with minimal dependencies, resulting i
 
 ![](https://avatars.githubusercontent.com/u/374452?s=400&u=191f2eada671b2a07f61782cf638bdda0ccb6d3f&v=4)
 
+## R1 transport foundations
+
+R1 supplies protocol-neutral mechanics, not production MCP, gRPC or Smithy adapters.
+The extensions remain independent and retain their official SDK contracts. No RPC superclass,
+cross-protocol message model, dispatcher or status mapping is introduced.
+
+### Supported byte transport and ownership
+
+`org.restlet.util.StreamTransport` is the supported core seam. Its implementation in
+`org.restlet.engine.stdio` is not exported. It needs no protocol SDK or Netty types:
+
+```java
+try (var transport = new StreamTransport(input, output, cancelIo)) {
+    transport.setMaxOperationBytes(65536);
+    transport.start();
+    transport.write(new byte[] {0, 1, 2});
+    int count = transport.read(buffer, 0, buffer.length);
+}
+```
+
+The streams and cancellation action are supplied explicitly. Borrowed streams, including
+standard streams, are **never closed**; output is flushed on writes and stop. The cancellation
+action must promptly release blocked borrowed I/O without closing global standard streams.
+Interruption is also attempted, but an arbitrary `InputStream` may ignore it. If the owner's
+cancellation does not release I/O, stop reports a timeout; cleanup remains pending until the
+owner releases it. This is not a guarantee of safely interrupting arbitrary `System.in` reads.
+No global stream is redirected.
+
+`new StreamTransport(List.of(executable, argument))` instead owns the subprocess and its pipes.
+No shell or URI-derived command is used. Stop closes owned pipes and terminates only that
+process, not a process tree. Stderr is drained independently into a bounded tail; protocol
+output is never mixed with it. Startup, I/O, unexpected nonzero exit, stderr-drain and shutdown
+failures are surfaced. The stderr tail remains available after stop.
+
+| Configuration | Default | Contract |
+|---|---|---|
+| `maxOperationBytes` | 65536 | Positive; reads are capped, oversized writes rejected before I/O |
+| `maxStderrBytes` | 8192 | Positive bounded tail for owned subprocess stderr |
+| `shutdownTimeout` | 5 seconds | Positive caller wait bound, greater than exit grace |
+| `processExitGrace` | 250 milliseconds | Nonnegative and below shutdown timeout; wait before destroy and again before forced termination |
+
+Configuration is fixed after start/stop. Reads are synchronous, demand-driven and serialized:
+there is no protocol reader, prefetch or input queue. Writes are serialized and flushed as
+opaque sequences, with no internal task queue. Extensions must bound their own callers,
+message assembly, SDK demand and pending calls; a read chunk is not a protocol message.
+Stopped transports reject new work and cannot restart.
+
+`Protocol.STDIO` identifies bytes/pipes, **not MCP**. Core installs no default STDIO helper.
+Connector construction requires one uniquely registered supporting helper class or an
+explicit supporting helper class; missing/ambiguous choices fail rather than taking the
+first protocol implementation. MCP framing, SDK correlation, routing and helpers belong to R2.
+
+### HTTP lifecycle and connection decisions
+
+`Request.getDisconnectSignal()` returns a read-only stage completed once with the first
+abnormal transport cause, including explicit client cancellation. Normal completion does not
+complete it. Netty reports it independently of application entity I/O, including an idle
+server whose entire request body has been consumed. Completion runs off the connector event
+loop; expensive continuations should still use an application executor. Wrappers delegate
+the signal; request copies have independent lifecycle state.
+
+An abort before connector registration is remembered, although `abort()` still returns false
+until an active action accepts it. Connector abort actions must be idempotent. Use a new
+request after cancellation. Connection/send failures also complete the signal.
+
+HTTP/1.1 performs a read after the body to observe peer closure. Pipelined requests from that
+read wait until the preceding response is flushed, preserving response order. This decoded
+lookahead is limited to 1024 messages and 1 MiB of content/header storage accounting; overflow
+reports a transport failure and closes the connection. Reads pause when lookahead is queued,
+so notification remains subject to transport back-pressure. Upgrade/CONNECT requests retain
+their existing read handoff to the replacement protocol. HTTP/2 and experimental HTTP/3 retain
+their stream lifecycle and flow control; this is not a new SDK flow-control implementation.
+
+R1 deliberately adds **no physical-connection control API**. The destination URI remains the
+source of HTTP/TLS authority, DNS resolution and pool identity in existing connectors.
+Extensions must not pretend that replacing `Host` implements separate SNI/resolved-address
+selection. gRPC resolver-address/authority divergence, physical connection pinning, per-connection
+admission, GOAWAY, PING and SDK keepalive must be explicitly rejected if requested by a future
+adapter until implemented and tested. Start with URI-origin routing and adapter-wide limits;
+SDK streaming/readiness conformance remains R3/R4/R6 work.
+
+### Independent SDK integration contracts
+
+| Extension delivery | SDK-owned contract | Restlet integration / ownership / finite limits |
+|---|---|---|
+| MCP (R2) | SDK 2.1.0 records, codecs, dispatch, correlation and supported revisions | Borrow injected HTTP connectors or `StreamTransport`; close adapter sessions/tasks, not borrowed connectors. Bound request/frame bytes, pending calls, sessions, replay history and SDK queues before admission. Profile compatibility remains explicit; R0 did not authorize Ikanos migration. |
+| gRPC (R3/R4/R6) | grpc-java 1.85.1 `ManagedChannel`, `ClientCall`, service definitions, SDK framing/status/metadata | Borrow configured HTTP/2 connectors; own logical SDK runtimes/call workers. Pin internal SPI use. Bound inbound/outbound message bytes, active calls and queued bytes; map receive demand/readiness before claiming streaming support. URI-origin routing only initially. |
+| Smithy (R5/R6) | Candidate smithy-java 1.7.0 native client transport, modeled operations/errors, signing | API remains unvalidated: prototype before adding adapter classes. Borrow Restlet HTTP connectors, preserve SDK authority/signing, bound bodies/concurrency and release owned work. Experimental server remains deferred. |
+
+These are delivery contracts, **not available adapter constructors or validated Smithy APIs**.
+Each delivery must choose and test finite protocol limits rather than inheriting an unlimited
+queue. Core transport chunks do not substitute for SDK message limits. Borrowed connector
+instances remain running after adapter shutdown; only explicitly owned resources may be stopped.
+
+Initial extension configuration is defined independently (positive limits fixed before start):
+MCP uses 1 MiB request/frame bytes, 128 pending calls, 64 sessions, and 1 MiB queued bytes per
+session, with replay disabled unless a finite history is explicitly configured. gRPC uses
+4 MiB inbound and outbound messages, 128 adapter-wide active calls, and at most 4 MiB queued
+bytes per call, including any frame awaiting SDK demand. Smithy's provisional prototype uses
+1 MiB buffered bodies and 128 active calls, subject to R5 verification rather than a supported
+SDK claim. All over-limit admissions fail through the selected protocol's own error contract;
+they are never truncated, silently dropped or mapped through a common RPC error. Deadlines
+remain native SDK settings. These are R1 design defaults to enforce and test when each extension
+lands, not limits already enforced by the R0 fixtures or by core `StreamTransport`.
+
+The regression suite compiles a separate named-module consumer of the public byte seam and
+checks that its implementation remains unexported and core has no MCP/gRPC SDK requirements.
+The inherited R0 fixtures compile and exercise the independent native MCP/gRPC contracts;
+they remain test-only. Run the foundations plus relevant connector/SDK regressions:
+
+```powershell
+.\mvnw.cmd -pl org.restlet '-Dtest=StreamTransportTestCase,RequestLifecycleTestCase,WrapperRequestTestCase,StdioHelperSelectionTestCase,RpcSdkBoundaryTestCase,HttpDisconnectTestCase,NettyConnectionUpgradeTestCase,GrpcSdkTransportSpikeTestCase,GrpcSdkServerHostSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase,*Http*TestCase,*EventStream*TestCase' test
+```
+
+Use the opt-in Ikanos properties below to include the live differential rather than skip it.
+
+R1 closing validation on Java 25: the live-enabled selector above passed **134 tests, zero
+failures/errors/skips**, including HTTP/3, TLS, SSE, protocol upgrades, exact lookahead limits,
+STDIO ownership/shutdown and independent named-module compilation. The full core run executed
+2257 tests with one shutdown wall-clock tolerance failure (1.715 s versus 1 s +/- 200 ms).
+The same test failed on the unchanged R0 baseline (1.635 s); the five-case shutdown class then
+passed in isolation on R1. No timing assertion was relaxed. This is a recorded baseline timing
+limitation, not a clean full-suite claim.
+
 ## R0 SDK interoperability probes
 
 The MCP and gRPC interoperability spikes are **test-only**, not production RPC extensions.
