@@ -135,6 +135,8 @@ STDIO ownership/shutdown and independent named-module compilation. The full core
 The same test failed on the unchanged R0 baseline (1.635 s); the five-case shutdown class then
 passed in isolation on R1. No timing assertion was relaxed. This is a recorded baseline timing
 limitation, not a clean full-suite claim.
+The final selector was rerun together with strict `javadoc:javadoc` generation after the
+cleanup/quality-check refinements; both passed. No quality gate or workflow was weakened.
 
 ## R0 SDK interoperability probes
 

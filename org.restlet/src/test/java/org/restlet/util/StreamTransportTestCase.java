@@ -115,7 +115,7 @@ class StreamTransportTestCase {
                         try {
                             new CountDownLatch(1).await();
                             throw new AssertionError("Unreachable");
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException _) {
                             Thread.currentThread().interrupt();
                             throw new InterruptedIOException("Cancelled read");
                         }
@@ -157,7 +157,7 @@ class StreamTransportTestCase {
                         writing.countDown();
                         try {
                             new CountDownLatch(1).await();
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException _) {
                             Thread.currentThread().interrupt();
                             throw new InterruptedIOException("Cancelled write");
                         }
@@ -206,7 +206,7 @@ class StreamTransportTestCase {
                             try {
                                 release.await();
                                 done = true;
-                            } catch (InterruptedException e) {
+                            } catch (InterruptedException _) {
                                 // Deliberately models an input that does not support interruption.
                             }
                         }
@@ -301,7 +301,7 @@ class StreamTransportTestCase {
                             () -> {
                                 try {
                                     return transport.read(new byte[1], 0, 1);
-                                } catch (IOException e) {
+                                } catch (IOException _) {
                                     assertFalse(transport.isStarted());
                                     return -1;
                                 }
@@ -363,7 +363,9 @@ class StreamTransportTestCase {
                 System.exit(23);
             }
             if ("idle".equals(args[0])) {
-                Thread.sleep(60000);
+                if (!new CountDownLatch(1).await(1, TimeUnit.MINUTES)) {
+                    throw new IllegalStateException("Idle test child was not stopped");
+                }
                 return;
             }
             System.err.write(new byte[200000]);
