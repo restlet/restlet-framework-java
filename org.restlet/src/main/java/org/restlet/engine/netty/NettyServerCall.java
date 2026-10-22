@@ -131,6 +131,10 @@ class NettyServerCall {
     /** Indicates whether the exchange was completed. */
     private volatile boolean completed;
 
+    private NettyRequest restletRequest;
+
+    private Throwable disconnectCause;
+
     /** The response body stream, if any. */
     private volatile ChannelOutputStream responseBody;
 
@@ -215,8 +219,12 @@ class NettyServerCall {
      * @param context The context of the server connector.
      * @return The Restlet request.
      */
-    NettyRequest toRequest(Context context) {
+    synchronized NettyRequest toRequest(Context context) {
         NettyRequest result = new NettyRequest(context, this);
+        restletRequest = result;
+        if (disconnectCause != null) {
+            result.notifyDisconnect(disconnectCause);
+        }
         result.getAttributes().put(ATTRIBUTE_HEADERS, requestHeaders);
         result.getAttributes().put(ATTRIBUTE_VERSION, kind.version());
 
@@ -242,6 +250,15 @@ class NettyServerCall {
         }
 
         return result;
+    }
+
+    synchronized void onDisconnect(Throwable cause) {
+        if (!completed && disconnectCause == null) {
+            disconnectCause = cause;
+            if (restletRequest != null) {
+                restletRequest.notifyDisconnect(cause);
+            }
+        }
     }
 
     /**
@@ -720,7 +737,19 @@ class NettyServerCall {
             if (!kind.isStream()) {
                 if (keepAlive) {
                     // Ready for the next request on this connection.
-                    future.addListener(f -> channel.read());
+                    future.addListener(
+                            f -> {
+                                if (f.isSuccess()) {
+                                    var context =
+                                            channel.pipeline().context(NettyServerHandler.class);
+                                    if (context != null) {
+                                        ((NettyServerHandler) context.handler())
+                                                .responseComplete(context, this);
+                                    }
+                                } else {
+                                    channel.close();
+                                }
+                            });
                 } else {
                     future.addListener(ChannelFutureListener.CLOSE);
                 }

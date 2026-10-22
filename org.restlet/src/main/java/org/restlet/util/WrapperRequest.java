@@ -58,6 +58,16 @@ public class WrapperRequest extends Request {
     }
 
     @Override
+    public java.util.concurrent.CompletionStage<Throwable> getDisconnectSignal() {
+        return wrappedRequest.getDisconnectSignal();
+    }
+
+    @Override
+    public void notifyDisconnect(Throwable cause) {
+        wrappedRequest.notifyDisconnect(cause);
+    }
+
+    @Override
     public void commit(Response response) {
         wrappedRequest.commit(response);
     }

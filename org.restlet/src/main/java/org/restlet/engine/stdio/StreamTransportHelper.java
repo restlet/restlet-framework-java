@@ -1,0 +1,381 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+package org.restlet.engine.stdio;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
+
+/** Internal implementation of the supported {@link org.restlet.util.StreamTransport} seam. */
+public final class StreamTransportHelper {
+
+    private final List<String> command;
+    private final Runnable cancelIo;
+    private final ReentrantLock readLock = new ReentrantLock();
+    private final ReentrantLock writeLock = new ReentrantLock();
+    private final Set<Thread> operations = new HashSet<>();
+    private InputStream input;
+    private OutputStream output;
+    private Process process;
+    private Thread stderrReader;
+    private IOException stderrFailure;
+    private byte[] stderrTail;
+    private int stderrSize;
+    private int stderrPosition;
+    private int maxOperationBytes = 65536;
+    private int maxStderrBytes = 8192;
+    private Duration shutdownTimeout = Duration.ofSeconds(5);
+    private Duration processExitGrace = Duration.ofMillis(250);
+    private boolean started;
+    private boolean stopped;
+    private CompletableFuture<Void> stopping;
+
+    public StreamTransportHelper(InputStream input, OutputStream output, Runnable cancelIo) {
+        this.input = Objects.requireNonNull(input, "input");
+        this.output = Objects.requireNonNull(output, "output");
+        this.cancelIo = Objects.requireNonNull(cancelIo, "cancelIo");
+        command = null;
+    }
+
+    public StreamTransportHelper(List<String> command) {
+        this.command = List.copyOf(command);
+        if (this.command.isEmpty() || this.command.getFirst().isBlank()) {
+            throw new IllegalArgumentException("An explicit executable is required");
+        }
+        cancelIo = null;
+    }
+
+    public synchronized int getMaxOperationBytes() {
+        return maxOperationBytes;
+    }
+
+    public synchronized void setMaxOperationBytes(int bytes) {
+        requireConfigurable();
+        if (bytes <= 0) {
+            throw new IllegalArgumentException("maxOperationBytes must be positive");
+        }
+        maxOperationBytes = bytes;
+    }
+
+    public synchronized int getMaxStderrBytes() {
+        return maxStderrBytes;
+    }
+
+    public synchronized void setMaxStderrBytes(int bytes) {
+        requireConfigurable();
+        if (bytes <= 0) {
+            throw new IllegalArgumentException("maxStderrBytes must be positive");
+        }
+        maxStderrBytes = bytes;
+    }
+
+    public synchronized Duration getShutdownTimeout() {
+        return shutdownTimeout;
+    }
+
+    public synchronized void setShutdownTimeout(Duration timeout) {
+        requireConfigurable();
+        if (timeout.isNegative() || timeout.isZero() || timeout.compareTo(processExitGrace) <= 0) {
+            throw new IllegalArgumentException("shutdownTimeout must exceed processExitGrace");
+        }
+        timeout.toNanos();
+        shutdownTimeout = timeout;
+    }
+
+    public synchronized Duration getProcessExitGrace() {
+        return processExitGrace;
+    }
+
+    public synchronized void setProcessExitGrace(Duration grace) {
+        requireConfigurable();
+        if (grace.isNegative() || grace.compareTo(shutdownTimeout) >= 0) {
+            throw new IllegalArgumentException(
+                    "processExitGrace must be nonnegative and below shutdownTimeout");
+        }
+        grace.toNanos();
+        processExitGrace = grace;
+    }
+
+    private void requireConfigurable() {
+        if (started || stopped) {
+            throw new IllegalStateException("Transport configuration is fixed after start or stop");
+        }
+    }
+
+    public synchronized void start() throws IOException {
+        if (stopped) {
+            throw new IllegalStateException("A stopped transport cannot be restarted");
+        }
+        if (started) {
+            return;
+        }
+        if (command != null) {
+            stderrTail = new byte[maxStderrBytes];
+            stderrReader =
+                    Thread.ofVirtual().name("restlet-stdio-stderr").unstarted(this::drainStderr);
+            process = new ProcessBuilder(command).start();
+            input = process.getInputStream();
+            output = process.getOutputStream();
+            try {
+                stderrReader.start();
+            } catch (RuntimeException | Error e) {
+                stopped = true;
+                process.destroyForcibly();
+                IOException closeFailure = closePipes(null);
+                if (closeFailure != null) {
+                    e.addSuppressed(closeFailure);
+                }
+                try {
+                    process.getErrorStream().close();
+                } catch (IOException closeError) {
+                    e.addSuppressed(closeError);
+                }
+                throw e;
+            }
+        }
+        started = true;
+    }
+
+    public synchronized boolean isStarted() {
+        return started && !stopped;
+    }
+
+    private synchronized void enter() throws IOException {
+        if (!isStarted()) {
+            throw new IOException("Stream transport is not accepting I/O");
+        }
+        if (stderrFailure != null) {
+            throw new IOException("Subprocess stderr drain failed", stderrFailure);
+        }
+        operations.add(Thread.currentThread());
+    }
+
+    private synchronized void leave() {
+        operations.remove(Thread.currentThread());
+        notifyAll();
+    }
+
+    public int read(byte[] buffer, int offset, int length) throws IOException {
+        Objects.checkFromIndexSize(offset, length, buffer.length);
+        lock(readLock);
+        try {
+            enter();
+            try {
+                int count = input.read(buffer, offset, Math.min(length, maxOperationBytes));
+                if (count == -1 && process != null) {
+                    if (!process.waitFor(shutdownTimeout.toNanos(), TimeUnit.NANOSECONDS)) {
+                        throw new IOException(
+                                "Subprocess stdout ended without process termination");
+                    }
+                    if (process.exitValue() != 0 && !isStopped()) {
+                        throw new IOException("Subprocess exited with code " + process.exitValue());
+                    }
+                }
+                return count;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException("Interrupted awaiting subprocess exit");
+            } finally {
+                leave();
+            }
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public void write(byte[] bytes) throws IOException {
+        Objects.requireNonNull(bytes, "bytes");
+        if (bytes.length > getMaxOperationBytes()) {
+            throw new IllegalArgumentException("Write exceeds maxOperationBytes");
+        }
+        lock(writeLock);
+        try {
+            enter();
+            try {
+                output.write(bytes);
+                output.flush();
+            } finally {
+                leave();
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    private static void lock(ReentrantLock lock) throws InterruptedIOException {
+        try {
+            lock.lockInterruptibly();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted awaiting stream I/O");
+        }
+    }
+
+    private synchronized boolean isStopped() {
+        return stopped;
+    }
+
+    private void drainStderr() {
+        try (InputStream errors = process.getErrorStream()) {
+            byte[] chunk = new byte[Math.min(4096, maxStderrBytes)];
+            int count;
+            while ((count = errors.read(chunk)) != -1) {
+                synchronized (this) {
+                    for (int i = 0; i < count; i++) {
+                        stderrTail[stderrPosition] = chunk[i];
+                        stderrPosition = (stderrPosition + 1) % stderrTail.length;
+                        stderrSize = Math.min(stderrSize + 1, stderrTail.length);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            synchronized (this) {
+                stderrFailure = e;
+            }
+        }
+    }
+
+    public synchronized byte[] getStderrTail() {
+        byte[] result = new byte[stderrSize];
+        for (int i = 0; i < result.length; i++) {
+            result[i] =
+                    stderrTail[
+                            (stderrPosition - stderrSize + i + stderrTail.length)
+                                    % stderrTail.length];
+        }
+        return result;
+    }
+
+    public synchronized long getProcessId() {
+        if (process == null) {
+            throw new IllegalStateException("No owned subprocess has been started");
+        }
+        return process.pid();
+    }
+
+    public void stop() throws IOException {
+        CompletableFuture<Void> completion;
+        synchronized (this) {
+            if (stopping == null) {
+                stopped = true;
+                stopping = new CompletableFuture<>();
+                if (!started) {
+                    stopping.complete(null);
+                } else {
+                    Thread.startVirtualThread(this::cleanup);
+                }
+            }
+            completion = stopping;
+        }
+        try {
+            completion.get(shutdownTimeout.toNanos(), TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted stopping stream transport");
+        } catch (TimeoutException e) {
+            throw new IOException(
+                    "Stream transport shutdown timed out; borrowed I/O must support cancellation",
+                    e);
+        } catch (ExecutionException e) {
+            throw new IOException("Stream transport shutdown failed", e.getCause());
+        }
+    }
+
+    private void cleanup() {
+        try {
+            IOException failure = null;
+            synchronized (this) {
+                operations.forEach(Thread::interrupt);
+            }
+            if (process != null) {
+                boolean exited = process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS);
+                if (exited && process.exitValue() != 0) {
+                    failure = new IOException("Subprocess exited with code " + process.exitValue());
+                }
+                if (!exited) {
+                    process.destroy();
+                    if (!process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS)) {
+                        process.destroyForcibly();
+                    }
+                }
+                process.waitFor();
+                failure = closePipes(failure);
+                stderrReader.join();
+            } else {
+                try {
+                    cancelIo.run();
+                } catch (RuntimeException e) {
+                    failure = new IOException("Borrowed I/O cancellation failed", e);
+                }
+            }
+            synchronized (this) {
+                while (!operations.isEmpty()) {
+                    wait();
+                }
+                if (stderrFailure != null) {
+                    failure =
+                            append(
+                                    failure,
+                                    new IOException(
+                                            "Subprocess stderr drain failed", stderrFailure));
+                }
+            }
+            if (process == null) {
+                try {
+                    output.flush();
+                } catch (IOException e) {
+                    failure = append(failure, e);
+                }
+            }
+            if (failure != null) {
+                throw failure;
+            }
+            stopping.complete(null);
+        } catch (IOException | RuntimeException e) {
+            stopping.completeExceptionally(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            stopping.completeExceptionally(e);
+        } finally {
+            if (process != null && process.isAlive()) {
+                process.destroyForcibly();
+            }
+        }
+    }
+
+    private IOException closePipes(IOException failure) {
+        for (java.io.Closeable pipe : List.<java.io.Closeable>of(input, output)) {
+            try {
+                pipe.close();
+            } catch (IOException e) {
+                failure = append(failure, e);
+            }
+        }
+        return failure;
+    }
+
+    private static IOException append(IOException failure, IOException next) {
+        if (failure == null) {
+            return next;
+        }
+        failure.addSuppressed(next);
+        return failure;
+    }
+}
