@@ -95,8 +95,7 @@ public final class StreamTransportHelper {
         if (timeout.isNegative() || timeout.isZero() || timeout.compareTo(processExitGrace) <= 0) {
             throw new IllegalArgumentException("shutdownTimeout must exceed processExitGrace");
         }
-        timeout.toNanos();
-        shutdownTimeout = timeout;
+        shutdownTimeout = Duration.ofNanos(timeout.toNanos());
     }
 
     public synchronized Duration getProcessExitGrace() {
@@ -109,8 +108,7 @@ public final class StreamTransportHelper {
             throw new IllegalArgumentException(
                     "processExitGrace must be nonnegative and below shutdownTimeout");
         }
-        grace.toNanos();
-        processExitGrace = grace;
+        processExitGrace = Duration.ofNanos(grace.toNanos());
     }
 
     private void requireConfigurable() {
@@ -135,7 +133,7 @@ public final class StreamTransportHelper {
             output = process.getOutputStream();
             try {
                 stderrReader.start();
-            } catch (RuntimeException | Error e) {
+            } catch (RuntimeException e) {
                 stopped = true;
                 process.destroyForcibly();
                 IOException closeFailure = closePipes(null);
@@ -190,8 +188,7 @@ public final class StreamTransportHelper {
                 }
                 return count;
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new InterruptedIOException("Interrupted awaiting subprocess exit");
+                throw interrupted("Interrupted awaiting subprocess exit", e);
             } finally {
                 leave();
             }
@@ -223,9 +220,15 @@ public final class StreamTransportHelper {
         try {
             lock.lockInterruptibly();
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedIOException("Interrupted awaiting stream I/O");
+            throw interrupted("Interrupted awaiting stream I/O", e);
         }
+    }
+
+    private static InterruptedIOException interrupted(String message, InterruptedException cause) {
+        Thread.currentThread().interrupt();
+        var failure = new InterruptedIOException(message);
+        failure.initCause(cause);
+        return failure;
     }
 
     private synchronized boolean isStopped() {
@@ -287,8 +290,7 @@ public final class StreamTransportHelper {
         try {
             completion.get(shutdownTimeout.toNanos(), TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedIOException("Interrupted stopping stream transport");
+            throw interrupted("Interrupted stopping stream transport", e);
         } catch (TimeoutException e) {
             throw new IOException(
                     "Stream transport shutdown timed out; borrowed I/O must support cancellation",
@@ -300,49 +302,13 @@ public final class StreamTransportHelper {
 
     private void cleanup() {
         try {
-            IOException failure = null;
             synchronized (this) {
                 operations.forEach(Thread::interrupt);
             }
-            if (process != null) {
-                boolean exited = process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS);
-                if (exited && process.exitValue() != 0) {
-                    failure = new IOException("Subprocess exited with code " + process.exitValue());
-                }
-                if (!exited) {
-                    process.destroy();
-                    if (!process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS)) {
-                        process.destroyForcibly();
-                    }
-                }
-                process.waitFor();
-                failure = closePipes(failure);
-                stderrReader.join();
-            } else {
-                try {
-                    cancelIo.run();
-                } catch (RuntimeException e) {
-                    failure = new IOException("Borrowed I/O cancellation failed", e);
-                }
-            }
-            synchronized (this) {
-                while (!operations.isEmpty()) {
-                    wait();
-                }
-                if (stderrFailure != null) {
-                    failure =
-                            append(
-                                    failure,
-                                    new IOException(
-                                            "Subprocess stderr drain failed", stderrFailure));
-                }
-            }
+            IOException failure = process != null ? stopProcess() : cancelBorrowedIo();
+            failure = awaitOperations(failure);
             if (process == null) {
-                try {
-                    output.flush();
-                } catch (IOException e) {
-                    failure = append(failure, e);
-                }
+                failure = flushBorrowedOutput(failure);
             }
             if (failure != null) {
                 throw failure;
@@ -357,6 +323,52 @@ public final class StreamTransportHelper {
             if (process != null && process.isAlive()) {
                 process.destroyForcibly();
             }
+        }
+    }
+
+    private IOException stopProcess() throws InterruptedException {
+        boolean exited = process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS);
+        IOException failure =
+                exited && process.exitValue() != 0
+                        ? new IOException("Subprocess exited with code " + process.exitValue())
+                        : null;
+        if (!exited) {
+            process.destroy();
+            if (!process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS)) {
+                process.destroyForcibly();
+            }
+        }
+        process.waitFor();
+        failure = closePipes(failure);
+        stderrReader.join();
+        return failure;
+    }
+
+    private IOException cancelBorrowedIo() {
+        try {
+            cancelIo.run();
+            return null;
+        } catch (RuntimeException e) {
+            return new IOException("Borrowed I/O cancellation failed", e);
+        }
+    }
+
+    private synchronized IOException awaitOperations(IOException failure)
+            throws InterruptedException {
+        while (!operations.isEmpty()) {
+            wait();
+        }
+        return stderrFailure == null
+                ? failure
+                : append(failure, new IOException("Subprocess stderr drain failed", stderrFailure));
+    }
+
+    private IOException flushBorrowedOutput(IOException failure) {
+        try {
+            output.flush();
+            return failure;
+        } catch (IOException e) {
+            return append(failure, e);
         }
     }
 

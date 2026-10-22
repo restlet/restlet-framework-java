@@ -735,24 +735,7 @@ class NettyServerCall {
             requestBody.close();
 
             if (!kind.isStream()) {
-                if (keepAlive) {
-                    // Ready for the next request on this connection.
-                    future.addListener(
-                            f -> {
-                                if (f.isSuccess()) {
-                                    var context =
-                                            channel.pipeline().context(NettyServerHandler.class);
-                                    if (context != null) {
-                                        ((NettyServerHandler) context.handler())
-                                                .responseComplete(context, this);
-                                    }
-                                } else {
-                                    channel.close();
-                                }
-                            });
-                } else {
-                    future.addListener(ChannelFutureListener.CLOSE);
-                }
+                completeHttp1(future, keepAlive);
             }
         } finally {
             if (eventStreamPermit) {
@@ -761,6 +744,25 @@ class NettyServerCall {
                 eventStreamPermit = false;
             }
         }
+    }
+
+    private void completeHttp1(ChannelFuture future, boolean keepAlive) {
+        if (!keepAlive) {
+            future.addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        future.addListener(
+                f -> {
+                    if (!f.isSuccess()) {
+                        channel.close();
+                        return;
+                    }
+                    var context = channel.pipeline().context(NettyServerHandler.class);
+                    if (context != null
+                            && context.handler() instanceof NettyServerHandler handler) {
+                        handler.responseComplete(context, this);
+                    }
+                });
     }
 
     static void setTrailerNames(

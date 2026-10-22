@@ -323,10 +323,11 @@ public class Request extends Message {
      * Ask the connector to attempt to abort the related network connection, for example immediately
      * closing the socket.
      *
+     * <p>An attempt made before connector registration is remembered and applied when an active
+     * action is installed. It still returns false until an active action accepts it. Use a new
+     * Request for a new exchange after cancellation.
+     *
      * @return True if the request was aborted.
-     * @implNote An attempt made before connector registration is remembered and applied when an
-     *     active action is installed. It still returns false until an active action accepts it. Use
-     *     a new Request for a new exchange after cancellation.
      */
     public boolean abort() {
         abortRequested.set(true);
@@ -338,9 +339,10 @@ public class Request extends Message {
      * Sets the action used to abort an active client request. Connector implementations configure
      * this while a request is in flight and clear it when the exchange ends.
      *
+     * <p>The action must be idempotent: concurrent registration and abort attempts can invoke it
+     * more than once.
+     *
      * @param action The abort action, or null when no exchange is active.
-     * @implNote The action must be idempotent: concurrent registration and abort attempts can
-     *     invoke it more than once.
      */
     public void setAbortAction(BooleanSupplier action) {
         this.abortAction = action;
