@@ -10,9 +10,13 @@ package org.restlet;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
@@ -84,6 +88,12 @@ public class Request extends Message {
 
     /** Action used by an active client connector to abort this request. */
     private volatile BooleanSupplier abortAction;
+
+    private final AtomicBoolean abortRequested = new AtomicBoolean();
+
+    private final CompletableFuture<Throwable> disconnectSignal = new CompletableFuture<>();
+
+    private final AtomicBoolean disconnectReported = new AtomicBoolean();
 
     /** The trailing headers received with the request entity. */
     private volatile Series<Header> trailers;
@@ -314,8 +324,12 @@ public class Request extends Message {
      * closing the socket.
      *
      * @return True if the request was aborted.
+     * @implNote An attempt made before connector registration is remembered and applied when an
+     *     active action is installed. It still returns false until an active action accepts it. Use
+     *     a new Request for a new exchange after cancellation.
      */
     public boolean abort() {
+        abortRequested.set(true);
         BooleanSupplier action = abortAction;
         return action != null && action.getAsBoolean();
     }
@@ -325,9 +339,39 @@ public class Request extends Message {
      * this while a request is in flight and clear it when the exchange ends.
      *
      * @param action The abort action, or null when no exchange is active.
+     * @implNote The action must be idempotent: concurrent registration and abort attempts can
+     *     invoke it more than once.
      */
     public void setAbortAction(BooleanSupplier action) {
         this.abortAction = action;
+        if (action != null && abortRequested.get()) {
+            action.getAsBoolean();
+        }
+    }
+
+    /**
+     * Returns a read-only completion stage for abnormal transport disconnection of this exchange.
+     * It completes once with the cause, even if subscribed after the disconnect, and does not
+     * complete on normal response completion. Connectors report failure independently of entity
+     * reads/writes, so an idle application can observe cancellation. Completion runs off the
+     * connector event loop; consumers should still use their own executor for expensive work. Not
+     * all connectors support this signal. Copies have independent lifecycle state.
+     */
+    public CompletionStage<Throwable> getDisconnectSignal() {
+        return disconnectSignal.minimalCompletionStage();
+    }
+
+    /**
+     * Reports abnormal disconnection from a connector. The first cause wins; normal completion must
+     * not call this method.
+     *
+     * @param cause The non-null transport failure.
+     */
+    public void notifyDisconnect(Throwable cause) {
+        Objects.requireNonNull(cause, "cause");
+        if (disconnectReported.compareAndSet(false, true)) {
+            Thread.startVirtualThread(() -> disconnectSignal.complete(cause));
+        }
     }
 
     /**
