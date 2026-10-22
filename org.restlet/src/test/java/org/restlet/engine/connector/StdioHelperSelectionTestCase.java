@@ -45,9 +45,11 @@ class StdioHelperSelectionTestCase {
         engine.getRegisteredServers().add(new OtherServer(null));
         assertThrows(IllegalStateException.class, () -> new Client(Protocol.STDIO));
         assertThrows(IllegalStateException.class, () -> new Server(Protocol.STDIO));
+        Context missing = new Context();
+        List<Protocol> protocols = List.of(Protocol.STDIO);
         assertThrows(
                 IllegalStateException.class,
-                () -> new Client(new Context(), List.of(Protocol.STDIO), "missing.Helper"));
+                () -> new Client(missing, protocols, "missing.Helper"));
     }
 
     @Test
