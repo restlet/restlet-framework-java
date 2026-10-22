@@ -32,6 +32,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 
@@ -207,6 +208,41 @@ class HttpDisconnectTestCase {
             assertFalse(first.get().getDisconnectSignal().toCompletableFuture().isDone());
         } finally {
             releaseFirst.countDown();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"HTTP1_1", "HTTP2"})
+    void preservesEmptyErrorStatusWhenTheClientClosesImmediately(String mode) throws Exception {
+        start(
+                mode,
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setStatus(
+                                request.getResourceRef().getPath().equals("/401")
+                                        ? Status.CLIENT_ERROR_UNAUTHORIZED
+                                        : Status.CLIENT_ERROR_FORBIDDEN);
+                    }
+                });
+        for (int i = 0; i < 64; i++) {
+            Status expected =
+                    i % 2 == 0 ? Status.CLIENT_ERROR_UNAUTHORIZED : Status.CLIENT_ERROR_FORBIDDEN;
+            Request request =
+                    new Request(
+                            Method.GET,
+                            "http://localhost:"
+                                    + server.getActualPort()
+                                    + "/"
+                                    + expected.getCode());
+            Response response = client.handle(request);
+            client.stop();
+            assertEquals(
+                    expected,
+                    response.getStatus(),
+                    () -> "Terminal response changed: " + response.getStatus().getThrowable());
+            assertFalse(request.getDisconnectSignal().toCompletableFuture().isDone());
+            client.start();
         }
     }
 }
