@@ -10,6 +10,7 @@ package org.restlet.engine.netty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.netty.buffer.Unpooled;
@@ -19,8 +20,14 @@ import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import org.junit.jupiter.api.Test;
+import org.restlet.data.Reference;
 import org.restlet.engine.connector.HttpServerHelper;
 
 class Http1LookaheadTestCase {
@@ -77,6 +84,45 @@ class Http1LookaheadTestCase {
             assertEquals(0, content.refCnt());
         } finally {
             channel.finishAndReleaseAll();
+        }
+    }
+
+    @Test
+    void publishesClientCompletionBeforeReleasingAnEmptyBodyConsumer() throws Exception {
+        var trailers = new io.netty.handler.codec.http.DefaultHttpHeaders();
+        new NettyClientCall(null, "GET", new Reference("http://localhost/"), "/", false)
+                .onResponseComplete(trailers);
+        var call = new NettyClientCall(null, "GET", new Reference("http://localhost/"), "/", false);
+        var body = new ChannelInputStream(null, 0);
+        var bodyField = NettyClientCall.class.getDeclaredField("body");
+        bodyField.setAccessible(true);
+        bodyField.set(call, body);
+        var lockField = NettyClientCall.class.getDeclaredField("lock");
+        lockField.setAccessible(true);
+        ReentrantLock lock = (ReentrantLock) lockField.get(call);
+        CountDownLatch completing = new CountDownLatch(1);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            java.util.concurrent.Callable<Integer> reader = body::read;
+            var read = executor.submit(reader);
+            lock.lock();
+            java.util.concurrent.Future<?> completion;
+            try {
+                completion =
+                        executor.submit(
+                                () -> {
+                                    completing.countDown();
+                                    call.onResponseComplete(trailers);
+                                });
+                assertTrue(completing.await(5, TimeUnit.SECONDS));
+                assertThrows(
+                        TimeoutException.class,
+                        () -> read.get(1, TimeUnit.SECONDS),
+                        "EOF must not be observable while terminal state publication is blocked");
+            } finally {
+                lock.unlock();
+            }
+            completion.get(5, TimeUnit.SECONDS);
+            assertEquals(-1, read.get(5, TimeUnit.SECONDS));
         }
     }
 

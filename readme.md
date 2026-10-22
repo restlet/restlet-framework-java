@@ -76,6 +76,8 @@ the signal; request copies have independent lifecycle state.
 An abort before connector registration is remembered, although `abort()` still returns false
 until an active action accepts it. Connector abort actions must be idempotent. Use a new
 request after cancellation. Connection/send failures also complete the signal.
+Client completion state is published before waking response-body consumers at EOF, so an
+empty completed response is not exposed while its exchange still appears active.
 
 HTTP/1.1 performs a read after the body to observe peer closure. Pipelined requests from that
 read wait until the preceding response is flushed, preserving response order. This decoded
@@ -123,20 +125,22 @@ The inherited R0 fixtures compile and exercise the independent native MCP/gRPC c
 they remain test-only. Run the foundations plus relevant connector/SDK regressions:
 
 ```powershell
-.\mvnw.cmd -pl org.restlet '-Dtest=StreamTransportTestCase,RequestLifecycleTestCase,WrapperRequestTestCase,StdioHelperSelectionTestCase,RpcSdkBoundaryTestCase,HttpDisconnectTestCase,NettyConnectionUpgradeTestCase,GrpcSdkTransportSpikeTestCase,GrpcSdkServerHostSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase,*Http*TestCase,*EventStream*TestCase' test
+.\mvnw.cmd -pl org.restlet '-Dtest=StreamTransportTestCase,RequestLifecycleTestCase,WrapperRequestTestCase,StdioHelperSelectionTestCase,RpcSdkBoundaryTestCase,HttpDisconnectTestCase,NettyConnectionUpgradeTestCase,SecurityTestCase,GrpcSdkTransportSpikeTestCase,GrpcSdkServerHostSpikeTestCase,McpSdkTransportSpikeTestCase,McpStreamableSdkTransportSpikeTestCase,*Http*TestCase,*EventStream*TestCase' test
 ```
 
 Use the opt-in Ikanos properties below to include the live differential rather than skip it.
 
-R1 closing validation on Java 25: the live-enabled selector above passed **134 tests, zero
+R1 closing validation on Java 25: the live-enabled selector above passed **145 tests, zero
 failures/errors/skips**, including HTTP/3, TLS, SSE, protocol upgrades, exact lookahead limits,
 STDIO ownership/shutdown and independent named-module compilation. The full core run executed
 2257 tests with one shutdown wall-clock tolerance failure (1.715 s versus 1 s +/- 200 ms).
 The same test failed on the unchanged R0 baseline (1.635 s); the five-case shutdown class then
 passed in isolation on R1. No timing assertion was relaxed. This is a recorded baseline timing
 limitation, not a clean full-suite claim.
-The final selector was rerun together with strict `javadoc:javadoc` generation after the
-cleanup/quality-check refinements; both passed. No quality gate or workflow was weakened.
+The expanded selector adds a deterministic terminal-publication regression (confirmed failing
+before its fix), repeated immediate client closes on empty 401/403 responses over HTTP/1.1 and
+HTTP/2, and the eight existing authorization tests after a CI investigation. It was rerun together
+with strict `javadoc:javadoc` generation; both passed. No quality gate or workflow was weakened.
 
 ## R0 SDK interoperability probes
 

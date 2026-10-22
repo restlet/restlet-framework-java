@@ -794,15 +794,15 @@ class NettyClientCall {
                 currentResponse.getTrailers().add(name, trailer.getValue());
             }
         }
-        ChannelInputStream stream = this.body;
-        if (stream != null) {
-            stream.end();
-        }
         lock.lock();
         try {
             responseComplete = true;
         } finally {
             lock.unlock();
+        }
+        ChannelInputStream stream = this.body;
+        if (stream != null) {
+            stream.end();
         }
         maybeRelease();
     }
