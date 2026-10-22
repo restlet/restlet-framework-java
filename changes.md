@@ -90,6 +90,8 @@ Changes log
         - Added `Request.getDisconnectSignal()` and connector notification of abnormal
           termination independently of entity I/O. Abort requests made before connector
           registration are remembered; wrappers delegate lifecycle and copies remain independent.
+        - HTTP clients publish response completion before exposing body EOF to consumers,
+          so an empty terminal response is not exposed while its exchange still appears active.
         - HTTP/1.1 observes idle disconnects after request-body consumption while preserving
           ordered pipelining with bounded decoded lookahead (1024 messages / 1 MiB accounted
           content/header storage). Overflow closes the connection; protocol upgrades retain

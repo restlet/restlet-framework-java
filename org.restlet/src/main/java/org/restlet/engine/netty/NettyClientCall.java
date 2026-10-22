@@ -822,10 +822,6 @@ class NettyClientCall {
                 currentResponse.getTrailers().add(name, trailer.getValue());
             }
         }
-        ChannelInputStream stream = this.body;
-        if (stream != null) {
-            stream.end();
-        }
         Representation emptyEntity;
         lock.lock();
         try {
@@ -834,6 +830,10 @@ class NettyClientCall {
             pendingEmptyEntity = null;
         } finally {
             lock.unlock();
+        }
+        ChannelInputStream stream = this.body;
+        if (stream != null) {
+            stream.end();
         }
         if (emptyEntity != null) {
             emptyEntity.release();
