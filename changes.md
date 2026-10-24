@@ -81,6 +81,14 @@ Changes log
           supporting helper class. Applications with multiple STDIO protocol helpers must
           select one explicitly.
     - Enhancements
+        - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
+          connector, with explicit plaintext opt-in, bounded messages and call admission.
+          Regression tests cover authority mapping, cancellation before and after headers,
+          disconnect recovery, malformed responses and shared connector ownership. Empty
+          responses retain SDK missing-status diagnostics instead of failing on a null stream.
+          Shutdown arriving before SDK listener installation is replayed once; interrupted
+          shutdown still closes owned transport resources and preserves the interrupt.
+          TLS, streaming methods and physical gRPC connection controls remain unsupported.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol
