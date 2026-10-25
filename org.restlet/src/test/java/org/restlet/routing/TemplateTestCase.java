@@ -89,4 +89,41 @@ class TemplateTestCase {
         assertTrue(parsed2 >= 0);
         assertEquals("hf%20kh", variables2.get("v1"));
     }
+
+    @Test
+    void testStartsWithSegmentMatchesOnSegmentBoundaries() {
+        Template template = new Template("/mcp", Template.MODE_STARTS_WITH_SEGMENT);
+
+        assertEquals(4, template.match("/mcp"));
+        assertEquals(4, template.match("/mcp/"));
+        assertEquals(4, template.match("/mcp/tools"));
+        assertEquals(4, template.match("/mcp?x=1"));
+        assertEquals(4, template.match("/mcp;v=1"));
+        assertEquals(4, template.match("/mcp#top"));
+        assertEquals(-1, template.match("/mcpx"));
+        assertEquals(-1, template.match("/mcp-admin/tools"));
+        assertEquals(-1, template.match("/other"));
+    }
+
+    @Test
+    void testStartsWithSegmentAcceptsTrailingSlashAndEmptyTemplates() {
+        assertEquals(5, new Template("/mcp/", Template.MODE_STARTS_WITH_SEGMENT).match("/mcp/x"));
+        assertEquals(0, new Template("", Template.MODE_STARTS_WITH_SEGMENT).match("/anything"));
+    }
+
+    @Test
+    void testStartsWithSegmentParsesVariables() {
+        Template template = new Template("/tenants/{id}", Template.MODE_STARTS_WITH_SEGMENT);
+        template.getVariables().put("id", new Variable(Variable.TYPE_URI_SEGMENT));
+
+        Map<String, Object> variables = new HashMap<>();
+        assertEquals(10, template.parse("/tenants/a/orders", variables));
+        assertEquals("a", variables.get("id"));
+        assertEquals(-1, template.parse("/tenantsx/a", new HashMap<>()));
+    }
+
+    @Test
+    void testStartsWithKeepsCharacterMatching() {
+        assertEquals(4, new Template("/mcp", Template.MODE_STARTS_WITH).match("/mcpx"));
+    }
 }

@@ -145,6 +145,10 @@ Changes log
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin. Issue #1611.
         - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
           `SameSite` enum), read and written in `Set-Cookie`.
+        - Added the `Template.MODE_STARTS_WITH_SEGMENT` matching mode: like `MODE_STARTS_WITH`, but
+          the match must end on a URI path segment boundary, so a route attached to "/mcp" matches
+          "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
+          routers or applications under path prefixes on one connector.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
