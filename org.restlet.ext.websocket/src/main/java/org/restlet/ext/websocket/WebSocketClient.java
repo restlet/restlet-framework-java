@@ -21,46 +21,214 @@ import org.restlet.ext.websocket.internal.NettyWebSocketConnector;
 
 /**
  * Opens WebSocket client sessions ("ws" and "wss" URIs) over HTTP/1.1 upgrades. Each session uses
- * its own connection. Close the client to release its I/O threads.
+ * its own connection.
+ *
+ * <p>Configure the client before starting it. {@link #connect(String)} starts a stopped client,
+ * like {@link org.restlet.Restlet#handle(org.restlet.Request)}. Stop or close the client to release
+ * its I/O threads; it can be started again afterwards.
  */
 public final class WebSocketClient implements AutoCloseable {
 
-    private final NettyWebSocketConnector connector;
+    private SSLContext sslContext;
 
-    private WebSocketClient(Builder builder) throws IOException {
-        this.connector =
-                new NettyWebSocketConnector(
-                        builder.sslContext,
-                        builder.connectTimeout.toMillis(),
-                        builder.idleTimeout.toMillis(),
-                        builder.maxMessageSize,
-                        (builder.maxFrameSize > 0) ? builder.maxFrameSize : builder.maxMessageSize,
-                        builder.compression,
-                        builder.hostnameVerification,
-                        Logger.getLogger(WebSocketClient.class.getName()));
-    }
+    private Duration connectTimeout = Duration.ofSeconds(15);
+
+    private Duration idleTimeout = Duration.ofSeconds(30);
+
+    private int maxMessageSize = 65536;
+
+    private int maxFrameSize;
+
+    private boolean compression = true;
+
+    private boolean hostnameVerification = true;
+
+    private NettyWebSocketConnector connector;
+
+    /** Constructor using the default settings. */
+    public WebSocketClient() {}
 
     /**
-     * Creates a client with the default settings.
+     * Returns the SSL context used for "wss" URIs.
      *
-     * @return The client.
-     * @throws IOException If the client cannot be created.
+     * @return The SSL context, or null for the JVM default context.
      */
-    public static WebSocketClient create() throws IOException {
-        return builder().build();
+    public synchronized SSLContext getSslContext() {
+        return sslContext;
     }
 
     /**
-     * Returns a builder.
+     * Sets the SSL context used for "wss" URIs. Defaults to the JVM default context.
      *
-     * @return The builder.
+     * @param sslContext The SSL context.
      */
-    public static Builder builder() {
-        return new Builder();
+    public synchronized void setSslContext(SSLContext sslContext) {
+        requireStopped();
+        this.sslContext = sslContext;
     }
 
     /**
-     * Opens a session, blocking until the handshake completes.
+     * Returns the connect and handshake timeout.
+     *
+     * @return The timeout; zero for none.
+     */
+    public synchronized Duration getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
+     * Sets the connect and handshake timeout. Defaults to 15 seconds; zero for none.
+     *
+     * @param connectTimeout The timeout.
+     */
+    public synchronized void setConnectTimeout(Duration connectTimeout) {
+        requireStopped();
+        this.connectTimeout = requireNonNegative(connectTimeout, "connectTimeout");
+    }
+
+    /**
+     * Returns the idle time after which the server is pinged.
+     *
+     * @return The idle timeout; zero when disabled.
+     */
+    public synchronized Duration getIdleTimeout() {
+        return idleTimeout;
+    }
+
+    /**
+     * Sets the idle time after which the server is pinged, the connection being closed if it stays
+     * idle as long again. Defaults to 30 seconds; zero to disable.
+     *
+     * @param idleTimeout The idle timeout.
+     */
+    public synchronized void setIdleTimeout(Duration idleTimeout) {
+        requireStopped();
+        this.idleTimeout = requireNonNegative(idleTimeout, "idleTimeout");
+    }
+
+    /**
+     * Returns the maximum size in bytes of a received message.
+     *
+     * @return The maximum message size.
+     */
+    public synchronized int getMaxMessageSize() {
+        return maxMessageSize;
+    }
+
+    /**
+     * Sets the maximum size in bytes of a received message. Defaults to 65536.
+     *
+     * @param maxMessageSize The maximum message size.
+     */
+    public synchronized void setMaxMessageSize(int maxMessageSize) {
+        requireStopped();
+        if (maxMessageSize <= 0) {
+            throw new IllegalArgumentException("maxMessageSize must be positive");
+        }
+        this.maxMessageSize = maxMessageSize;
+    }
+
+    /**
+     * Returns the maximum size in bytes of a received frame.
+     *
+     * @return The maximum frame size, the maximum message size when not set.
+     */
+    public synchronized int getMaxFrameSize() {
+        return (maxFrameSize > 0) ? maxFrameSize : maxMessageSize;
+    }
+
+    /**
+     * Sets the maximum size in bytes of a received frame. A message may be fragmented in several
+     * frames. Defaults to the maximum message size, and is capped by it.
+     *
+     * @param maxFrameSize The maximum frame size.
+     */
+    public synchronized void setMaxFrameSize(int maxFrameSize) {
+        requireStopped();
+        if (maxFrameSize <= 0) {
+            throw new IllegalArgumentException("maxFrameSize must be positive");
+        }
+        this.maxFrameSize = maxFrameSize;
+    }
+
+    /**
+     * Indicates whether "permessage-deflate" compression (RFC 7692) is offered to the server.
+     *
+     * @return True if compression is offered.
+     */
+    public synchronized boolean isCompression() {
+        return compression;
+    }
+
+    /**
+     * Sets whether "permessage-deflate" compression (RFC 7692) is offered to the server. Defaults
+     * to true; it is used only if the server accepts it.
+     *
+     * @param compression True to offer compression.
+     */
+    public synchronized void setCompression(boolean compression) {
+        requireStopped();
+        this.compression = compression;
+    }
+
+    /**
+     * Indicates whether the server host name is verified for "wss" URIs.
+     *
+     * @return True if the host name is verified.
+     */
+    public synchronized boolean isHostnameVerification() {
+        return hostnameVerification;
+    }
+
+    /**
+     * Sets whether the server host name is verified for "wss" URIs. Defaults to true.
+     *
+     * @param hostnameVerification True to verify the host name.
+     */
+    public synchronized void setHostnameVerification(boolean hostnameVerification) {
+        requireStopped();
+        this.hostnameVerification = hostnameVerification;
+    }
+
+    /**
+     * Starts the client, creating its I/O threads. Does nothing if already started.
+     *
+     * @throws IOException If the client cannot be started.
+     */
+    public synchronized void start() throws IOException {
+        if (connector == null) {
+            connector =
+                    new NettyWebSocketConnector(
+                            sslContext,
+                            connectTimeout.toMillis(),
+                            idleTimeout.toMillis(),
+                            maxMessageSize,
+                            getMaxFrameSize(),
+                            compression,
+                            hostnameVerification,
+                            Logger.getLogger(WebSocketClient.class.getName()));
+        }
+    }
+
+    /**
+     * Indicates whether the client is started.
+     *
+     * @return True if the client is started.
+     */
+    public synchronized boolean isStarted() {
+        return connector != null;
+    }
+
+    /** Stops the client, releasing its I/O threads. Does nothing if already stopped. */
+    public synchronized void stop() {
+        if (connector != null) {
+            connector.close();
+            connector = null;
+        }
+    }
+
+    /**
+     * Opens a session, blocking until the handshake completes. Starts the client if needed.
      *
      * @param uri The "ws" or "wss" URI.
      * @return The open session.
@@ -71,7 +239,7 @@ public final class WebSocketClient implements AutoCloseable {
     }
 
     /**
-     * Opens a session, blocking until the handshake completes.
+     * Opens a session, blocking until the handshake completes. Starts the client if needed.
      *
      * @param uri The "ws" or "wss" URI.
      * @param subprotocols The subprotocols to offer, in preference order.
@@ -81,138 +249,35 @@ public final class WebSocketClient implements AutoCloseable {
      */
     public WebSocketSession connect(URI uri, List<String> subprotocols, Map<String, String> headers)
             throws IOException {
-        return connector.connect(
+        NettyWebSocketConnector current;
+        synchronized (this) {
+            start();
+            current = connector;
+        }
+        return current.connect(
                 Objects.requireNonNull(uri, "uri"),
                 List.copyOf(subprotocols),
                 new LinkedHashMap<>(headers));
     }
 
+    /** Stops the client. */
     @Override
     public void close() {
-        connector.close();
+        stop();
     }
 
-    /** Builds a {@link WebSocketClient}. */
-    public static final class Builder {
-
-        private SSLContext sslContext;
-
-        private Duration connectTimeout = Duration.ofSeconds(15);
-
-        private Duration idleTimeout = Duration.ofSeconds(30);
-
-        private int maxMessageSize = 65536;
-
-        private int maxFrameSize;
-
-        private boolean compression = true;
-
-        private boolean hostnameVerification = true;
-
-        private Builder() {}
-
-        /**
-         * Sets the SSL context used for "wss" URIs. Defaults to the JVM default context.
-         *
-         * @param sslContext The SSL context.
-         * @return This builder.
-         */
-        public Builder sslContext(SSLContext sslContext) {
-            this.sslContext = sslContext;
-            return this;
+    private void requireStopped() {
+        if (connector != null) {
+            throw new IllegalStateException(
+                    "Stop the WebSocket client before changing its settings");
         }
+    }
 
-        /**
-         * Sets the connect and handshake timeout. Defaults to 15 seconds; zero for none.
-         *
-         * @param connectTimeout The timeout.
-         * @return This builder.
-         */
-        public Builder connectTimeout(Duration connectTimeout) {
-            this.connectTimeout = requireNonNegative(connectTimeout, "connectTimeout");
-            return this;
+    private static Duration requireNonNegative(Duration value, String name) {
+        Objects.requireNonNull(value, name);
+        if (value.isNegative()) {
+            throw new IllegalArgumentException(name + " cannot be negative");
         }
-
-        /**
-         * Sets the idle time after which the server is pinged, the connection being closed if it
-         * stays idle as long again. Defaults to 30 seconds; zero to disable.
-         *
-         * @param idleTimeout The idle timeout.
-         * @return This builder.
-         */
-        public Builder idleTimeout(Duration idleTimeout) {
-            this.idleTimeout = requireNonNegative(idleTimeout, "idleTimeout");
-            return this;
-        }
-
-        /**
-         * Sets the maximum size in bytes of a received message. Defaults to 65536.
-         *
-         * @param maxMessageSize The maximum message size.
-         * @return This builder.
-         */
-        public Builder maxMessageSize(int maxMessageSize) {
-            if (maxMessageSize <= 0) {
-                throw new IllegalArgumentException("maxMessageSize must be positive");
-            }
-            this.maxMessageSize = maxMessageSize;
-            return this;
-        }
-
-        /**
-         * Sets the maximum size in bytes of a received frame. A message may be fragmented in
-         * several frames. Defaults to the maximum message size, and is capped by it.
-         *
-         * @param maxFrameSize The maximum frame size.
-         * @return This builder.
-         */
-        public Builder maxFrameSize(int maxFrameSize) {
-            if (maxFrameSize <= 0) {
-                throw new IllegalArgumentException("maxFrameSize must be positive");
-            }
-            this.maxFrameSize = maxFrameSize;
-            return this;
-        }
-
-        /**
-         * Sets whether "permessage-deflate" compression (RFC 7692) is offered to the server.
-         * Defaults to true; it is used only if the server accepts it.
-         *
-         * @param compression True to offer compression.
-         * @return This builder.
-         */
-        public Builder compression(boolean compression) {
-            this.compression = compression;
-            return this;
-        }
-
-        /**
-         * Sets whether the server host name is verified for "wss" URIs. Defaults to true.
-         *
-         * @param hostnameVerification True to verify the host name.
-         * @return This builder.
-         */
-        public Builder hostnameVerification(boolean hostnameVerification) {
-            this.hostnameVerification = hostnameVerification;
-            return this;
-        }
-
-        /**
-         * Builds the client.
-         *
-         * @return The client.
-         * @throws IOException If the client cannot be created.
-         */
-        public WebSocketClient build() throws IOException {
-            return new WebSocketClient(this);
-        }
-
-        private static Duration requireNonNegative(Duration value, String name) {
-            Objects.requireNonNull(value, name);
-            if (value.isNegative()) {
-                throw new IllegalArgumentException(name + " cannot be negative");
-            }
-            return value;
-        }
+        return value;
     }
 }
