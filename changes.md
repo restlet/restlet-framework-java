@@ -104,6 +104,9 @@ Changes log
         - Added Netty 4.2.19 (imported with the `netty-bom`). CI builds with Java 25.
         - The `dangling-doc-comments` lint, new in Java 23, is disabled because license headers
           use Javadoc-style comments.
+        - The HTTP client logs the steps of its exchanges and connections at the FINE level. CI
+          writes the FINE logs of the core tests to `target/restlet-fine.log` ("ci-logging"
+          profile) and uploads them when the build fails. Issue #1601.
  
 - 3.0 Milestone 1 (10-11-2026)
     - Breaking changes
