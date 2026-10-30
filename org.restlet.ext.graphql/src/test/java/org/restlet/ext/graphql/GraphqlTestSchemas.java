@@ -9,12 +9,16 @@
 package org.restlet.ext.graphql;
 
 import graphql.GraphQL;
+import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.dataloader.DataLoader;
+import org.restlet.Request;
+import org.restlet.data.ClientInfo;
 
 /** Schemas shared by the tests. */
 final class GraphqlTestSchemas {
@@ -26,26 +30,51 @@ final class GraphqlTestSchemas {
               virtualThread: Boolean
               asyncHello: String
               failing: String
+              whoami: String
+              userAgent: String
+              loaded(key: String!): String
             }
             type Mutation {
               increment(by: Int!): Int
+            }
+            type Subscription {
+              ticks(count: Int!): Int
             }
             """;
 
     private GraphqlTestSchemas() {}
 
     static GraphQLSchema schema(AtomicInteger counter) {
+        DataFetcher<Object> hello = env -> "Hello " + env.getArgumentOrDefault("name", "world");
+        DataFetcher<Object> failing =
+                env -> {
+                    throw new IllegalStateException("secret detail");
+                };
+        DataFetcher<Object> whoami =
+                env -> {
+                    ClientInfo clientInfo = env.getGraphQlContext().get(RestletGraphql.CLIENT_INFO);
+                    return clientInfo.getUser() == null
+                            ? "anonymous"
+                            : clientInfo.getUser().getIdentifier();
+                };
+        DataFetcher<Object> userAgent =
+                env -> {
+                    Request request = env.getGraphQlContext().get(RestletGraphql.REQUEST);
+                    return request.getClientInfo().getAgent();
+                };
+        DataFetcher<Object> loaded =
+                env -> {
+                    DataLoader<String, String> loader = env.getDataLoader("upper");
+                    return loader.load(env.getArgument("key"));
+                };
+        DataFetcher<Object> ticks = env -> new TickPublisher(env.<Integer>getArgument("count"));
+
         RuntimeWiring wiring =
                 RuntimeWiring.newRuntimeWiring()
                         .type(
                                 "Query",
                                 type ->
-                                        type.dataFetcher(
-                                                        "hello",
-                                                        env ->
-                                                                "Hello "
-                                                                        + env.getArgumentOrDefault(
-                                                                                "name", "world"))
+                                        type.dataFetcher("hello", hello)
                                                 .dataFetcher(
                                                         "virtualThread",
                                                         env -> Thread.currentThread().isVirtual())
@@ -54,18 +83,17 @@ final class GraphqlTestSchemas {
                                                         env ->
                                                                 CompletableFuture.supplyAsync(
                                                                         () -> "async"))
-                                                .dataFetcher(
-                                                        "failing",
-                                                        env -> {
-                                                            throw new IllegalStateException(
-                                                                    "secret detail");
-                                                        }))
+                                                .dataFetcher("failing", failing)
+                                                .dataFetcher("whoami", whoami)
+                                                .dataFetcher("userAgent", userAgent)
+                                                .dataFetcher("loaded", loaded))
                         .type(
                                 "Mutation",
                                 type ->
                                         type.dataFetcher(
                                                 "increment",
                                                 env -> counter.addAndGet(env.getArgument("by"))))
+                        .type("Subscription", type -> type.dataFetcher("ticks", ticks))
                         .build();
         return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(SDL), wiring);
     }
