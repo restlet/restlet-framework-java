@@ -10,6 +10,7 @@ package org.restlet.engine.connector;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -175,6 +176,57 @@ class ProxyTestCase {
     }
 
     @Test
+    void keepsTunnelsApartPerProxyCredentials() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        client = newHttpsClient();
+
+        List<ChallengeResponse> credentials =
+                List.of(
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"),
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "lion"),
+                        rawCredentials("token1"),
+                        rawCredentials("token2"),
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+        for (ChallengeResponse challengeResponse : credentials) {
+            Request request =
+                    new Request(Method.GET, "https://localhost:" + server.getActualPort() + "/s");
+            request.setProxyChallengeResponse(challengeResponse);
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("none", response.getEntityAsText());
+        }
+
+        // A tunnel per credentials, the last request reusing the tunnel of the first one.
+        assertEquals(
+                List.of(
+                        "Basic c2NvdHQ6dGlnZXI=",
+                        "Basic c2NvdHQ6bGlvbg==",
+                        "Bearer token1",
+                        "Bearer token2"),
+                proxy.proxyAuthorizations);
+    }
+
+    @Test
+    void sharesConnectionLimitAcrossProxyCredentials() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        client = newHttpsClient("maxConnectionsPerDestination", "1");
+
+        for (String password : List.of("tiger", "lion", "tiger")) {
+            Request request =
+                    new Request(Method.GET, "https://localhost:" + server.getActualPort() + "/s");
+            request.setProxyChallengeResponse(
+                    new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", password));
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("none", response.getEntityAsText());
+        }
+
+        // A single connection at a time: the idle tunnel of the other credentials is closed to open
+        // a new one, so the first tunnel can't be reused by the third request.
+        assertEquals(3, proxy.requestLines.size());
+    }
+
+    @Test
     void returnsProxyChallengeWhenTunnelIsRefused() throws Exception {
         proxy.requiredAuthorization = "Basic c2NvdHQ6dGlnZXI=";
         startHttpsServer(HELLO);
@@ -190,6 +242,17 @@ class ProxyTestCase {
                 ChallengeScheme.HTTP_BASIC,
                 response.getProxyChallengeRequests().getFirst().getScheme());
         assertEquals("proxy", response.getProxyChallengeRequests().getFirst().getRealm());
+        // The body of the refusal is not returned, nor its entity headers.
+        assertNull(response.getHeaders().getFirstValue(HeaderConstants.HEADER_CONTENT_TYPE, true));
+        assertNull(
+                response.getHeaders().getFirstValue(HeaderConstants.HEADER_CONTENT_LENGTH, true));
+    }
+
+    private static ChallengeResponse rawCredentials(String token) {
+        ChallengeResponse result =
+                new ChallengeResponse(new ChallengeScheme("HTTP_BEARER", "Bearer"));
+        result.setRawValue(token);
+        return result;
     }
 
     @Test
@@ -233,9 +296,12 @@ class ProxyTestCase {
         server.start();
     }
 
-    private Client newHttpsClient() throws Exception {
+    private Client newHttpsClient(String... parameters) throws Exception {
         Path keystore = keystore();
         Context context = new Context();
+        for (int i = 0; i < parameters.length; i += 2) {
+            context.getParameters().add(parameters[i], parameters[i + 1]);
+        }
         context.getParameters().add("proxyHost", "localhost");
         context.getParameters().add("proxyPort", Integer.toString(proxy.port()));
         context.getParameters().add("truststorePath", keystore.toString());
@@ -303,7 +369,9 @@ class ProxyTestCase {
                                 .write(
                                         ("HTTP/1.1 407 Proxy Authentication Required\r\n"
                                                         + "Proxy-Authenticate: Basic realm=\"proxy\"\r\n"
-                                                        + "Content-Length: 0\r\n\r\n")
+                                                        + "Content-Type: text/plain\r\n"
+                                                        + "Content-Length: 6\r\n\r\n"
+                                                        + "denied")
                                                 .getBytes(StandardCharsets.US_ASCII));
                         client.getOutputStream().flush();
                         return;
