@@ -136,6 +136,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
         executor = Objects.requireNonNull(value, "executor");
     }
 
+    /** Returns the borrowed SDK callback executor, or null when the SDK default is used. */
+    public synchronized Executor getExecutor() {
+        return executor;
+    }
+
     public List<ClientInterceptor> getInterceptors() {
         return interceptors;
     }
