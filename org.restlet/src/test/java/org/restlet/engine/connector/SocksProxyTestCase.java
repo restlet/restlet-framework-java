@@ -157,7 +157,7 @@ class SocksProxyTestCase {
         server.start();
 
         Context context = socksContext();
-        context.getParameters().add("nonProxyHosts", "localhost");
+        context.getParameters().set("nonProxyHosts", "localhost");
         client = new Client(context, Protocol.HTTP);
         client.start();
 
@@ -176,6 +176,7 @@ class SocksProxyTestCase {
 
         String previousHost = System.setProperty("socksProxyHost", "localhost");
         String previousPort = System.setProperty("socksProxyPort", Integer.toString(proxy.port()));
+        String previousNonProxyHosts = System.setProperty("http.nonProxyHosts", "");
         try {
             client = new Client(new Context(), Protocol.HTTP);
             client.start();
@@ -186,6 +187,7 @@ class SocksProxyTestCase {
         } finally {
             restore("socksProxyHost", previousHost);
             restore("socksProxyPort", previousPort);
+            restore("http.nonProxyHosts", previousNonProxyHosts);
         }
 
         assertEquals(List.of("localhost:" + server.getActualPort()), proxy.targets);
@@ -203,6 +205,7 @@ class SocksProxyTestCase {
         Context context = new Context();
         context.getParameters().add("socksProxyHost", "localhost");
         context.getParameters().add("socksProxyPort", Integer.toString(proxy.port()));
+        context.getParameters().add("nonProxyHosts", "");
         return context;
     }
 
