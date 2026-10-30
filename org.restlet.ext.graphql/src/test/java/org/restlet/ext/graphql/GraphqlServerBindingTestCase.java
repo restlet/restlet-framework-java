@@ -243,7 +243,12 @@ class GraphqlServerBindingTestCase {
                         MediaType.APPLICATION_JSON);
         request.setEntity(chunked);
         Response streamed = client.handle(request);
-        assertEquals(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE, streamed.getStatus());
+        // The server answers before reading the whole body and closes the connection: the client
+        // gets the 413, or fails while still writing.
+        assertTrue(
+                Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE.equals(streamed.getStatus())
+                        || streamed.getStatus().isConnectorError(),
+                streamed.getStatus()::toString);
     }
 
     @Test
