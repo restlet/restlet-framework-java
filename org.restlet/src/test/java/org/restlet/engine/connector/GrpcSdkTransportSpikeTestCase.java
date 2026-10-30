@@ -330,117 +330,171 @@ class GrpcSdkTransportSpikeTestCase {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void cancelsBeforeHeadersAndShutsDownActiveCalls(boolean restletHosted) throws Exception {
-        CountDownLatch received = new CountDownLatch(2);
-        CountDownLatch cancelled = new CountDownLatch(2);
-        AtomicInteger cancellationCount = new AtomicInteger();
-        AtomicReference<Throwable> unexpectedError = new AtomicReference<>();
-        ServerServiceDefinition service =
-                ServerServiceDefinition.builder("restlet.r0.Echo")
-                        .addMethod(
-                                BIDI_STREAM_METHOD,
-                                ServerCalls.asyncBidiStreamingCall(
-                                        result -> {
-                                            if (!(result
-                                                    instanceof
-                                                    io.grpc.stub.ServerCallStreamObserver<?>
-                                                            observer)) {
-                                                throw new IllegalStateException(
-                                                        "The SDK did not supply a server call observer");
-                                            }
-                                            observer.setOnCancelHandler(
-                                                    () -> {
-                                                        cancellationCount.incrementAndGet();
-                                                        cancelled.countDown();
-                                                    });
-                                            return new io.grpc.stub.StreamObserver<StringValue>() {
-                                                @Override
-                                                public void onNext(StringValue value) {
-                                                    received.countDown();
-                                                }
+    void cancelsActiveCallBeforeHeaders(boolean restletHosted) throws Exception {
+        HoldingService holding = new HoldingService(1);
+        openInteropChannel(holding.definition(), restletHosted);
+        HeldCalls held = startHeldCalls(1);
+        assertTrue(holding.received.await(5, TimeUnit.SECONDS));
+        assertEquals(
+                0, held.headerCount.get(), "The SDK must not report headers before they are sent");
+        held.calls.getFirst().cancel("pre-header cancellation", null);
+        assertTrue(held.closed.await(5, TimeUnit.SECONDS));
+        assertTrue(holding.cancelled.await(5, TimeUnit.SECONDS));
+        assertEquals(List.of(Status.Code.CANCELLED), held.statuses);
+        assertEquals(1, holding.cancellationCount.get());
+        assertNull(holding.unexpectedError.get());
+        assertWorkersFinished(1);
+    }
 
-                                                @Override
-                                                public void onError(Throwable error) {
-                                                    if (Status.fromThrowable(error).getCode()
-                                                            != Status.Code.CANCELLED) {
-                                                        unexpectedError.set(error);
-                                                    }
-                                                }
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shutsDownAllActiveCalls(boolean restletHosted) throws Exception {
+        HoldingService holding = new HoldingService(2);
+        openInteropChannel(holding.definition(), restletHosted);
+        HeldCalls held = startHeldCalls(2);
+        assertTrue(holding.received.await(5, TimeUnit.SECONDS));
+        assertEquals(
+                0, held.headerCount.get(), "The SDK must not report headers before they are sent");
+        channel.shutdownNow();
+        assertTrue(held.closed.await(5, TimeUnit.SECONDS));
+        assertTrue(holding.cancelled.await(5, TimeUnit.SECONDS));
+        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
+        assertEquals(2, held.statuses.size());
+        assertEquals(2, holding.cancellationCount.get());
+        assertNull(holding.unexpectedError.get());
+        assertTrue(
+                held.statuses.stream()
+                        .allMatch(
+                                status ->
+                                        status == Status.Code.CANCELLED
+                                                || status == Status.Code.UNAVAILABLE),
+                held.statuses.toString());
+        assertWorkersFinished(2);
+        if (interopFactory != null) {
+            assertTrue(interopFactory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
+            assertTrue(client.isStarted());
+        } else {
+            assertTrue(restletServer.isStarted());
+        }
+    }
 
-                                                @Override
-                                                public void onCompleted() {
-                                                    result.onCompleted();
-                                                }
-                                            };
-                                        }))
-                        .build();
-        openInteropChannel(service, restletHosted);
-        List<ClientCall<StringValue, StringValue>> calls = new ArrayList<>();
-        CountDownLatch closed = new CountDownLatch(2);
-        AtomicInteger terminalCount = new AtomicInteger();
-        AtomicInteger headerCount = new AtomicInteger();
-        AtomicReference<Status.Code> explicitCancellation = new AtomicReference<>();
-        List<Status.Code> statuses = new java.util.concurrent.CopyOnWriteArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            boolean cancelDirectly = i == 0;
+    /** Starts bidirectional calls that each send one message and wait for response headers. */
+    private HeldCalls startHeldCalls(int count) {
+        HeldCalls held = new HeldCalls(count);
+        for (int i = 0; i < count; i++) {
             var call = channel.newCall(BIDI_STREAM_METHOD, CallOptions.DEFAULT);
-            calls.add(call);
+            held.calls.add(call);
             call.start(
                     new ClientCall.Listener<>() {
                         @Override
                         public void onHeaders(Metadata headers) {
-                            headerCount.incrementAndGet();
+                            held.headerCount.incrementAndGet();
                         }
 
                         @Override
                         public void onClose(Status status, Metadata trailers) {
-                            if (cancelDirectly) {
-                                explicitCancellation.set(status.getCode());
-                            }
-                            statuses.add(status.getCode());
-                            terminalCount.incrementAndGet();
-                            closed.countDown();
+                            held.statuses.add(status.getCode());
+                            held.closed.countDown();
                         }
                     },
                     new Metadata());
             call.request(1);
             call.sendMessage(StringValue.of("hold-before-headers"));
         }
-        assertTrue(received.await(5, TimeUnit.SECONDS));
-        assertEquals(0, headerCount.get(), "The SDK must not report headers before they are sent");
-        calls.getFirst().cancel("pre-header cancellation", null);
-        channel.shutdownNow();
-        assertTrue(closed.await(5, TimeUnit.SECONDS));
-        assertTrue(cancelled.await(5, TimeUnit.SECONDS));
-        assertTrue(channel.awaitTermination(5, TimeUnit.SECONDS));
-        assertEquals(2, terminalCount.get());
-        assertEquals(2, cancellationCount.get());
-        assertEquals(Status.Code.CANCELLED, explicitCancellation.get());
-        assertNull(unexpectedError.get());
-        assertTrue(
-                statuses.stream()
-                        .allMatch(
-                                status ->
-                                        status == Status.Code.CANCELLED
-                                                || status == Status.Code.UNAVAILABLE),
-                statuses.toString());
+        return held;
+    }
+
+    /** Verifies that the I/O workers of every bidirectional call of the interop transport ended. */
+    private void assertWorkersFinished(int count) throws InterruptedException {
         if (interopFactory != null) {
-            assertTrue(
-                    interopFactory.transport.lastBidirectionalStream.responseReaderFinished.await(
-                            5, TimeUnit.SECONDS));
-            assertTrue(
-                    interopFactory.transport.lastBidirectionalStream.requestWriterFinished.await(
-                            5, TimeUnit.SECONDS));
-            assertTrue(interopFactory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
-            assertTrue(client.isStarted());
+            List<RestletClientStream> streams = interopFactory.transport.bidirectionalStreams;
+            assertEquals(count, streams.size());
+            for (RestletClientStream stream : streams) {
+                assertTrue(stream.responseReaderFinished.await(5, TimeUnit.SECONDS));
+                assertTrue(stream.requestWriterFinished.await(5, TimeUnit.SECONDS));
+            }
         } else {
-            assertTrue(
-                    interopServer.lastBidirectionalCall.requestReaderFinished.await(
-                            5, TimeUnit.SECONDS));
-            assertTrue(
-                    interopServer.lastBidirectionalCall.responseWriterFinished.await(
-                            5, TimeUnit.SECONDS));
-            assertTrue(restletServer.isStarted());
+            List<SpikeServerCall<?, ?>> serverCalls = interopServer.bidirectionalCalls;
+            assertEquals(count, serverCalls.size());
+            for (SpikeServerCall<?, ?> serverCall : serverCalls) {
+                assertTrue(serverCall.requestReaderFinished.await(5, TimeUnit.SECONDS));
+                assertTrue(serverCall.responseWriterFinished.await(5, TimeUnit.SECONDS));
+            }
+        }
+    }
+
+    /** The client side of calls held open before their response headers. */
+    private static final class HeldCalls {
+
+        private final List<ClientCall<StringValue, StringValue>> calls = new ArrayList<>();
+
+        private final CountDownLatch closed;
+
+        private final AtomicInteger headerCount = new AtomicInteger();
+
+        private final List<Status.Code> statuses =
+                new java.util.concurrent.CopyOnWriteArrayList<>();
+
+        private HeldCalls(int count) {
+            this.closed = new CountDownLatch(count);
+        }
+    }
+
+    /** A bidirectional service that receives messages but never sends response headers. */
+    private static final class HoldingService {
+
+        private final CountDownLatch received;
+
+        private final CountDownLatch cancelled;
+
+        private final AtomicInteger cancellationCount = new AtomicInteger();
+
+        private final AtomicReference<Throwable> unexpectedError = new AtomicReference<>();
+
+        private HoldingService(int count) {
+            this.received = new CountDownLatch(count);
+            this.cancelled = new CountDownLatch(count);
+        }
+
+        private ServerServiceDefinition definition() {
+            return ServerServiceDefinition.builder("restlet.r0.Echo")
+                    .addMethod(
+                            BIDI_STREAM_METHOD,
+                            ServerCalls.asyncBidiStreamingCall(
+                                    result -> {
+                                        if (!(result
+                                                instanceof
+                                                io.grpc.stub.ServerCallStreamObserver<?>
+                                                        observer)) {
+                                            throw new IllegalStateException(
+                                                    "The SDK did not supply a server call observer");
+                                        }
+                                        observer.setOnCancelHandler(
+                                                () -> {
+                                                    cancellationCount.incrementAndGet();
+                                                    cancelled.countDown();
+                                                });
+                                        return new io.grpc.stub.StreamObserver<StringValue>() {
+                                            @Override
+                                            public void onNext(StringValue value) {
+                                                received.countDown();
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable error) {
+                                                if (Status.fromThrowable(error).getCode()
+                                                        != Status.Code.CANCELLED) {
+                                                    unexpectedError.set(error);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCompleted() {
+                                                result.onCompleted();
+                                            }
+                                        };
+                                    }))
+                    .build();
         }
     }
 
@@ -1038,6 +1092,9 @@ class GrpcSdkTransportSpikeTestCase {
 
         private volatile SpikeServerCall<?, ?> lastBidirectionalCall;
 
+        private final List<SpikeServerCall<?, ?>> bidirectionalCalls =
+                new java.util.concurrent.CopyOnWriteArrayList<>();
+
         private final java.util.concurrent.atomic.AtomicReference<String> lastRequestProtocol =
                 new java.util.concurrent.atomic.AtomicReference<>();
 
@@ -1095,6 +1152,7 @@ class GrpcSdkTransportSpikeTestCase {
             SpikeServerCall<RequestT, ResponseT> serverCall =
                     new SpikeServerCall<>(method, true, request.getHostRef().getAuthority());
             lastBidirectionalCall = serverCall;
+            bidirectionalCalls.add(serverCall);
             response.setOnSent(
                     (sentRequest, sentResponse) -> serverCall.responseWriterFinished.countDown());
             ServerCall.Listener<RequestT> listener =
@@ -1493,6 +1551,9 @@ class GrpcSdkTransportSpikeTestCase {
 
         private volatile RestletClientStream lastBidirectionalStream;
 
+        private final List<RestletClientStream> bidirectionalStreams =
+                new java.util.concurrent.CopyOnWriteArrayList<>();
+
         private final Client client;
 
         private final RestletSocketAddress address;
@@ -1585,6 +1646,7 @@ class GrpcSdkTransportSpikeTestCase {
                             this::streamFinished);
             if (method.getType() == MethodDescriptor.MethodType.BIDI_STREAMING) {
                 lastBidirectionalStream = stream;
+                bidirectionalStreams.add(stream);
             }
             return stream;
         }
