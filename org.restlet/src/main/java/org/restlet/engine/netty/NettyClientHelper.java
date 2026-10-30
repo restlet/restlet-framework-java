@@ -135,7 +135,8 @@ import org.restlet.representation.Representation;
  * <td>String</td>
  * <td>HTTP1_1</td>
  * <td>Indicate the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2"
- * (HTTP/2 only: negotiated with ALPN over TLS, prior knowledge in cleartext), "DYNAMIC" (HTTP/2
+ * (HTTP/2 only: negotiated with ALPN over TLS, prior knowledge in cleartext, except through a
+ * forward proxy where HTTP/1.1 is used), "DYNAMIC" (HTTP/2
  * when negotiated with ALPN over TLS, HTTP/1.1 otherwise), "HTTP3" (<b>experimental</b>: HTTP/3
  * over QUIC for HTTPS URIs without proxy, HTTP/1.1 otherwise; requires the optional
  * {@code io.netty:netty-codec-http3} dependency with its native QUIC library, and the {@link
@@ -697,11 +698,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         @Override
                                         protected void initChannel(SocketChannel ch) {
                                             initConnection(
-                                                    ch,
-                                                    pool,
-                                                    ssl,
-                                                    pool.secure ? proxy : null,
-                                                    proxyAuthorization);
+                                                    ch, pool, ssl, proxy, proxyAuthorization);
                                         }
                                     });
 
@@ -806,7 +803,7 @@ public abstract class NettyClientHelper extends ClientHelper {
             SocketChannel ch,
             OriginPool pool,
             SslContext ssl,
-            InetSocketAddress tunnelProxy,
+            InetSocketAddress proxy,
             String proxyAuthorization) {
         final Promise<String> ready = ch.eventLoop().newPromise();
         ch.attr(READY).set(ready);
@@ -821,8 +818,8 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
         p.addLast("writability", Writability.HANDLER);
 
-        if (tunnelProxy == null) {
-            initProtocols(ch, pool, ssl, ready);
+        if ((proxy == null) || !pool.secure) {
+            initProtocols(ch, pool, ssl, ready, proxy != null);
             return;
         }
 
@@ -830,7 +827,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         if (proxyAuthorization != null) {
             connectHeaders.set(HttpHeaderNames.PROXY_AUTHORIZATION, proxyAuthorization);
         }
-        HttpProxyHandler proxyHandler = new HttpProxyHandler(tunnelProxy, connectHeaders);
+        HttpProxyHandler proxyHandler = new HttpProxyHandler(proxy, connectHeaders);
         proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
         p.addLast("proxy", proxyHandler);
         p.addLast(
@@ -851,7 +848,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                 .addListener(
                         f -> {
                             if (f.isSuccess()) {
-                                initProtocols(ch, pool, ssl, ready);
+                                initProtocols(ch, pool, ssl, ready, false);
                             } else {
                                 ready.tryFailure(f.cause());
                             }
@@ -865,9 +862,14 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @param pool The connection pool of the origin.
      * @param ssl The SSL context, or null for a cleartext connection.
      * @param ready The promise completed with the negotiated protocol.
+     * @param forwardProxy True for a cleartext connection to a forward proxy.
      */
     private void initProtocols(
-            SocketChannel ch, OriginPool pool, SslContext ssl, Promise<String> ready) {
+            SocketChannel ch,
+            OriginPool pool,
+            SslContext ssl,
+            Promise<String> ready,
+            boolean forwardProxy) {
         ChannelPipeline p = ch.pipeline();
         final TransportMode mode = getTransportMode();
         if (ssl != null) {
@@ -908,10 +910,19 @@ public abstract class NettyClientHelper extends ClientHelper {
                             ctx.close();
                         }
                     });
-        } else if (mode == TransportMode.HTTP2) {
+        } else if (mode == TransportMode.HTTP2 && !forwardProxy) {
             addHttp2Handlers(p);
             ready.trySuccess(ApplicationProtocolNames.HTTP_2);
         } else {
+            if (mode == TransportMode.HTTP2) {
+                // HTTP proxies generally don't accept HTTP/2 with prior knowledge.
+                getLogger()
+                        .fine(
+                                "Using HTTP/1.1 through the forward proxy to "
+                                        + pool.host
+                                        + ":"
+                                        + pool.port);
+            }
             addHttp1Handlers(p);
             ready.trySuccess(ApplicationProtocolNames.HTTP_1_1);
         }
