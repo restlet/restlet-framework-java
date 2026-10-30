@@ -66,7 +66,7 @@ class GrpcModuleTestCase {
         String modulePath =
                 paths.stream()
                         .distinct()
-                        .map(Path::toString)
+                        .map(path -> path.toString())
                         .collect(Collectors.joining(File.pathSeparator));
         Path descriptor = temp.resolve("module-info.java");
         Path example = temp.resolve("Main.java");
@@ -104,13 +104,14 @@ class GrpcModuleTestCase {
                 """);
         Path classes = temp.resolve("classes");
         var diagnostics = new java.io.ByteArrayOutputStream();
+        var diagnosticStream = new java.io.PrintStream(diagnostics, true);
         assertEquals(
                 0,
-                javax.tools.ToolProvider.getSystemJavaCompiler()
+                java.util.spi.ToolProvider.findFirst("javac")
+                        .orElseThrow()
                         .run(
-                                null,
-                                diagnostics,
-                                diagnostics,
+                                diagnosticStream,
+                                diagnosticStream,
                                 "--module-path",
                                 modulePath,
                                 "-d",

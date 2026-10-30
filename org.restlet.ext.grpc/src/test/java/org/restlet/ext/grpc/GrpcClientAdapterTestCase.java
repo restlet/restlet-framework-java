@@ -188,10 +188,11 @@ class GrpcClientAdapterTestCase {
                 assertThrows(StatusRuntimeException.class, () -> call("bad"));
         assertEquals(Status.Code.INVALID_ARGUMENT, error.getStatus().getCode());
         assertEquals("native % error: caf\u00e9", error.getStatus().getDescription());
+        Metadata trailers = java.util.Objects.requireNonNull(error.getTrailers());
         assertEquals(
                 List.of("one", "two"),
-                com.google.common.collect.ImmutableList.copyOf(error.getTrailers().getAll(TEXT)));
-        assertArrayEquals(new byte[] {0, (byte) 255, 7}, error.getTrailers().get(BINARY));
+                com.google.common.collect.ImmutableList.copyOf(trailers.getAll(TEXT)));
+        assertArrayEquals(new byte[] {0, (byte) 255, 7}, trailers.get(BINARY));
         assertEquals("recovered", call("recovered").getValue());
     }
 

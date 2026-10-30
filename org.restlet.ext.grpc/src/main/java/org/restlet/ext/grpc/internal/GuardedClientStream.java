@@ -19,6 +19,7 @@ import io.grpc.internal.InsightBuilder;
 import java.io.InputStream;
 
 /** Delayed SDK streams must turn synchronous framing failures into terminal call status. */
+@SuppressWarnings("null")
 final class GuardedClientStream implements ClientStream {
     private final ClientStream delegate;
     private final int maxBytes;
