@@ -168,13 +168,15 @@ import org.restlet.representation.Representation;
  * <tr>
  * <td>proxyHost</td>
  * <td>String</td>
- * <td>System property "http.proxyHost"</td>
- * <td>The host name of the HTTP proxy.</td>
+ * <td>System property "http.proxyHost" for HTTP requests, "https.proxyHost" for HTTPS
+ * requests</td>
+ * <td>The host name of the HTTP proxy, used for both HTTP and HTTPS requests when set.</td>
  * </tr>
  * <tr>
  * <td>proxyPort</td>
  * <td>int</td>
- * <td>System property "http.proxyPort" or "3128"</td>
+ * <td>System property "http.proxyPort" for HTTP requests, "https.proxyPort" for HTTPS requests,
+ * or "3128"</td>
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
@@ -314,7 +316,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         boolean secure = "https".equalsIgnoreCase(scheme);
-        boolean forwardProxy = !secure && (getProxyHost() != null);
+        boolean forwardProxy = !secure && (getProxy(false) != null);
         String target = ReferenceUtils.format(request.getResourceRef(), forwardProxy, request);
         return new NettyClientCall(this, request.getMethod().toString(), ref, target, secure);
     }
@@ -467,7 +469,7 @@ public abstract class NettyClientHelper extends ClientHelper {
     Channel acquire(NettyClientCall call) throws IOException {
         if (call.isConfidential()
                 && getTransportMode() == TransportMode.HTTP3
-                && getProxyHost() == null) {
+                && getProxy(true) == null) {
             return acquireHttp3(call);
         }
 
@@ -662,9 +664,11 @@ public abstract class NettyClientHelper extends ClientHelper {
         boolean acquired = true;
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
-            final String proxyHost = getProxyHost();
+            final InetSocketAddress proxyRef = getProxy(pool.secure);
             final InetSocketAddress proxy =
-                    (proxyHost == null) ? null : new InetSocketAddress(proxyHost, getProxyPort());
+                    (proxyRef == null)
+                            ? null
+                            : new InetSocketAddress(proxyRef.getHostString(), proxyRef.getPort());
 
             Bootstrap bootstrap =
                     new Bootstrap()
@@ -1107,7 +1111,46 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
-     * Returns the host name of the HTTP proxy, if specified.
+     * Returns the HTTP proxy to send a request to, or null to connect directly to the origin
+     * server.
+     *
+     * @param secure True for an HTTPS request, false for an HTTP request.
+     * @return The unresolved address of the HTTP proxy, or null.
+     */
+    InetSocketAddress getProxy(boolean secure) {
+        String host = secure ? getHttpsProxyHost() : getProxyHost();
+        return (host == null)
+                ? null
+                : InetSocketAddress.createUnresolved(
+                        host, secure ? getHttpsProxyPort() : getProxyPort());
+    }
+
+    /**
+     * Returns the host name of the HTTP proxy for HTTPS requests, if specified: the "proxyHost"
+     * parameter, or the "https.proxyHost" system property.
+     *
+     * @return the host name of the HTTP proxy for HTTPS requests, if specified.
+     */
+    public String getHttpsProxyHost() {
+        return getHelpedParameters()
+                .getFirstValue("proxyHost", System.getProperty("https.proxyHost"));
+    }
+
+    /**
+     * Returns the port of the HTTP proxy for HTTPS requests: the "proxyPort" parameter, or the
+     * "https.proxyPort" system property, 3128 otherwise.
+     *
+     * @return the port of the HTTP proxy for HTTPS requests.
+     */
+    public int getHttpsProxyPort() {
+        return Integer.parseInt(
+                getHelpedParameters()
+                        .getFirstValue("proxyPort", System.getProperty("https.proxyPort", "3128")));
+    }
+
+    /**
+     * Returns the host name of the HTTP proxy for HTTP requests, if specified: the "proxyHost"
+     * parameter, or the "http.proxyHost" system property.
      *
      * @return the host name of the HTTP proxy, if specified.
      */
@@ -1117,7 +1160,8 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
-     * Returns the port of the HTTP proxy, if specified, 3128 otherwise.
+     * Returns the port of the HTTP proxy for HTTP requests: the "proxyPort" parameter, or the
+     * "http.proxyPort" system property, 3128 otherwise.
      *
      * @return the port of the HTTP proxy.
      */
