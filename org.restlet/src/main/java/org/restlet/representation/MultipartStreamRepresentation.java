@@ -11,6 +11,7 @@ package org.restlet.representation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
@@ -77,7 +78,11 @@ public final class MultipartStreamRepresentation extends OutputRepresentation {
             }
         }
         parameters.add(new Parameter("boundary", boundary));
-        return new MediaType(mediaType, parameters);
+        // The name of the original type may carry its parameters, including the old boundary.
+        return new MediaType(
+                mediaType.getMainType() + "/" + mediaType.getSubType(),
+                parameters,
+                mediaType.getDescription());
     }
 
     /**
@@ -125,6 +130,13 @@ public final class MultipartStreamRepresentation extends OutputRepresentation {
             this.delimiter = ("\r\n--" + boundary).getBytes(StandardCharsets.US_ASCII);
         }
 
+        /** Indicates whether the content starts with the delimiter without its line break. */
+        private boolean startsWithDashBoundary(byte[] content) {
+            int length = delimiter.length - 2;
+            return content.length >= length
+                    && Arrays.equals(content, 0, length, delimiter, 2, delimiter.length);
+        }
+
         /**
          * Writes and flushes one part, followed by the next delimiter.
          *
@@ -139,7 +151,9 @@ public final class MultipartStreamRepresentation extends OutputRepresentation {
             if (closed) {
                 throw new IOException("Part sink is closed");
             }
-            if (contains(content, delimiter)) {
+            // The line break ending the headers precedes the content, so content starting with
+            // the boundary would also form a delimiter.
+            if (contains(content, delimiter) || startsWithDashBoundary(content)) {
                 throw new IllegalArgumentException("The part content contains the delimiter");
             }
             StringBuilder head = new StringBuilder();
