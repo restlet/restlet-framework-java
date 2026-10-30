@@ -31,6 +31,12 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.PushbackInputStream;
 import java.net.ConnectException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -246,12 +252,53 @@ class NettyClientCall {
             return;
         }
         requestHeaders.removeAll(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
-        ChallengeResponse credentials = request.getProxyChallengeResponse();
         this.tunnelProxyAuthorization = authorization;
-        this.tunnelProxyIdentity =
-                (credentials == null)
-                        ? authorization
-                        : credentials.getScheme().getName() + " " + credentials.getIdentifier();
+        this.tunnelProxyIdentity = fingerprint(authorization, request.getProxyChallengeResponse());
+    }
+
+    /**
+     * Returns a fingerprint of the proxy credentials, identifying the tunnels they can reuse. It
+     * covers the secret or raw value, so that different credentials never share a tunnel, but not
+     * the values changing with each request (e.g. Digest nonces). It is a SHA-256 hash, so the pool
+     * keys don't retain the credentials in clear.
+     *
+     * @param authorization The "Proxy-Authorization" header value.
+     * @param credentials The proxy credentials of the request, or null.
+     * @return The fingerprint.
+     */
+    static String fingerprint(String authorization, ChallengeResponse credentials) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
+
+        if (credentials == null) {
+            update(digest, authorization);
+        } else {
+            update(digest, credentials.getScheme().getName());
+            update(digest, credentials.getRawValue());
+            update(digest, credentials.getIdentifier());
+            update(digest, credentials.getSecret());
+            update(digest, credentials.getRealm());
+        }
+        return HexFormat.of().formatHex(digest.digest());
+    }
+
+    private static void update(MessageDigest digest, String value) {
+        update(digest, (value == null) ? null : value.toCharArray());
+    }
+
+    private static void update(MessageDigest digest, char[] value) {
+        if (value == null) {
+            digest.update((byte) 0);
+        } else {
+            digest.update((byte) 1);
+            ByteBuffer bytes = StandardCharsets.UTF_8.encode(CharBuffer.wrap(value));
+            digest.update(ByteBuffer.allocate(Integer.BYTES).putInt(bytes.remaining()).flip());
+            digest.update(bytes);
+        }
     }
 
     /**
@@ -462,8 +509,10 @@ class NettyClientCall {
         completeEntityRelease();
         helper.logFailure("The HTTP proxy requires authentication to open a tunnel", cause);
         abort();
-        for (Map.Entry<String, String> header : headers) {
-            responseHeaders.add(header.getKey(), header.getValue());
+        // Only the challenges are kept: the body of the refusal is discarded, so its entity
+        // headers would not describe the response.
+        for (String challenge : headers.getAll(HttpHeaderNames.PROXY_AUTHENTICATE)) {
+            responseHeaders.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE, challenge);
         }
         return Status.CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
     }
