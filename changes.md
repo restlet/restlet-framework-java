@@ -152,7 +152,11 @@ Changes log
           result requested at a time, client disconnects cancel the subscription, and finite
           limits apply (64 active subscriptions and 1 MiB of queued bytes per subscription by
           default). `GraphqlClientAdapter.subscribe` returns a `Publisher<ExecutionResult>`
-          honoring demand; cancelling it aborts the request. Issue #1581.
+          honoring demand; cancelling it aborts the request. With `GraphqlTransport.WEBSOCKET`,
+          the server adapter also accepts `graphql-transport-ws` WebSocket upgrades on its own path
+          (HTTP/1.1 only), with several operations per connection, a `connection_init` timeout
+          and the protocol's close codes; `org.restlet.ext.websocket` is an optional dependency,
+          loaded only then. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.

@@ -19,5 +19,12 @@ public enum GraphqlTransport {
      * a request accepting {@code text/event-stream} gets one {@code next} event per result and a
      * final {@code complete} event.
      */
-    SSE
+    SSE,
+
+    /**
+     * WebSocket, following the {@code graphql-transport-ws} protocol: the adapter accepts upgrades
+     * offering this subprotocol, on HTTP/1.1 connections only. Requires the {@code
+     * org.restlet.ext.websocket} module.
+     */
+    WEBSOCKET
 }
