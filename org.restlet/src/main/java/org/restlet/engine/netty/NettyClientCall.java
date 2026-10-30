@@ -236,7 +236,12 @@ class NettyClientCall {
 
     /** Indicates whether the exchange goes through a CONNECT tunnel of the HTTP proxy. */
     private boolean isTunneled() {
-        return secure && (helper.getProxyHost() != null);
+        return secure && (helper.getProxy(true) != null);
+    }
+
+    /** Indicates whether the exchange is sent to an HTTP forward proxy. */
+    private boolean isForwardProxied() {
+        return !secure && (helper.getProxy(false) != null);
     }
 
     /**
@@ -322,6 +327,9 @@ class NettyClientCall {
         HeaderUtils.addRequestHeaders(request, requestHeaders);
         if (isTunneled()) {
             moveTunnelProxyAuthorization(request);
+        } else if (!isForwardProxied()) {
+            // Direct connection: the proxy credentials must not reach the origin server.
+            requestHeaders.removeAll(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
         }
 
         Status status = sendRequest(request);

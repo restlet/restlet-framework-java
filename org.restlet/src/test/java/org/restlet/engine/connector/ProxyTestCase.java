@@ -24,7 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -256,6 +258,65 @@ class ProxyTestCase {
     }
 
     @Test
+    void usesHttpsProxySystemPropertiesForHttpsRequests() throws Exception {
+        startHttpsServer(HELLO);
+        withSystemProperties(
+                Map.of("https.proxyHost", "localhost", "https.proxyPort", proxyPort()),
+                () -> {
+                    client = newHttpsClient(false);
+                    Response response =
+                            client.handle(
+                                    new Request(
+                                            Method.GET,
+                                            "https://localhost:" + server.getActualPort() + "/s"));
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                });
+
+        assertEquals(
+                List.of("CONNECT localhost:" + server.getActualPort() + " HTTP/1.1"),
+                proxy.requestLines);
+    }
+
+    @Test
+    void ignoresHttpProxySystemPropertiesForHttpsRequests() throws Exception {
+        startHttpsServer(HELLO);
+        withSystemProperties(
+                Map.of("http.proxyHost", "localhost", "http.proxyPort", proxyPort()),
+                () -> {
+                    client = newHttpsClient(false);
+                    Response response =
+                            client.handle(
+                                    new Request(
+                                            Method.GET,
+                                            "https://localhost:" + server.getActualPort() + "/s"));
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                });
+
+        assertTrue(proxy.requestLines.isEmpty(), proxy.requestLines.toString());
+    }
+
+    @Test
+    void doesNotSendProxyCredentialsToOriginServerWithoutProxy() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        withSystemProperties(
+                Map.of("http.proxyHost", "localhost", "http.proxyPort", proxyPort()),
+                () -> {
+                    client = newHttpsClient(false);
+                    Request request =
+                            new Request(
+                                    Method.GET,
+                                    "https://localhost:" + server.getActualPort() + "/s");
+                    request.setProxyChallengeResponse(
+                            new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+                    Response response = client.handle(request);
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                    assertEquals("none", response.getEntityAsText());
+                });
+
+        assertTrue(proxy.requestLines.isEmpty(), proxy.requestLines.toString());
+    }
+
+    @Test
     void reportsUnreachableProxy() throws Exception {
         server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
         server.start();
@@ -297,19 +358,55 @@ class ProxyTestCase {
     }
 
     private Client newHttpsClient(String... parameters) throws Exception {
+        return newHttpsClient(true, parameters);
+    }
+
+    private Client newHttpsClient(boolean proxyParameters, String... parameters) throws Exception {
         Path keystore = keystore();
         Context context = new Context();
         for (int i = 0; i < parameters.length; i += 2) {
             context.getParameters().add(parameters[i], parameters[i + 1]);
         }
-        context.getParameters().add("proxyHost", "localhost");
-        context.getParameters().add("proxyPort", Integer.toString(proxy.port()));
+        if (proxyParameters) {
+            context.getParameters().add("proxyHost", "localhost");
+            context.getParameters().add("proxyPort", proxyPort());
+        }
         context.getParameters().add("truststorePath", keystore.toString());
         context.getParameters().add("truststorePassword", "testtest");
         context.getParameters().add("trustStoreType", "PKCS12");
         Client result = new Client(context, Protocol.HTTPS);
         result.start();
         return result;
+    }
+
+    private String proxyPort() {
+        return Integer.toString(proxy.port());
+    }
+
+    /** Runs an action with system properties set, then restores their previous values. */
+    private static void withSystemProperties(Map<String, String> properties, ThrowingAction action)
+            throws Exception {
+        Map<String, String> previous = new HashMap<>();
+        for (Map.Entry<String, String> property : properties.entrySet()) {
+            previous.put(
+                    property.getKey(), System.setProperty(property.getKey(), property.getValue()));
+        }
+        try {
+            action.run();
+        } finally {
+            for (Map.Entry<String, String> property : previous.entrySet()) {
+                if (property.getValue() == null) {
+                    System.clearProperty(property.getKey());
+                } else {
+                    System.setProperty(property.getKey(), property.getValue());
+                }
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface ThrowingAction {
+        void run() throws Exception;
     }
 
     /**
