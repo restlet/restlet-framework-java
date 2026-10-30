@@ -155,6 +155,9 @@ class NettyClientCall {
     /** Indicates whether the channel was released. */
     private boolean released;
 
+    /** The empty multiplexed response entity to release once the response completes. */
+    private Representation pendingEmptyEntity;
+
     /**
      * Constructor.
      *
@@ -484,11 +487,36 @@ class NettyClientCall {
         response.setEntity(entity);
 
         if (entity != null && (entity.isEmpty() || !hasBody(response.getStatus()))) {
+            if (kind.isStream()
+                    && hasBody(response.getStatus())
+                    && deferEmptyEntityRelease(entity)) {
+                // Releasing now would reset the stream and lose any trailers still to come.
+                return;
+            }
             entity.release();
             if (Status.SUCCESS_RESET_CONTENT.equals(response.getStatus())
                     || response.getStatus().isInformational()) {
                 response.setEntity(null);
             }
+        }
+    }
+
+    /**
+     * Defers the release of an empty multiplexed response entity until the response completes.
+     *
+     * @param entity The empty response entity.
+     * @return True if the release was deferred, false if the response is already complete.
+     */
+    private boolean deferEmptyEntityRelease(Representation entity) {
+        lock.lock();
+        try {
+            if (responseComplete) {
+                return false;
+            }
+            pendingEmptyEntity = entity;
+            return true;
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -795,11 +823,17 @@ class NettyClientCall {
         if (stream != null) {
             stream.end();
         }
+        Representation emptyEntity;
         lock.lock();
         try {
             responseComplete = true;
+            emptyEntity = pendingEmptyEntity;
+            pendingEmptyEntity = null;
         } finally {
             lock.unlock();
+        }
+        if (emptyEntity != null) {
+            emptyEntity.release();
         }
         maybeRelease();
     }
