@@ -20,10 +20,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.MultiPartRepresentation;
 import org.restlet.representation.MultiPartRepresentation.Part;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.util.Series;
 
 /**
  * Test case for the {@link MultiPartRepresentation} class in multipart mode.
@@ -75,6 +77,50 @@ class MultiPartRepresentationTestCase {
         rep.setBoundary("myActualBoundary");
         assertEquals(
                 "multipart/form-data; boundary=myActualBoundary", rep.getMediaType().toString());
+    }
+
+    @Test
+    void setBoundaryKeepsTheOtherParameters() {
+        assertEquals(
+                "multipart/mixed; deferSpec=20220824; boundary=b",
+                MultiPartRepresentation.setBoundary(
+                                MediaType.valueOf("multipart/mixed; deferSpec=20220824"), "b")
+                        .toString());
+        assertEquals(
+                "multipart/mixed; deferSpec=20220824; boundary=b",
+                MultiPartRepresentation.setBoundary(
+                                MediaType.valueOf(
+                                        "multipart/mixed; boundary=a; deferSpec=20220824"),
+                                "b")
+                        .toString());
+        assertEquals(
+                "multipart/related; type=\"a;boundary=x\"; boundary=b",
+                MultiPartRepresentation.setBoundary(
+                                MediaType.valueOf(
+                                        "multipart/related; Boundary=a; type=\"a;boundary=x\""),
+                                "b")
+                        .toString());
+        // As parsed from a Content-Type header
+        Series<Parameter> parameters = new Series<>(Parameter.class);
+        parameters.add("type", "application/xml");
+        parameters.add("BOUNDARY", "a");
+        assertEquals(
+                "multipart/related; type=\"application/xml\"; boundary=b",
+                MultiPartRepresentation.setBoundary(
+                                new MediaType("multipart/related", parameters), "b")
+                        .toString());
+        assertNull(MultiPartRepresentation.setBoundary(null, "b"));
+
+        MultiPartRepresentation rep =
+                new MultiPartRepresentation(
+                        MediaType.valueOf("multipart/mixed; deferSpec=20220824"),
+                        "b",
+                        List.of(new Part("a", null, new StringRepresentation("b"))));
+        assertEquals(
+                "multipart/mixed; deferSpec=20220824; boundary=b", rep.getMediaType().toString());
+        rep.setBoundary("c");
+        assertEquals(
+                "multipart/mixed; deferSpec=20220824; boundary=c", rep.getMediaType().toString());
     }
 
     @Test
