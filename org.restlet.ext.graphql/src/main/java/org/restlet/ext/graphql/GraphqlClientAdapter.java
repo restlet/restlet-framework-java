@@ -77,6 +77,9 @@ public class GraphqlClientAdapter {
 
     private static final int EXCERPT_BYTES = 1024;
 
+    private static final MediaType INCREMENTAL =
+            new MediaType(MediaType.MULTIPART_MIXED, "deferSpec", "20220824");
+
     private enum State {
         NEW,
         STARTED,
@@ -98,6 +101,8 @@ public class GraphqlClientAdapter {
     private volatile Consumer<Request> requestCustomizer;
 
     private volatile State state = State.NEW;
+
+    private volatile boolean incrementalDeliveryEnabled;
 
     private final Set<GraphqlSsePublisher.EventStreamSubscription> subscriptions =
             ConcurrentHashMap.newKeySet();
@@ -248,6 +253,33 @@ public class GraphqlClientAdapter {
     public void setRequestCustomizer(Consumer<Request> requestCustomizer) {
         checkNew();
         this.requestCustomizer = requestCustomizer;
+    }
+
+    /**
+     * Indicates if incremental delivery is accepted.
+     *
+     * @return True if incremental delivery is accepted.
+     */
+    public boolean isIncrementalDeliveryEnabled() {
+        return incrementalDeliveryEnabled;
+    }
+
+    /**
+     * Indicates if incremental delivery ({@code @defer}) is accepted. Experimental and off by
+     * default: the GraphQL incremental delivery RFC is not finalized.
+     *
+     * <p>When enabled, {@code execute} accepts {@code multipart/mixed} responses in graphql-java's
+     * format ({@code deferSpec=20220824}). Such a response is returned as an {@link
+     * graphql.incremental.IncrementalExecutionResult} with the initial result. When it has more
+     * results, its item publisher reads them from the response, which stays open until the
+     * publisher completes, fails or is cancelled: subscribe to it, or cancel its subscription. Each
+     * part is bounded by {@link #getMaxResponseBytes()}.
+     *
+     * @param incrementalDeliveryEnabled True to accept incremental delivery.
+     */
+    public void setIncrementalDeliveryEnabled(boolean incrementalDeliveryEnabled) {
+        checkNew();
+        this.incrementalDeliveryEnabled = incrementalDeliveryEnabled;
     }
 
     /**
@@ -531,8 +563,20 @@ public class GraphqlClientAdapter {
         request.getClientInfo()
                 .getAcceptedMediaTypes()
                 .add(new Preference<>(MediaType.APPLICATION_JSON, 0.9F));
+        if (incrementalDeliveryEnabled) {
+            request.getClientInfo().getAcceptedMediaTypes().add(new Preference<>(INCREMENTAL, 1F));
+        }
 
         Response response = client.handle(request);
+        Representation multipart = response.getEntity();
+        if (incrementalDeliveryEnabled
+                && response.getStatus().isSuccess()
+                && multipart != null
+                && multipart.getMediaType() != null
+                && MediaType.MULTIPART_MIXED.equals(multipart.getMediaType(), true)) {
+            // Releases the response itself, once the last result is read.
+            return GraphqlIncrementalPublisher.read(response, maxResponseBytes);
+        }
         try {
             return toResult(response);
         } finally {

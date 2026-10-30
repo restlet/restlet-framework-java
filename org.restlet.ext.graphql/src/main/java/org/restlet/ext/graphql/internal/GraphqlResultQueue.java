@@ -10,7 +10,9 @@ package org.restlet.ext.graphql.internal;
 
 import graphql.ExecutionResult;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Function;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -19,8 +21,11 @@ import org.reactivestreams.Subscription;
  * writes them. One result is requested at a time: the writer calls {@link #request()} once a result
  * is written. Results received without being requested are queued up to a byte limit, beyond which
  * the subscription is cancelled.
+ *
+ * <p>Items are {@link ExecutionResult} values by default, or other results with their own
+ * serialization, such as the delayed results of incremental delivery.
  */
-public final class GraphqlResultQueue implements Subscriber<ExecutionResult> {
+public final class GraphqlResultQueue implements Subscriber<Object> {
 
     /** A signal taken from the queue. */
     public sealed interface Signal permits Next, Failure, Completed, Cancelled {}
@@ -51,6 +56,8 @@ public final class GraphqlResultQueue implements Subscriber<ExecutionResult> {
 
     private final long maxQueuedBytes;
 
+    private final Function<Object, Map<String, Object>> specification;
+
     private long queuedBytes;
 
     private volatile Subscription subscription;
@@ -65,7 +72,19 @@ public final class GraphqlResultQueue implements Subscriber<ExecutionResult> {
      * @param maxQueuedBytes The maximum number of bytes of results received but not yet taken.
      */
     public GraphqlResultQueue(long maxQueuedBytes) {
+        this(maxQueuedBytes, item -> ((ExecutionResult) item).toSpecification());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param maxQueuedBytes The maximum number of bytes of results received but not yet taken.
+     * @param specification Returns the specification map of an item, serialized to JSON.
+     */
+    public GraphqlResultQueue(
+            long maxQueuedBytes, Function<Object, Map<String, Object>> specification) {
         this.maxQueuedBytes = maxQueuedBytes;
+        this.specification = specification;
     }
 
     @Override
@@ -79,8 +98,8 @@ public final class GraphqlResultQueue implements Subscriber<ExecutionResult> {
     }
 
     @Override
-    public void onNext(ExecutionResult item) {
-        String json = GraphqlJson.writeString(item.toSpecification());
+    public void onNext(Object item) {
+        String json = GraphqlJson.writeString(specification.apply(item));
         long size = json.getBytes(StandardCharsets.UTF_8).length;
         synchronized (this) {
             if (terminated) {

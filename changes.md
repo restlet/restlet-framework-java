@@ -102,7 +102,10 @@ Changes log
           the server adapter also accepts `graphql-transport-ws` WebSocket upgrades on its own path
           (HTTP/1.1 only), with several operations per connection, a `connection_init` timeout
           and the protocol's close codes; `org.restlet.ext.websocket` is an optional dependency,
-          loaded only then. Issue #1581.
+          loaded only then. Incremental delivery of `@defer` results over `multipart/mixed` is
+          available on both sides when enabled (experimental, off by default): the client
+          returns graphql-java's `IncrementalExecutionResult`, whose item publisher reads the
+          delayed results. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
