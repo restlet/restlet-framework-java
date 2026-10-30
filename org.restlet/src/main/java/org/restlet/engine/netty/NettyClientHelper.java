@@ -912,6 +912,20 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
+     * Returns the event loop group doing network I/O, so that other Netty channels can share it.
+     * The group belongs to this connector: it is created on start and shut down on stop, closing
+     * the channels registered with it. Callers must not shut it down.
+     *
+     * <p>This is an engine extension point, meant for Restlet extensions.
+     *
+     * @return The event loop group, or null if the connector is not started.
+     */
+    @SuppressWarnings("exports")
+    public EventLoopGroup getEventLoopGroup() {
+        return group;
+    }
+
+    /**
      * Returns the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2",
      * "HTTP3" (experimental) and "DYNAMIC". Default to "HTTP1_1".
      *
