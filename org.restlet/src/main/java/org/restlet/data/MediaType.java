@@ -444,6 +444,9 @@ public final class MediaType extends Metadata {
     public static final MediaType MULTIPART_FORM_DATA =
             register("multipart/form-data", "Multipart form data");
 
+    public static final MediaType MULTIPART_MIXED =
+            register("multipart/mixed", "Multipart mixed content");
+
     public static final MediaType TEXT_ALL = register("text/*", "All texts");
 
     public static final MediaType TEXT_CALENDAR = register("text/calendar", "iCalendar event");
