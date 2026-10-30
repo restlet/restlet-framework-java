@@ -59,6 +59,8 @@ public final class EventStreamRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
+        // Sends the response head now, so that clients get it even if the first event is late.
+        outputStream.flush();
         try (EventSink sink = new EventSink(outputStream)) {
             if (heartbeatInterval == null) {
                 writer.write(sink);

@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
@@ -67,6 +71,16 @@ class EventStreamConnectorTestCase {
     @Test
     void flushesEventsBeforeTheResourceCompletesOverHttp2() throws Exception {
         assertStreamsBeforeCompletion(true);
+    }
+
+    @Test
+    void sendsTheResponseHeadBeforeTheFirstEventOverHttp11() throws Exception {
+        assertHeadBeforeFirstEvent(false);
+    }
+
+    @Test
+    void sendsTheResponseHeadBeforeTheFirstEventOverHttp2() throws Exception {
+        assertHeadBeforeFirstEvent(true);
     }
 
     @Test
@@ -216,6 +230,71 @@ class EventStreamConnectorTestCase {
         try (EventStreamReader reader = new EventStreamReader(response.getEntity().getStream())) {
             assertEquals("after idle", reader.readEvent().getData());
             assertNull(reader.readEvent());
+        }
+    }
+
+    private void assertHeadBeforeFirstEvent(boolean http2) throws Exception {
+        CountDownLatch sendEvent = new CountDownLatch(1);
+        Restlet restlet =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity(
+                                new EventStreamRepresentation(
+                                        sink -> {
+                                            // An idle stream, without heartbeats
+                                            try {
+                                                if (!sendEvent.await(10, TimeUnit.SECONDS)) {
+                                                    throw new java.io.IOException(
+                                                            "Timed out waiting to send the event");
+                                                }
+                                            } catch (InterruptedException e) {
+                                                Thread.currentThread().interrupt();
+                                                throw new java.io.IOException(
+                                                        "Interrupted while awaiting an event", e);
+                                            }
+                                            sink.send(
+                                                    ServerSentEvent.builder().data("late").build());
+                                        }));
+                    }
+                };
+        Context serverContext = new Context();
+        if (http2) {
+            serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        }
+        server = new Server(serverContext, Protocol.HTTP, 0, restlet);
+        server.start();
+
+        // The JDK client returns the response as soon as its head arrives, before any body byte
+        try (HttpClient jdkClient =
+                HttpClient.newBuilder()
+                        .version(http2 ? HttpClient.Version.HTTP_2 : HttpClient.Version.HTTP_1_1)
+                        .build()) {
+            HttpRequest request =
+                    HttpRequest.newBuilder(
+                                    URI.create("http://localhost:" + server.getActualPort() + "/"))
+                            .build();
+            HttpResponse<InputStream> response =
+                    jdkClient
+                            .sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+                            .get(5, TimeUnit.SECONDS);
+            assertEquals(200, response.statusCode());
+            assertEquals(
+                    http2 ? HttpClient.Version.HTTP_2 : HttpClient.Version.HTTP_1_1,
+                    response.version());
+            assertTrue(
+                    response.headers()
+                            .firstValue("Content-Type")
+                            .orElseThrow()
+                            .startsWith(MediaType.TEXT_EVENT_STREAM.getName()));
+
+            sendEvent.countDown();
+            try (EventStreamReader reader = new EventStreamReader(response.body())) {
+                assertEquals("late", reader.readEvent().getData());
+                assertNull(reader.readEvent());
+            }
+        } finally {
+            sendEvent.countDown();
         }
     }
 
