@@ -132,6 +132,25 @@ class ProxyTestCase {
     }
 
     @Test
+    void forwardsCleartextHttp2RequestsWithHttp1() throws Exception {
+        server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
+        server.start();
+
+        Context context = new Context();
+        context.getParameters().add("proxyHost", "localhost");
+        context.getParameters().add("proxyPort", proxyPort());
+        context.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(context, Protocol.HTTP);
+        client.start();
+
+        String uri = "http://localhost:" + server.getActualPort() + "/h2";
+        Response response = client.handle(new Request(Method.GET, uri));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("hello /h2", response.getEntityAsText());
+        assertEquals(List.of("GET " + uri + " HTTP/1.1"), proxy.requestLines);
+    }
+
+    @Test
     void tunnelsHttpsRequestsWithConnect() throws Exception {
         startHttpsServer(HELLO);
         client = newHttpsClient();
