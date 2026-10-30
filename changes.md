@@ -94,6 +94,8 @@ Changes log
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
     - Bugs fixed
+        - `MultiPartRepresentation.setBoundary` kept only the boundary parameter when replacing an
+          existing boundary, dropping the media type's other parameters. Issue #1600.
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
