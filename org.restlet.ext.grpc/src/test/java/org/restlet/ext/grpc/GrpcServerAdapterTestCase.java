@@ -1,0 +1,795 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+package org.restlet.ext.grpc;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.StringValue;
+import io.grpc.CallOptions;
+import io.grpc.ClientCall;
+import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
+import io.grpc.ServerServiceDefinition;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.health.v1.HealthCheckRequest;
+import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.health.v1.HealthGrpc;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.protobuf.ProtoUtils;
+import io.grpc.protobuf.services.HealthStatusManager;
+import io.grpc.stub.ClientCalls;
+import io.grpc.stub.ServerCallStreamObserver;
+import io.grpc.stub.ServerCalls;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
+import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.routing.Router;
+
+class GrpcServerAdapterTestCase {
+    private static final MethodDescriptor<StringValue, StringValue> ECHO =
+            MethodDescriptor.<StringValue, StringValue>newBuilder()
+                    .setType(MethodDescriptor.MethodType.UNARY)
+                    .setFullMethodName("review.Server/Echo")
+                    .setRequestMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .setResponseMarshaller(ProtoUtils.marshaller(StringValue.getDefaultInstance()))
+                    .build();
+    private static final MethodDescriptor<StringValue, StringValue> WATCH =
+            ECHO.toBuilder()
+                    .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
+                    .setFullMethodName("review.Server/Watch")
+                    .build();
+    private final GrpcServerAdapter adapter = new GrpcServerAdapter();
+    private Server http;
+    private ManagedChannel channel;
+    private final java.util.List<LogRecord> lifecycleErrors = new CopyOnWriteArrayList<>();
+    private final Handler errorHandler =
+            new Handler() {
+                @Override
+                public void publish(LogRecord record) {
+                    if (record.getLevel().intValue() >= Level.SEVERE.intValue()) {
+                        lifecycleErrors.add(record);
+                    }
+                }
+
+                @Override
+                public void flush() {}
+
+                @Override
+                public void close() {}
+            };
+
+    @BeforeEach
+    void captureLifecycleErrors() {
+        Logger.getLogger("io.grpc.internal").addHandler(errorHandler);
+    }
+
+    private void start(ServerServiceDefinition service) throws Exception {
+        adapter.getServices().add(service);
+        adapter.start();
+        Router router = new Router();
+        adapter.attachTo(router);
+        router.attach(
+                "/rest",
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity("rest", MediaType.TEXT_PLAIN);
+                    }
+                });
+        Context context = new Context();
+        context.getParameters().set("http.transport.protocol", "HTTP2");
+        http = new Server(context, Protocol.HTTP, 0, router);
+        http.start();
+        channel =
+                NettyChannelBuilder.forAddress("localhost", http.getActualPort())
+                        .usePlaintext()
+                        .build();
+    }
+
+    private String call(String value) {
+        return ClientCalls.blockingUnaryCall(
+                        channel,
+                        ECHO,
+                        CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.SECONDS),
+                        StringValue.of(value))
+                .getValue();
+    }
+
+    private static ServerServiceDefinition echo() {
+        return ServerServiceDefinition.builder("review.Server")
+                .addMethod(
+                        ECHO,
+                        ServerCalls.asyncUnaryCall(
+                                (StringValue request,
+                                        io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                    out.onNext(request);
+                                    out.onCompleted();
+                                }))
+                .build();
+    }
+
+    @AfterEach
+    void cleanup() throws Exception {
+        try {
+            if (channel != null) {
+                channel.shutdownNow();
+                assertTrue(channel.awaitTermination(15, TimeUnit.SECONDS));
+            }
+        } finally {
+            try {
+                adapter.stop();
+            } finally {
+                if (http != null) {
+                    http.stop();
+                }
+                Logger.getLogger("io.grpc.internal").removeHandler(errorHandler);
+                assertTrue(
+                        lifecycleErrors.isEmpty(),
+                        () ->
+                                lifecycleErrors.stream()
+                                        .map(LogRecord::getMessage)
+                                        .toList()
+                                        .toString());
+            }
+        }
+    }
+
+    @Test
+    void generatedAndDynamicUnaryShareListenerWithRest() throws Exception {
+        adapter.getServices().add(new HealthStatusManager().getHealthService().bindService());
+        start(echo());
+        assertEquals("hello", call("hello"));
+        assertEquals(
+                HealthCheckResponse.ServingStatus.SERVING,
+                HealthGrpc.newBlockingStub(channel)
+                        .withDeadlineAfter(10, TimeUnit.SECONDS)
+                        .check(HealthCheckRequest.getDefaultInstance())
+                        .getStatus());
+        var method =
+                MethodDescriptor.<DynamicMessage, DynamicMessage>newBuilder()
+                        .setType(MethodDescriptor.MethodType.UNARY)
+                        .setFullMethodName(ECHO.getFullMethodName())
+                        .setRequestMarshaller(
+                                ProtoUtils.marshaller(
+                                        DynamicMessage.getDefaultInstance(
+                                                StringValue.getDescriptor())))
+                        .setResponseMarshaller(
+                                ProtoUtils.marshaller(
+                                        DynamicMessage.getDefaultInstance(
+                                                StringValue.getDescriptor())))
+                        .build();
+        var request =
+                DynamicMessage.newBuilder(StringValue.getDescriptor())
+                        .setField(StringValue.getDescriptor().findFieldByName("value"), "dynamic")
+                        .build();
+        assertEquals(
+                request,
+                ClientCalls.blockingUnaryCall(
+                        channel,
+                        method,
+                        CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.SECONDS),
+                        request));
+        Context context = new Context();
+        context.getParameters().set("httpClientTransportMode", "HTTP2");
+        Client rest = new Client(context, Protocol.HTTP);
+        rest.start();
+        try {
+            assertEquals(
+                    "rest",
+                    rest.handle(
+                                    new Request(
+                                            org.restlet.data.Method.GET,
+                                            "http://localhost:" + http.getActualPort() + "/rest"))
+                            .getEntity()
+                            .getText());
+            adapter.stop();
+            assertTrue(http.isStarted());
+            assertEquals(
+                    "rest",
+                    rest.handle(
+                                    new Request(
+                                            org.restlet.data.Method.GET,
+                                            "http://localhost:" + http.getActualPort() + "/rest"))
+                            .getEntity()
+                            .getText());
+        } finally {
+            rest.stop();
+        }
+    }
+
+    @Test
+    void preservesTrailersOnlyErrorsAndRecovers() throws Exception {
+        Metadata.Key<String> key = Metadata.Key.of("x-detail", Metadata.ASCII_STRING_MARSHALLER);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            Metadata trailers = new Metadata();
+                                            trailers.put(key, "one");
+                                            trailers.put(key, "two");
+                                            out.onError(
+                                                    Status.INVALID_ARGUMENT
+                                                            .withDescription("native % error")
+                                                            .asRuntimeException(trailers));
+                                        }))
+                        .build());
+        var error = assertThrows(StatusRuntimeException.class, () -> call("bad"));
+        assertEquals(Status.Code.INVALID_ARGUMENT, error.getStatus().getCode());
+        assertEquals("native % error", error.getStatus().getDescription());
+        assertEquals(
+                java.util.List.of("one", "two"),
+                com.google.common.collect.ImmutableList.copyOf(
+                        java.util.Objects.requireNonNull(error.getTrailers()).getAll(key)));
+    }
+
+    @Test
+    void serverStreamingUsesReadinessAndPreservesOrder() throws Exception {
+        adapter.setMaxQueuedBytes(32768);
+        AtomicInteger produced = new AtomicInteger();
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                WATCH,
+                                ServerCalls.asyncServerStreamingCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            var observer =
+                                                    (ServerCallStreamObserver<StringValue>) out;
+                                            observer.setOnReadyHandler(
+                                                    () -> {
+                                                        while (observer.isReady()
+                                                                && produced.get() < 100) {
+                                                            int index = produced.getAndIncrement();
+                                                            observer.onNext(
+                                                                    StringValue.of(
+                                                                            index
+                                                                                    + ":"
+                                                                                    + "x"
+                                                                                            .repeat(
+                                                                                                    4096)));
+                                                        }
+                                                        if (produced.compareAndSet(100, 101)) {
+                                                            observer.onCompleted();
+                                                        }
+                                                    });
+                                        }))
+                        .build());
+        var responses =
+                ClientCalls.blockingServerStreamingCall(
+                        channel,
+                        WATCH,
+                        CallOptions.DEFAULT.withDeadlineAfter(15, TimeUnit.SECONDS),
+                        StringValue.of("watch"));
+        var values = new ArrayList<String>();
+        while (responses.hasNext()) {
+            values.add(responses.next().getValue());
+            Thread.sleep(2);
+        }
+        assertEquals(100, values.size());
+        for (int i = 0; i < 100; i++) {
+            assertEquals(i + ":" + "x".repeat(4096), values.get(i));
+        }
+    }
+
+    @Test
+    void cancellationAndShutdownReleaseAdmissionWithoutStoppingListener() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        adapter.setShutdownTimeout(Duration.ofMillis(100));
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch cancelled = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            if ("block".equals(request.getValue())) {
+                                                ((ServerCallStreamObserver<StringValue>) out)
+                                                        .setOnCancelHandler(cancelled::countDown);
+                                                entered.countDown();
+                                            } else {
+                                                out.onNext(request);
+                                                out.onCompleted();
+                                            }
+                                        }))
+                        .build());
+        var first =
+                ClientCalls.futureUnaryCall(
+                        channel.newCall(ECHO, CallOptions.DEFAULT), StringValue.of("block"));
+        assertTrue(entered.await(10, TimeUnit.SECONDS));
+        first.cancel(true);
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS));
+        assertEquals("next", call("next"));
+        var second =
+                ClientCalls.futureUnaryCall(
+                        channel.newCall(ECHO, CallOptions.DEFAULT), StringValue.of("block"));
+        adapter.stop();
+        assertThrows(
+                java.util.concurrent.ExecutionException.class,
+                () -> second.get(10, TimeUnit.SECONDS));
+        assertTrue(http.isStarted());
+        assertFalse(adapter.isStarted());
+    }
+
+    @Test
+    void requestAndResponseMessageBudgetsAreEnforced() throws Exception {
+        adapter.setMaxMessageBytes(128);
+        start(echo());
+        assertEquals("x".repeat(126), call("x".repeat(126)));
+        assertEquals(
+                Status.Code.RESOURCE_EXHAUSTED,
+                assertThrows(StatusRuntimeException.class, () -> call("x".repeat(127)))
+                        .getStatus()
+                        .getCode());
+        assertEquals("next", call("next"));
+    }
+
+    @Test
+    void unsupportedStreamingRegistrationFailsExplicitly() {
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        ECHO.toBuilder()
+                                                .setType(
+                                                        MethodDescriptor.MethodType
+                                                                .CLIENT_STREAMING)
+                                                .build(),
+                                        ServerCalls.asyncClientStreamingCall(
+                                                out ->
+                                                        new io.grpc.stub.StreamObserver<
+                                                                StringValue>() {
+                                                            @Override
+                                                            public void onNext(StringValue value) {}
+
+                                                            @Override
+                                                            public void onError(Throwable cause) {}
+
+                                                            @Override
+                                                            public void onCompleted() {}
+                                                        }))
+                                .build());
+        assertThrows(UnsupportedOperationException.class, adapter::start);
+    }
+
+    private Response dispatch(MethodDescriptor<StringValue, StringValue> method, String value)
+            throws Exception {
+        var bytes = new ByteArrayOutputStream();
+        var data = new DataOutputStream(bytes);
+        byte[] message = StringValue.of(value).toByteArray();
+        data.writeByte(0);
+        data.writeInt(message.length);
+        data.write(message);
+        Request request =
+                new Request(
+                        org.restlet.data.Method.POST,
+                        "http://localhost/" + method.getFullMethodName());
+        request.setEntity(
+                new InputRepresentation(
+                        new ByteArrayInputStream(bytes.toByteArray()),
+                        MediaType.valueOf("application/grpc")));
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        return response;
+    }
+
+    @Test
+    void completedResponseRetainsAdmissionUntilSentAndBorrowedExecutorSurvives() throws Exception {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            adapter.setExecutor(executor);
+            adapter.setMaxConcurrentCalls(1);
+            adapter.getServices().add(echo());
+            adapter.start();
+            Response first = dispatch(ECHO, "first");
+            first.getEntity().write(OutputStream.nullOutputStream());
+            assertEquals(
+                    org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
+                    dispatch(ECHO, "busy").getStatus());
+            first.getOnSent().handle(first.getRequest(), first);
+            first.getOnSent().handle(first.getRequest(), first);
+            Response next = dispatch(ECHO, "next");
+            next.getEntity().write(OutputStream.nullOutputStream());
+            next.getOnSent().handle(next.getRequest(), next);
+            adapter.stop();
+            adapter.stop();
+            assertFalse(executor.isShutdown());
+            assertEquals("still available", executor.submit(() -> "still available").get());
+        }
+    }
+
+    @Test
+    void stalledWriterBoundsReadinessAndResumesInOrder() throws Exception {
+        int queueBudget = 32768;
+        adapter.setMaxQueuedBytes(queueBudget);
+        AtomicInteger produced = new AtomicInteger();
+        CountDownLatch backpressured = new CountDownLatch(1);
+        AtomicReference<ServerCallStreamObserver<StringValue>> observerRef =
+                new AtomicReference<>();
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        WATCH,
+                                        ServerCalls.asyncServerStreamingCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> {
+                                                    var observer =
+                                                            (ServerCallStreamObserver<StringValue>)
+                                                                    out;
+                                                    observerRef.set(observer);
+                                                    observer.setOnReadyHandler(
+                                                            () -> {
+                                                                while (observer.isReady()
+                                                                        && produced.get() < 100) {
+                                                                    observer.onNext(
+                                                                            StringValue.of(
+                                                                                    produced
+                                                                                                    .getAndIncrement()
+                                                                                            + ":"
+                                                                                            + "x"
+                                                                                                    .repeat(
+                                                                                                            4096)));
+                                                                }
+                                                                if (produced.compareAndSet(
+                                                                        100, 101)) {
+                                                                    observer.onCompleted();
+                                                                } else if (!observer.isReady()) {
+                                                                    backpressured.countDown();
+                                                                }
+                                                            });
+                                                }))
+                                .build());
+        adapter.start();
+        Response response = dispatch(WATCH, "watch");
+        CountDownLatch stalled = new CountDownLatch(1);
+        CountDownLatch resume = new CountDownLatch(1);
+        var received = new ByteArrayOutputStream();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var writer =
+                    executor.submit(
+                            () -> {
+                                response.getEntity()
+                                        .write(
+                                                new OutputStream() {
+                                                    @Override
+                                                    public void write(int value) {
+                                                        received.write(value);
+                                                    }
+
+                                                    @Override
+                                                    public void write(
+                                                            byte[] bytes, int offset, int length)
+                                                            throws IOException {
+                                                        stalled.countDown();
+                                                        try {
+                                                            if (!resume.await(
+                                                                    10, TimeUnit.SECONDS)) {
+                                                                throw new IOException(
+                                                                        "Stalled writer was not released");
+                                                            }
+                                                        } catch (InterruptedException e) {
+                                                            Thread.currentThread().interrupt();
+                                                            throw new IOException(e);
+                                                        }
+                                                        received.write(bytes, offset, length);
+                                                    }
+                                                });
+                                return null;
+                            });
+            try {
+                assertTrue(stalled.await(10, TimeUnit.SECONDS));
+                assertTrue(backpressured.await(10, TimeUnit.SECONDS));
+                assertFalse(observerRef.get().isReady());
+                // Each queued response contains at least 4096 payload bytes.
+                assertTrue(produced.get() * 4096 <= queueBudget);
+            } finally {
+                resume.countDown();
+            }
+            writer.get(10, TimeUnit.SECONDS);
+        }
+        var input = new java.io.DataInputStream(new ByteArrayInputStream(received.toByteArray()));
+        for (int i = 0; i < 100; i++) {
+            assertEquals(0, input.readUnsignedByte());
+            int size = input.readInt();
+            assertEquals(
+                    i + ":" + "x".repeat(4096),
+                    StringValue.parseFrom(input.readNBytes(size)).getValue());
+        }
+        assertEquals(-1, input.read());
+        assertEquals("0", response.getTrailers().getFirstValue("grpc-status"));
+        response.getOnSent().handle(response.getRequest(), response);
+    }
+
+    @Test
+    void producerIgnoringReadinessFailsAtQueueBudget() throws Exception {
+        adapter.setMaxQueuedBytes(16384);
+        CountDownLatch produced = new CountDownLatch(1);
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        WATCH,
+                                        ServerCalls.asyncServerStreamingCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> {
+                                                    for (int i = 0; i < 16; i++) {
+                                                        out.onNext(
+                                                                StringValue.of("x".repeat(4096)));
+                                                    }
+                                                    out.onCompleted();
+                                                    produced.countDown();
+                                                }))
+                                .build());
+        adapter.start();
+        Response response = dispatch(WATCH, "watch");
+        assertTrue(produced.await(10, TimeUnit.SECONDS));
+        var bytes = new ByteArrayOutputStream();
+        response.getEntity().write(bytes);
+        assertEquals(0, bytes.size());
+        assertEquals("8", response.getTrailers().getFirstValue("grpc-status"));
+        assertEquals(
+                "Response queue byte budget exceeded",
+                response.getTrailers().getFirstValue("grpc-message"));
+    }
+
+    @Test
+    void serverDeadlineCancelsHandlerAndReleasesAdmission() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        adapter.setMaxCallDuration(Duration.ofMillis(200));
+        CountDownLatch cancelled = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            if ("block".equals(request.getValue())) {
+                                                ((ServerCallStreamObserver<StringValue>) out)
+                                                        .setOnCancelHandler(cancelled::countDown);
+                                            } else {
+                                                out.onNext(request);
+                                                out.onCompleted();
+                                            }
+                                        }))
+                        .build());
+        assertEquals(
+                Status.Code.DEADLINE_EXCEEDED,
+                assertThrows(StatusRuntimeException.class, () -> call("block"))
+                        .getStatus()
+                        .getCode());
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS));
+        assertEquals("next", call("next"));
+    }
+
+    @Test
+    void oversizedResponseFailsAndNextCallSucceeds() throws Exception {
+        adapter.setMaxMessageBytes(128);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            out.onNext(
+                                                    "large".equals(request.getValue())
+                                                            ? StringValue.of("x".repeat(127))
+                                                            : request);
+                                            out.onCompleted();
+                                        }))
+                        .build());
+        assertEquals(
+                Status.Code.RESOURCE_EXHAUSTED,
+                assertThrows(StatusRuntimeException.class, () -> call("large"))
+                        .getStatus()
+                        .getCode());
+        assertEquals("next", call("next"));
+    }
+
+    @Test
+    void shutdownWakesActiveStreamWriterAndDeliversCancellation() throws Exception {
+        CountDownLatch cancelled = new CountDownLatch(1);
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        WATCH,
+                                        ServerCalls.asyncServerStreamingCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> {
+                                                    ((ServerCallStreamObserver<StringValue>) out)
+                                                            .setOnCancelHandler(
+                                                                    cancelled::countDown);
+                                                    out.onNext(StringValue.of("first"));
+                                                }))
+                                .build());
+        adapter.start();
+        Response response = dispatch(WATCH, "watch");
+        CountDownLatch writing = new CountDownLatch(1);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var writer =
+                    executor.submit(
+                            () -> {
+                                response.getEntity()
+                                        .write(
+                                                new OutputStream() {
+                                                    @Override
+                                                    public void write(int value) {
+                                                        writing.countDown();
+                                                    }
+                                                });
+                                return null;
+                            });
+            assertTrue(writing.await(10, TimeUnit.SECONDS));
+            adapter.stop();
+            writer.get(10, TimeUnit.SECONDS);
+            assertTrue(cancelled.await(10, TimeUnit.SECONDS));
+            assertEquals("14", response.getTrailers().getFirstValue("grpc-status"));
+            assertFalse(adapter.isStarted());
+        }
+    }
+
+    @Test
+    void ownedCallbackShutdownTimeoutIsReportedAndInterruptsWorker() throws Exception {
+        adapter.setShutdownTimeout(Duration.ofMillis(200));
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch interrupted = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            entered.countDown();
+                                            try {
+                                                release.await();
+                                            } catch (InterruptedException e) {
+                                                Thread.currentThread().interrupt();
+                                                interrupted.countDown();
+                                            }
+                                        }))
+                        .build());
+        ClientCalls.futureUnaryCall(
+                channel.newCall(ECHO, CallOptions.DEFAULT), StringValue.of("block"));
+        assertTrue(entered.await(10, TimeUnit.SECONDS));
+        try {
+            assertEquals(
+                    "gRPC callback executor shutdown timed out",
+                    assertThrows(IllegalStateException.class, adapter::stop).getMessage());
+            assertTrue(interrupted.await(10, TimeUnit.SECONDS));
+            assertTrue(http.isStarted());
+            assertFalse(adapter.isStarted());
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    void clientCancellationAfterStreamMessageReleasesAdmission() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        CountDownLatch cancelled = new CountDownLatch(1);
+        var service = ServerServiceDefinition.builder("review.Server");
+        echo().getMethods().forEach(service::addMethod);
+        start(
+                service.addMethod(
+                                WATCH,
+                                ServerCalls.asyncServerStreamingCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            ((ServerCallStreamObserver<StringValue>) out)
+                                                    .setOnCancelHandler(cancelled::countDown);
+                                            out.onNext(StringValue.of("first"));
+                                        }))
+                        .build());
+        CountDownLatch closed = new CountDownLatch(1);
+        AtomicReference<Status> status = new AtomicReference<>();
+        var call =
+                channel.newCall(WATCH, CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.SECONDS));
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue value) {
+                        call.cancel("cancel after first message", null);
+                    }
+
+                    @Override
+                    public void onClose(Status value, Metadata trailers) {
+                        status.set(value);
+                        closed.countDown();
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        call.sendMessage(StringValue.of("watch"));
+        call.halfClose();
+        assertTrue(closed.await(10, TimeUnit.SECONDS));
+        assertEquals(Status.Code.CANCELLED, status.get().getCode());
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS));
+        assertEquals("next", call("next"));
+    }
+
+    @Test
+    void disconnectRacingResponseSentTerminatesEachTransportOnce() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        WATCH,
+                                        ServerCalls.asyncServerStreamingCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> out.onNext(request)))
+                                .build());
+        adapter.start();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (int i = 0; i < 32; i++) {
+                Response response = dispatch(WATCH, "watch");
+                assertEquals(org.restlet.data.Status.SUCCESS_OK, response.getStatus());
+                var writer =
+                        executor.submit(
+                                () -> {
+                                    response.getEntity().write(OutputStream.nullOutputStream());
+                                    response.getOnSent().handle(response.getRequest(), response);
+                                    return null;
+                                });
+                var disconnect =
+                        executor.submit(
+                                () ->
+                                        response.getRequest()
+                                                .notifyDisconnect(new IOException("Peer reset")));
+                disconnect.get(10, TimeUnit.SECONDS);
+                writer.get(10, TimeUnit.SECONDS);
+            }
+        }
+        adapter.stop();
+    }
+}

@@ -9,9 +9,14 @@
     </parent>
     <artifactId>org.restlet.ext.grpc</artifactId>
     <name>Restlet Framework - gRPC extension</name>
-    <description>Native gRPC unary client on a borrowed Restlet HTTP/2 connector.</description>
+    <description>Native gRPC unary client and unary/server-streaming hosting on borrowed Restlet HTTP/2 connectors.</description>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>failureaccess</artifactId>
+                <version>1.0.3</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>

@@ -109,15 +109,35 @@ class NettyRequest extends Request {
         this.headers = call.getRequestHeaders();
 
         setMethod(Method.valueOf(call.getMethod()));
+        setProtocol(Protocol.valueOf(call.getProtocol().getSchemeName(), call.getVersion()));
         setHostRef(hostRef(call.getProtocol(), headers));
 
         String uri = call.getRequestUri();
-        Reference resourceRef = new Reference(getHostRef(), uri);
-        if (resourceRef.isRelative()) {
-            // Take care of the "/" between the host part and the segments.
-            resourceRef =
-                    new Reference(getHostRef().toString() + (uri.startsWith("/") ? "" : "/") + uri);
+        if (uri == null || uri.isEmpty()) {
+            uri = "/";
+        } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+            Reference absoluteRef = new Reference(uri);
+            if (absoluteRef.getAuthority() != null
+                    && getHostRef() != null
+                    && absoluteRef.getAuthority().equals(getHostRef().getAuthority())) {
+                String path = absoluteRef.getPath();
+                String query = absoluteRef.getQuery();
+                if (path == null || path.isEmpty()) {
+                    path = "/";
+                } else if (!path.startsWith("/")) {
+                    path = "/" + path;
+                }
+                uri = path;
+                if (query != null) {
+                    uri += "?" + query;
+                }
+            }
+        } else if (!uri.startsWith("/")) {
+            uri = "/" + uri;
         }
+
+        Reference resourceRef = new Reference(getHostRef().toString() + uri);
+        resourceRef.setBaseRef(new Reference(getHostRef().toString()));
         setResourceRef(resourceRef);
         setOriginalRef(ReferenceUtils.getOriginalRef(getResourceRef(), headers));
 
