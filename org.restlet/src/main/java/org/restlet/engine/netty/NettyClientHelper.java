@@ -23,14 +23,18 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http2.Http2FrameCodecBuilder;
 import io.netty.handler.codec.http2.Http2MultiplexHandler;
 import io.netty.handler.codec.http2.Http2StreamChannel;
 import io.netty.handler.codec.http2.Http2StreamChannelBootstrap;
 import io.netty.handler.codec.http2.Http2StreamFrameToHttpObjectCodec;
 import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.ProxyConnectException;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.ApplicationProtocolNames;
 import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
@@ -444,12 +448,15 @@ public abstract class NettyClientHelper extends ClientHelper {
             return acquireHttp3(call);
         }
 
+        // Tunnels opened with different proxy credentials are kept apart.
+        String proxyIdentity = call.getTunnelProxyIdentity();
         OriginPool pool =
                 pools.computeIfAbsent(
                         (call.isConfidential() ? "https://" : "http://")
                                 + call.getTargetHost()
                                 + ":"
-                                + call.getTargetPort(),
+                                + call.getTargetPort()
+                                + ((proxyIdentity == null) ? "" : "#" + proxyIdentity),
                         k ->
                                 new OriginPool(
                                         call.isConfidential(),
@@ -471,7 +478,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         if (getTransportMode() == TransportMode.HTTP1_1) {
-            channel = connect(pool);
+            channel = connect(pool, call.getTunnelProxyAuthorization());
         } else {
             pool.connectLock.lock();
             try {
@@ -479,7 +486,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                 if (http2 != null && http2.isActive()) {
                     return openStream(http2, call);
                 }
-                channel = connect(pool);
+                channel = connect(pool, call.getTunnelProxyAuthorization());
                 if (channel.pipeline().get(Http2MultiplexHandler.class) != null) {
                     pool.http2 = channel;
                     return openStream(channel, call);
@@ -610,7 +617,8 @@ public abstract class NettyClientHelper extends ClientHelper {
         return NettyFutures.await(future, getConnectTimeout(), "Unable to open an HTTP/2 stream");
     }
 
-    private Channel connect(final OriginPool pool) throws IOException {
+    private Channel connect(final OriginPool pool, final String proxyAuthorization)
+            throws IOException {
         long timeout = getConnectTimeout();
         try {
             if (!pool.permits.tryAcquire(timeout, TimeUnit.MILLISECONDS)) {
@@ -643,7 +651,11 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         @Override
                                         protected void initChannel(SocketChannel ch) {
                                             initConnection(
-                                                    ch, pool, ssl, pool.secure ? proxy : null);
+                                                    ch,
+                                                    pool,
+                                                    ssl,
+                                                    pool.secure ? proxy : null,
+                                                    proxyAuthorization);
                                         }
                                     });
 
@@ -690,7 +702,11 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     private void initConnection(
-            SocketChannel ch, OriginPool pool, SslContext ssl, InetSocketAddress tunnelProxy) {
+            SocketChannel ch,
+            OriginPool pool,
+            SslContext ssl,
+            InetSocketAddress tunnelProxy,
+            String proxyAuthorization) {
         final Promise<String> ready = ch.eventLoop().newPromise();
         ch.attr(READY).set(ready);
         ch.attr(POOL).set(pool);
@@ -704,12 +720,54 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
         p.addLast("writability", Writability.HANDLER);
 
-        if (tunnelProxy != null) {
-            HttpProxyHandler proxyHandler = new HttpProxyHandler(tunnelProxy);
-            proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
-            p.addLast("proxy", proxyHandler);
+        if (tunnelProxy == null) {
+            initProtocols(ch, pool, ssl, ready);
+            return;
         }
 
+        HttpHeaders connectHeaders = new DefaultHttpHeaders();
+        if (proxyAuthorization != null) {
+            connectHeaders.set(HttpHeaderNames.PROXY_AUTHORIZATION, proxyAuthorization);
+        }
+        HttpProxyHandler proxyHandler = new HttpProxyHandler(tunnelProxy, connectHeaders);
+        proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
+        p.addLast("proxy", proxyHandler);
+        p.addLast(
+                "proxy-failure",
+                new ChannelInboundHandlerAdapter() {
+                    @Override
+                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                        // Already reported with the ready promise.
+                        if (!(cause instanceof ProxyConnectException)) {
+                            ctx.fireExceptionCaught(cause);
+                        }
+                    }
+                });
+        // The protocol handlers are only added once the tunnel is established, so that a refusal of
+        // the proxy (e.g. a 407 response) is reported as is, not as a TLS handshake failure.
+        proxyHandler
+                .connectFuture()
+                .addListener(
+                        f -> {
+                            if (f.isSuccess()) {
+                                initProtocols(ch, pool, ssl, ready);
+                            } else {
+                                ready.tryFailure(f.cause());
+                            }
+                        });
+    }
+
+    /**
+     * Adds the TLS and HTTP handlers of a connection, directly connected or tunneled.
+     *
+     * @param ch The connection channel.
+     * @param pool The connection pool of the origin.
+     * @param ssl The SSL context, or null for a cleartext connection.
+     * @param ready The promise completed with the negotiated protocol.
+     */
+    private void initProtocols(
+            SocketChannel ch, OriginPool pool, SslContext ssl, Promise<String> ready) {
+        ChannelPipeline p = ch.pipeline();
         final TransportMode mode = getTransportMode();
         if (ssl != null) {
             SSLEngine engine = ssl.newEngine(ch.alloc(), pool.host, pool.port);
