@@ -75,7 +75,8 @@ Changes log
           "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
           enabled by default. `WebSocketClient.setClient` shares the I/O threads of a borrowed,
-          started Netty HTTP `Client` instead of creating its own.
+          started Netty HTTP `Client` instead of creating its own, with or without a context
+          (issue #1599). `Client.getHelper()` is now public, as an engine extension point.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
