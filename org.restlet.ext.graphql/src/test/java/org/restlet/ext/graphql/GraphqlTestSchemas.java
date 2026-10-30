@@ -47,6 +47,7 @@ final class GraphqlTestSchemas {
             }
             type Subscription {
               ticks(count: Int!): Int
+              idle: Int
             }
             """;
 
@@ -114,7 +115,12 @@ final class GraphqlTestSchemas {
                                         type.dataFetcher(
                                                 "increment",
                                                 env -> counter.addAndGet(env.getArgument("by"))))
-                        .type("Subscription", type -> type.dataFetcher("ticks", ticks))
+                        .type(
+                                "Subscription",
+                                type ->
+                                        type.dataFetcher("ticks", ticks)
+                                                .dataFetcher(
+                                                        "idle", env -> new TickPublisher(0, true)))
                         .build();
         return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(SDL), wiring);
     }

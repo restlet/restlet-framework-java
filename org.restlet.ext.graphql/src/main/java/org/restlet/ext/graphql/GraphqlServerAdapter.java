@@ -21,10 +21,17 @@ import graphql.parser.ParserEnvironment;
 import graphql.parser.ParserOptions;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import org.reactivestreams.Publisher;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -33,10 +40,13 @@ import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Status;
+import org.restlet.ext.graphql.internal.GraphqlEventStream;
 import org.restlet.ext.graphql.internal.GraphqlJson;
 import org.restlet.ext.graphql.internal.GraphqlMediaTypes;
 import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.EventStreamRepresentation;
 import org.restlet.representation.Representation;
 
 /**
@@ -65,6 +75,14 @@ import org.restlet.representation.Representation;
  *       200}, even with field errors.
  * </ul>
  *
+ * <p>Subscriptions are rejected unless a transport is enabled with {@link
+ * #getSubscriptionTransports()}. With {@link GraphqlTransport#SSE}, a request accepting {@code
+ * text/event-stream} gets a {@code graphql-sse} event stream in distinct connections mode, for
+ * subscriptions as well as queries and mutations, including subscriptions over {@code GET} when it
+ * is enabled. Results are requested one at a time and written as {@code next} events, followed by a
+ * {@code complete} event. A client disconnect, detected on write or by heartbeats, cancels the
+ * subscription, and stopping the adapter ends its open streams.
+ *
  * <p>Operations run on the thread of the call, a virtual thread by default. Asynchronous data
  * fetchers are joined on that thread. The {@code graphql.GraphQLContext} of each operation holds
  * the Restlet request under {@link RestletGraphql#REQUEST} and its client info under {@link
@@ -80,6 +98,15 @@ public class GraphqlServerAdapter extends Restlet {
     /** The default maximum size of a request body: 1 MiB. */
     public static final long DEFAULT_MAX_REQUEST_BYTES = 1L << 20;
 
+    /** The default maximum number of active subscriptions of an adapter: 64. */
+    public static final int DEFAULT_MAX_SUBSCRIPTIONS = 64;
+
+    /** The default maximum number of bytes queued for a subscription: 1 MiB. */
+    public static final long DEFAULT_MAX_QUEUED_BYTES = 1L << 20;
+
+    /** The default interval of event stream heartbeats: 15 seconds. */
+    public static final Duration DEFAULT_HEARTBEAT_INTERVAL = Duration.ofSeconds(15);
+
     private volatile GraphQL graphQL;
 
     private volatile long maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
@@ -89,6 +116,19 @@ public class GraphqlServerAdapter extends Restlet {
     private volatile ParserOptions parserOptions;
 
     private volatile BiConsumer<Request, ExecutionInput.Builder> executionInputCustomizer;
+
+    private volatile Set<GraphqlTransport> subscriptionTransports =
+            EnumSet.noneOf(GraphqlTransport.class);
+
+    private volatile int maxSubscriptions = DEFAULT_MAX_SUBSCRIPTIONS;
+
+    private volatile long maxQueuedBytes = DEFAULT_MAX_QUEUED_BYTES;
+
+    private volatile Duration heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
+
+    private final AtomicInteger activeSubscriptions = new AtomicInteger();
+
+    private final Set<GraphqlEventStream> openStreams = ConcurrentHashMap.newKeySet();
 
     /** Constructor. */
     public GraphqlServerAdapter() {
@@ -209,6 +249,101 @@ public class GraphqlServerAdapter extends Restlet {
         this.executionInputCustomizer = executionInputCustomizer;
     }
 
+    /**
+     * Returns the transports enabled for subscriptions. Empty by default: subscriptions are then
+     * rejected. The set can be modified until the adapter starts.
+     *
+     * @return The transports enabled for subscriptions.
+     */
+    public Set<GraphqlTransport> getSubscriptionTransports() {
+        return subscriptionTransports;
+    }
+
+    /**
+     * Returns the maximum number of active subscriptions of this adapter.
+     *
+     * @return The maximum number of active subscriptions.
+     */
+    public int getMaxSubscriptions() {
+        return maxSubscriptions;
+    }
+
+    /**
+     * Sets the maximum number of active subscriptions of this adapter. Further subscriptions get
+     * {@code 503}. Defaults to {@link #DEFAULT_MAX_SUBSCRIPTIONS}. The {@code
+     * server.maxEventStreams} parameter of the server connector still applies.
+     *
+     * @param maxSubscriptions The maximum number of active subscriptions.
+     */
+    public void setMaxSubscriptions(int maxSubscriptions) {
+        checkNotStarted();
+        if (maxSubscriptions <= 0) {
+            throw new IllegalArgumentException(
+                    "The maximum number of subscriptions must be positive");
+        }
+        this.maxSubscriptions = maxSubscriptions;
+    }
+
+    /**
+     * Returns the maximum number of bytes of results received from a subscription but not yet
+     * written.
+     *
+     * @return The maximum number of queued bytes per subscription.
+     */
+    public long getMaxQueuedBytes() {
+        return maxQueuedBytes;
+    }
+
+    /**
+     * Sets the maximum number of bytes of results received from a subscription but not yet written.
+     * Results are requested one at a time, so this bounds the size of a result and protects against
+     * publishers that ignore demand. Beyond it, the subscription is cancelled and the stream ends
+     * with an error. Defaults to {@link #DEFAULT_MAX_QUEUED_BYTES}.
+     *
+     * @param maxQueuedBytes The maximum number of queued bytes per subscription.
+     */
+    public void setMaxQueuedBytes(long maxQueuedBytes) {
+        checkNotStarted();
+        if (maxQueuedBytes <= 0) {
+            throw new IllegalArgumentException("The maximum queued bytes must be positive");
+        }
+        this.maxQueuedBytes = maxQueuedBytes;
+    }
+
+    /**
+     * Returns the interval of event stream heartbeats.
+     *
+     * @return The interval of event stream heartbeats, or null if disabled.
+     */
+    public Duration getHeartbeatInterval() {
+        return heartbeatInterval;
+    }
+
+    /**
+     * Sets the interval of comment heartbeats on event streams. They keep idle subscriptions open
+     * through proxies and detect disconnected clients. Defaults to {@link
+     * #DEFAULT_HEARTBEAT_INTERVAL}.
+     *
+     * @param heartbeatInterval The interval of event stream heartbeats, or null to disable them.
+     */
+    public void setHeartbeatInterval(Duration heartbeatInterval) {
+        checkNotStarted();
+        if (heartbeatInterval != null
+                && (heartbeatInterval.isZero() || heartbeatInterval.isNegative())) {
+            throw new IllegalArgumentException("The heartbeat interval must be positive");
+        }
+        this.heartbeatInterval = heartbeatInterval;
+    }
+
+    /**
+     * Returns the number of active subscriptions.
+     *
+     * @return The number of active subscriptions.
+     */
+    public int getActiveSubscriptions() {
+        return activeSubscriptions.get();
+    }
+
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
@@ -218,7 +353,21 @@ public class GraphqlServerAdapter extends Restlet {
             if (parserOptions == null) {
                 parserOptions = ParserOptions.getDefaultOperationParserOptions();
             }
+            subscriptionTransports =
+                    Collections.unmodifiableSet(EnumSet.copyOf(subscriptionTransports));
             super.start();
+        }
+    }
+
+    /**
+     * Stops the adapter. Open subscription streams are cancelled and end with an error and a {@code
+     * complete} event, so that the server connector can shut down gracefully.
+     */
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+        for (GraphqlEventStream stream : List.copyOf(openStreams)) {
+            stream.stop();
         }
     }
 
@@ -238,11 +387,18 @@ public class GraphqlServerAdapter extends Restlet {
 
         // The response media type is negotiated, which caches must know of.
         response.getDimensions().add(Dimension.MEDIA_TYPE);
-        MediaType responseType =
-                GraphqlMediaTypes.negotiate(request.getClientInfo().getAcceptedMediaTypes());
+        List<Preference<MediaType>> accepted = request.getClientInfo().getAcceptedMediaTypes();
+        boolean sse =
+                subscriptionTransports.contains(GraphqlTransport.SSE)
+                        && GraphqlMediaTypes.quality(accepted, MediaType.TEXT_EVENT_STREAM, true)
+                                > 0F;
+        MediaType responseType = GraphqlMediaTypes.negotiate(accepted);
         if (responseType == null) {
-            response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            return;
+            if (!sse) {
+                response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                return;
+            }
+            responseType = MediaType.APPLICATION_JSON;
         }
 
         Map<String, Object> params;
@@ -288,19 +444,49 @@ public class GraphqlServerAdapter extends Restlet {
             return;
         }
 
-        if (get && operation != OperationDefinition.Operation.QUERY) {
+        boolean subscription = operation == OperationDefinition.Operation.SUBSCRIPTION;
+        if (get && operation != OperationDefinition.Operation.QUERY && !(sse && subscription)) {
             methodNotAllowed(response, false);
             return;
         }
-        if (operation == OperationDefinition.Operation.SUBSCRIPTION) {
+        if (subscription && !sse) {
             write(
                     response,
                     responseType,
-                    failure(error("Subscriptions are not supported by this endpoint")));
+                    failure(error("Subscriptions require an event stream on this endpoint")));
+            return;
+        }
+        if (subscription && activeSubscriptions.get() >= maxSubscriptions) {
+            writeEntity(response, responseType, failure(error("Too many active subscriptions")));
+            response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
             return;
         }
 
-        write(response, responseType, graphQL.execute(executionInput));
+        ExecutionResult result = graphQL.execute(executionInput);
+        if (!sse || !result.isDataPresent()) {
+            // Without an event stream, or when execution didn't start: a single JSON result.
+            write(response, responseType, result, sse);
+        } else if (result.getData() instanceof Publisher<?> publisher) {
+            @SuppressWarnings("unchecked")
+            Publisher<ExecutionResult> results = (Publisher<ExecutionResult>) publisher;
+            response.setEntity(
+                    new EventStreamRepresentation(
+                            new GraphqlEventStream(
+                                    results,
+                                    activeSubscriptions,
+                                    openStreams,
+                                    this::isStopped,
+                                    maxSubscriptions,
+                                    maxQueuedBytes,
+                                    getLogger()),
+                            heartbeatInterval));
+            response.setStatus(Status.SUCCESS_OK);
+        } else {
+            response.setEntity(
+                    new EventStreamRepresentation(
+                            new GraphqlEventStream(result), heartbeatInterval));
+            response.setStatus(Status.SUCCESS_OK);
+        }
     }
 
     private ExecutionInput.Builder customize(Request request, ExecutionInput.Builder input) {
@@ -464,10 +650,19 @@ public class GraphqlServerAdapter extends Restlet {
      * reported with {@code 400} in {@code application/graphql-response+json} only.
      */
     private static void write(Response response, MediaType responseType, ExecutionResult result) {
+        write(response, responseType, result, false);
+    }
+
+    /**
+     * Writes a result. Event stream requests that fail before execution always get {@code 400}, as
+     * in {@code graphql-sse}.
+     */
+    private static void write(
+            Response response, MediaType responseType, ExecutionResult result, boolean sse) {
         writeEntity(response, responseType, result);
         boolean requestError =
                 !result.isDataPresent()
-                        && GraphqlMediaTypes.GRAPHQL_RESPONSE_JSON.equals(responseType);
+                        && (sse || GraphqlMediaTypes.GRAPHQL_RESPONSE_JSON.equals(responseType));
         response.setStatus(requestError ? Status.CLIENT_ERROR_BAD_REQUEST : Status.SUCCESS_OK);
     }
 
