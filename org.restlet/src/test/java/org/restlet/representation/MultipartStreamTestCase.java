@@ -18,11 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -170,7 +173,51 @@ class MultipartStreamTestCase {
     }
 
     @Test
-    void validatesTheRepresentation() {
+    void validatesTheEntityBeforeAcquiringItsStream() {
+        AtomicBoolean acquired = new AtomicBoolean();
+        Function<MediaType, Representation> entity =
+                mediaType ->
+                        new StringRepresentation("", mediaType) {
+                            @Override
+                            public InputStream getStream() throws IOException {
+                                acquired.set(true);
+                                return super.getStream();
+                            }
+                        };
+        assertThrows(
+                IOException.class,
+                () -> new MultipartStreamReader(entity.apply(MediaType.MULTIPART_MIXED), 1));
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new MultipartStreamReader(
+                                entity.apply(
+                                        new MediaType(MediaType.MULTIPART_MIXED, "boundary", "b")),
+                                0));
+        assertFalse(acquired.get());
+    }
+
+    @Test
+    void acceptsCaseInsensitiveBoundaryAndLargeLimits() throws Exception {
+        Representation entity =
+                new StringRepresentation(
+                        "--b\r\n\r\nx\r\n--b--",
+                        new MediaType(MediaType.MULTIPART_MIXED, "Boundary", "b"));
+        try (MultipartStreamReader reader = new MultipartStreamReader(entity, Long.MAX_VALUE)) {
+            assertEquals("x", reader.readPart().getContentAsString(StandardCharsets.UTF_8));
+            assertNull(reader.readPart());
+        }
+
+        // The opening delimiter is longer than the limit, but isn't part of the preamble.
+        try (MultipartStreamReader reader =
+                reader("--boundary\r\n\r\nx\r\n--boundary--", "boundary", 8)) {
+            assertEquals("x", reader.readPart().getContentAsString(StandardCharsets.UTF_8));
+            assertNull(reader.readPart());
+        }
+    }
+
+    @Test
+    void validatesTheRepresentation() throws Exception {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new MultipartStreamRepresentation(MediaType.TEXT_PLAIN, null, sink -> {}));
@@ -212,6 +259,30 @@ class MultipartStreamTestCase {
                 "20220824", parameters.getMediaType().getParameters().getFirstValue("deferSpec"));
         assertEquals("-", MultiPartRepresentation.getBoundary(parameters.getMediaType()));
         assertEquals(2, parameters.getMediaType().getParameters().size());
+        assertEquals(
+                "multipart/mixed; deferSpec=20220824; boundary=-",
+                parameters.getMediaType().getName());
+        // Content starting with the boundary would forge a part after the header line break.
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        write(
+                                new MultipartStreamRepresentation(
+                                        MediaType.MULTIPART_MIXED,
+                                        "b",
+                                        sink ->
+                                                sink.send(
+                                                        null,
+                                                        "--b\r\nA: 1\r\n\r\nforged".getBytes()))));
+        assertEquals(
+                "\r\n--bb\r\n\r\n--b\r\n--bb--\r\n",
+                new String(
+                        write(
+                                new MultipartStreamRepresentation(
+                                        MediaType.MULTIPART_MIXED,
+                                        "bb",
+                                        sink -> sink.send(null, "--b".getBytes()))),
+                        StandardCharsets.UTF_8));
         MultipartStreamRepresentation generated = new MultipartStreamRepresentation(sink -> {});
         assertTrue(MediaType.MULTIPART_MIXED.equals(generated.getMediaType(), true));
         assertFalse(generated.getBoundary().isEmpty());
