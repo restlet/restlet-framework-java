@@ -784,6 +784,7 @@ class NettyClientCall {
             lastContent = withTrailers;
         }
         check(ch.writeAndFlush(lastContent));
+        helper.getLogger().fine(() -> "Sent the request " + method + " " + target + " on " + ch);
 
         lock.lock();
         try {
@@ -907,6 +908,8 @@ class NettyClientCall {
      * @param response The response head.
      */
     void onResponseHead(HttpResponse response) {
+        helper.getLogger()
+                .fine(() -> "Received the response head " + response.status() + " on " + channel);
         for (Map.Entry<String, String> entry : response.headers()) {
             String name =
                     kind.isStream() ? entry.getKey().toLowerCase(Locale.ROOT) : entry.getKey();
@@ -961,6 +964,7 @@ class NettyClientCall {
 
     /** Called on the event loop when the response is fully received. */
     void onResponseComplete(io.netty.handler.codec.http.HttpHeaders trailers) {
+        helper.getLogger().fine(() -> "Received the end of the response on " + channel);
         org.restlet.Response currentResponse = response;
         if (currentResponse != null) {
             for (Map.Entry<String, String> trailer : trailers) {
@@ -996,6 +1000,7 @@ class NettyClientCall {
      * @param cause The failure cause.
      */
     void onFailure(Throwable cause) {
+        helper.logFailure("The exchange failed on " + channel, cause);
         boolean notifyResponseFailure = false;
         boolean responseHeadReceived;
         lock.lock();

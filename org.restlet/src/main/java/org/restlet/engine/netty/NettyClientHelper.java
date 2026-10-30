@@ -500,9 +500,13 @@ public abstract class NettyClientHelper extends ClientHelper {
         Channel channel;
         while ((channel = pool.idle.pollFirst()) != null) {
             if (channel.isActive()) {
+                Channel reused = channel;
+                getLogger().fine(() -> "Reusing the idle connection " + reused);
                 bindHttp1(channel, call);
                 return channel;
             }
+            Channel inactive = channel;
+            getLogger().fine(() -> "Discarding the inactive idle connection " + inactive);
         }
 
         if (getTransportMode() == TransportMode.HTTP1_1) {
@@ -609,8 +613,10 @@ public abstract class NettyClientHelper extends ClientHelper {
 
         OriginPool pool = channel.attr(POOL).get();
         if (reusable && channel.isActive() && pool != null && group != null) {
+            getLogger().fine(() -> "Returning the connection " + channel + " to the pool");
             pool.idle.offerFirst(channel);
         } else {
+            getLogger().fine(() -> "Closing the connection " + channel + ", reusable=" + reusable);
             channel.close();
         }
     }
@@ -714,7 +720,12 @@ public abstract class NettyClientHelper extends ClientHelper {
                             timeout,
                             "Unable to connect to " + pool.host + ":" + pool.port);
             connections.add(channel);
-            channel.closeFuture().addListener(f -> releaseConnection(pool, true));
+            channel.closeFuture()
+                    .addListener(
+                            f -> {
+                                releaseConnection(pool, true);
+                                getLogger().fine(() -> "Closed the connection " + channel);
+                            });
             acquired = false;
 
             Promise<String> ready = channel.attr(READY).get();
@@ -724,6 +735,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                 channel.close();
                 throw e;
             }
+            getLogger().fine(() -> "Opened the connection " + channel);
             return channel;
         } finally {
             if (acquired) {

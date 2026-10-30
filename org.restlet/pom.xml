@@ -199,6 +199,27 @@
                 </plugins>
             </build>
         </profile>
+        <!-- CI logging: the FINE level of the Restlet loggers goes to target/restlet-fine.log. -->
+        <profile>
+            <id>ci-logging</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-test</id>
+                                <configuration>
+                                    <systemPropertyVariables combine.children="append">
+                                        <java.util.logging.config.file>${project.basedir}/src/test/ci-logging.properties</java.util.logging.config.file>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- Native QUIC library of the build platform, used by the experimental HTTP/3 tests. -->
         <profile>
             <id>quic-linux-x86_64</id>
