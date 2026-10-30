@@ -29,6 +29,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -231,10 +232,12 @@ public class GraphqlServerAdapter extends Restlet {
         Method method = request.getMethod();
         boolean get = Method.GET.equals(method);
         if (!Method.POST.equals(method) && !(get && getEnabled)) {
-            methodNotAllowed(response);
+            methodNotAllowed(response, getEnabled);
             return;
         }
 
+        // The response media type is negotiated, which caches must know of.
+        response.getDimensions().add(Dimension.MEDIA_TYPE);
         MediaType responseType =
                 GraphqlMediaTypes.negotiate(request.getClientInfo().getAcceptedMediaTypes());
         if (responseType == null) {
@@ -253,12 +256,10 @@ public class GraphqlServerAdapter extends Restlet {
             return;
         }
 
-        String query;
-        String operationName;
         ExecutionInput.Builder input;
         try {
-            query = string(params, "query", true);
-            operationName = string(params, "operationName", false);
+            String query = string(params, "query", true);
+            String operationName = string(params, "operationName", false);
             input = ExecutionInput.newExecutionInput().query(query).operationName(operationName);
             Map<String, Object> variables = object(params, "variables");
             if (variables != null) {
@@ -273,9 +274,12 @@ public class GraphqlServerAdapter extends Restlet {
             return;
         }
 
+        // The operation is selected once customized, as the customizer can change it.
+        ExecutionInput executionInput = customize(request, input).build();
         OperationDefinition.Operation operation;
         try {
-            operation = selectOperation(query, operationName);
+            operation =
+                    selectOperation(executionInput.getQuery(), executionInput.getOperationName());
         } catch (InvalidSyntaxException e) {
             write(response, responseType, failure(e.toInvalidSyntaxError()));
             return;
@@ -285,7 +289,7 @@ public class GraphqlServerAdapter extends Restlet {
         }
 
         if (get && operation != OperationDefinition.Operation.QUERY) {
-            methodNotAllowed(response);
+            methodNotAllowed(response, false);
             return;
         }
         if (operation == OperationDefinition.Operation.SUBSCRIPTION) {
@@ -296,7 +300,7 @@ public class GraphqlServerAdapter extends Restlet {
             return;
         }
 
-        write(response, responseType, graphQL.execute(customize(request, input).build()));
+        write(response, responseType, graphQL.execute(executionInput));
     }
 
     private ExecutionInput.Builder customize(Request request, ExecutionInput.Builder input) {
@@ -326,7 +330,8 @@ public class GraphqlServerAdapter extends Restlet {
                                 .build());
         List<OperationDefinition> operations =
                 document.getDefinitionsOfType(OperationDefinition.class);
-        if (operationName == null) {
+        // An empty operation name, such as an empty GET parameter, is omitted.
+        if (operationName == null || operationName.isEmpty()) {
             if (operations.size() != 1) {
                 throw new RequestException(
                         operations.isEmpty()
@@ -436,8 +441,11 @@ public class GraphqlServerAdapter extends Restlet {
         return ExecutionResult.newExecutionResult().errors(List.of(error)).build();
     }
 
-    private static void methodNotAllowed(Response response) {
+    private static void methodNotAllowed(Response response, boolean getAllowed) {
         response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        if (getAllowed) {
+            response.getAllowedMethods().add(Method.GET);
+        }
         response.getAllowedMethods().add(Method.POST);
     }
 
