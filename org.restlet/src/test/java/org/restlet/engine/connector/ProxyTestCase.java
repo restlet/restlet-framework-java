@@ -10,6 +10,7 @@ package org.restlet.engine.connector;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -36,11 +38,15 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.security.HttpBasicHelper;
 
 /**
  * Tests the HTTP proxy support of the client connector: absolute-form requests for HTTP, and
@@ -60,6 +66,7 @@ class ProxyTestCase {
     void setUp() throws Exception {
         Engine.clearThreadLocalVariables();
         Engine.register(false);
+        Engine.getInstance().getRegisteredAuthenticators().add(new HttpBasicHelper());
         Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
         Engine.getInstance().getRegisteredServers().add(new HttpsServerHelper(null));
         Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
@@ -84,6 +91,20 @@ class ProxyTestCase {
                 public void handle(Request request, Response response) {
                     response.setEntity(
                             "hello " + request.getResourceRef().getPath(), MediaType.TEXT_PLAIN);
+                }
+            };
+
+    /** Returns the "Proxy-Authorization" header received by the origin server, if any. */
+    private static final Restlet PROXY_AUTHORIZATION_ECHO =
+            new Restlet() {
+                @Override
+                public void handle(Request request, Response response) {
+                    String authorization =
+                            request.getHeaders()
+                                    .getFirstValue(
+                                            HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
+                    response.setEntity(
+                            (authorization == null) ? "none" : authorization, MediaType.TEXT_PLAIN);
                 }
             };
 
@@ -112,27 +133,8 @@ class ProxyTestCase {
 
     @Test
     void tunnelsHttpsRequestsWithConnect() throws Exception {
-        Path keystore = tempDir.resolve("dummy.p12");
-        try (InputStream in = SslBaseConnectorsTestCase.class.getResourceAsStream("dummy.p12")) {
-            Files.copy(in, keystore, REPLACE_EXISTING);
-        }
-
-        Context serverContext = new Context();
-        serverContext.getParameters().add("keystorePath", keystore.toString());
-        serverContext.getParameters().add("keystorePassword", "testtest");
-        serverContext.getParameters().add("keyStoreType", "PKCS12");
-        serverContext.getParameters().add("keyPassword", "testtest");
-        server = new Server(serverContext, Protocol.HTTPS, 0, HELLO);
-        server.start();
-
-        Context context = new Context();
-        context.getParameters().add("proxyHost", "localhost");
-        context.getParameters().add("proxyPort", Integer.toString(proxy.port()));
-        context.getParameters().add("truststorePath", keystore.toString());
-        context.getParameters().add("truststorePassword", "testtest");
-        context.getParameters().add("trustStoreType", "PKCS12");
-        client = new Client(context, Protocol.HTTPS);
-        client.start();
+        startHttpsServer(HELLO);
+        client = newHttpsClient();
 
         Response response =
                 client.handle(
@@ -146,6 +148,111 @@ class ProxyTestCase {
         assertEquals(
                 "CONNECT localhost:" + server.getActualPort() + " HTTP/1.1",
                 proxy.requestLines.getFirst());
+    }
+
+    @Test
+    void sendsProxyCredentialsWithConnectOnly() throws Exception {
+        proxy.requiredAuthorization =
+                "Basic "
+                        + Base64.getEncoder()
+                                .encodeToString("scott:tiger".getBytes(StandardCharsets.UTF_8));
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        client = newHttpsClient();
+
+        for (int i = 0; i < 2; i++) {
+            Request request =
+                    new Request(Method.GET, "https://localhost:" + server.getActualPort() + "/s");
+            request.setProxyChallengeResponse(
+                    new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            // The origin server never receives the proxy credentials.
+            assertEquals("none", response.getEntityAsText());
+        }
+
+        // The tunnel is reused for the second request.
+        assertEquals(1, proxy.requestLines.size());
+        assertEquals(List.of(proxy.requiredAuthorization), proxy.proxyAuthorizations);
+    }
+
+    @Test
+    void keepsTunnelsApartPerProxyCredentials() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        client = newHttpsClient();
+
+        List<ChallengeResponse> credentials =
+                List.of(
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"),
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "lion"),
+                        rawCredentials("token1"),
+                        rawCredentials("token2"),
+                        new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+        for (ChallengeResponse challengeResponse : credentials) {
+            Request request =
+                    new Request(Method.GET, "https://localhost:" + server.getActualPort() + "/s");
+            request.setProxyChallengeResponse(challengeResponse);
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("none", response.getEntityAsText());
+        }
+
+        // A tunnel per credentials, the last request reusing the tunnel of the first one.
+        assertEquals(
+                List.of(
+                        "Basic c2NvdHQ6dGlnZXI=",
+                        "Basic c2NvdHQ6bGlvbg==",
+                        "Bearer token1",
+                        "Bearer token2"),
+                proxy.proxyAuthorizations);
+    }
+
+    @Test
+    void sharesConnectionLimitAcrossProxyCredentials() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        client = newHttpsClient("maxConnectionsPerDestination", "1");
+
+        for (String password : List.of("tiger", "lion", "tiger")) {
+            Request request =
+                    new Request(Method.GET, "https://localhost:" + server.getActualPort() + "/s");
+            request.setProxyChallengeResponse(
+                    new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", password));
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("none", response.getEntityAsText());
+        }
+
+        // A single connection at a time: the idle tunnel of the other credentials is closed to open
+        // a new one, so the first tunnel can't be reused by the third request.
+        assertEquals(3, proxy.requestLines.size());
+    }
+
+    @Test
+    void returnsProxyChallengeWhenTunnelIsRefused() throws Exception {
+        proxy.requiredAuthorization = "Basic c2NvdHQ6dGlnZXI=";
+        startHttpsServer(HELLO);
+        client = newHttpsClient();
+
+        Response response =
+                client.handle(
+                        new Request(
+                                Method.GET, "https://localhost:" + server.getActualPort() + "/s"));
+        assertEquals(Status.CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED, response.getStatus());
+        assertEquals(1, response.getProxyChallengeRequests().size());
+        assertEquals(
+                ChallengeScheme.HTTP_BASIC,
+                response.getProxyChallengeRequests().getFirst().getScheme());
+        assertEquals("proxy", response.getProxyChallengeRequests().getFirst().getRealm());
+        // The body of the refusal is not returned, nor its entity headers.
+        assertNull(response.getHeaders().getFirstValue(HeaderConstants.HEADER_CONTENT_TYPE, true));
+        assertNull(
+                response.getHeaders().getFirstValue(HeaderConstants.HEADER_CONTENT_LENGTH, true));
+    }
+
+    private static ChallengeResponse rawCredentials(String token) {
+        ChallengeResponse result =
+                new ChallengeResponse(new ChallengeScheme("HTTP_BEARER", "Bearer"));
+        result.setRawValue(token);
+        return result;
     }
 
     @Test
@@ -170,6 +277,41 @@ class ProxyTestCase {
         assertTrue(response.getStatus().isConnectorError(), response.getStatus().toString());
     }
 
+    private Path keystore() throws IOException {
+        Path keystore = tempDir.resolve("dummy.p12");
+        try (InputStream in = SslBaseConnectorsTestCase.class.getResourceAsStream("dummy.p12")) {
+            Files.copy(in, keystore, REPLACE_EXISTING);
+        }
+        return keystore;
+    }
+
+    private void startHttpsServer(Restlet next) throws Exception {
+        Path keystore = keystore();
+        Context serverContext = new Context();
+        serverContext.getParameters().add("keystorePath", keystore.toString());
+        serverContext.getParameters().add("keystorePassword", "testtest");
+        serverContext.getParameters().add("keyStoreType", "PKCS12");
+        serverContext.getParameters().add("keyPassword", "testtest");
+        server = new Server(serverContext, Protocol.HTTPS, 0, next);
+        server.start();
+    }
+
+    private Client newHttpsClient(String... parameters) throws Exception {
+        Path keystore = keystore();
+        Context context = new Context();
+        for (int i = 0; i < parameters.length; i += 2) {
+            context.getParameters().add(parameters[i], parameters[i + 1]);
+        }
+        context.getParameters().add("proxyHost", "localhost");
+        context.getParameters().add("proxyPort", Integer.toString(proxy.port()));
+        context.getParameters().add("truststorePath", keystore.toString());
+        context.getParameters().add("truststorePassword", "testtest");
+        context.getParameters().add("trustStoreType", "PKCS12");
+        Client result = new Client(context, Protocol.HTTPS);
+        result.start();
+        return result;
+    }
+
     /**
      * Minimal HTTP proxy: forwards absolute-form requests (one connection to the origin per client
      * connection, bytes relayed both ways) and opens CONNECT tunnels.
@@ -177,6 +319,12 @@ class ProxyTestCase {
     private static final class TestProxy implements AutoCloseable {
 
         final List<String> requestLines = new CopyOnWriteArrayList<>();
+
+        /** The "Proxy-Authorization" headers received with CONNECT requests. */
+        final List<String> proxyAuthorizations = new CopyOnWriteArrayList<>();
+
+        /** The "Proxy-Authorization" header required to open a tunnel, if any. */
+        volatile String requiredAuthorization;
 
         private final ServerSocket serverSocket;
 
@@ -211,6 +359,23 @@ class ProxyTestCase {
                 String[] parts = requestLine.split(" ");
 
                 if ("CONNECT".equals(parts[0])) {
+                    String authorization = headerValue(head, "Proxy-Authorization");
+                    if (authorization != null) {
+                        proxyAuthorizations.add(authorization);
+                    }
+                    if ((requiredAuthorization != null)
+                            && !requiredAuthorization.equals(authorization)) {
+                        client.getOutputStream()
+                                .write(
+                                        ("HTTP/1.1 407 Proxy Authentication Required\r\n"
+                                                        + "Proxy-Authenticate: Basic realm=\"proxy\"\r\n"
+                                                        + "Content-Type: text/plain\r\n"
+                                                        + "Content-Length: 6\r\n\r\n"
+                                                        + "denied")
+                                                .getBytes(StandardCharsets.US_ASCII));
+                        client.getOutputStream().flush();
+                        return;
+                    }
                     String[] hostPort = parts[1].split(":");
                     try (Socket origin = new Socket(hostPort[0], Integer.parseInt(hostPort[1]))) {
                         client.getOutputStream()
@@ -275,6 +440,17 @@ class ProxyTestCase {
                     Thread.currentThread().interrupt();
                 }
             }
+        }
+
+        /** Returns the value of a header in a request head, ignoring case, or null. */
+        private static String headerValue(String head, String name) {
+            for (String line : head.split("\r\n")) {
+                int colon = line.indexOf(':');
+                if ((colon > 0) && line.substring(0, colon).trim().equalsIgnoreCase(name)) {
+                    return line.substring(colon + 1).trim();
+                }
+            }
+            return null;
         }
 
         /** Reads the request head, up to and including the empty line. */

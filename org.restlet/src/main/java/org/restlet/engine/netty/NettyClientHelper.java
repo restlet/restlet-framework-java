@@ -23,14 +23,18 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http2.Http2FrameCodecBuilder;
 import io.netty.handler.codec.http2.Http2MultiplexHandler;
 import io.netty.handler.codec.http2.Http2StreamChannel;
 import io.netty.handler.codec.http2.Http2StreamChannelBootstrap;
 import io.netty.handler.codec.http2.Http2StreamFrameToHttpObjectCodec;
 import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.ProxyConnectException;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.ApplicationProtocolNames;
 import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
@@ -56,6 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import javax.net.ssl.SSLEngine;
@@ -214,8 +219,17 @@ public abstract class NettyClientHelper extends ClientHelper {
         DYNAMIC
     }
 
-    /** Connection pool of an origin. */
+    /**
+     * Connection pool of an origin. The tunnels opened with proxy credentials have a pool per
+     * credentials, sharing the connection limit of the origin.
+     */
     static final class OriginPool {
+
+        /** The key of the pool. */
+        final String key;
+
+        /** Indicates whether the pool is specific to proxy credentials, and dropped once unused. */
+        final boolean transientPool;
 
         final boolean secure;
 
@@ -225,7 +239,11 @@ public abstract class NettyClientHelper extends ClientHelper {
 
         final Deque<Channel> idle = new ConcurrentLinkedDeque<>();
 
+        /** The connection permits of the origin, shared by its pools. */
         final Semaphore permits;
+
+        /** The number of connections of the pool, open or being opened. */
+        final AtomicInteger connections = new AtomicInteger();
 
         /**
          * Serializes connection establishment when HTTP/2 may be negotiated, so that concurrent
@@ -235,11 +253,19 @@ public abstract class NettyClientHelper extends ClientHelper {
 
         volatile Channel http2;
 
-        OriginPool(boolean secure, String host, int port, int maxConnections) {
+        OriginPool(
+                String key,
+                boolean transientPool,
+                boolean secure,
+                String host,
+                int port,
+                Semaphore permits) {
+            this.key = key;
+            this.transientPool = transientPool;
             this.secure = secure;
             this.host = host;
             this.port = port;
-            this.permits = new Semaphore(Math.max(1, maxConnections));
+            this.permits = permits;
         }
     }
 
@@ -258,8 +284,11 @@ public abstract class NettyClientHelper extends ClientHelper {
     /** The QUIC connections, per origin, for the experimental HTTP/3 support. */
     private final Map<String, Channel> http3Connections = new ConcurrentHashMap<>();
 
-    /** The connection pools, per origin. */
+    /** The connection pools, per origin, and per proxy credentials for tunnels. */
     private final Map<String, OriginPool> pools = new ConcurrentHashMap<>();
+
+    /** The connection permits, per origin. */
+    private final Map<String, Semaphore> permits = new ConcurrentHashMap<>();
 
     /**
      * Constructor.
@@ -442,18 +471,24 @@ public abstract class NettyClientHelper extends ClientHelper {
             return acquireHttp3(call);
         }
 
+        // Tunnels opened with different proxy credentials are kept apart.
+        String origin =
+                (call.isConfidential() ? "https://" : "http://")
+                        + call.getTargetHost()
+                        + ":"
+                        + call.getTargetPort();
+        String proxyIdentity = call.getTunnelProxyIdentity();
         OriginPool pool =
                 pools.computeIfAbsent(
-                        (call.isConfidential() ? "https://" : "http://")
-                                + call.getTargetHost()
-                                + ":"
-                                + call.getTargetPort(),
+                        (proxyIdentity == null) ? origin : origin + "#" + proxyIdentity,
                         k ->
                                 new OriginPool(
+                                        k,
+                                        proxyIdentity != null,
                                         call.isConfidential(),
                                         call.getTargetHost(),
                                         call.getTargetPort(),
-                                        getMaxConnectionsPerDestination()));
+                                        getPermits(origin)));
 
         Channel http2 = pool.http2;
         if (http2 != null && http2.isActive()) {
@@ -469,7 +504,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         if (getTransportMode() == TransportMode.HTTP1_1) {
-            channel = connect(pool);
+            channel = connect(pool, call.getTunnelProxyAuthorization());
         } else {
             pool.connectLock.lock();
             try {
@@ -477,7 +512,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                 if (http2 != null && http2.isActive()) {
                     return openStream(http2, call);
                 }
-                channel = connect(pool);
+                channel = connect(pool, call.getTunnelProxyAuthorization());
                 if (channel.pipeline().get(Http2MultiplexHandler.class) != null) {
                     pool.http2 = channel;
                     return openStream(channel, call);
@@ -608,14 +643,18 @@ public abstract class NettyClientHelper extends ClientHelper {
         return NettyFutures.await(future, getConnectTimeout(), "Unable to open an HTTP/2 stream");
     }
 
-    private Channel connect(final OriginPool pool) throws IOException {
+    private Channel connect(final OriginPool pool, final String proxyAuthorization)
+            throws IOException {
         long timeout = getConnectTimeout();
+        pool.connections.incrementAndGet();
         try {
-            if (!pool.permits.tryAcquire(timeout, TimeUnit.MILLISECONDS)) {
+            if (!acquirePermit(pool, timeout)) {
+                releaseConnection(pool, false);
                 throw new ConnectException(
                         "Too many connections to " + pool.host + ":" + pool.port);
             }
         } catch (InterruptedException _) {
+            releaseConnection(pool, false);
             Thread.currentThread().interrupt();
             throw new InterruptedIOException("Interrupted while waiting for a connection");
         }
@@ -641,7 +680,11 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         @Override
                                         protected void initChannel(SocketChannel ch) {
                                             initConnection(
-                                                    ch, pool, ssl, pool.secure ? proxy : null);
+                                                    ch,
+                                                    pool,
+                                                    ssl,
+                                                    pool.secure ? proxy : null,
+                                                    proxyAuthorization);
                                         }
                                     });
 
@@ -669,7 +712,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                             timeout,
                             "Unable to connect to " + pool.host + ":" + pool.port);
             connections.add(channel);
-            channel.closeFuture().addListener(f -> pool.permits.release());
+            channel.closeFuture().addListener(f -> releaseConnection(pool, true));
             acquired = false;
 
             Promise<String> ready = channel.attr(READY).get();
@@ -682,13 +725,72 @@ public abstract class NettyClientHelper extends ClientHelper {
             return channel;
         } finally {
             if (acquired) {
-                pool.permits.release();
+                releaseConnection(pool, true);
             }
         }
     }
 
+    /**
+     * Returns the connection permits of an origin, shared by its pools.
+     *
+     * @param origin The origin.
+     * @return The connection permits.
+     */
+    private Semaphore getPermits(String origin) {
+        return permits.computeIfAbsent(
+                origin, o -> new Semaphore(Math.max(1, getMaxConnectionsPerDestination())));
+    }
+
+    /**
+     * Acquires a connection permit of the origin of a pool. When they are all taken, an idle
+     * connection of another pool of the origin (opened with other proxy credentials) is closed to
+     * free one.
+     *
+     * @param pool The pool.
+     * @param timeout The max time to wait, in milliseconds.
+     * @return True if a permit was acquired.
+     * @throws InterruptedException If interrupted while waiting.
+     */
+    private boolean acquirePermit(OriginPool pool, long timeout) throws InterruptedException {
+        if (pool.permits.tryAcquire()) {
+            return true;
+        }
+
+        for (OriginPool other : pools.values()) {
+            if ((other != pool) && (other.permits == pool.permits)) {
+                Channel idle = other.idle.pollLast();
+                if (idle != null) {
+                    idle.close();
+                    break;
+                }
+            }
+        }
+        return pool.permits.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Releases a connection of a pool, closed or not opened. A pool specific to proxy credentials
+     * is dropped once it has no connection left, so that such pools do not accumulate. A call
+     * holding it meanwhile still works, its connection is simply not reused by the next calls.
+     *
+     * @param pool The pool.
+     * @param permit True if the connection held a permit.
+     */
+    private void releaseConnection(OriginPool pool, boolean permit) {
+        if (permit) {
+            pool.permits.release();
+        }
+        if ((pool.connections.decrementAndGet() == 0) && pool.transientPool) {
+            pools.remove(pool.key, pool);
+        }
+    }
+
     private void initConnection(
-            SocketChannel ch, OriginPool pool, SslContext ssl, InetSocketAddress tunnelProxy) {
+            SocketChannel ch,
+            OriginPool pool,
+            SslContext ssl,
+            InetSocketAddress tunnelProxy,
+            String proxyAuthorization) {
         final Promise<String> ready = ch.eventLoop().newPromise();
         ch.attr(READY).set(ready);
         ch.attr(POOL).set(pool);
@@ -702,12 +804,54 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
         p.addLast("writability", Writability.HANDLER);
 
-        if (tunnelProxy != null) {
-            HttpProxyHandler proxyHandler = new HttpProxyHandler(tunnelProxy);
-            proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
-            p.addLast("proxy", proxyHandler);
+        if (tunnelProxy == null) {
+            initProtocols(ch, pool, ssl, ready);
+            return;
         }
 
+        HttpHeaders connectHeaders = new DefaultHttpHeaders();
+        if (proxyAuthorization != null) {
+            connectHeaders.set(HttpHeaderNames.PROXY_AUTHORIZATION, proxyAuthorization);
+        }
+        HttpProxyHandler proxyHandler = new HttpProxyHandler(tunnelProxy, connectHeaders);
+        proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
+        p.addLast("proxy", proxyHandler);
+        p.addLast(
+                "proxy-failure",
+                new ChannelInboundHandlerAdapter() {
+                    @Override
+                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                        // Already reported with the ready promise.
+                        if (!(cause instanceof ProxyConnectException)) {
+                            ctx.fireExceptionCaught(cause);
+                        }
+                    }
+                });
+        // The protocol handlers are only added once the tunnel is established, so that a refusal of
+        // the proxy (e.g. a 407 response) is reported as is, not as a TLS handshake failure.
+        proxyHandler
+                .connectFuture()
+                .addListener(
+                        f -> {
+                            if (f.isSuccess()) {
+                                initProtocols(ch, pool, ssl, ready);
+                            } else {
+                                ready.tryFailure(f.cause());
+                            }
+                        });
+    }
+
+    /**
+     * Adds the TLS and HTTP handlers of a connection, directly connected or tunneled.
+     *
+     * @param ch The connection channel.
+     * @param pool The connection pool of the origin.
+     * @param ssl The SSL context, or null for a cleartext connection.
+     * @param ready The promise completed with the negotiated protocol.
+     */
+    private void initProtocols(
+            SocketChannel ch, OriginPool pool, SslContext ssl, Promise<String> ready) {
+        ChannelPipeline p = ch.pipeline();
         final TransportMode mode = getTransportMode();
         if (ssl != null) {
             SSLEngine engine = ssl.newEngine(ch.alloc(), pool.host, pool.port);
@@ -837,6 +981,7 @@ public abstract class NettyClientHelper extends ClientHelper {
             connections.close().awaitUninterruptibly(5, TimeUnit.SECONDS);
         }
         pools.clear();
+        permits.clear();
         http3Connections.clear();
         http3Client = null;
         if (g != null) {
