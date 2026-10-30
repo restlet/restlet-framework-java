@@ -89,6 +89,12 @@ Changes log
           supporting helper class. Applications with multiple STDIO protocol helpers must
           select one explicitly.
     - Enhancements
+        - Added the MCP extension using the official Java SDK 2.1.0 on shared Restlet HTTP
+          connectors and explicitly configured STDIO helpers. The supported stateless profile
+          uses revision 2025-11-25, native SDK tools/resources/prompts and in-JVM dispatch,
+          bounded messages/calls, one-shot SSE responses, and request cancellation. Sessions,
+          listening GET streams, replay and Ikanos revision compatibility are not supported.
+          Borrowed HTTP connectors are not stopped by the MCP client.
         - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
           connector, with explicit plaintext opt-in, bounded messages and call admission.
           Regression tests cover authority mapping, cancellation before and after headers,

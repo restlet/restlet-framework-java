@@ -10,7 +10,9 @@ package org.restlet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -21,6 +23,21 @@ import org.restlet.data.Method;
 import org.restlet.util.WrapperRequest;
 
 class RequestLifecycleTestCase {
+
+    @Test
+    void abortSignalsCancellationWithoutRunningSubscribersOnCaller() throws Exception {
+        Request request = new Request();
+        Thread caller = Thread.currentThread();
+        var callback =
+                request.getDisconnectSignal()
+                        .thenAccept(
+                                cause -> {
+                                    assertTrue(cause instanceof IOException);
+                                    assertNotSame(caller, Thread.currentThread());
+                                });
+        assertFalse(request.abort());
+        callback.toCompletableFuture().get(5, TimeUnit.SECONDS);
+    }
 
     @Test
     void reportsOnceWithLateSubscriptionAndWrapperDelegation() throws Exception {
