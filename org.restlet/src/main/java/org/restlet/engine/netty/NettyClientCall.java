@@ -24,6 +24,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.proxy.HttpProxyHandler.HttpProxyConnectException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import org.restlet.Uniform;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -80,6 +82,12 @@ class NettyClientCall {
 
     /** Indicates whether the exchange is secured with TLS. */
     private final boolean secure;
+
+    /** The "Proxy-Authorization" header value for the CONNECT request of a tunnel, if any. */
+    private volatile String tunnelProxyAuthorization;
+
+    /** The identity of the tunnel proxy credentials, if any, keeping tunnels apart per user. */
+    private volatile String tunnelProxyIdentity;
 
     /** The request headers. */
     private final Series<Header> requestHeaders = new Series<>(Header.class);
@@ -202,6 +210,51 @@ class NettyClientCall {
     }
 
     /**
+     * Returns the "Proxy-Authorization" header value to send with the CONNECT request of a new
+     * tunnel, if any.
+     *
+     * @return The header value or null.
+     */
+    String getTunnelProxyAuthorization() {
+        return tunnelProxyAuthorization;
+    }
+
+    /**
+     * Returns the identity of the credentials sent to the tunnel proxy, if any.
+     *
+     * @return The identity or null.
+     */
+    String getTunnelProxyIdentity() {
+        return tunnelProxyIdentity;
+    }
+
+    /** Indicates whether the exchange goes through a CONNECT tunnel of the HTTP proxy. */
+    private boolean isTunneled() {
+        return secure && (helper.getProxyHost() != null);
+    }
+
+    /**
+     * Moves the "Proxy-Authorization" header out of the request headers of a tunneled exchange: the
+     * proxy only sees the CONNECT request, the request headers go to the origin server.
+     *
+     * @param request The Restlet request.
+     */
+    private void moveTunnelProxyAuthorization(org.restlet.Request request) {
+        String authorization =
+                requestHeaders.getFirstValue(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
+        if (authorization == null) {
+            return;
+        }
+        requestHeaders.removeAll(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
+        ChallengeResponse credentials = request.getProxyChallengeResponse();
+        this.tunnelProxyAuthorization = authorization;
+        this.tunnelProxyIdentity =
+                (credentials == null)
+                        ? authorization
+                        : credentials.getScheme().getName() + " " + credentials.getIdentifier();
+    }
+
+    /**
      * Sends the request and updates the response. Asynchronous requests invoke their "onSent" and
      * "onResponse" callbacks once the response is updated.
      *
@@ -220,6 +273,9 @@ class NettyClientCall {
         // NOTE: This must stay at the end because the AWS challenge scheme requires access to all
         // HTTP headers
         HeaderUtils.addRequestHeaders(request, requestHeaders);
+        if (isTunneled()) {
+            moveTunnelProxyAuthorization(request);
+        }
 
         Status status = sendRequest(request);
         updateResponse(response, status);
@@ -325,6 +381,8 @@ class NettyClientCall {
             awaitHead();
             result = new Status(statusCode, reasonPhrase);
             finishRequestBody(request, result, backgroundWriterStarted);
+        } catch (HttpProxyConnectException e) {
+            result = handleProxyConnectFailure(e);
         } catch (ConnectException e) {
             result = handleConnectFailure(e);
         } catch (IOException e) {
@@ -388,6 +446,26 @@ class NettyClientCall {
         helper.logFailure("Unable to connect to the remote HTTP server", cause);
         abort();
         return new Status(Status.CONNECTOR_ERROR_CONNECTION, cause);
+    }
+
+    /**
+     * Handles the refusal of the HTTP proxy to open a CONNECT tunnel. A challenge for proxy
+     * credentials is returned as a 407 response, like for a forward proxy, so the caller can
+     * provide or fix the proxy credentials.
+     */
+    private Status handleProxyConnectFailure(HttpProxyConnectException cause) {
+        HttpHeaders headers = cause.headers();
+        if ((headers == null) || !headers.contains(HttpHeaderNames.PROXY_AUTHENTICATE)) {
+            return handleConnectFailure(cause);
+        }
+
+        completeEntityRelease();
+        helper.logFailure("The HTTP proxy requires authentication to open a tunnel", cause);
+        abort();
+        for (Map.Entry<String, String> header : headers) {
+            responseHeaders.add(header.getKey(), header.getValue());
+        }
+        return Status.CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
     }
 
     private Status handleCommunicationFailure(IOException cause) {

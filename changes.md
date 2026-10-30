@@ -97,6 +97,10 @@ Changes log
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
+        - The HTTP client sends the proxy credentials of HTTPS requests with the CONNECT request
+          of the tunnel, instead of sending them to the origin server inside the tunnel. A
+          refusal of the proxy to open the tunnel with a challenge is returned as a 407 response.
+          Issue #1569.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
