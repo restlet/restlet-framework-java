@@ -9,6 +9,7 @@
 package org.restlet.ext.websocket;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -113,12 +114,11 @@ class WebSocketSessionTestCase {
         context.getParameters().add("keyStoreType", "PKCS12");
         int port = start(Protocol.HTTPS, context, ECHO);
 
-        try (WebSocketClient client =
-                        WebSocketClient.builder()
-                                .sslContext(trustingContext())
-                                .hostnameVerification(true)
-                                .maxMessageSize(1024)
-                                .build();
+        WebSocketClient client = new WebSocketClient();
+        client.setSslContext(trustingContext());
+        client.setHostnameVerification(true);
+        client.setMaxMessageSize(1024);
+        try (client;
                 WebSocketSession session = client.connect("wss://localhost:" + port + "/")) {
             session.sendText("secure");
             assertEquals("secure", session.receive().getText());
@@ -131,8 +131,9 @@ class WebSocketSessionTestCase {
         context.getParameters().add("connector.idleTimeout", "100");
         int port = start(Protocol.HTTP, context, ECHO);
 
-        try (WebSocketClient client =
-                        WebSocketClient.builder().idleTimeout(Duration.ofMillis(100)).build();
+        WebSocketClient client = new WebSocketClient();
+        client.setIdleTimeout(Duration.ofMillis(100));
+        try (client;
                 WebSocketSession session = client.connect("ws://localhost:" + port + "/")) {
             // Several idle periods: both sides ping, and the pongs keep the session open.
             Thread.sleep(600);
@@ -152,7 +153,7 @@ class WebSocketSessionTestCase {
                             throw new IllegalStateException("boom");
                         });
 
-        try (WebSocketClient client = WebSocketClient.create()) {
+        try (WebSocketClient client = new WebSocketClient()) {
             WebSocketSession session = client.connect("ws://localhost:" + port + "/");
             assertNull(session.receive());
             assertEquals(WebSocketSession.INTERNAL_ERROR, session.getCloseCode());
@@ -166,8 +167,9 @@ class WebSocketSessionTestCase {
         try (ServerSocket socket = new ServerSocket(0)) {
             freePort = socket.getLocalPort();
         }
-        try (WebSocketClient client =
-                WebSocketClient.builder().connectTimeout(Duration.ofSeconds(2)).build()) {
+        WebSocketClient client = new WebSocketClient();
+        client.setConnectTimeout(Duration.ofSeconds(2));
+        try (client) {
             String refusedUri = "ws://localhost:" + freePort + "/";
             String httpUri = "http://localhost:" + freePort + "/";
             assertThrows(ConnectException.class, () -> client.connect(refusedUri));
@@ -177,14 +179,67 @@ class WebSocketSessionTestCase {
     }
 
     @Test
-    void builderValidatesSettings() {
-        WebSocketClient.Builder builder = WebSocketClient.builder();
-        assertThrows(IllegalArgumentException.class, () -> builder.maxMessageSize(0));
-        assertThrows(
-                IllegalArgumentException.class, () -> builder.idleTimeout(Duration.ofSeconds(-1)));
+    void clientValidatesSettings() {
+        WebSocketClient client = new WebSocketClient();
+        assertThrows(IllegalArgumentException.class, () -> client.setMaxMessageSize(0));
+        assertThrows(IllegalArgumentException.class, () -> client.setMaxFrameSize(0));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> builder.connectTimeout(Duration.ofSeconds(-1)));
+                () -> client.setIdleTimeout(Duration.ofSeconds(-1)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> client.setConnectTimeout(Duration.ofSeconds(-1)));
+    }
+
+    @Test
+    void settingsAreFixedWhileStarted() throws Exception {
+        WebSocketClient client = new WebSocketClient();
+        assertEquals(65536, client.getMaxFrameSize());
+        client.setMaxMessageSize(1024);
+        assertEquals(1024, client.getMaxFrameSize());
+
+        client.start();
+        try {
+            assertTrue(client.isStarted());
+            assertThrows(IllegalStateException.class, () -> client.setMaxMessageSize(2048));
+            assertThrows(IllegalStateException.class, () -> client.setCompression(false));
+        } finally {
+            client.stop();
+        }
+
+        assertFalse(client.isStarted());
+        client.setMaxMessageSize(2048);
+        assertEquals(2048, client.getMaxMessageSize());
+    }
+
+    @Test
+    void stoppedClientReconnectsWithUpdatedSettings() throws Exception {
+        int port = start(Protocol.HTTP, new Context(), ECHO);
+        String uri = "ws://localhost:" + port + "/";
+        String large = "x".repeat(64);
+
+        try (WebSocketClient client = new WebSocketClient()) {
+            client.setMaxMessageSize(1024);
+            WebSocketSession first = client.connect(uri);
+            first.sendText(large);
+            assertEquals(large, first.receive().getText());
+
+            client.stop();
+            assertNull(first.receive());
+            assertFalse(first.isOpen());
+
+            client.setMaxMessageSize(16);
+            try (WebSocketSession second = client.connect(uri)) {
+                assertTrue(client.isStarted());
+                second.sendText("small");
+                assertEquals("small", second.receive().getText());
+
+                // The echo exceeds the new client limit.
+                second.sendText(large);
+                assertNull(second.receive());
+                assertEquals(WebSocketSession.MESSAGE_TOO_BIG, second.getCloseCode());
+            }
+        }
     }
 
     @Test
@@ -202,7 +257,7 @@ class WebSocketSessionTestCase {
         context.getParameters().add("websocket.maxMessageSize", "0");
         int port = start(Protocol.HTTP, context, ECHO);
 
-        try (WebSocketClient client = WebSocketClient.create()) {
+        try (WebSocketClient client = new WebSocketClient()) {
             assertThrows(IOException.class, () -> client.connect("ws://localhost:" + port + "/"));
         }
     }
