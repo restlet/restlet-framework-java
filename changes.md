@@ -187,7 +187,8 @@ Changes log
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
         - The HTTP client connects directly to the hosts listed in the "nonProxyHosts" parameter
-          or the "http.nonProxyHosts" system property, without proxy. Issue #401.
+          or the "http.nonProxyHosts" system property, without proxy. As with the JDK, the
+          loopback addresses are excluded by default. Issue #401.
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin. Issue #1611.
         - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
           `SameSite` enum), read and written in `Set-Cookie`.

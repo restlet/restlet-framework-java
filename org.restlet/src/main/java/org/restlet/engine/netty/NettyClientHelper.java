@@ -169,10 +169,11 @@ import org.restlet.representation.Representation;
  * <tr>
  * <td>nonProxyHosts</td>
  * <td>String</td>
- * <td>System property "http.nonProxyHosts"</td>
+ * <td>System property "http.nonProxyHosts" or "localhost|127.*|[::1]|0.0.0.0|[::0]"</td>
  * <td>The hosts to connect to directly, without proxy, separated by "|". A host name can start or
  * end with a "*" wildcard, e.g. "localhost|*.example.com|192.168.*", and is matched ignoring
- * case. Unlike the JDK, no host is excluded by default.</td>
+ * case. As with the JDK, the loopback addresses are excluded by default, and an empty value
+ * excludes no host.</td>
  * </tr>
  * <tr>
  * <td>proxyHost</td>
@@ -217,6 +218,9 @@ public abstract class NettyClientHelper extends ClientHelper {
     /** The negotiated application protocol of a new connection. */
     private static final AttributeKey<Promise<String>> READY =
             AttributeKey.valueOf(NettyClientHelper.class, "ready");
+
+    /** The hosts connected to directly by default, as with the JDK. */
+    private static final String DEFAULT_NON_PROXY_HOSTS = "localhost|127.*|[::1]|0.0.0.0|[::0]";
 
     /** The pool owning a connection. */
     private static final AttributeKey<OriginPool> POOL =
@@ -1153,13 +1157,16 @@ public abstract class NettyClientHelper extends ClientHelper {
 
     /**
      * Returns the hosts to connect to directly, without proxy, separated by "|": the
-     * "nonProxyHosts" parameter, or the "http.nonProxyHosts" system property.
+     * "nonProxyHosts" parameter, or the "http.nonProxyHosts" system property, the loopback
+     * addresses otherwise.
      *
-     * @return The hosts to connect to directly, or null.
+     * @return The hosts to connect to directly, possibly empty.
      */
     public String getNonProxyHosts() {
         return getHelpedParameters()
-                .getFirstValue("nonProxyHosts", System.getProperty("http.nonProxyHosts"));
+                .getFirstValue(
+                        "nonProxyHosts",
+                        System.getProperty("http.nonProxyHosts", DEFAULT_NON_PROXY_HOSTS));
     }
 
     /**
