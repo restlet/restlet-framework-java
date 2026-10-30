@@ -94,7 +94,8 @@ Changes log
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
         - The HTTP client connects directly to the hosts listed in the "nonProxyHosts" parameter
-          or the "http.nonProxyHosts" system property, without proxy. Issue #401.
+          or the "http.nonProxyHosts" system property, without proxy. As with the JDK, the
+          loopback addresses are excluded by default. Issue #401.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
