@@ -104,6 +104,12 @@ public class GraphqlClientAdapter {
 
     private volatile boolean incrementalDeliveryEnabled;
 
+    private volatile GraphqlTransport subscriptionTransport = GraphqlTransport.SSE;
+
+    private volatile Map<String, Object> connectionInitPayload;
+
+    private volatile GraphqlSubscriptionTransport webSocketTransport;
+
     private final Set<GraphqlSsePublisher.EventStreamSubscription> subscriptions =
             ConcurrentHashMap.newKeySet();
 
@@ -283,6 +289,50 @@ public class GraphqlClientAdapter {
     }
 
     /**
+     * Returns the transport of subscriptions.
+     *
+     * @return The transport of subscriptions.
+     */
+    public GraphqlTransport getSubscriptionTransport() {
+        return subscriptionTransport;
+    }
+
+    /**
+     * Sets the transport of subscriptions. Defaults to {@link GraphqlTransport#SSE}, with one
+     * request per subscription. With {@link GraphqlTransport#WEBSOCKET}, subscriptions are
+     * multiplexed over one {@code graphql-transport-ws} connection, opened on the first demand at
+     * the endpoint URI with the "ws" or "wss" scheme. It shares the event loop of the borrowed
+     * client, which must then be a started Netty HTTP client, and requires the {@code
+     * org.restlet.ext.websocket} module. The request customizer adds handshake headers.
+     *
+     * @param subscriptionTransport The transport of subscriptions.
+     */
+    public void setSubscriptionTransport(GraphqlTransport subscriptionTransport) {
+        checkNew();
+        this.subscriptionTransport = Objects.requireNonNull(subscriptionTransport);
+    }
+
+    /**
+     * Returns the payload of the {@code connection_init} message of WebSocket connections.
+     *
+     * @return The payload, or null.
+     */
+    public Map<String, Object> getConnectionInitPayload() {
+        return connectionInitPayload;
+    }
+
+    /**
+     * Sets the payload of the {@code connection_init} message of WebSocket connections, for example
+     * an authentication token.
+     *
+     * @param connectionInitPayload The payload, or null.
+     */
+    public void setConnectionInitPayload(Map<String, Object> connectionInitPayload) {
+        checkNew();
+        this.connectionInitPayload = connectionInitPayload;
+    }
+
+    /**
      * Validates and freezes the configuration.
      *
      * @throws IllegalStateException If the client or the endpoint is missing, or if the adapter was
@@ -299,6 +349,14 @@ public class GraphqlClientAdapter {
         if (parserOptions == null) {
             parserOptions = ParserOptions.getDefaultOperationParserOptions();
         }
+        if (subscriptionTransport == GraphqlTransport.WEBSOCKET) {
+            try {
+                // Only loads the optional WebSocket extension when selected.
+                webSocketTransport = new GraphqlWebSocketTransport(this);
+            } catch (IOException e) {
+                throw new IllegalStateException("Unable to start the WebSocket client", e);
+            }
+        }
         state = State.STARTED;
     }
 
@@ -311,6 +369,10 @@ public class GraphqlClientAdapter {
         for (GraphqlSsePublisher.EventStreamSubscription subscription :
                 List.copyOf(subscriptions)) {
             subscription.stop();
+        }
+        GraphqlSubscriptionTransport transport = webSocketTransport;
+        if (transport != null) {
+            transport.stop();
         }
     }
 
@@ -388,8 +450,7 @@ public class GraphqlClientAdapter {
         ExecutionResult invalid = validate(document);
         return invalid != null
                 ? single(invalid)
-                : new GraphqlSsePublisher(
-                        this, AstPrinter.printAst(document), operationName, variables);
+                : publisher(AstPrinter.printAst(document), operationName, variables);
     }
 
     /**
@@ -423,7 +484,15 @@ public class GraphqlClientAdapter {
                 return single(invalid);
             }
         }
-        return new GraphqlSsePublisher(this, document, operationName, variables);
+        return publisher(document, operationName, variables);
+    }
+
+    private Publisher<ExecutionResult> publisher(
+            String document, String operationName, Map<String, Object> variables) {
+        GraphqlSubscriptionTransport transport = webSocketTransport;
+        return transport != null
+                ? transport.subscribe(document, operationName, variables)
+                : new GraphqlSsePublisher(this, document, operationName, variables);
     }
 
     /** A publisher of one result, for documents that fail local validation. */

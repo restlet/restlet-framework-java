@@ -162,7 +162,9 @@ Changes log
           the server adapter also accepts `graphql-transport-ws` WebSocket upgrades on its own path
           (HTTP/1.1 only), with several operations per connection, a `connection_init` timeout
           and the protocol's close codes; `org.restlet.ext.websocket` is an optional dependency,
-          loaded only then. Incremental delivery of `@defer` results over `multipart/mixed` is
+          loaded only then. `GraphqlClientAdapter.setSubscriptionTransport(WEBSOCKET)` multiplexes
+          subscriptions over one `graphql-transport-ws` connection sharing the borrowed client's
+          event loop. Incremental delivery of `@defer` results over `multipart/mixed` is
           available on both sides when enabled (experimental, off by default): the client
           returns graphql-java's `IncrementalExecutionResult`, whose item publisher reads the
           delayed results. Issue #1581.
