@@ -27,8 +27,9 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
       - name: Build and test with Maven
-        # verify also runs the Spotless check, the JaCoCo coverage check and SpotBugs
-        run: ./mvnw -B verify -P default,test
+        # verify also runs the Spotless check, the JaCoCo coverage check and SpotBugs. The
+        # ci-logging profile writes the FINE logs of the core tests to a file (issue #1601).
+        run: ./mvnw -B verify -P default,test,ci-logging
       - name: Check Javadoc
         run: ./mvnw -B -q compile javadoc:javadoc
       - name: Upload coverage and static analysis reports
@@ -39,4 +40,13 @@ jobs:
           path: |
             **/target/site/jacoco/
             **/target/spotbugsXml.xml
+          if-no-files-found: ignore
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-logs
+          path: |
+            **/target/restlet-fine.log
+            **/target/surefire-reports/
           if-no-files-found: ignore
