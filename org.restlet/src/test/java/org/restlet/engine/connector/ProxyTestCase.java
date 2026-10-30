@@ -296,6 +296,27 @@ class ProxyTestCase {
     }
 
     @Test
+    void doesNotSendProxyCredentialsToOriginServerWithoutProxy() throws Exception {
+        startHttpsServer(PROXY_AUTHORIZATION_ECHO);
+        withSystemProperties(
+                Map.of("http.proxyHost", "localhost", "http.proxyPort", proxyPort()),
+                () -> {
+                    client = newHttpsClient(false);
+                    Request request =
+                            new Request(
+                                    Method.GET,
+                                    "https://localhost:" + server.getActualPort() + "/s");
+                    request.setProxyChallengeResponse(
+                            new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+                    Response response = client.handle(request);
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                    assertEquals("none", response.getEntityAsText());
+                });
+
+        assertTrue(proxy.requestLines.isEmpty(), proxy.requestLines.toString());
+    }
+
+    @Test
     void reportsUnreachableProxy() throws Exception {
         server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
         server.start();
@@ -340,8 +361,7 @@ class ProxyTestCase {
         return newHttpsClient(true, parameters);
     }
 
-    private Client newHttpsClient(boolean proxyParameters, String... parameters)
-            throws Exception {
+    private Client newHttpsClient(boolean proxyParameters, String... parameters) throws Exception {
         Path keystore = keystore();
         Context context = new Context();
         for (int i = 0; i < parameters.length; i += 2) {
