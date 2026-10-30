@@ -135,6 +135,12 @@ Changes log
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
           enabled by default. `WebSocketClient.setClient` shares the I/O threads of a borrowed,
           started Netty HTTP `Client` instead of creating its own.
+        - Added the experimental `org.restlet.ext.graphql` extension, on graphql-java.
+          `GraphqlServerAdapter` serves a `graphql.GraphQL` instance as a Restlet, following the
+          GraphQL over HTTP draft (`application/graphql-response+json` and `application/json`);
+          operations run on the call's virtual thread. `GraphqlClientAdapter` sends operations
+          through a borrowed `Client` and returns native `ExecutionResult` values, throwing
+          `GraphqlTransportException` when no GraphQL response is received. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
@@ -192,6 +198,7 @@ Changes log
           without adding a production module dependency.
         - Pinned the Maven Deploy plugin to version 3.2.0 (avoids resolving incompatible Maven 4 beta versions).
         - Added Netty 4.2.19 (imported with the `netty-bom`). CI builds with Java 25.
+        - Added graphql-java 26.1 (GraphQL extension).
         - The `dangling-doc-comments` lint, new in Java 23, is disabled because license headers
           use Javadoc-style comments.
  
