@@ -184,7 +184,7 @@ class GraphqlWebSocketClientTestCase {
         TestSubscriber subscriber = new TestSubscriber();
         graphql.subscribe("subscription { ticks(count: -1) }", null, null).subscribe(subscriber);
         subscriber.subscription.request(1);
-        subscriber.next();
+        // The failure is signalled at once, possibly before the first buffered result.
         assertTrue(subscriber.done.await(5, TimeUnit.SECONDS));
         assertInstanceOf(GraphqlTransportException.class, subscriber.error.get());
         await(() -> TickPublisher.CANCELLED.get() > cancelled);
