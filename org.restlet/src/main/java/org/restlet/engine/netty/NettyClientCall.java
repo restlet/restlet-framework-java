@@ -163,6 +163,12 @@ class NettyClientCall {
     /** Indicates whether the response was fully received. */
     private boolean responseComplete;
 
+    /**
+     * Indicates whether the end of the response body is known: received, or announced by a zero
+     * "Content-Length" header.
+     */
+    private boolean bodyEnded;
+
     /** Indicates whether the connection can carry another exchange. */
     private boolean reusable = true;
 
@@ -373,9 +379,10 @@ class NettyClientCall {
         if (request == null || currentResponse == null) {
             return;
         }
-        currentResponse.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, cause);
         Uniform callback = request.getOnResponse();
         if (callback == null) {
+            // The status was returned to a synchronous caller and is kept: the failure reaches the
+            // response entity stream only.
             return;
         }
         if (responseCallbackLock.isHeldByCurrentThread()) {
@@ -384,8 +391,10 @@ class NettyClientCall {
         }
         responseCallbackLock.lock();
         try {
+            // Otherwise, the initial callback, not dispatched yet, reports the failure.
             if (responseCallbackDispatched && !responseFailureCallbackDispatched) {
                 responseFailureCallbackDispatched = true;
+                currentResponse.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, cause);
                 invokeResponseCallback(callback, request, currentResponse);
             }
         } finally {
@@ -941,11 +950,20 @@ class NettyClientCall {
                         : response.protocolVersion().majorVersion()
                                 + "."
                                 + response.protocolVersion().minorVersion();
-        this.body = new ChannelInputStream(channel, helper.getIdleTimeout());
+        ChannelInputStream stream = new ChannelInputStream(channel, helper.getIdleTimeout());
+        // The response is complete with its head when it announces an empty body.
+        boolean empty =
+                HttpUtil.getContentLength(response, -1L) == 0
+                        && !HttpUtil.isTransferEncodingChunked(response);
+        if (empty) {
+            stream.end();
+        }
+        this.body = stream;
 
         lock.lock();
         try {
             head = true;
+            bodyEnded = empty;
             headReceived.signalAll();
         } finally {
             lock.unlock();
@@ -983,6 +1001,7 @@ class NettyClientCall {
         lock.lock();
         try {
             responseComplete = true;
+            bodyEnded = true;
             emptyEntity = pendingEmptyEntity;
             pendingEmptyEntity = null;
         } finally {
@@ -1019,7 +1038,7 @@ class NettyClientCall {
             if (!head) {
                 failure = cause;
                 headReceived.signalAll();
-            } else if (responseFailure == null) {
+            } else if (responseFailure == null && !bodyEnded) {
                 responseFailure = cause;
                 notifyResponseFailure = true;
             }
