@@ -97,6 +97,11 @@ Changes log
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
+        - The HTTP client no longer replaces the status of a synchronous response with a
+          communication error (1001) when the connection fails after the response head, for
+          example when the client stops before the end of the body: the failure reaches the
+          entity stream only. A response with a "Content-Length: 0" header is complete with its
+          head, and the failures caused by stopping the client report "Client stopped". Issue #1601.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

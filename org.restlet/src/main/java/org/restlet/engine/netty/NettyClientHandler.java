@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.netty;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.DecoderResultProvider;
@@ -16,6 +17,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import java.io.IOException;
 
@@ -27,6 +29,10 @@ import java.io.IOException;
  * handler keeps reading as long as the response body consumer keeps up.
  */
 class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    /** Marks the connections closed because the client connector stops. */
+    static final AttributeKey<Boolean> CLIENT_STOPPED =
+            AttributeKey.valueOf(NettyClientHandler.class, "clientStopped");
 
     /** The call in progress, if any. */
     private volatile NettyClientCall call;
@@ -121,9 +127,23 @@ class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         NettyClientCall current = this.call;
         if (current != null) {
-            current.onFailure(new IOException("Connection closed by peer"));
+            current.onFailure(
+                    new IOException(
+                            isClientStopped(ctx.channel())
+                                    ? "Client stopped"
+                                    : "Connection closed by peer"));
         }
         super.channelInactive(ctx);
+    }
+
+    /** Indicates whether a channel, or its parent connection, was closed by the client's stop. */
+    private static boolean isClientStopped(Channel channel) {
+        for (Channel c = channel; c != null; c = c.parent()) {
+            if (Boolean.TRUE.equals(c.attr(CLIENT_STOPPED).get())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

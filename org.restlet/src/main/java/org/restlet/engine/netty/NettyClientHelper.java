@@ -834,6 +834,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         EventLoopGroup g = group;
         group = null;
         if (connections != null) {
+            connections.forEach(c -> c.attr(NettyClientHandler.CLIENT_STOPPED).set(Boolean.TRUE));
             connections.close().awaitUninterruptibly(5, TimeUnit.SECONDS);
         }
         pools.clear();
