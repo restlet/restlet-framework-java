@@ -36,11 +36,14 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.header.HeaderConstants;
 
 /** Tests the SOCKS5 proxy support of the client connector, for HTTP and HTTPS requests. */
 class SocksProxyTestCase {
@@ -79,10 +82,17 @@ class SocksProxyTestCase {
             new Restlet() {
                 @Override
                 public void handle(Request request, Response response) {
+                    String proxyAuthorization =
+                            request.getHeaders()
+                                    .getFirstValue(
+                                            HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
                     response.setEntity(
                             request.getResourceRef().getScheme()
                                     + " "
-                                    + request.getResourceRef().getPath(),
+                                    + request.getResourceRef().getPath()
+                                    + ((proxyAuthorization == null)
+                                            ? ""
+                                            : " " + proxyAuthorization),
                             MediaType.TEXT_PLAIN);
                 }
             };
@@ -130,6 +140,57 @@ class SocksProxyTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("https /s", response.getEntityAsText());
         assertEquals(List.of("localhost:" + server.getActualPort()), proxy.targets);
+    }
+
+    @Test
+    void doesNotSendProxyCredentialsToOriginServer() throws Exception {
+        Path keystore = keystore();
+        startHttpsServer(keystore);
+        Context context = socksContext();
+        addTrustStore(context, keystore);
+        client = new Client(context, List.of(Protocol.HTTP, Protocol.HTTPS));
+        client.start();
+        Server httpServer = new Server(new Context(), Protocol.HTTP, 0, ECHO);
+        httpServer.start();
+
+        try {
+            for (String uri :
+                    List.of(
+                            "http://localhost:" + httpServer.getActualPort() + "/p",
+                            "https://localhost:" + server.getActualPort() + "/p")) {
+                Request request = new Request(Method.GET, uri);
+                ChallengeResponse credentials =
+                        new ChallengeResponse(new ChallengeScheme("HTTP_BEARER", "Bearer"));
+                credentials.setRawValue("token");
+                request.setProxyChallengeResponse(credentials);
+                Response response = client.handle(request);
+                assertEquals(Status.SUCCESS_OK, response.getStatus());
+                // No "Proxy-Authorization" header echoed.
+                assertEquals(
+                        uri.substring(0, uri.indexOf(':')) + " /p", response.getEntityAsText());
+            }
+        } finally {
+            httpServer.stop();
+        }
+        assertEquals(2, proxy.targets.size());
+    }
+
+    @Test
+    void ignoresEmptySocksProxyHost() throws Exception {
+        server = new Server(new Context(), Protocol.HTTP, 0, ECHO);
+        server.start();
+
+        Context context = socksContext();
+        context.getParameters().set("socksProxyHost", "");
+        client = new Client(context, Protocol.HTTP);
+        client.start();
+
+        Response response =
+                client.handle(
+                        new Request(
+                                Method.GET, "http://localhost:" + server.getActualPort() + "/e"));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertTrue(proxy.targets.isEmpty(), proxy.targets.toString());
     }
 
     @Test

@@ -1214,7 +1214,7 @@ public abstract class NettyClientHelper extends ClientHelper {
      */
     InetSocketAddress getSocksProxy(String targetHost) {
         String host = getSocksProxyHost();
-        return ((host == null) || isNonProxyHost(targetHost))
+        return ((host == null) || host.isEmpty() || isNonProxyHost(targetHost))
                 ? null
                 : InetSocketAddress.createUnresolved(host, getSocksProxyPort());
     }

@@ -331,7 +331,7 @@ class NettyClientCall {
         if (isTunneled()) {
             moveTunnelProxyAuthorization(request);
         } else if (!isForwardProxied()) {
-            // Direct connection: the proxy credentials must not reach the origin server.
+            // Direct or SOCKS connection: the proxy credentials must not reach the origin server.
             requestHeaders.removeAll(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
         }
 
