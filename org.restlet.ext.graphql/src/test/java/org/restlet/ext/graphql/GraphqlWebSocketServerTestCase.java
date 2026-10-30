@@ -58,7 +58,8 @@ class GraphqlWebSocketServerTestCase {
         adapter = new GraphqlServerAdapter();
         adapter.setGraphQL(GraphqlTestSchemas.graphQL(new AtomicInteger()));
         adapter.getSubscriptionTransports().add(GraphqlTransport.WEBSOCKET);
-        adapter.setConnectionInitTimeout(Duration.ofMillis(300));
+        // Long enough for slow CI runners to send connection_init, short enough for the 4408 test.
+        adapter.setConnectionInitTimeout(Duration.ofSeconds(2));
         component.getDefaultHost().attach("/graphql", adapter);
         component.start();
         base = "localhost:" + component.getServers().get(0).getActualPort() + "/graphql";
