@@ -170,6 +170,8 @@ Changes log
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
+        - `MultiPartRepresentation.setBoundary` kept only the boundary parameter when replacing an
+          existing boundary, dropping the media type's other parameters. Issue #1600.
         - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
           a login. Issue #554.
