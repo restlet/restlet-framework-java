@@ -142,6 +142,20 @@ public class Client extends Connector {
         return getHelper() != null;
     }
 
+    /**
+     * Sets the context, and stores the helper in its "org.restlet.engine.helper" attribute.
+     *
+     * @param context The context.
+     */
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+
+        if (context != null && getHelper() != null) {
+            context.getAttributes().put("org.restlet.engine.helper", getHelper());
+        }
+    }
+
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
