@@ -123,6 +123,19 @@ class TemplateTestCase {
     }
 
     @Test
+    void testStartsWithSegmentBacktracksToAnEarlierBoundary() {
+        Template template = new Template("/files/{name}.json", Template.MODE_STARTS_WITH_SEGMENT);
+        template.getVariables().put("name", new Variable(Variable.TYPE_URI_SEGMENT));
+        String uri = "/files/a.json;b.jsonx/tools";
+
+        assertEquals(13, template.match(uri));
+        Map<String, Object> variables = new HashMap<>();
+        assertEquals(13, template.parse(uri, variables));
+        assertEquals("a", variables.get("name"));
+        assertEquals(-1, template.match("/files/a.jsonx"));
+    }
+
+    @Test
     void testStartsWithKeepsCharacterMatching() {
         assertEquals(4, new Template("/mcp", Template.MODE_STARTS_WITH).match("/mcpx"));
     }
