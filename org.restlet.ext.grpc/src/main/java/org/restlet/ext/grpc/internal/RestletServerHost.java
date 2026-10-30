@@ -180,6 +180,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         private int queued;
         private boolean terminal;
 
+        /** Whether the end of the call was reported to the SDK; confined to {@link #serial}. */
+        private boolean reported;
+
         private Call(Request request, Response response) {
             this.request = request;
             this.response = response;
@@ -201,10 +204,15 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                 path = "/" + path;
             }
             String method = path.substring(1);
-            response.setOnSent((sentRequest, sentResponse) -> serial.execute(() -> finish(null)));
+            response.setOnSent(
+                    (sentRequest, sentResponse) -> {
+                        if (claim()) {
+                            serial.execute(() -> finish(null));
+                        }
+                    });
             serial.execute(
                     () -> {
-                        if (finished.get()) {
+                        if (reported) {
                             return;
                         }
                         Attributes attributes = transportListener.transportReady(Attributes.EMPTY);
@@ -244,7 +252,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             } else {
                 serial.execute(
                         () -> {
-                            if (!finished.get()) {
+                            if (!reported) {
                                 stream.state.inboundDataReceived(ReadableBuffers.wrap(bytes), true);
                             }
                         });
@@ -299,12 +307,12 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         }
 
         private void cancel(Status status) {
+            if (!claim()) {
+                return;
+            }
             serial.execute(
                     () -> {
                         synchronized (queue) {
-                            if (finished.get()) {
-                                return;
-                            }
                             queue.clear();
                             queued = 0;
                             terminal = true;
@@ -320,24 +328,38 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                     });
         }
 
+        /**
+         * Claims the end of the call and frees its slot at once, in the thread that ends it.
+         * Another thread may be draining {@link #serial}, so a slot released by {@link #finish}
+         * could still be held when the client sends its next call.
+         *
+         * @return True if this is the first claim.
+         */
+        private boolean claim() {
+            if (!finished.compareAndSet(false, true)) {
+                return false;
+            }
+            calls.remove(this);
+            admission.release();
+            return true;
+        }
+
+        /** Reports the end of a claimed call to the SDK, in {@link #serial}. */
         private void finish(Status failure) {
-            if (finished.compareAndSet(false, true)) {
-                if (deadline != null) {
-                    deadline.cancel(false);
-                }
-                try {
-                    if (stream != null) {
-                        if (failure == null) {
-                            stream.state.complete();
-                        } else {
-                            stream.state.transportReportStatus(failure);
-                        }
+            reported = true;
+            if (deadline != null) {
+                deadline.cancel(false);
+            }
+            try {
+                if (stream != null) {
+                    if (failure == null) {
+                        stream.state.complete();
+                    } else {
+                        stream.state.transportReportStatus(failure);
                     }
-                } finally {
-                    calls.remove(this);
-                    admission.release();
-                    transportListener.transportTerminated();
                 }
+            } finally {
+                transportListener.transportTerminated();
             }
         }
 
