@@ -107,11 +107,14 @@ public class Client extends Connector {
     }
 
     /**
-     * Returns the helper provided by the implementation.
+     * Returns the helper provided by the implementation. This is an engine extension point, meant
+     * for Restlet extensions that share the connector's resources, such as its I/O threads. It
+     * doesn't depend on the client having a context.
      *
-     * @return The helper provided by the implementation.
+     * @return The helper provided by the implementation, or null if no connector supports the
+     *     protocols.
      */
-    private RestletHelper<Client> getHelper() {
+    public RestletHelper<Client> getHelper() {
         return this.helper;
     }
 
