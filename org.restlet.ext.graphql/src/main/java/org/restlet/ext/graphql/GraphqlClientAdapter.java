@@ -9,14 +9,25 @@
 package org.restlet.ext.graphql;
 
 import graphql.ExecutionResult;
+import graphql.GraphQLError;
+import graphql.ParseAndValidate;
 import graphql.language.AstPrinter;
 import graphql.language.Document;
+import graphql.parser.InvalidSyntaxException;
+import graphql.parser.Parser;
+import graphql.parser.ParserEnvironment;
+import graphql.parser.ParserOptions;
+import graphql.schema.GraphQLSchema;
+import graphql.validation.ValidationError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -38,19 +49,29 @@ import org.restlet.representation.StringRepresentation;
  * GraphqlClientAdapter graphql = new GraphqlClientAdapter(getContext());
  * graphql.setClient(restletClient);
  * graphql.setEndpoint("https://example.com/graphql");
+ * graphql.setSchema(schema); // optional: validate before sending
  * graphql.start();
  * ExecutionResult result = graphql.execute(document, "GetIssue", variables);
  * </pre>
  *
- * <p>The adapter never starts or stops the borrowed client. Its configuration can't change once
- * started. Errors reported by the server are returned in the {@link ExecutionResult}; failures to
- * obtain a GraphQL response throw a {@link GraphqlTransportException}.
+ * <p>Operations are sent with {@code POST}, accepting {@code application/graphql-response+json} and
+ * {@code application/json}. Variables are serialized as JSON values, never templated as text.
+ *
+ * <p>Errors reported by the server, including request errors sent with a {@code 4xx} status and a
+ * GraphQL body, are returned in the {@link ExecutionResult}: without data when execution didn't
+ * start. Failures to obtain a GraphQL response throw a {@link GraphqlTransportException}:
+ * connection failures and timeouts, responses larger than {@link #getMaxResponseBytes()}, and
+ * responses that are not GraphQL, such as an HTML error page or an empty {@code 401}.
+ *
+ * <p>The adapter never starts or stops the borrowed client, and never fetches a schema. Its
+ * configuration can't change once started.
  */
 public class GraphqlClientAdapter {
 
-    private static final int EXCERPT_BYTES = 1024;
+    /** The default maximum size of a response body: 10 MiB. */
+    public static final long DEFAULT_MAX_RESPONSE_BYTES = 10L << 20;
 
-    private static final long MAX_RESPONSE_BYTES = 10L << 20;
+    private static final int EXCERPT_BYTES = 1024;
 
     private enum State {
         NEW,
@@ -63,6 +84,14 @@ public class GraphqlClientAdapter {
     private volatile Client client;
 
     private volatile String endpoint;
+
+    private volatile GraphQLSchema schema;
+
+    private volatile ParserOptions parserOptions;
+
+    private volatile long maxResponseBytes = DEFAULT_MAX_RESPONSE_BYTES;
+
+    private volatile Consumer<Request> requestCustomizer;
 
     private volatile State state = State.NEW;
 
@@ -99,7 +128,8 @@ public class GraphqlClientAdapter {
     }
 
     /**
-     * Sets the borrowed client. The adapter never starts or stops it.
+     * Sets the borrowed client. The adapter never starts or stops it. Its authentication, proxy and
+     * timeout settings apply to every operation.
      *
      * @param client The borrowed client.
      */
@@ -128,6 +158,92 @@ public class GraphqlClientAdapter {
     }
 
     /**
+     * Returns the schema used to validate documents before sending them.
+     *
+     * @return The schema, or null.
+     */
+    public GraphQLSchema getSchema() {
+        return schema;
+    }
+
+    /**
+     * Sets a schema used to validate documents before sending them. Invalid documents are returned
+     * as an {@link ExecutionResult} with errors, without a network call. The schema can be built
+     * without data fetchers, for example from SDL with {@code UnExecutableSchemaGenerator}. The
+     * adapter never fetches a schema by itself.
+     *
+     * @param schema The schema, or null to send documents unchecked.
+     */
+    public void setSchema(GraphQLSchema schema) {
+        checkNew();
+        this.schema = schema;
+    }
+
+    /**
+     * Returns the parser options used to validate documents locally.
+     *
+     * @return The parser options, or null for graphql-java's default operation parser options.
+     */
+    public ParserOptions getParserOptions() {
+        return parserOptions;
+    }
+
+    /**
+     * Sets the parser options used to validate documents locally, when a schema is set.
+     *
+     * @param parserOptions The parser options, or null for graphql-java's default operation parser
+     *     options, read when the adapter starts.
+     */
+    public void setParserOptions(ParserOptions parserOptions) {
+        checkNew();
+        this.parserOptions = parserOptions;
+    }
+
+    /**
+     * Returns the maximum size of a response body.
+     *
+     * @return The maximum size of a response body, in bytes.
+     */
+    public long getMaxResponseBytes() {
+        return maxResponseBytes;
+    }
+
+    /**
+     * Sets the maximum size of a response body. Larger responses throw a {@link
+     * GraphqlTransportException}; they are never truncated. Defaults to {@link
+     * #DEFAULT_MAX_RESPONSE_BYTES}.
+     *
+     * @param maxResponseBytes The maximum size of a response body, in bytes.
+     */
+    public void setMaxResponseBytes(long maxResponseBytes) {
+        checkNew();
+        if (maxResponseBytes <= 0) {
+            throw new IllegalArgumentException("The maximum response size must be positive");
+        }
+        this.maxResponseBytes = maxResponseBytes;
+    }
+
+    /**
+     * Returns the request customizer.
+     *
+     * @return The request customizer, or null.
+     */
+    public Consumer<Request> getRequestCustomizer() {
+        return requestCustomizer;
+    }
+
+    /**
+     * Sets a customizer called on each HTTP request before it is sent, for example to add an API
+     * key header or a {@code ChallengeResponse}.
+     *
+     * @param requestCustomizer The request customizer, or null.
+     */
+    public void setRequestCustomizer(Consumer<Request> requestCustomizer) {
+        checkNew();
+        this.requestCustomizer = requestCustomizer;
+    }
+
+    /**
      * Validates and freezes the configuration.
      *
      * @throws IllegalStateException If the client or the endpoint is missing, or if the adapter was
@@ -140,6 +256,9 @@ public class GraphqlClientAdapter {
         }
         if (endpoint == null) {
             throw new IllegalStateException("No endpoint set");
+        }
+        if (parserOptions == null) {
+            parserOptions = ParserOptions.getDefaultOperationParserOptions();
         }
         state = State.STARTED;
     }
@@ -170,7 +289,12 @@ public class GraphqlClientAdapter {
     public ExecutionResult execute(
             Document document, String operationName, Map<String, Object> variables)
             throws GraphqlTransportException {
-        return execute(AstPrinter.printAst(document), operationName, variables);
+        Objects.requireNonNull(document, "document");
+        checkStarted();
+        ExecutionResult invalid = validate(document);
+        return invalid != null
+                ? invalid
+                : send(AstPrinter.printAst(document), operationName, variables);
     }
 
     /**
@@ -186,10 +310,52 @@ public class GraphqlClientAdapter {
             String document, String operationName, Map<String, Object> variables)
             throws GraphqlTransportException {
         Objects.requireNonNull(document, "document");
-        if (state != State.STARTED) {
-            throw new IllegalStateException("The adapter is not started");
+        checkStarted();
+        if (schema != null) {
+            ExecutionResult invalid;
+            try {
+                invalid = validate(parse(document));
+            } catch (InvalidSyntaxException e) {
+                invalid = failure(List.of(e.toInvalidSyntaxError()));
+            }
+            if (invalid != null) {
+                return invalid;
+            }
         }
+        return send(document, operationName, variables);
+    }
 
+    private Document parse(String document) {
+        return Parser.parse(
+                ParserEnvironment.newParserEnvironment()
+                        .document(document)
+                        .parserOptions(parserOptions)
+                        .build());
+    }
+
+    /** Returns a result with the validation errors, or null if the document is valid. */
+    private ExecutionResult validate(Document document) {
+        GraphQLSchema validationSchema = schema;
+        if (validationSchema == null) {
+            return null;
+        }
+        List<ValidationError> errors = ParseAndValidate.validate(validationSchema, document);
+        return errors.isEmpty() ? null : failure(new ArrayList<GraphQLError>(errors));
+    }
+
+    private static ExecutionResult failure(List<GraphQLError> errors) {
+        return ExecutionResult.newExecutionResult().errors(errors).build();
+    }
+
+    /**
+     * Creates the HTTP request of an operation.
+     *
+     * @param document The document.
+     * @param operationName The name of the operation to execute, or null.
+     * @param variables The variables, or null.
+     * @return The request, customized.
+     */
+    Request createRequest(String document, String operationName, Map<String, Object> variables) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("query", document);
         if (operationName != null) {
@@ -206,6 +372,17 @@ public class GraphqlClientAdapter {
                         MediaType.APPLICATION_JSON,
                         null,
                         CharacterSet.UTF_8));
+        Consumer<Request> customizer = requestCustomizer;
+        if (customizer != null) {
+            customizer.accept(request);
+        }
+        return request;
+    }
+
+    private ExecutionResult send(
+            String document, String operationName, Map<String, Object> variables)
+            throws GraphqlTransportException {
+        Request request = createRequest(document, operationName, variables);
         request.getClientInfo()
                 .getAcceptedMediaTypes()
                 .add(new Preference<>(GraphqlMediaTypes.GRAPHQL_RESPONSE_JSON, 1F));
@@ -224,7 +401,7 @@ public class GraphqlClientAdapter {
         }
     }
 
-    private static ExecutionResult toResult(Response response) throws GraphqlTransportException {
+    private ExecutionResult toResult(Response response) throws GraphqlTransportException {
         Status status = response.getStatus();
         if (status.isConnectorError()) {
             throw new GraphqlTransportException(
@@ -235,27 +412,21 @@ public class GraphqlClientAdapter {
         }
 
         Representation entity = response.getEntity();
+        long limit = maxResponseBytes;
+        if (entity != null && entity.getSize() > limit) {
+            throw tooLarge(status, limit, null);
+        }
         byte[] bytes;
         try (InputStream in = stream(entity)) {
-            bytes = GraphqlJson.readBytes(in, MAX_RESPONSE_BYTES);
+            bytes = GraphqlJson.readBytes(in, limit);
         } catch (GraphqlJson.TooLargeException e) {
-            throw new GraphqlTransportException(
-                    "The GraphQL response exceeds " + MAX_RESPONSE_BYTES + " bytes",
-                    status,
-                    null,
-                    e);
+            throw tooLarge(status, limit, e);
         } catch (IOException e) {
             throw new GraphqlTransportException(
                     "Unable to read the GraphQL response", status, null, e);
         }
 
-        boolean json =
-                entity != null
-                        && entity.getMediaType() != null
-                        && (entity.getMediaType()
-                                        .equals(GraphqlMediaTypes.GRAPHQL_RESPONSE_JSON, true)
-                                || entity.getMediaType().equals(MediaType.APPLICATION_JSON, true));
-        if (json && (status.isSuccess() || status.isClientError())) {
+        if (isJson(entity) && (status.isSuccess() || status.isClientError())) {
             Map<String, Object> result = null;
             try {
                 result = GraphqlJson.asObject(GraphqlJson.parse(bytes));
@@ -286,6 +457,18 @@ public class GraphqlClientAdapter {
         return in == null ? InputStream.nullInputStream() : in;
     }
 
+    private static boolean isJson(Representation entity) {
+        MediaType type = entity == null ? null : entity.getMediaType();
+        return type != null
+                && (type.equals(GraphqlMediaTypes.GRAPHQL_RESPONSE_JSON, true)
+                        || type.equals(MediaType.APPLICATION_JSON, true));
+    }
+
+    private static GraphqlTransportException tooLarge(Status status, long limit, Throwable cause) {
+        return new GraphqlTransportException(
+                "The GraphQL response exceeds " + limit + " bytes", status, null, cause);
+    }
+
     private static String excerpt(byte[] bytes) {
         if (bytes.length == 0) {
             return null;
@@ -296,6 +479,12 @@ public class GraphqlClientAdapter {
     private void checkNew() {
         if (state != State.NEW) {
             throw new IllegalStateException("The configuration can't change once started");
+        }
+    }
+
+    private void checkStarted() {
+        if (state != State.STARTED) {
+            throw new IllegalStateException("The adapter is not started");
         }
     }
 }
