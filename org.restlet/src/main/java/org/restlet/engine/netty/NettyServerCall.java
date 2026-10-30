@@ -301,6 +301,12 @@ class NettyServerCall {
     /** The request target, "/" when empty. */
     String getRequestUri() {
         String uri = request.uri();
+        if (uri == null || uri.isEmpty() || "/".equals(uri)) {
+            String path = request.headers().get(":path");
+            if (path != null && !path.isEmpty()) {
+                uri = path;
+            }
+        }
         return (uri == null || uri.isEmpty()) ? "/" : uri;
     }
 
@@ -326,6 +332,15 @@ class NettyServerCall {
     /** The exact protocol (HTTP or HTTPS). */
     Protocol getProtocol() {
         return confidential ? Protocol.HTTPS : Protocol.HTTP;
+    }
+
+    /** The protocol version as reported to the application (for example "1.1" or "2.0"). */
+    String getVersion() {
+        String version = kind.version();
+        int slash = version.lastIndexOf('/');
+        return (slash >= 0 && slash + 1 < version.length())
+                ? version.substring(slash + 1)
+                : version;
     }
 
     /** The remote address, or null. */

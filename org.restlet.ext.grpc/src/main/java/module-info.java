@@ -12,6 +12,8 @@ module org.restlet.ext.grpc {
     requires transitive io.grpc;
     requires io.grpc.internal;
     requires com.google.common;
+    // Guava is automatic and does not resolve this explicit module itself.
+    requires com.google.common.util.concurrent.internal;
 
     exports org.restlet.ext.grpc;
 }

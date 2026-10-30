@@ -95,6 +95,15 @@ Changes log
           bounded messages/calls, one-shot SSE responses, and request cancellation. Sessions,
           listening GET streams, replay and Ikanos revision compatibility are not supported.
           Borrowed HTTP connectors are not stopped by the MCP client.
+        - Added experimental SDK-native gRPC unary and bounded server-streaming hosting on a
+          borrowed Restlet/Netty HTTP/2 listener. Generated and dynamic services can share the
+          listener with REST routes. grpc-java owns service dispatch, framing and status semantics;
+          Restlet owns HTTP I/O and finite message, queue, concurrency and call-duration budgets.
+          Cancellation and response completion terminate each logical transport exactly once;
+          admission remains held until response transmission or cancellation. Adapter shutdown
+          leaves the borrowed listener and supplied callback executor running and reports timeout
+          explicitly. Client-streaming, bidirectional streaming, TLS configuration and physical
+          gRPC connection controls are not supported by the server adapter.
         - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
           connector, with explicit plaintext opt-in, bounded messages and call admission.
           Regression tests cover authority mapping, cancellation before and after headers,

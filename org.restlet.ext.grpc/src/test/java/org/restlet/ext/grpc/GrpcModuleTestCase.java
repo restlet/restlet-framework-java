@@ -24,7 +24,7 @@ import org.restlet.Client;
 
 class GrpcModuleTestCase {
     @Test
-    void nativeChannelResolvesWithoutSdkNetworkTransportOrInternalExports(@TempDir Path temp)
+    void nativeAdaptersResolveWithoutSdkNetworkTransportOrInternalExports(@TempDir Path temp)
             throws Exception {
         String classPath =
                 System.getProperty(
@@ -79,12 +79,61 @@ class GrpcModuleTestCase {
                 import org.restlet.Context;
                 import org.restlet.data.Protocol;
                 import org.restlet.ext.grpc.GrpcClientAdapter;
+                import org.restlet.ext.grpc.GrpcServerAdapter;
+                import org.restlet.routing.Router;
+                import io.grpc.CallOptions;
+                import io.grpc.ClientCall;
+                import io.grpc.Metadata;
+                import io.grpc.MethodDescriptor;
+                import io.grpc.ServerCall;
+                import io.grpc.ServerServiceDefinition;
+                import io.grpc.Status;
                 public final class Main {
                     public static void main(String[] args) throws Exception {
                         try {
                             Class.forName("io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder");
                             throw new AssertionError("SDK network transport is present");
                         } catch (ClassNotFoundException expected) { }
+                        var marshaller = new MethodDescriptor.Marshaller<String>() {
+                            public java.io.InputStream stream(String value) {
+                                return new java.io.ByteArrayInputStream(
+                                    value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                            }
+                            public String parse(java.io.InputStream input) {
+                                try {
+                                    return new String(input.readAllBytes(),
+                                        java.nio.charset.StandardCharsets.UTF_8);
+                                } catch (java.io.IOException e) {
+                                    throw new java.io.UncheckedIOException(e);
+                                }
+                            }
+                        };
+                        var method = MethodDescriptor.<String, String>newBuilder()
+                            .setType(MethodDescriptor.MethodType.UNARY)
+                            .setFullMethodName("consumer.Echo/Call")
+                            .setRequestMarshaller(marshaller)
+                            .setResponseMarshaller(marshaller).build();
+                        var server = new GrpcServerAdapter();
+                        server.getServices().add(ServerServiceDefinition.builder("consumer.Echo")
+                            .addMethod(method, (call, headers) -> {
+                                call.request(1);
+                                return new ServerCall.Listener<String>() {
+                                    private String message;
+                                    public void onMessage(String value) { message = value; }
+                                    public void onHalfClose() {
+                                        call.sendHeaders(new Metadata());
+                                        call.sendMessage(message);
+                                        call.close(Status.OK, new Metadata());
+                                    }
+                                };
+                            }).build());
+                        server.start();
+                        var router = new Router();
+                        server.attachTo(router);
+                        var serverContext = new Context();
+                        serverContext.getParameters().set("http.transport.protocol", "HTTP2");
+                        var http = new org.restlet.Server(serverContext, Protocol.HTTP, 0, router);
+                        http.start();
                         var context = new Context();
                         context.getParameters().set("httpClientTransportMode", "HTTP2");
                         context.getParameters().set("followRedirects", "false");
@@ -93,12 +142,44 @@ class GrpcModuleTestCase {
                         try (var adapter = new GrpcClientAdapter()) {
                             adapter.setClient(client);
                             adapter.setPlaintext(true);
-                            adapter.setTarget("dns:///localhost:12345");
+                            String authority = "localhost:" + http.getActualPort();
+                            adapter.setTarget("dns:///" + authority);
                             adapter.start();
-                            if (!adapter.getChannel().authority().equals("localhost:12345")) {
+                            if (!adapter.getChannel().authority().equals(authority)) {
                                 throw new AssertionError("Native authority was lost");
                             }
-                        } finally { client.stop(); }
+                            var done = new java.util.concurrent.CountDownLatch(1);
+                            var reply = new java.util.concurrent.atomic.AtomicReference<String>();
+                            var result = new java.util.concurrent.atomic.AtomicReference<Status>();
+                            var call = adapter.getChannel().newCall(method,
+                                CallOptions.DEFAULT.withDeadlineAfter(10,
+                                    java.util.concurrent.TimeUnit.SECONDS));
+                            call.start(new ClientCall.Listener<String>() {
+                                public void onMessage(String value) { reply.set(value); }
+                                public void onClose(Status status, Metadata trailers) {
+                                    result.set(status);
+                                    done.countDown();
+                                }
+                            }, new Metadata());
+                            call.request(1);
+                            call.sendMessage("packaged echo");
+                            call.halfClose();
+                            if (!done.await(15, java.util.concurrent.TimeUnit.SECONDS)
+                                    || result.get() == null || !result.get().isOk()
+                                    || !"packaged echo".equals(reply.get())) {
+                                throw new AssertionError("Native round trip failed: " + result.get());
+                            }
+                            server.stop();
+                            if (!http.isStarted()) {
+                                throw new AssertionError("Borrowed listener was stopped");
+                            }
+                        } finally {
+                            try { server.stop(); }
+                            finally {
+                                try { client.stop(); }
+                                finally { http.stop(); }
+                            }
+                        }
                     }
                 }
                 """);
