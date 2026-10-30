@@ -26,5 +26,12 @@ public final class RestletGraphql {
      */
     public static final String CLIENT_INFO = "org.restlet.ext.graphql.clientInfo";
 
+    /**
+     * Key of the payload of the {@code connection_init} message of a {@code graphql-transport-ws}
+     * connection, a {@code Map<String, Object>}, absent if the client sent none.
+     */
+    public static final String CONNECTION_INIT_PAYLOAD =
+            "org.restlet.ext.graphql.connectionInitPayload";
+
     private RestletGraphql() {}
 }
