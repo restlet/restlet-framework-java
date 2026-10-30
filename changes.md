@@ -131,6 +131,9 @@ Changes log
           `MediaType.MULTIPART_MIXED` constant. Issue #1587.
         - `EventStreamRepresentation` sends the response head before the first event, so that
           clients get the status and headers of an idle stream without heartbeats. Issue #1598.
+        - `EventStreamReader` limits the size of an event, 1 Mi characters by default
+          (`setMaxEventSize`). A larger line or event fails the read and closes the reader. Issue
+          #1597.
         - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
