@@ -30,10 +30,45 @@
 			<version>${lib-jackson3-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.websocket</artifactId>
+			<version>${project.version}</version>
+			<!-- Only needed for GraphqlTransport.WEBSOCKET -->
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>${lib-junit-version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>m2e-test-modules</id>
+			<activation>
+				<property><name>m2e.version</name></property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>default-testCompile</id>
+								<configuration>
+									<!-- Keep the JDK HTTP client and server test-only in m2e/JDT;
+									     Maven already compiles tests on the classpath. -->
+									<compilerArgs combine.children="append">
+										<arg>--add-reads</arg>
+										<arg>org.restlet.ext.graphql=java.net.http,jdk.httpserver</arg>
+									</compilerArgs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

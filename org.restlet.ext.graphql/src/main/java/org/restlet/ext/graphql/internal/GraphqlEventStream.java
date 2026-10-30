@@ -12,17 +12,13 @@ import graphql.ExecutionResult;
 import graphql.GraphqlErrorBuilder;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.restlet.data.ServerSentEvent;
 import org.restlet.representation.EventStreamRepresentation.EventSink;
 import org.restlet.representation.EventStreamRepresentation.EventWriter;
@@ -53,7 +49,7 @@ public final class GraphqlEventStream implements EventWriter {
 
     private final BooleanSupplier endpointStopped;
 
-    private volatile QueueingSubscriber subscriber;
+    private volatile GraphqlResultQueue subscriber;
 
     private volatile boolean stopped;
 
@@ -139,9 +135,9 @@ public final class GraphqlEventStream implements EventWriter {
      */
     public void stop() {
         stopped = true;
-        QueueingSubscriber current = subscriber;
+        GraphqlResultQueue current = subscriber;
         if (current != null) {
-            current.fail(new Failure("The GraphQL endpoint is stopping", null));
+            current.fail(new GraphqlResultQueue.Failure("The GraphQL endpoint is stopping", null));
         }
     }
 
@@ -159,7 +155,7 @@ public final class GraphqlEventStream implements EventWriter {
             sink.send(COMPLETE);
             return;
         }
-        QueueingSubscriber subscriber = new QueueingSubscriber(maxQueuedBytes);
+        GraphqlResultQueue subscriber = new GraphqlResultQueue(maxQueuedBytes);
         this.subscriber = subscriber;
         openStreams.add(this);
         try {
@@ -167,16 +163,17 @@ public final class GraphqlEventStream implements EventWriter {
             sink.send(OPEN);
             // Registered before checking, so that a concurrent stop of the adapter sees it.
             if (stopped || endpointStopped.getAsBoolean()) {
-                subscriber.fail(new Failure("The GraphQL endpoint is stopping", null));
+                subscriber.fail(
+                        new GraphqlResultQueue.Failure("The GraphQL endpoint is stopping", null));
             } else {
                 publisher.subscribe(subscriber);
             }
             while (true) {
-                Object signal = subscriber.take();
-                if (signal instanceof Next next) {
+                GraphqlResultQueue.Signal signal = subscriber.take();
+                if (signal instanceof GraphqlResultQueue.Next next) {
                     sink.send(next(next.json()));
                     subscriber.request();
-                } else if (signal instanceof Failure failure) {
+                } else if (signal instanceof GraphqlResultQueue.Failure failure) {
                     if (failure.cause() != null) {
                         logger.log(Level.WARNING, "GraphQL subscription failed", failure.cause());
                     }
@@ -196,113 +193,6 @@ public final class GraphqlEventStream implements EventWriter {
             subscriber.cancel();
             openStreams.remove(this);
             activeSubscriptions.decrementAndGet();
-        }
-    }
-
-    /** A serialized result and its size in bytes. */
-    private record Next(String json, long size) {}
-
-    /** A terminal failure of the stream. */
-    private record Failure(String message, Throwable cause) {}
-
-    /** The completion of the stream. */
-    private static final Object COMPLETED = new Object();
-
-    /** Queues the serialized results of a subscription for the writer thread. */
-    private static final class QueueingSubscriber implements Subscriber<ExecutionResult> {
-
-        private final LinkedBlockingQueue<Object> signals = new LinkedBlockingQueue<>();
-
-        private final long maxQueuedBytes;
-
-        private long queuedBytes;
-
-        private volatile Subscription subscription;
-
-        private volatile boolean cancelled;
-
-        private boolean terminated;
-
-        QueueingSubscriber(long maxQueuedBytes) {
-            this.maxQueuedBytes = maxQueuedBytes;
-        }
-
-        @Override
-        public void onSubscribe(Subscription subscription) {
-            this.subscription = subscription;
-            if (cancelled) {
-                subscription.cancel();
-            } else {
-                subscription.request(1);
-            }
-        }
-
-        @Override
-        public void onNext(ExecutionResult item) {
-            String json = GraphqlJson.writeString(item.toSpecification());
-            long size = json.getBytes(StandardCharsets.UTF_8).length;
-            synchronized (this) {
-                if (terminated) {
-                    return;
-                }
-                queuedBytes += size;
-                if (queuedBytes > maxQueuedBytes) {
-                    terminated = true;
-                    signals.add(
-                            new Failure("The subscription exceeded its queued bytes limit", null));
-                    cancel();
-                    return;
-                }
-                signals.add(new Next(json, size));
-            }
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            terminate(new Failure("The subscription failed", throwable));
-        }
-
-        @Override
-        public void onComplete() {
-            terminate(COMPLETED);
-        }
-
-        /** Ends the stream with a failure and cancels the subscription. */
-        void fail(Failure failure) {
-            terminate(failure);
-            cancel();
-        }
-
-        private synchronized void terminate(Object signal) {
-            if (!terminated) {
-                terminated = true;
-                signals.add(signal);
-            }
-        }
-
-        Object take() throws InterruptedException {
-            Object signal = signals.take();
-            if (signal instanceof Next next) {
-                synchronized (this) {
-                    queuedBytes -= next.size();
-                }
-            }
-            return signal;
-        }
-
-        void request() {
-            Subscription current = subscription;
-            if (current != null && !cancelled) {
-                current.request(1);
-            }
-        }
-
-        void cancel() {
-            cancelled = true;
-            Subscription current = subscription;
-            if (current != null) {
-                current.cancel();
-            }
         }
     }
 }

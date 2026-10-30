@@ -83,6 +83,12 @@ import org.restlet.representation.Representation;
  * {@code complete} event. A client disconnect, detected on write or by heartbeats, cancels the
  * subscription, and stopping the adapter ends its open streams.
  *
+ * <p>With {@link GraphqlTransport#WEBSOCKET}, the adapter also accepts WebSocket upgrades offering
+ * the {@code graphql-transport-ws} subprotocol on its own path, on HTTP/1.1 connections. The
+ * upgrade request goes through the same filters and authenticators, and the payload of the {@code
+ * connection_init} message is available under {@link RestletGraphql#CONNECTION_INIT_PAYLOAD}.
+ * Subscriptions share the limits of SSE ones; stopping the adapter closes the connections.
+ *
  * <p>Operations run on the thread of the call, a virtual thread by default. Asynchronous data
  * fetchers are joined on that thread. The {@code graphql.GraphQLContext} of each operation holds
  * the Restlet request under {@link RestletGraphql#REQUEST} and its client info under {@link
@@ -103,6 +109,9 @@ public class GraphqlServerAdapter extends Restlet {
 
     /** The default maximum number of bytes queued for a subscription: 1 MiB. */
     public static final long DEFAULT_MAX_QUEUED_BYTES = 1L << 20;
+
+    /** The default time allowed to WebSocket clients to initialize their connection: 3 seconds. */
+    public static final Duration DEFAULT_CONNECTION_INIT_TIMEOUT = Duration.ofSeconds(3);
 
     /** The default interval of event stream heartbeats: 15 seconds. */
     public static final Duration DEFAULT_HEARTBEAT_INTERVAL = Duration.ofSeconds(15);
@@ -129,6 +138,10 @@ public class GraphqlServerAdapter extends Restlet {
     private final AtomicInteger activeSubscriptions = new AtomicInteger();
 
     private final Set<GraphqlEventStream> openStreams = ConcurrentHashMap.newKeySet();
+
+    private volatile Duration connectionInitTimeout = DEFAULT_CONNECTION_INIT_TIMEOUT;
+
+    private volatile GraphqlUpgradeSupport upgradeSupport;
 
     /** Constructor. */
     public GraphqlServerAdapter() {
@@ -336,6 +349,37 @@ public class GraphqlServerAdapter extends Restlet {
     }
 
     /**
+     * Returns the time allowed to WebSocket clients to send their {@code connection_init} message.
+     *
+     * @return The time allowed to initialize a WebSocket connection.
+     */
+    public Duration getConnectionInitTimeout() {
+        return connectionInitTimeout;
+    }
+
+    /**
+     * Sets the time allowed to WebSocket clients to send their {@code connection_init} message,
+     * after which the connection is closed with code 4408. Defaults to {@link
+     * #DEFAULT_CONNECTION_INIT_TIMEOUT}.
+     *
+     * @param connectionInitTimeout The time allowed to initialize a WebSocket connection.
+     */
+    public void setConnectionInitTimeout(Duration connectionInitTimeout) {
+        checkNotStarted();
+        if (connectionInitTimeout == null
+                || connectionInitTimeout.isZero()
+                || connectionInitTimeout.isNegative()) {
+            throw new IllegalArgumentException("The connection init timeout must be positive");
+        }
+        this.connectionInitTimeout = connectionInitTimeout;
+    }
+
+    /** Returns the counter of active subscriptions, shared by all transports. */
+    AtomicInteger getActiveSubscriptionCounter() {
+        return activeSubscriptions;
+    }
+
+    /**
      * Returns the number of active subscriptions.
      *
      * @return The number of active subscriptions.
@@ -357,6 +401,10 @@ public class GraphqlServerAdapter extends Restlet {
             EnumSet<GraphqlTransport> transports = EnumSet.noneOf(GraphqlTransport.class);
             transports.addAll(subscriptionTransports);
             subscriptionTransports = Collections.unmodifiableSet(transports);
+            if (subscriptionTransports.contains(GraphqlTransport.WEBSOCKET)) {
+                // Only loads the optional WebSocket extension when enabled.
+                upgradeSupport = new GraphqlWebSocketSupport(this);
+            }
             super.start();
         }
     }
@@ -371,12 +419,20 @@ public class GraphqlServerAdapter extends Restlet {
         for (GraphqlEventStream stream : List.copyOf(openStreams)) {
             stream.stop();
         }
+        GraphqlUpgradeSupport upgrades = upgradeSupport;
+        if (upgrades != null) {
+            upgrades.stop();
+        }
     }
 
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
         if (!isStarted()) {
+            return;
+        }
+        GraphqlUpgradeSupport upgrades = upgradeSupport;
+        if (upgrades != null && upgrades.handle(request, response)) {
             return;
         }
 
@@ -433,7 +489,7 @@ public class GraphqlServerAdapter extends Restlet {
         }
 
         // The operation is selected once customized, as the customizer can change it.
-        ExecutionInput executionInput = customize(request, input).build();
+        ExecutionInput executionInput = customize(request, input, null).build();
         OperationDefinition.Operation operation;
         try {
             operation =
@@ -491,17 +547,35 @@ public class GraphqlServerAdapter extends Restlet {
         }
     }
 
-    private ExecutionInput.Builder customize(Request request, ExecutionInput.Builder input) {
+    /**
+     * Executes an operation.
+     *
+     * @param request The request.
+     * @param input The execution input, before customization.
+     * @param initPayload The payload of a WebSocket connection_init message, or null.
+     * @return The result.
+     */
+    ExecutionResult execute(
+            Request request, ExecutionInput.Builder input, Map<String, Object> initPayload) {
+        return graphQL.execute(customize(request, input, initPayload).build());
+    }
+
+    private ExecutionInput.Builder customize(
+            Request request, ExecutionInput.Builder input, Map<String, Object> initPayload) {
         BiConsumer<Request, ExecutionInput.Builder> customizer = executionInputCustomizer;
         if (customizer != null) {
             customizer.accept(request, input);
         }
         // graphql-java reads per-execution parser options from the context under their class.
         return input.graphQLContext(
-                builder ->
-                        builder.put(ParserOptions.class, parserOptions)
-                                .put(RestletGraphql.REQUEST, request)
-                                .put(RestletGraphql.CLIENT_INFO, request.getClientInfo()));
+                builder -> {
+                    builder.put(ParserOptions.class, parserOptions)
+                            .put(RestletGraphql.REQUEST, request)
+                            .put(RestletGraphql.CLIENT_INFO, request.getClientInfo());
+                    if (initPayload != null) {
+                        builder.put(RestletGraphql.CONNECTION_INIT_PAYLOAD, initPayload);
+                    }
+                });
     }
 
     /**

@@ -16,6 +16,9 @@ module org.restlet.ext.graphql {
     requires transitive com.graphqljava;
     requires transitive org.reactivestreams;
 
+    // Optional: only loaded when GraphqlTransport.WEBSOCKET is enabled.
+    requires static org.restlet.ext.websocket;
+
     // JSON is an implementation detail: required, not re-exported.
     requires tools.jackson.core;
     requires tools.jackson.databind;

@@ -37,6 +37,7 @@ final class GraphqlTestSchemas {
               loaded(key: String!): String
               echo(input: EchoInput!): String
               header(name: String!): String
+              initToken: String
             }
             input EchoInput {
               text: String!
@@ -87,6 +88,12 @@ final class GraphqlTestSchemas {
                     Request request = env.getGraphQlContext().get(RestletGraphql.REQUEST);
                     return request.getHeaders().getFirstValue(env.getArgument("name"), true);
                 };
+        DataFetcher<Object> initToken =
+                env -> {
+                    Map<String, Object> payload =
+                            env.getGraphQlContext().get(RestletGraphql.CONNECTION_INIT_PAYLOAD);
+                    return payload == null ? null : payload.get("token");
+                };
         DataFetcher<Object> ticks = env -> new TickPublisher(env.<Integer>getArgument("count"));
 
         RuntimeWiring wiring =
@@ -108,7 +115,8 @@ final class GraphqlTestSchemas {
                                                 .dataFetcher("userAgent", userAgent)
                                                 .dataFetcher("loaded", loaded)
                                                 .dataFetcher("echo", echo)
-                                                .dataFetcher("header", header))
+                                                .dataFetcher("header", header)
+                                                .dataFetcher("initToken", initToken))
                         .type(
                                 "Mutation",
                                 type ->
