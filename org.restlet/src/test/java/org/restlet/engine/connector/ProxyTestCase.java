@@ -136,9 +136,7 @@ class ProxyTestCase {
         server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
         server.start();
 
-        Context context = new Context();
-        context.getParameters().add("proxyHost", "localhost");
-        context.getParameters().add("proxyPort", proxyPort());
+        Context context = proxyContext();
         context.getParameters().add("httpClientTransportMode", "HTTP2");
         client = new Client(context, Protocol.HTTP);
         client.start();
