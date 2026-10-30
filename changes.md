@@ -140,7 +140,8 @@ Changes log
           "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
           enabled by default. `WebSocketClient.setClient` shares the I/O threads of a borrowed,
-          started Netty HTTP `Client` instead of creating its own.
+          started Netty HTTP `Client` instead of creating its own, with or without a context
+          (issue #1599). `Client.getHelper()` is now public, as an engine extension point.
         - Added the experimental `org.restlet.ext.graphql` extension, on graphql-java.
           `GraphqlServerAdapter` serves a `graphql.GraphQL` instance as a Restlet, following the
           GraphQL over HTTP draft (`application/graphql-response+json` and `application/json`);

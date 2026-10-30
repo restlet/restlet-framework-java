@@ -210,10 +210,10 @@ public final class WebSocketClient implements AutoCloseable {
 
     /**
      * Sets a borrowed HTTP client whose I/O threads are shared, instead of creating new ones. The
-     * client must use the Netty HTTP connector of the core, have a context, and be started before
-     * this WebSocket client. Its owner stops it, after this WebSocket client: stopping it closes
-     * the sessions. Only the I/O threads are shared; the other settings, including TLS, are those
-     * of this WebSocket client.
+     * client must use the Netty HTTP connector of the core and be started before this WebSocket
+     * client. Its owner stops it, after this WebSocket client: stopping it closes the sessions.
+     * Only the I/O threads are shared; the other settings, including TLS, are those of this
+     * WebSocket client.
      *
      * @param client The borrowed client, or null to create new I/O threads.
      */
@@ -313,13 +313,9 @@ public final class WebSocketClient implements AutoCloseable {
         if (client == null) {
             return null;
         }
-        Object helper =
-                (client.getContext() == null)
-                        ? null
-                        : client.getContext().getAttributes().get("org.restlet.engine.helper");
-        if (!(helper instanceof NettyClientHelper nettyHelper)) {
+        if (!(client.getHelper() instanceof NettyClientHelper nettyHelper)) {
             throw new IllegalStateException(
-                    "The borrowed client must have a context and use the Netty HTTP connector");
+                    "The borrowed client must use the Netty HTTP connector");
         }
         EventLoopGroup group = nettyHelper.getEventLoopGroup();
         if (group == null || group.isShuttingDown()) {
