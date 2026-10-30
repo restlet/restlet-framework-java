@@ -133,6 +133,20 @@ class WebSocketSharedEventLoopTestCase {
     }
 
     @Test
+    void acceptsAClientWithoutContext() throws Exception {
+        Client plain = new Client(Protocol.HTTP);
+        plain.start();
+        try (WebSocketClient client = new WebSocketClient()) {
+            client.setClient(plain);
+            WebSocketSession session = client.connect(uri);
+            session.sendText("plain");
+            assertEquals("plain", session.receive().getText());
+        } finally {
+            plain.stop();
+        }
+    }
+
+    @Test
     void rejectsUnsuitableClients() throws Exception {
         WebSocketClient client = new WebSocketClient();
 
