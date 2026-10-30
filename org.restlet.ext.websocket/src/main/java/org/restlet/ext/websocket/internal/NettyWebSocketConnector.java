@@ -72,9 +72,12 @@ public final class NettyWebSocketConnector implements AutoCloseable {
     /** Whether the event loop group was created by this connector, which then shuts it down. */
     private final boolean ownedGroup;
 
-    /** The open connections, closed with the connector. */
+    /**
+     * The open connections, closed with the connector. The group stays closed, closing the late
+     * connections of concurrent connect() calls, which a borrowed event loop would keep open.
+     */
     private final ChannelGroup channels =
-            new DefaultChannelGroup("restlet-websocket-client", GlobalEventExecutor.INSTANCE);
+            new DefaultChannelGroup("restlet-websocket-client", GlobalEventExecutor.INSTANCE, true);
 
     private final SslContext sslContext;
 
