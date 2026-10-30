@@ -213,6 +213,36 @@ class WebSocketSessionTestCase {
     }
 
     @Test
+    void stoppedClientReconnectsWithUpdatedSettings() throws Exception {
+        int port = start(Protocol.HTTP, new Context(), ECHO);
+        String uri = "ws://localhost:" + port + "/";
+        String large = "x".repeat(64);
+
+        try (WebSocketClient client = new WebSocketClient()) {
+            client.setMaxMessageSize(1024);
+            WebSocketSession first = client.connect(uri);
+            first.sendText(large);
+            assertEquals(large, first.receive().getText());
+
+            client.stop();
+            assertNull(first.receive());
+            assertFalse(first.isOpen());
+
+            client.setMaxMessageSize(16);
+            try (WebSocketSession second = client.connect(uri)) {
+                assertTrue(client.isStarted());
+                second.sendText("small");
+                assertEquals("small", second.receive().getText());
+
+                // The echo exceeds the new client limit.
+                second.sendText(large);
+                assertNull(second.receive());
+                assertEquals(WebSocketSession.MESSAGE_TOO_BIG, second.getCloseCode());
+            }
+        }
+    }
+
+    @Test
     void messagesHaveValueSemantics() {
         assertEquals(WebSocketMessage.text("a"), WebSocketMessage.text("a"));
         assertEquals(WebSocketMessage.text("a").hashCode(), WebSocketMessage.text("a").hashCode());

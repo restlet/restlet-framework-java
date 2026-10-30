@@ -119,7 +119,9 @@ Changes log
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
           virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
-          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server
+          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs; it is configured
+          with setters, which are rejected while it is started, and can be stopped, reconfigured
+          and started again (`connect` starts a stopped client). The server
           answers pings, pings idle sessions, and supports the "websocket.maxSessions",
           "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
