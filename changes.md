@@ -189,6 +189,11 @@ Changes log
         - The HTTP client connects directly to the hosts listed in the "nonProxyHosts" parameter
           or the "http.nonProxyHosts" system property, without proxy. As with the JDK, the
           loopback addresses are excluded by default. Issue #401.
+        - The HTTP client supports SOCKS5 proxies, with optional username/password
+          authentication: "socksProxyHost", "socksProxyPort", "socksProxyUsername" and
+          "socksProxyPassword" parameters, defaulting to the "socksProxyHost", "socksProxyPort",
+          "java.net.socks.username" and "java.net.socks.password" system properties. An HTTP
+          proxy takes precedence. Issue #1573.
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin. Issue #1611.
         - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
           `SameSite` enum), read and written in `Set-Cookie`.
