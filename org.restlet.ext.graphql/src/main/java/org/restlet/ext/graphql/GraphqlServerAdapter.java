@@ -13,6 +13,7 @@ import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
+import graphql.incremental.IncrementalExecutionResult;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.InvalidSyntaxException;
@@ -43,10 +44,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.ext.graphql.internal.GraphqlEventStream;
+import org.restlet.ext.graphql.internal.GraphqlIncrementalStream;
 import org.restlet.ext.graphql.internal.GraphqlJson;
 import org.restlet.ext.graphql.internal.GraphqlMediaTypes;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.EventStreamRepresentation;
+import org.restlet.representation.MultipartStreamRepresentation;
 import org.restlet.representation.Representation;
 
 /**
@@ -140,6 +143,8 @@ public class GraphqlServerAdapter extends Restlet {
     private final Set<GraphqlEventStream> openStreams = ConcurrentHashMap.newKeySet();
 
     private volatile Duration connectionInitTimeout = DEFAULT_CONNECTION_INIT_TIMEOUT;
+
+    private volatile boolean incrementalDeliveryEnabled;
 
     private volatile GraphqlUpgradeSupport upgradeSupport;
 
@@ -374,6 +379,33 @@ public class GraphqlServerAdapter extends Restlet {
         this.connectionInitTimeout = connectionInitTimeout;
     }
 
+    /**
+     * Indicates if incremental delivery is enabled.
+     *
+     * @return True if incremental delivery is enabled.
+     */
+    public boolean isIncrementalDeliveryEnabled() {
+        return incrementalDeliveryEnabled;
+    }
+
+    /**
+     * Indicates if incremental delivery ({@code @defer} and {@code @stream}) is enabled.
+     * Experimental and off by default: the GraphQL incremental delivery RFC is not finalized.
+     *
+     * <p>When enabled, and a query or mutation accepts {@code multipart/mixed}, graphql-java's
+     * incremental support is enabled for that execution. An incremental result is then streamed as
+     * {@code multipart/mixed} parts (boundary "-", {@code deferSpec=20220824}): the initial result,
+     * then each delayed result, in graphql-java's format. Delayed results are requested one at a
+     * time and bounded by {@link #getMaxQueuedBytes()}. Without {@code multipart/mixed} in the
+     * {@code Accept} header, {@code @defer} and {@code @stream} are not executed incrementally.
+     *
+     * @param incrementalDeliveryEnabled True to enable incremental delivery.
+     */
+    public void setIncrementalDeliveryEnabled(boolean incrementalDeliveryEnabled) {
+        checkNotStarted();
+        this.incrementalDeliveryEnabled = incrementalDeliveryEnabled;
+    }
+
     /** Returns the counter of active subscriptions, shared by all transports. */
     AtomicInteger getActiveSubscriptionCounter() {
         return activeSubscriptions;
@@ -450,9 +482,14 @@ public class GraphqlServerAdapter extends Restlet {
                 subscriptionTransports.contains(GraphqlTransport.SSE)
                         && GraphqlMediaTypes.quality(accepted, MediaType.TEXT_EVENT_STREAM, true)
                                 > 0F;
+        boolean multipart =
+                incrementalDeliveryEnabled
+                        && !sse
+                        && GraphqlMediaTypes.quality(accepted, MediaType.MULTIPART_MIXED, true)
+                                > 0F;
         MediaType responseType = GraphqlMediaTypes.negotiate(accepted);
         if (responseType == null) {
-            if (!sse) {
+            if (!sse && !multipart) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                 return;
             }
@@ -520,8 +557,21 @@ public class GraphqlServerAdapter extends Restlet {
             return;
         }
 
+        if (multipart && !subscription) {
+            GraphQL.unusualConfiguration(executionInput)
+                    .incrementalSupport()
+                    .enableIncrementalSupport(true);
+        }
         ExecutionResult result = graphQL.execute(executionInput);
-        if (!sse || !result.isDataPresent()) {
+        if (multipart && result instanceof IncrementalExecutionResult incremental) {
+            response.setEntity(
+                    new MultipartStreamRepresentation(
+                            GraphqlIncrementalStream.MEDIA_TYPE,
+                            GraphqlIncrementalStream.BOUNDARY,
+                            new GraphqlIncrementalStream(
+                                    incremental, maxQueuedBytes, getLogger())));
+            response.setStatus(Status.SUCCESS_OK);
+        } else if (!sse || !result.isDataPresent()) {
             // Without an event stream, or when execution didn't start: a single JSON result.
             write(response, responseType, result, sse);
         } else if (result.getData() instanceof Publisher<?> publisher) {
