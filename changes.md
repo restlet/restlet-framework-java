@@ -66,6 +66,9 @@ Changes log
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
           `server.maxEventStreams` parameter limits concurrent event streams.
+        - `EventStreamReader` limits the size of an event, 1 Mi characters by default
+          (`setMaxEventSize`). A larger line or event fails the read and closes the reader. Issue
+          #1597.
         - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
