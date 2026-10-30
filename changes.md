@@ -210,6 +210,9 @@ Changes log
         - The HTTP client uses the "https.proxyHost" and "https.proxyPort" system properties for
           HTTPS requests, instead of "http.proxyHost" and "http.proxyPort", like the JDK. The
           "proxyHost" and "proxyPort" parameters still apply to both. Issue #1570.
+        - In the "HTTP2" transport mode, the HTTP client uses HTTP/1.1 for cleartext requests
+          sent through a forward proxy, instead of HTTP/2 with prior knowledge that HTTP proxies
+          generally refuse. Issue #1571.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
         - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
