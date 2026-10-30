@@ -236,7 +236,7 @@ public class GraphqlClientAdapter {
 
         Representation entity = response.getEntity();
         byte[] bytes;
-        try (InputStream in = entity == null ? InputStream.nullInputStream() : entity.getStream()) {
+        try (InputStream in = stream(entity)) {
             bytes = GraphqlJson.readBytes(in, MAX_RESPONSE_BYTES);
         } catch (GraphqlJson.TooLargeException e) {
             throw new GraphqlTransportException(
@@ -263,12 +263,27 @@ public class GraphqlClientAdapter {
                 // Reported below as a non-GraphQL response
             }
             if (result != null && (result.containsKey("data") || result.containsKey("errors"))) {
-                return ExecutionResult.fromSpecification(result);
+                try {
+                    ExecutionResult executionResult = ExecutionResult.fromSpecification(result);
+                    if (result.containsKey("data") && result.get("data") == null) {
+                        // fromSpecification() drops an explicit null data entry
+                        executionResult = executionResult.transform(builder -> builder.data(null));
+                    }
+                    return executionResult;
+                } catch (RuntimeException e) {
+                    throw new GraphqlTransportException(
+                            "Not a GraphQL response: " + status, status, excerpt(bytes), e);
+                }
             }
         }
 
         throw new GraphqlTransportException(
                 "Not a GraphQL response: " + status, status, excerpt(bytes), null);
+    }
+
+    private static InputStream stream(Representation entity) throws IOException {
+        InputStream in = entity == null ? null : entity.getStream();
+        return in == null ? InputStream.nullInputStream() : in;
     }
 
     private static String excerpt(byte[] bytes) {
