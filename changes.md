@@ -173,6 +173,9 @@ Changes log
           of the tunnel, instead of sending them to the origin server inside the tunnel. A
           refusal of the proxy to open the tunnel with a challenge is returned as a 407 response.
           Issue #1569.
+        - The HTTP client uses the "https.proxyHost" and "https.proxyPort" system properties for
+          HTTPS requests, instead of "http.proxyHost" and "http.proxyPort", like the JDK. The
+          "proxyHost" and "proxyPort" parameters still apply to both. Issue #1570.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
         - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
