@@ -93,6 +93,8 @@ Changes log
         - HTTP/2 and HTTP/3 requests advertise `te: trailers`; stream header names are normalized
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
+        - The HTTP client connects directly to the hosts listed in the "nonProxyHosts" parameter
+          or the "http.nonProxyHosts" system property, without proxy. Issue #401.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.

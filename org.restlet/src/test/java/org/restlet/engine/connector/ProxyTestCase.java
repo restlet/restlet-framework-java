@@ -317,6 +317,63 @@ class ProxyTestCase {
     }
 
     @Test
+    void bypassesProxyForNonProxyHosts() throws Exception {
+        server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
+        server.start();
+
+        Context context = new Context();
+        context.getParameters().add("proxyHost", "localhost");
+        context.getParameters().add("proxyPort", proxyPort());
+        context.getParameters().add("nonProxyHosts", "example.org | LOCAL*");
+        client = new Client(context, Protocol.HTTP);
+        client.start();
+
+        Response response =
+                client.handle(
+                        new Request(
+                                Method.GET, "http://localhost:" + server.getActualPort() + "/d"));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("hello /d", response.getEntityAsText());
+        assertTrue(proxy.requestLines.isEmpty(), proxy.requestLines.toString());
+    }
+
+    @Test
+    void bypassesProxyForNonProxyHostsSystemProperty() throws Exception {
+        startHttpsServer(HELLO);
+        withSystemProperties(
+                Map.of("http.nonProxyHosts", "*.example.org|*host"),
+                () -> {
+                    client = newHttpsClient();
+                    Response response =
+                            client.handle(
+                                    new Request(
+                                            Method.GET,
+                                            "https://localhost:" + server.getActualPort() + "/s"));
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                });
+
+        assertTrue(proxy.requestLines.isEmpty(), proxy.requestLines.toString());
+    }
+
+    @Test
+    void usesProxyForOtherHosts() throws Exception {
+        server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
+        server.start();
+
+        Context context = new Context();
+        context.getParameters().add("proxyHost", "localhost");
+        context.getParameters().add("proxyPort", proxyPort());
+        context.getParameters().add("nonProxyHosts", "*.example.org|local|127.*");
+        client = new Client(context, Protocol.HTTP);
+        client.start();
+
+        String uri = "http://localhost:" + server.getActualPort() + "/p";
+        Response response = client.handle(new Request(Method.GET, uri));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(List.of("GET " + uri + " HTTP/1.1"), proxy.requestLines);
+    }
+
+    @Test
     void reportsUnreachableProxy() throws Exception {
         server = new Server(new Context(), Protocol.HTTP, 0, HELLO);
         server.start();
