@@ -15,6 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.connector.HttpClientHelper;
 import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.engine.netty.NettyClientHelper;
+import org.restlet.ext.websocket.internal.NettyWebSocketConnector;
 
 /** Tests WebSocket clients sharing the I/O threads of a borrowed HTTP client. */
 class WebSocketSharedEventLoopTestCase {
@@ -114,6 +119,28 @@ class WebSocketSharedEventLoopTestCase {
             assertNull(session.receive());
             assertThrows(IOException.class, () -> client.connect(uri));
         }
+    }
+
+    @Test
+    void closedConnectorClosesLateConnections() throws Exception {
+        http.start();
+        NettyWebSocketConnector connector =
+                new NettyWebSocketConnector(
+                        helper(http).getEventLoopGroup(),
+                        null,
+                        5000,
+                        0,
+                        65536,
+                        65536,
+                        false,
+                        true,
+                        Logger.getLogger(WebSocketSharedEventLoopTestCase.class.getName()));
+        connector.close();
+
+        // As a connect() call racing with stop() would do after the connections were closed.
+        assertThrows(
+                IOException.class, () -> connector.connect(URI.create(uri), List.of(), Map.of()));
+        assertFalse(helper(http).getEventLoopGroup().isShuttingDown());
     }
 
     @Test
