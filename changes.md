@@ -129,6 +129,8 @@ Changes log
           that readers process it at once; content containing the delimiter is rejected. The
           reader returns parts as they arrive, with a maximum part size. Added the
           `MediaType.MULTIPART_MIXED` constant. Issue #1587.
+        - `EventStreamRepresentation` sends the response head before the first event, so that
+          clients get the status and headers of an idle stream without heartbeats. Issue #1598.
         - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
