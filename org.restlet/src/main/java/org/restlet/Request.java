@@ -8,6 +8,7 @@
  */
 package org.restlet;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -325,14 +326,17 @@ public class Request extends Message {
      *
      * <p>An attempt made before connector registration is remembered and applied when an active
      * action is installed. It still returns false until an active action accepts it. Use a new
-     * Request for a new exchange after cancellation.
+     * Request for a new exchange after cancellation. Explicit abort also reports cancellation on
+     * {@link #getDisconnectSignal()}, even when no connector action is registered.
      *
      * @return True if the request was aborted.
      */
     public boolean abort() {
         abortRequested.set(true);
         BooleanSupplier action = abortAction;
-        return action != null && action.getAsBoolean();
+        boolean aborted = action != null && action.getAsBoolean();
+        notifyDisconnect(new IOException("Request aborted"));
+        return aborted;
     }
 
     /**
@@ -372,7 +376,9 @@ public class Request extends Message {
     public void notifyDisconnect(Throwable cause) {
         Objects.requireNonNull(cause, "cause");
         if (disconnectReported.compareAndSet(false, true)) {
-            Thread.startVirtualThread(() -> disconnectSignal.complete(cause));
+            Thread.ofVirtual()
+                    .name("restlet-request-disconnect")
+                    .start(() -> disconnectSignal.complete(cause));
         }
     }
 
