@@ -15,7 +15,8 @@ import org.reactivestreams.Subscription;
 
 /**
  * Publishes 1, 2, ... up to a count, or forever when the count is negative, honoring demand and
- * cancellation. Counts its instances and cancellations for the tests.
+ * cancellation. An idle publisher never publishes. Counts its instances and cancellations for the
+ * tests.
  */
 final class TickPublisher implements Publisher<Integer> {
 
@@ -25,8 +26,15 @@ final class TickPublisher implements Publisher<Integer> {
 
     private final int count;
 
+    private final boolean idle;
+
     TickPublisher(int count) {
+        this(count, false);
+    }
+
+    TickPublisher(int count, boolean idle) {
         this.count = count;
+        this.idle = idle;
         CREATED.incrementAndGet();
     }
 
@@ -53,6 +61,9 @@ final class TickPublisher implements Publisher<Integer> {
 
         @Override
         public void request(long n) {
+            if (idle) {
+                return;
+            }
             synchronized (this) {
                 demand += n;
                 if (emitting) {
