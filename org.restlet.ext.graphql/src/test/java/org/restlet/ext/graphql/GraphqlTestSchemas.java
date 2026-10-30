@@ -14,6 +14,8 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.dataloader.DataLoader;
@@ -33,6 +35,12 @@ final class GraphqlTestSchemas {
               whoami: String
               userAgent: String
               loaded(key: String!): String
+              echo(input: EchoInput!): String
+              header(name: String!): String
+            }
+            input EchoInput {
+              text: String!
+              tags: [String!]
             }
             type Mutation {
               increment(by: Int!): Int
@@ -67,6 +75,17 @@ final class GraphqlTestSchemas {
                     DataLoader<String, String> loader = env.getDataLoader("upper");
                     return loader.load(env.getArgument("key"));
                 };
+        DataFetcher<Object> echo =
+                env -> {
+                    Map<String, Object> input = env.getArgument("input");
+                    List<?> tags = (List<?>) input.getOrDefault("tags", List.of());
+                    return input.get("text") + "|" + tags.size();
+                };
+        DataFetcher<Object> header =
+                env -> {
+                    Request request = env.getGraphQlContext().get(RestletGraphql.REQUEST);
+                    return request.getHeaders().getFirstValue(env.getArgument("name"), true);
+                };
         DataFetcher<Object> ticks = env -> new TickPublisher(env.<Integer>getArgument("count"));
 
         RuntimeWiring wiring =
@@ -86,7 +105,9 @@ final class GraphqlTestSchemas {
                                                 .dataFetcher("failing", failing)
                                                 .dataFetcher("whoami", whoami)
                                                 .dataFetcher("userAgent", userAgent)
-                                                .dataFetcher("loaded", loaded))
+                                                .dataFetcher("loaded", loaded)
+                                                .dataFetcher("echo", echo)
+                                                .dataFetcher("header", header))
                         .type(
                                 "Mutation",
                                 type ->
