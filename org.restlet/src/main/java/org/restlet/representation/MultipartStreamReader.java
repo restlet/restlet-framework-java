@@ -56,10 +56,10 @@ public final class MultipartStreamReader
      * @throws IOException If the entity has no boundary or can't be read.
      */
     public MultipartStreamReader(Representation entity, long maxPartSize) throws IOException {
-        this(
-                entity.getStream(),
-                boundary(Objects.requireNonNull(entity, "entity").getMediaType()),
-                maxPartSize);
+        // Validate before acquiring the stream, which would otherwise be left open.
+        String boundary = boundary(Objects.requireNonNull(entity, "entity").getMediaType());
+        checkMaxPartSize(maxPartSize);
+        this(entity.getStream(), boundary, maxPartSize);
     }
 
     /**
@@ -74,18 +74,26 @@ public final class MultipartStreamReader
         if (boundary == null || boundary.isEmpty()) {
             throw new IllegalArgumentException("A boundary is required");
         }
-        if (maxPartSize <= 0) {
-            throw new IllegalArgumentException("The maximum part size must be positive");
-        }
+        checkMaxPartSize(maxPartSize);
         this.input = new BufferedInputStream(inputStream);
         this.delimiter = ("\r\n--" + boundary).getBytes(StandardCharsets.US_ASCII);
         this.failure = failureTable(delimiter);
         this.maxPartSize = maxPartSize;
     }
 
+    private static void checkMaxPartSize(long maxPartSize) {
+        if (maxPartSize <= 0) {
+            throw new IllegalArgumentException("The maximum part size must be positive");
+        }
+    }
+
     private static String boundary(MediaType mediaType) throws IOException {
-        String boundary = mediaType == null ? null : MultiPartRepresentation.getBoundary(mediaType);
-        if (boundary == null) {
+        // Parameter names are case-insensitive.
+        String boundary =
+                mediaType == null
+                        ? null
+                        : mediaType.getParameters().getFirstValue("boundary", true);
+        if (boundary == null || boundary.isEmpty()) {
             throw new IOException("The multipart media type has no boundary: " + mediaType);
         }
         return boundary;
@@ -209,7 +217,8 @@ public final class MultipartStreamReader
             } else {
                 content.write(c);
             }
-            if (++size > maxPartSize + delimiter.length) {
+            // Subtract the delimiter allowance rather than add it, which could overflow the limit.
+            if (++size - delimiter.length > maxPartSize) {
                 throw new IOException("A multipart part exceeds " + maxPartSize + " bytes");
             }
         }
@@ -239,7 +248,8 @@ public final class MultipartStreamReader
             if (c == (delimiter[matched] & 0xFF)) {
                 matched++;
             }
-            if (++skipped > maxPartSize) {
+            // The bytes currently matching the delimiter aren't part of the preamble.
+            if (++skipped - matched > maxPartSize) {
                 throw new IOException("The multipart preamble exceeds " + maxPartSize + " bytes");
             }
         }
