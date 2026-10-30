@@ -140,7 +140,11 @@ Changes log
           GraphQL over HTTP draft (`application/graphql-response+json` and `application/json`);
           operations run on the call's virtual thread. `GraphqlClientAdapter` sends operations
           through a borrowed `Client` and returns native `ExecutionResult` values, throwing
-          `GraphqlTransportException` when no GraphQL response is received. Issue #1581.
+          `GraphqlTransportException` when no GraphQL response is received. The server accepts
+          queries over `GET` when enabled (off by default), applies the draft's status codes per
+          response media type, limits the request size (1 MiB by default) and the parser per
+          adapter (`ParserOptions`, never the process-wide defaults), and gives data fetchers the
+          Restlet request and client info through `RestletGraphql` context keys. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
