@@ -43,6 +43,7 @@ import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.util.Series;
 
 /** SDK-framed, bounded unary exchange. No gRPC frame/status codec is implemented here. */
+@SuppressWarnings("null")
 final class RestletClientStream extends AbstractClientStream {
     private final SerializingExecutor serial = new SerializingExecutor(Runnable::run);
     private final State state;
