@@ -56,21 +56,10 @@ public class Template {
     public static final int MODE_STARTS_WITH_SEGMENT = 3;
 
     /**
-     * Indicates whether a matched length ends on a URI path segment boundary.
-     *
-     * @param formattedString The string being matched.
-     * @param end The number of matched characters.
-     * @return True if the match ends on a segment boundary.
+     * Regex suffix requiring a match to end on a URI path segment boundary. Being part of the
+     * pattern lets the regex backtrack to an earlier boundary.
      */
-    private static boolean isSegmentBoundary(String formattedString, int end) {
-        if (end == 0 || end >= formattedString.length()) {
-            return true;
-        }
-
-        char previous = formattedString.charAt(end - 1);
-        char next = formattedString.charAt(end);
-        return previous == '/' || next == '/' || next == '?' || next == ';' || next == '#';
-    }
+    private static final String SEGMENT_BOUNDARY = "(?:\\A|\\z|(?<=/)|(?=[/?;#]))";
 
     /**
      * Appends to a pattern a repeating group of a given content based on a class of characters.
@@ -244,6 +233,9 @@ public class Template {
 
     /** The internal Regex pattern. */
     private volatile Pattern regexPattern;
+
+    /** The internal Regex pattern requiring a match to end on a segment boundary. */
+    private volatile Pattern segmentRegexPattern;
 
     /** The sequence of Regex variable names as found in the pattern string. */
     private volatile List<String> regexVariables;
@@ -542,12 +534,30 @@ public class Template {
                         }
                     }
 
+                    this.segmentRegexPattern = null;
                     this.regexPattern = Pattern.compile(patternBuffer.toString());
                 }
             }
         }
 
         return this.regexPattern;
+    }
+
+    /**
+     * Returns the Regex pattern requiring a match to end on a URI path segment boundary.
+     *
+     * @return The Regex pattern requiring a match to end on a segment boundary.
+     */
+    private Pattern getSegmentRegexPattern() {
+        Pattern base = getRegexPattern();
+        Pattern result = this.segmentRegexPattern;
+
+        if (result == null) {
+            result = Pattern.compile(base.pattern() + SEGMENT_BOUNDARY);
+            this.segmentRegexPattern = result;
+        }
+
+        return result;
     }
 
     /**
@@ -644,15 +654,14 @@ public class Template {
      * Applies the matching mode to a matcher.
      *
      * @param matcher The matcher on the formatted string.
-     * @param formattedString The formatted string.
      * @return True if the formatted string matches according to the matching mode.
      */
-    private boolean matches(Matcher matcher, String formattedString) {
+    private boolean matches(Matcher matcher) {
         return switch (getMatchingMode()) {
             case MODE_EQUALS -> matcher.matches();
             case MODE_STARTS_WITH -> matcher.lookingAt();
             case MODE_STARTS_WITH_SEGMENT ->
-                    matcher.lookingAt() && isSegmentBoundary(formattedString, matcher.end());
+                    matcher.usePattern(getSegmentRegexPattern()).lookingAt();
             default -> false;
         };
     }
@@ -670,7 +679,7 @@ public class Template {
             if (formattedString != null) {
                 final Matcher matcher = getRegexPattern().matcher(formattedString);
 
-                if (matches(matcher, formattedString)) {
+                if (matches(matcher)) {
                     result = matcher.end();
                 }
             }
@@ -717,7 +726,7 @@ public class Template {
         if (formattedString != null) {
             try {
                 Matcher matcher = getRegexPattern().matcher(formattedString);
-                boolean matched = matches(matcher, formattedString);
+                boolean matched = matches(matcher);
 
                 if (matched) {
                     // Update the number of matched characters
