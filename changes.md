@@ -218,6 +218,11 @@ Changes log
         - In the "HTTP2" transport mode, the HTTP client uses HTTP/1.1 for cleartext requests
           sent through a forward proxy, instead of HTTP/2 with prior knowledge that HTTP proxies
           generally refuse. Issue #1571.
+        - The HTTP client no longer replaces the status of a synchronous response with a
+          communication error (1001) when the connection fails after the response head, for
+          example when the client stops before the end of the body: the failure reaches the
+          entity stream only. A response with a "Content-Length: 0" header is complete with its
+          head, and the failures caused by stopping the client report "Client stopped". Issue #1601.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
         - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
