@@ -96,6 +96,11 @@ Changes log
         - The HTTP client connects directly to the hosts listed in the "nonProxyHosts" parameter
           or the "http.nonProxyHosts" system property, without proxy. As with the JDK, the
           loopback addresses are excluded by default. Issue #401.
+        - The HTTP client supports SOCKS5 proxies, with optional username/password
+          authentication: "socksProxyHost", "socksProxyPort", "socksProxyUsername" and
+          "socksProxyPassword" parameters, defaulting to the "socksProxyHost", "socksProxyPort",
+          "java.net.socks.username" and "java.net.socks.password" system properties. An HTTP
+          proxy takes precedence. Issue #1573.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.

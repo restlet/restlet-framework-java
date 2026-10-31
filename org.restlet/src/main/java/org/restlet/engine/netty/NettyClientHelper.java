@@ -35,6 +35,8 @@ import io.netty.handler.codec.http2.Http2StreamChannelBootstrap;
 import io.netty.handler.codec.http2.Http2StreamFrameToHttpObjectCodec;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.ProxyConnectException;
+import io.netty.handler.proxy.ProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.ApplicationProtocolNames;
 import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
@@ -171,7 +173,7 @@ import org.restlet.representation.Representation;
  * <td>nonProxyHosts</td>
  * <td>String</td>
  * <td>System property "http.nonProxyHosts" or "localhost|127.*|[::1]|0.0.0.0|[::0]"</td>
- * <td>The hosts to connect to directly, without proxy, separated by "|". A host name can start or
+ * <td>The hosts to connect to directly, without HTTP or SOCKS proxy, separated by "|". A host name can start or
  * end with a "*" wildcard, e.g. "localhost|*.example.com|192.168.*", and is matched ignoring
  * case. As with the JDK, the loopback addresses are excluded by default, and an empty value
  * excludes no host.</td>
@@ -195,6 +197,32 @@ import org.restlet.representation.Representation;
  * <td>int</td>
  * <td>8192</td>
  * <td>The size in bytes of the buffer used to write request entities</td>
+ * </tr>
+ * <tr>
+ * <td>socksProxyHost</td>
+ * <td>String</td>
+ * <td>System property "socksProxyHost"</td>
+ * <td>The host name of the SOCKS5 proxy, used for the requests without HTTP proxy. The SOCKS
+ * proxy resolves the host names of the origin servers.</td>
+ * </tr>
+ * <tr>
+ * <td>socksProxyPort</td>
+ * <td>int</td>
+ * <td>System property "socksProxyPort" or "1080"</td>
+ * <td>The port of the SOCKS5 proxy.</td>
+ * </tr>
+ * <tr>
+ * <td>socksProxyUsername</td>
+ * <td>String</td>
+ * <td>System property "java.net.socks.username"</td>
+ * <td>The user name for the username/password authentication with the SOCKS5 proxy, if
+ * required.</td>
+ * </tr>
+ * <tr>
+ * <td>socksProxyPassword</td>
+ * <td>String</td>
+ * <td>System property "java.net.socks.password"</td>
+ * <td>The password for the username/password authentication with the SOCKS5 proxy.</td>
  * </tr>
  * <tr>
  * <td>userAgentField</td>
@@ -483,7 +511,8 @@ public abstract class NettyClientHelper extends ClientHelper {
     Channel acquire(NettyClientCall call) throws IOException {
         if (call.isConfidential()
                 && getTransportMode() == TransportMode.HTTP3
-                && getProxy(true, call.getTargetHost()) == null) {
+                && getProxy(true, call.getTargetHost()) == null
+                && getSocksProxy(call.getTargetHost()) == null) {
             return acquireHttp3(call);
         }
 
@@ -678,11 +707,9 @@ public abstract class NettyClientHelper extends ClientHelper {
         boolean acquired = true;
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
-            final InetSocketAddress proxyRef = getProxy(pool.secure, pool.host);
-            final InetSocketAddress proxy =
-                    (proxyRef == null)
-                            ? null
-                            : new InetSocketAddress(proxyRef.getHostString(), proxyRef.getPort());
+            final InetSocketAddress proxy = resolve(getProxy(pool.secure, pool.host));
+            final InetSocketAddress socksProxy =
+                    (proxy == null) ? resolve(getSocksProxy(pool.host)) : null;
 
             Bootstrap bootstrap =
                     new Bootstrap()
@@ -698,7 +725,12 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         @Override
                                         protected void initChannel(SocketChannel ch) {
                                             initConnection(
-                                                    ch, pool, ssl, proxy, proxyAuthorization);
+                                                    ch,
+                                                    pool,
+                                                    ssl,
+                                                    proxy,
+                                                    proxyAuthorization,
+                                                    socksProxy);
                                         }
                                     });
 
@@ -708,8 +740,8 @@ public abstract class NettyClientHelper extends ClientHelper {
             }
 
             SocketAddress remote;
-            if (proxy != null && pool.secure) {
-                // Tunnel with CONNECT, the proxy resolves the host name.
+            if ((proxy != null && pool.secure) || (socksProxy != null)) {
+                // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
                 bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
                 remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
             } else if (proxy != null) {
@@ -804,7 +836,8 @@ public abstract class NettyClientHelper extends ClientHelper {
             OriginPool pool,
             SslContext ssl,
             InetSocketAddress proxy,
-            String proxyAuthorization) {
+            String proxyAuthorization,
+            InetSocketAddress socksProxy) {
         final Promise<String> ready = ch.eventLoop().newPromise();
         ch.attr(READY).set(ready);
         ch.attr(POOL).set(pool);
@@ -818,16 +851,22 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
         p.addLast("writability", Writability.HANDLER);
 
-        if ((proxy == null) || !pool.secure) {
+        ProxyHandler proxyHandler;
+        if (socksProxy != null) {
+            proxyHandler =
+                    new Socks5ProxyHandler(
+                            socksProxy, getSocksProxyUsername(), getSocksProxyPassword());
+        } else if ((proxy != null) && pool.secure) {
+            HttpHeaders connectHeaders = new DefaultHttpHeaders();
+            if (proxyAuthorization != null) {
+                connectHeaders.set(HttpHeaderNames.PROXY_AUTHORIZATION, proxyAuthorization);
+            }
+            proxyHandler = new HttpProxyHandler(proxy, connectHeaders);
+        } else {
             initProtocols(ch, pool, ssl, ready, proxy != null);
             return;
         }
 
-        HttpHeaders connectHeaders = new DefaultHttpHeaders();
-        if (proxyAuthorization != null) {
-            connectHeaders.set(HttpHeaderNames.PROXY_AUTHORIZATION, proxyAuthorization);
-        }
-        HttpProxyHandler proxyHandler = new HttpProxyHandler(proxy, connectHeaders);
         proxyHandler.setConnectTimeoutMillis(getConnectTimeout());
         p.addLast("proxy", proxyHandler);
         p.addLast(
@@ -1148,6 +1187,73 @@ public abstract class NettyClientHelper extends ClientHelper {
                 ? null
                 : InetSocketAddress.createUnresolved(
                         host, secure ? getHttpsProxyPort() : getProxyPort());
+    }
+
+    /**
+     * Returns the SOCKS5 proxy to connect to an origin server through, or null to connect directly.
+     * An HTTP proxy, if any for the request, takes precedence.
+     *
+     * @param targetHost The host name of the origin server.
+     * @return The unresolved address of the SOCKS5 proxy, or null.
+     */
+    InetSocketAddress getSocksProxy(String targetHost) {
+        String host = getSocksProxyHost();
+        return ((host == null) || host.isEmpty() || isNonProxyHost(targetHost))
+                ? null
+                : InetSocketAddress.createUnresolved(host, getSocksProxyPort());
+    }
+
+    /**
+     * Returns the host name of the SOCKS5 proxy, if specified: the "socksProxyHost" parameter, or
+     * the "socksProxyHost" system property.
+     *
+     * @return The host name of the SOCKS5 proxy, if specified.
+     */
+    public String getSocksProxyHost() {
+        return getHelpedParameters()
+                .getFirstValue("socksProxyHost", System.getProperty("socksProxyHost"));
+    }
+
+    /**
+     * Returns the port of the SOCKS5 proxy: the "socksProxyPort" parameter, or the "socksProxyPort"
+     * system property, 1080 otherwise.
+     *
+     * @return The port of the SOCKS5 proxy.
+     */
+    public int getSocksProxyPort() {
+        return Integer.parseInt(
+                getHelpedParameters()
+                        .getFirstValue(
+                                "socksProxyPort", System.getProperty("socksProxyPort", "1080")));
+    }
+
+    /**
+     * Returns the user name for the authentication with the SOCKS5 proxy, if specified: the
+     * "socksProxyUsername" parameter, or the "java.net.socks.username" system property.
+     *
+     * @return The user name, or null.
+     */
+    public String getSocksProxyUsername() {
+        return getHelpedParameters()
+                .getFirstValue("socksProxyUsername", System.getProperty("java.net.socks.username"));
+    }
+
+    /**
+     * Returns the password for the authentication with the SOCKS5 proxy, if specified: the
+     * "socksProxyPassword" parameter, or the "java.net.socks.password" system property.
+     *
+     * @return The password, or null.
+     */
+    public String getSocksProxyPassword() {
+        return getHelpedParameters()
+                .getFirstValue("socksProxyPassword", System.getProperty("java.net.socks.password"));
+    }
+
+    /** Resolves the host name of a proxy address, if any. */
+    private static InetSocketAddress resolve(InetSocketAddress address) {
+        return (address == null)
+                ? null
+                : new InetSocketAddress(address.getHostString(), address.getPort());
     }
 
     /**
