@@ -24,6 +24,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -217,6 +218,42 @@ class Http1LookaheadTestCase {
         } finally {
             release.countDown();
             server.stop();
+        }
+    }
+
+    @Test
+    void reportsFailedTerminalResponseWriteAsDisconnect() throws Exception {
+        var helper = new HttpServerHelper(null);
+        IOException failure = new IOException("reset while flushing");
+        var channel =
+                new EmbeddedChannel(
+                        new io.netty.channel.ChannelOutboundHandlerAdapter() {
+                            @Override
+                            public void write(
+                                    ChannelHandlerContext ctx,
+                                    Object msg,
+                                    io.netty.channel.ChannelPromise promise) {
+                                io.netty.util.ReferenceCountUtil.release(msg);
+                                promise.setFailure(failure);
+                            }
+                        });
+        try {
+            var call =
+                    new NettyServerCall(
+                            helper,
+                            channel,
+                            StreamKind.HTTP1,
+                            new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/"),
+                            new ChannelInputStream(channel, 0),
+                            false);
+            Request request = call.toRequest(new Context());
+            call.complete();
+            channel.runPendingTasks();
+            assertEquals(
+                    failure,
+                    request.getDisconnectSignal().toCompletableFuture().get(5, TimeUnit.SECONDS));
+        } finally {
+            channel.finishAndReleaseAll();
         }
     }
 

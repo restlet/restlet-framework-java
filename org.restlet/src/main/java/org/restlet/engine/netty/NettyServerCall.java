@@ -135,6 +135,12 @@ class NettyServerCall {
 
     private Throwable disconnectCause;
 
+    /** Indicates whether the terminal response write was flushed, or the exchange handed over. */
+    private boolean responseDelivered;
+
+    /** The write of a response head that also ends the response, if any. */
+    private ChannelFuture responseEndFuture;
+
     /** The response body stream, if any. */
     private volatile ChannelOutputStream responseBody;
 
@@ -253,7 +259,7 @@ class NettyServerCall {
     }
 
     synchronized void onDisconnect(Throwable cause) {
-        if (!completed && disconnectCause == null) {
+        if (!responseDelivered && disconnectCause == null) {
             disconnectCause = cause;
             if (restletRequest != null) {
                 restletRequest.notifyDisconnect(cause);
@@ -426,6 +432,7 @@ class NettyServerCall {
      */
     private void upgrade(Response response, NettyConnectionUpgrade upgrade) {
         completed = true;
+        markResponseDelivered();
         responseHeadWritten = true;
         requestBody.close();
         try {
@@ -646,7 +653,10 @@ class NettyServerCall {
             setHttp1Framing(head, emptyBody, hasTrailers, bodyAllowed);
         }
 
-        channel.write(head);
+        ChannelFuture future = channel.write(head);
+        if (responseEndedWithHead) {
+            responseEndFuture = future;
+        }
     }
 
     /** Creates the response head with the status and the response headers. */
@@ -718,6 +728,7 @@ class NettyServerCall {
                 return;
             }
             if (responseEndedWithHead) {
+                trackDelivery(responseEndFuture);
                 channel.flush();
                 requestBody.close();
                 return;
@@ -731,7 +742,7 @@ class NettyServerCall {
                 copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
                 lastContent = withTrailers;
             }
-            ChannelFuture future = channel.writeAndFlush(lastContent);
+            ChannelFuture future = trackDelivery(channel.writeAndFlush(lastContent));
             requestBody.close();
 
             if (!kind.isStream()) {
@@ -744,6 +755,29 @@ class NettyServerCall {
                 eventStreamPermit = false;
             }
         }
+    }
+
+    /**
+     * Reports a failed terminal response write as a disconnect, and stops reporting disconnects
+     * once it is flushed.
+     *
+     * @param future The terminal write.
+     * @return The terminal write.
+     */
+    private ChannelFuture trackDelivery(ChannelFuture future) {
+        future.addListener(
+                f -> {
+                    if (f.isSuccess()) {
+                        markResponseDelivered();
+                    } else {
+                        onDisconnect(f.cause());
+                    }
+                });
+        return future;
+    }
+
+    private synchronized void markResponseDelivered() {
+        responseDelivered = true;
     }
 
     private void completeHttp1(ChannelFuture future, boolean keepAlive) {
