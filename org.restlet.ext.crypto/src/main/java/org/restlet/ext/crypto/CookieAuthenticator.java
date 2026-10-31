@@ -172,7 +172,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
             getLogger().log(Level.SEVERE, "Could not format credentials cookie", e);
         }
 
-        return super.authenticated(request, response);
+        int result = super.authenticated(request, response);
+
+        // Don't let the next restlet overwrite a login redirection (issue #554)
+        return response.getStatus().isRedirection() ? STOP : result;
     }
 
     /**

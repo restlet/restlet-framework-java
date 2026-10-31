@@ -16,8 +16,8 @@ import org.restlet.engine.util.SystemUtils;
  * Cookie setting provided by a server. This allows a server side application to add, modify, or
  * remove a cookie on the client.<br>
  * <br>
- * Note that when used with HTTP connectors, this class maps to the "Set-Cookie" and "Set-Cookie2"
- * headers.
+ * Note that when used with HTTP connectors, this class maps to the "Set-Cookie" header (RFC 6265).
+ * The "Set-Cookie2" header (RFC 2965) is deprecated.
  *
  * @see Response#getCookieSettings()
  * @author Jerome Louvel
@@ -52,7 +52,10 @@ public final class CookieSetting extends Cookie {
      * @param version The cookie's version.
      * @param name The cookie's name.
      * @param value The cookie's value.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(int version, String name, String value) {
         this(version, name, value, null, null);
     }
@@ -65,7 +68,10 @@ public final class CookieSetting extends Cookie {
      * @param value The cookie's value.
      * @param path The cookie's path.
      * @param domain The cookie's domain name.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(int version, String name, String value, String path, String domain) {
         this(version, name, value, path, domain, null, -1, false, false);
     }
@@ -83,7 +89,10 @@ public final class CookieSetting extends Cookie {
      *     Use 0 to immediately discard an existing cookie.<br>
      *     Use -1 to discard the cookie at the end of the session (default).
      * @param secure Indicates if the cookie should only be transmitted by secure means.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(
             int version,
             String name,
@@ -111,7 +120,10 @@ public final class CookieSetting extends Cookie {
      * @param secure Indicates if the cookie should only be transmitted by secure means.
      * @param accessRestricted Indicates whether to restrict cookie access to untrusted parties.
      *     Currently, this toggles the non-standard but widely supported HttpOnly cookie parameter.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(
             int version,
             String name,
@@ -160,7 +172,10 @@ public final class CookieSetting extends Cookie {
      * Returns the comment for the user.
      *
      * @return The comment for the user.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public String getComment() {
         return this.comment;
     }
@@ -223,7 +238,10 @@ public final class CookieSetting extends Cookie {
      * Sets the comment for the user.
      *
      * @param comment The comment for the user.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public void setComment(String comment) {
         this.comment = comment;
     }

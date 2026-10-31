@@ -47,9 +47,9 @@ class CookieSettingWriterTestCase {
     }
 
     @Test
-    void write_pathVersionOne_appendsQuotedPath() {
+    void write_pathVersionOne_appendsUnquotedPath() {
         CookieSetting cookieSetting = new CookieSetting(1, "name", "value", "/path", null);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Path=\"/path\""));
+        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Path=/path"));
     }
 
     @Test
@@ -63,7 +63,7 @@ class CookieSettingWriterTestCase {
     void write_maxAgeVersionOne_appendsMaxAge() {
         CookieSetting cookieSetting = new CookieSetting(1, "name", "value");
         cookieSetting.setMaxAge(3600);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Max-Age=\"3600\""));
+        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Max-Age=3600"));
     }
 
     @Test
