@@ -220,6 +220,58 @@ class GraphqlWebSocketClientTestCase {
     }
 
     @Test
+    void stopFailsSubscribersWithoutDemand() throws Exception {
+        GraphqlClientAdapter graphql = graphql("/graphql");
+        graphql.start();
+        TestSubscriber subscriber = new TestSubscriber();
+        graphql.subscribe("subscription { idle }", null, null).subscribe(subscriber);
+        graphql.stop();
+        assertTrue(subscriber.done.await(5, TimeUnit.SECONDS));
+        assertInstanceOf(GraphqlTransportException.class, subscriber.error.get());
+        assertEquals(0, upgrades.get());
+    }
+
+    @Test
+    void nonPositiveDemandFailsAndCompletesTheServerSubscription() throws Exception {
+        GraphqlClientAdapter graphql = graphql("/graphql");
+        graphql.start();
+        TestSubscriber idle = new TestSubscriber();
+        graphql.subscribe("subscription { idle }", null, null).subscribe(idle);
+        idle.subscription.request(0);
+        assertTrue(idle.done.await(5, TimeUnit.SECONDS));
+        assertInstanceOf(IllegalArgumentException.class, idle.error.get());
+        assertEquals(0, upgrades.get());
+
+        TestSubscriber active = new TestSubscriber();
+        graphql.subscribe("subscription { idle }", null, null).subscribe(active);
+        active.subscription.request(1);
+        await(() -> server.getActiveSubscriptions() == 1);
+        active.subscription.request(-1);
+        assertTrue(active.done.await(5, TimeUnit.SECONDS));
+        assertInstanceOf(IllegalArgumentException.class, active.error.get());
+        await(() -> server.getActiveSubscriptions() == 0);
+        graphql.stop();
+    }
+
+    @Test
+    void setupFailuresAreSignalled() throws Exception {
+        GraphqlClientAdapter graphql = graphql("/graphql");
+        graphql.setRequestCustomizer(
+                request -> {
+                    throw new IllegalStateException("No credentials");
+                });
+        graphql.start();
+        TestSubscriber subscriber = new TestSubscriber();
+        graphql.subscribe("subscription { idle }", null, null).subscribe(subscriber);
+        subscriber.subscription.request(1);
+        assertTrue(subscriber.done.await(5, TimeUnit.SECONDS));
+        GraphqlTransportException e =
+                assertInstanceOf(GraphqlTransportException.class, subscriber.error.get());
+        assertInstanceOf(IllegalStateException.class, e.getCause());
+        graphql.stop();
+    }
+
+    @Test
     void webSocketNeedsAStartedNettyClient() {
         GraphqlClientAdapter graphql = graphql("/graphql");
         graphql.setClient(new Client(Protocol.HTTP));
