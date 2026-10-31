@@ -1000,7 +1000,6 @@ class NettyClientCall {
      * @param cause The failure cause.
      */
     void onFailure(Throwable cause) {
-        helper.logFailure("The exchange failed on " + channel, cause);
         boolean notifyResponseFailure = false;
         boolean responseHeadReceived;
         lock.lock();
@@ -1024,6 +1023,7 @@ class NettyClientCall {
         } finally {
             lock.unlock();
         }
+        helper.logFailure("The exchange failed on " + channel, cause);
         ChannelInputStream stream = this.body;
         org.restlet.Request request = currentRequest;
         if (request != null) {
