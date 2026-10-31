@@ -368,7 +368,8 @@ final class RestletClientStream extends AbstractClientStream {
 
         @Override
         public void deframeFailed(Throwable cause) {
-            fail(Status.fromThrowable(cause));
+            // Also abort the HTTP exchange, whose worker may be blocked reading the body.
+            RestletClientStream.this.fail(Status.fromThrowable(cause));
         }
 
         @Override

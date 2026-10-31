@@ -19,7 +19,11 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.ProtoUtils;
 import io.grpc.stub.ClientCalls;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +37,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.OutputRepresentation;
 
 class GrpcHttpValidationTestCase {
     private final GrpcClientAdapter adapter = new GrpcClientAdapter();
@@ -278,6 +283,37 @@ class GrpcHttpValidationTestCase {
                     response.getTrailers().add("grpc-status", "0");
                 });
         assertEquals(Status.Code.RESOURCE_EXHAUSTED, failure().getCode());
+        assertRecovered();
+    }
+
+    @Test
+    void unsupportedEncodingAbortsAnUnfinishedResponseAndRecovers() throws Exception {
+        CountDownLatch aborted = new CountDownLatch(1);
+        startMalformedThenHealthy(
+                response -> {
+                    response.getHeaders().add("grpc-encoding", "unsupported-encoding");
+                    response.setEntity(
+                            new OutputRepresentation(MediaType.valueOf("application/grpc")) {
+                                @Override
+                                public void write(OutputStream output) throws IOException {
+                                    try {
+                                        for (int i = 0; i < 100; i++) {
+                                            output.write(0);
+                                            output.flush();
+                                            Thread.sleep(100);
+                                        }
+                                    } catch (IOException e) {
+                                        aborted.countDown();
+                                        throw e;
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                        throw new IOException(e);
+                                    }
+                                }
+                            });
+                });
+        assertEquals(Status.Code.INTERNAL, failure().getCode());
+        assertTrue(aborted.await(5, TimeUnit.SECONDS), "The HTTP exchange must be aborted");
         assertRecovered();
     }
 }
