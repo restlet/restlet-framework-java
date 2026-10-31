@@ -53,7 +53,10 @@ public class Cookie implements NamedValue<String> {
      * @param version The version number.
      * @param name The name.
      * @param value The value.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated
     public Cookie(int version, String name, String value) {
         this(version, name, value, null, null);
     }
@@ -66,7 +69,10 @@ public class Cookie implements NamedValue<String> {
      * @param value The value.
      * @param path The validity path.
      * @param domain The domain name.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated
     public Cookie(int version, String name, String value, String path, String domain) {
         this.version = version;
         this.name = name;
@@ -142,7 +148,10 @@ public class Cookie implements NamedValue<String> {
      * Returns the cookie specification version.
      *
      * @return The cookie specification version.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated
     public int getVersion() {
         return this.version;
     }
@@ -193,7 +202,10 @@ public class Cookie implements NamedValue<String> {
      * Sets the cookie specification version.
      *
      * @param version The cookie specification version.
+     * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
+     *     cookies.
      */
+    @Deprecated
     public void setVersion(int version) {
         this.version = version;
     }

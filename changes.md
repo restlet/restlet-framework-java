@@ -6,6 +6,7 @@ Changes log
     - Upgraded Jetty library to version 12.1.14. Issue #1515.
     - Upgraded Jackson library to version 2.22.4.
     - Upgraded org.json library to version 20260814.
+    - Deprecated the legacy RFC 2109/2965 cookie API (cookie version, comment and related constructors), to be removed in Restlet 3.0 in favor of RFC 6265.
   - Bugs fixed
     - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
     - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
