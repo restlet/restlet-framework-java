@@ -140,7 +140,7 @@ import org.restlet.representation.Representation;
  * (HTTP/2 only: negotiated with ALPN over TLS, prior knowledge in cleartext, except through a
  * forward proxy where HTTP/1.1 is used), "DYNAMIC" (HTTP/2
  * when negotiated with ALPN over TLS, HTTP/1.1 otherwise), "HTTP3" (<b>experimental</b>: HTTP/3
- * over QUIC for HTTPS URIs without proxy, HTTP/1.1 otherwise; requires the optional
+ * over QUIC for HTTPS URIs without HTTP or SOCKS proxy, HTTP/1.1 otherwise; requires the optional
  * {@code io.netty:netty-codec-http3} dependency with its native QUIC library, and the {@link
  * org.restlet.engine.ssl.DefaultSslContextFactory}).</td>
  * </tr>
@@ -1030,6 +1030,13 @@ public abstract class NettyClientHelper extends ClientHelper {
         if (getTransportMode() == TransportMode.HTTP3) {
             Http3Availability.ensureAvailable();
             getLogger().warning("HTTP/3 support is experimental");
+            if ((getHttpsProxyHost() != null) || (getSocksProxyHost() != null)) {
+                // Proxying QUIC requires CONNECT-UDP (RFC 9298), not supported by Netty yet.
+                getLogger()
+                        .info(
+                                "HTTP/3 is not used through proxies: the HTTPS requests sent"
+                                        + " through a proxy use HTTP/1.1 over TCP");
+            }
         }
         super.start();
         group =
