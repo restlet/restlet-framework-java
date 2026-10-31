@@ -85,9 +85,8 @@ public class CookieReader extends HeaderReader<Cookie> {
      * @param legacyOnly True, if the pair must be left unread unless its name starts with '$'.
      * @return The character ending the name: '=', ';' or -1 at the end of the header, or {@link
      *     #NOT_LEGACY}.
-     * @throws IOException
      */
-    private int readName(StringBuilder name, boolean legacyOnly) throws IOException {
+    private int readName(StringBuilder name, boolean legacyOnly) {
         int next;
 
         while (((next = read()) != -1) && (next != ';') && (next != '=')) {
