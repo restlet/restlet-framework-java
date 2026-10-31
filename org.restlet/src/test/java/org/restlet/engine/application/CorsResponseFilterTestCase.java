@@ -335,6 +335,7 @@ class CorsResponseFilterTestCase {
         corsFilter.setAllowedCredentials(true);
         corsFilter.setAllowedOrigins(java.util.Collections.singleton("http://allowed.example"));
         corsFilter.start();
+        assertTrue(corsFilter.isStarted());
     }
 
     @Test

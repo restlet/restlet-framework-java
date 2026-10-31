@@ -88,7 +88,9 @@ class CorsServiceTestCase {
         CorsService service = new CorsService();
         service.setAllowedCredentials(true);
 
-        assertThrows(IllegalStateException.class, () -> service.createInboundFilter(new Context()));
+        Context context = new Context();
+
+        assertThrows(IllegalStateException.class, () -> service.createInboundFilter(context));
     }
 
     @Test
