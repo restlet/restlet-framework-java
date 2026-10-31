@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -54,7 +55,11 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
 
     private final AtomicLong ids = new AtomicLong();
 
+    /** The operations registered under their wire ID, from subscribe to completion. */
     private final Map<String, Operation> operations = new ConcurrentHashMap<>();
+
+    /** The operations of all subscribers, from onSubscribe until terminated or cancelled. */
+    private final Set<Operation> subscriptions = ConcurrentHashMap.newKeySet();
 
     private Connection connection;
 
@@ -82,8 +87,22 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
         }
         return subscriber -> {
             Objects.requireNonNull(subscriber, "subscriber");
-            subscriber.onSubscribe(new Operation(subscriber, payload));
+            Operation operation = new Operation(subscriber, payload);
+            subscriptions.add(operation);
+            subscriber.onSubscribe(operation);
+            // Checked once tracked, so that a concurrent stop either sees it or is seen here.
+            if (isStopped()) {
+                operation.stop(stoppedError());
+            }
         };
+    }
+
+    private synchronized boolean isStopped() {
+        return stopped;
+    }
+
+    private static GraphqlTransportException stoppedError() {
+        return new GraphqlTransportException("The GraphQL client was stopped", null, null, null);
     }
 
     @Override
@@ -94,10 +113,9 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
             current = connection;
             connection = null;
         }
-        GraphqlTransportException error =
-                new GraphqlTransportException("The GraphQL client was stopped", null, null, null);
-        for (Operation operation : List.copyOf(operations.values())) {
-            operation.fail(error);
+        GraphqlTransportException error = stoppedError();
+        for (Operation operation : List.copyOf(subscriptions)) {
+            operation.stop(error);
         }
         if (current != null) {
             current.close(WebSocketSession.NORMAL_CLOSURE, null);
@@ -108,9 +126,9 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
     /** Returns the open connection, opening one if needed. */
     private synchronized Connection connection() throws GraphqlTransportException {
         if (stopped) {
-            throw new GraphqlTransportException("The GraphQL client was stopped", null, null, null);
+            throw stoppedError();
         }
-        if (connection == null || !connection.session.isOpen()) {
+        if (connection == null || connection.closed || !connection.session.isOpen()) {
             connection = open();
         }
         return connection;
@@ -177,6 +195,9 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
 
         private final Object sendLock = new Object();
 
+        /** Set once the reader stops, after which the connection is no longer used. */
+        private volatile boolean closed;
+
         Connection(WebSocketSession session) {
             this.session = session;
         }
@@ -196,6 +217,7 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
         }
 
         void read() {
+            int closeCode = WebSocketSession.NORMAL_CLOSURE;
             try {
                 WebSocketMessage received;
                 while ((received = session.receive()) != null) {
@@ -203,9 +225,15 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                         dispatch(received.getText());
                     }
                 }
-            } catch (IOException | RuntimeException _) {
+            } catch (IOException _) {
                 // Reported below as a closed connection
+            } catch (RuntimeException _) {
+                // A message that can't be decoded
+                closeCode = GraphqlWebSocketSupport.INVALID_MESSAGE;
             }
+            // Without a reader, the session can't be used anymore.
+            closed = true;
+            close(closeCode, null);
             GraphqlTransportException closed =
                     new GraphqlTransportException(
                             "The GraphQL WebSocket closed: "
@@ -278,7 +306,7 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
 
         private boolean started;
 
-        private boolean invalidDemand;
+        private volatile boolean invalidDemand;
 
         private volatile boolean cancelled;
 
@@ -293,22 +321,35 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
 
         @Override
         public void request(long n) {
+            boolean signal = false;
+            boolean start = false;
             synchronized (this) {
                 if (cancelled) {
                     return;
                 }
                 if (n <= 0) {
                     invalidDemand = true;
+                    // Without a delivery thread, signal from here and prevent one from starting.
+                    signal = !started;
+                    if (signal) {
+                        cancelled = true;
+                    }
                 } else {
                     demand = demand + n < 0 ? Long.MAX_VALUE : demand + n;
-                }
-                notifyAll();
-                if (started) {
-                    return;
+                    start = !started;
                 }
                 started = true;
+                notifyAll();
             }
-            Thread.ofVirtual().name("restlet-graphql-ws-operation").start(this::run);
+            if (signal) {
+                subscriptions.remove(this);
+                subscriber.onError(invalidDemandError());
+            } else if (start) {
+                Thread.ofVirtual().name("restlet-graphql-ws-operation").start(this::run);
+            } else if (n <= 0) {
+                // Wakes the delivery thread up, even without a result to deliver.
+                inbox.add(new Signal(null, 0, false, null));
+            }
         }
 
         @Override
@@ -320,20 +361,46 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                 cancelled = true;
                 notifyAll();
             }
+            subscriptions.remove(this);
             inbox.add(new Signal(null, 0, true, null));
-            if (operations.remove(id, this) && !terminated) {
-                Connection current = connection;
-                if (current != null) {
-                    try {
-                        current.send("{\"id\":\"" + id + "\",\"type\":\"complete\"}");
-                    } catch (IOException _) {
-                        // The connection is closing
-                    }
+            completeOnServer();
+        }
+
+        /** Stops the operation because the transport stops, signalling an error. */
+        void stop(Throwable error) {
+            boolean signal;
+            synchronized (this) {
+                if (cancelled) {
+                    return;
+                }
+                // Without a delivery thread, signal from here and prevent one from starting.
+                signal = !started;
+                started = true;
+                if (signal) {
+                    cancelled = true;
+                }
+            }
+            if (signal) {
+                subscriptions.remove(this);
+                subscriber.onError(error);
+            } else {
+                fail(error);
+            }
+        }
+
+        /** Tells the server to complete the operation, if it is still active there. */
+        private void completeOnServer() {
+            Connection current = connection;
+            if (operations.remove(id, this) && !terminated && current != null) {
+                try {
+                    current.send("{\"id\":\"" + id + "\",\"type\":\"complete\"}");
+                } catch (IOException _) {
+                    // The connection is closing
                 }
             }
         }
 
-        void next(ExecutionResult result, long size) throws IOException {
+        void next(ExecutionResult result, long size) {
             synchronized (this) {
                 bufferedBytes += size;
                 if (bufferedBytes <= adapter.getMaxResponseBytes()) {
@@ -341,8 +408,6 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                     return;
                 }
             }
-            // Still registered: tell the server to complete the subscription.
-            boolean registered = operations.remove(id, this);
             fail(
                     new GraphqlTransportException(
                             "The subscription exceeded "
@@ -351,9 +416,6 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                             null,
                             null,
                             null));
-            if (registered) {
-                connection.send("{\"id\":\"" + id + "\",\"type\":\"complete\"}");
-            }
         }
 
         void error(ExecutionResult result) {
@@ -368,10 +430,13 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
             inbox.add(new Signal(null, 0, true, null));
         }
 
-        /** Fails the operation at once, even ahead of buffered results. */
+        /**
+         * Fails the operation at once, even ahead of buffered results. An operation still active on
+         * the server is completed there.
+         */
         void fail(Throwable error) {
+            completeOnServer();
             terminated = true;
-            operations.remove(id, this);
             synchronized (this) {
                 if (failure == null) {
                     failure = error;
@@ -383,39 +448,57 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
 
         private void run() {
             try {
+                if (subscribe()) {
+                    deliver();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                subscriptions.remove(this);
+            }
+        }
+
+        /** Sends the subscribe message. Returns false if the operation ended meanwhile. */
+        private boolean subscribe() {
+            try {
                 Connection current = connection();
                 connection = current;
-                operations.put(id, this);
-                if (cancelled) {
-                    operations.remove(id, this);
-                    return;
-                }
                 Map<String, Object> subscribe = new LinkedHashMap<>();
                 subscribe.put("id", id);
                 subscribe.put("type", "subscribe");
                 subscribe.put("payload", payload);
-                current.send(GraphqlJson.writeString(subscribe));
-                deliver();
+                String text = GraphqlJson.writeString(subscribe);
+                // Sent while holding the lock that cancel() takes first, so that the complete
+                // message of a cancellation can't be sent before.
+                synchronized (this) {
+                    if (cancelled) {
+                        return false;
+                    }
+                    operations.put(id, this);
+                    current.send(text);
+                }
+                return true;
             } catch (GraphqlTransportException e) {
                 operations.remove(id, this);
                 signalError(e);
-            } catch (IOException e) {
+            } catch (IOException | RuntimeException e) {
+                // Including failures of the request customizer or of the serialization
                 operations.remove(id, this);
                 signalError(
                         new GraphqlTransportException(
                                 "Unable to send the GraphQL subscription", null, null, e));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
+            return false;
         }
 
         private void deliver() throws InterruptedException {
             while (true) {
                 Signal signal = inbox.take();
-                synchronized (this) {
-                    bufferedBytes -= signal.size();
-                }
                 if (cancelled) {
+                    return;
+                }
+                if (invalidDemand) {
+                    rejectDemand();
                     return;
                 }
                 if (signal.error() != null) {
@@ -427,8 +510,14 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                         Throwable error = failure();
                         if (error != null) {
                             signalError(error);
+                        } else if (invalidDemand) {
+                            rejectDemand();
                         }
                         return;
+                    }
+                    // Counted as buffered until delivered.
+                    synchronized (this) {
+                        bufferedBytes -= signal.size();
                     }
                     subscriber.onNext(signal.result());
                 }
@@ -437,6 +526,15 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
                     return;
                 }
             }
+        }
+
+        private void rejectDemand() {
+            completeOnServer();
+            signalError(invalidDemandError());
+        }
+
+        private IllegalArgumentException invalidDemandError() {
+            return new IllegalArgumentException("The requested number of results must be positive");
         }
 
         private void signalError(Throwable error) {
@@ -450,20 +548,13 @@ final class GraphqlWebSocketTransport implements GraphqlSubscriptionTransport {
             return failure;
         }
 
-        /** Waits for demand. Returns false if cancelled or failed meanwhile. */
+        /** Waits for demand. Returns false if cancelled, failed or given invalid demand. */
         private boolean awaitDemand() throws InterruptedException {
             synchronized (this) {
                 while (!cancelled && failure == null && demand == 0 && !invalidDemand) {
                     wait();
                 }
-                if (cancelled || failure != null) {
-                    return false;
-                }
-                if (invalidDemand) {
-                    cancelled = true;
-                    subscriber.onError(
-                            new IllegalArgumentException(
-                                    "The requested number of results must be positive"));
+                if (cancelled || failure != null || invalidDemand) {
                     return false;
                 }
                 if (demand != Long.MAX_VALUE) {
