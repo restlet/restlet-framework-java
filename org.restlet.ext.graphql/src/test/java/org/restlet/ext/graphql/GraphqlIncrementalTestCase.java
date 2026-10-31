@@ -42,6 +42,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -68,6 +69,9 @@ class GraphqlIncrementalTestCase {
     private static final String DEFERRED = "{ fast ... @defer(label: \"d\") { slow } }";
 
     private final CountDownLatch release = new CountDownLatch(1);
+
+    /** The body of the raw multipart responses, with the "b" boundary. */
+    private final AtomicReference<String> raw = new AtomicReference<>();
 
     private Component component;
 
@@ -124,6 +128,19 @@ class GraphqlIncrementalTestCase {
         GraphqlServerAdapter disabled = new GraphqlServerAdapter();
         disabled.setGraphQL(graphQL);
         component.getDefaultHost().attach("/disabled", disabled);
+        component
+                .getDefaultHost()
+                .attach(
+                        "/raw",
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                response.setEntity(
+                                        new StringRepresentation(
+                                                raw.get(),
+                                                MediaType.valueOf("multipart/mixed; boundary=b")));
+                            }
+                        });
         component.start();
         base = "http://localhost:" + component.getServers().get(0).getActualPort();
         client = new Client(Protocol.HTTP);
@@ -280,6 +297,63 @@ class GraphqlIncrementalTestCase {
         negative.subscription.request(0);
         assertTrue(negative.done.await(5, TimeUnit.SECONDS));
         assertInstanceOf(IllegalArgumentException.class, negative.error.get());
+    }
+
+    @Test
+    void invalidDemandDoesNotWaitForParts() throws Exception {
+        GraphqlClientAdapter graphql = graphql("/graphql");
+        IncrementalExecutionResult incremental =
+                (IncrementalExecutionResult) graphql.execute(DEFERRED, null, null);
+        TestSubscriber subscriber = new TestSubscriber();
+        incremental.getIncrementalItemPublisher().subscribe(subscriber);
+        // The deferred part is held back while the reader waits for it.
+        subscriber.subscription.request(1);
+        Thread.sleep(100);
+        subscriber.subscription.request(-1);
+        assertTrue(subscriber.done.await(2, TimeUnit.SECONDS));
+        assertInstanceOf(IllegalArgumentException.class, subscriber.error.get());
+    }
+
+    @Test
+    void rawResponsesAreChecked() throws Exception {
+        String initial =
+                "--b\r\nContent-Type: application/json\r\n\r\n"
+                        + "{\"data\":{\"fast\":\"fast\"},\"hasNext\":true}\r\n";
+        String last =
+                "--b\r\nContent-Type: application/json\r\n\r\n"
+                        + "{\"incremental\":[{\"data\":{\"slow\":\"slow\"},\"path\":[]}],"
+                        + "\"extensions\":{\"trace\":null},\"hasNext\":false}\r\n";
+        GraphqlClientAdapter graphql = graphql("/raw");
+
+        // Null extension values are kept.
+        raw.set(initial + last + "--b--\r\n");
+        TestSubscriber complete = subscribe(graphql);
+        DelayedIncrementalPartialResult delayed = complete.next();
+        assertTrue(delayed.getExtensions().containsKey("trace"));
+        assertTrue(complete.done.await(5, TimeUnit.SECONDS));
+        assertNull(complete.error.get());
+
+        // A missing close delimiter or extra parts are errors.
+        for (String end : List.of("--b", initial + "--b--\r\n")) {
+            raw.set(initial + last + end);
+            TestSubscriber invalid = subscribe(graphql);
+            assertTrue(invalid.done.await(5, TimeUnit.SECONDS), end);
+            assertInstanceOf(GraphqlTransportException.class, invalid.error.get(), end);
+        }
+        raw.set(
+                "--b\r\nContent-Type: application/json\r\n\r\n"
+                        + "{\"data\":{\"fast\":\"fast\"},\"hasNext\":false}\r\n--b");
+        assertThrows(
+                GraphqlTransportException.class, () -> graphql.execute("{ fast }", null, null));
+    }
+
+    private static TestSubscriber subscribe(GraphqlClientAdapter graphql) throws Exception {
+        IncrementalExecutionResult incremental =
+                (IncrementalExecutionResult) graphql.execute(DEFERRED, null, null);
+        TestSubscriber subscriber = new TestSubscriber();
+        incremental.getIncrementalItemPublisher().subscribe(subscriber);
+        subscriber.subscription.request(Long.MAX_VALUE);
+        return subscriber;
     }
 
     @Test
