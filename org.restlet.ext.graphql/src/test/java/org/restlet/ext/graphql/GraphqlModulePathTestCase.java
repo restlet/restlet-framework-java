@@ -10,6 +10,7 @@ package org.restlet.ext.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -138,6 +139,7 @@ class GraphqlModulePathTestCase {
                                 Set.of("consumer"));
         assertNotNull(configuration.findModule("com.graphqljava").orElse(null));
         assertNotNull(configuration.findModule("org.reactivestreams").orElse(null));
+        assertTrue(configuration.findModule("org.restlet.ext.websocket").isEmpty());
 
         ModuleLayer layer =
                 ModuleLayer.boot()
@@ -159,7 +161,9 @@ class GraphqlModulePathTestCase {
                     || entry.contains("test-classes")
                     || entry.contains("junit")
                     || entry.contains("opentest4j")
-                    || entry.contains("apiguardian")) {
+                    || entry.contains("apiguardian")
+                    // The WebSocket extension is optional: the consumer must run without it.
+                    || entry.contains("ext.websocket")) {
                 continue;
             }
             try {
