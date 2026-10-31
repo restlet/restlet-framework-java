@@ -33,6 +33,9 @@ import java.util.logging.Level;
  */
 public class AuthenticatorUtils {
 
+	/** Name of the challenge parameter that advertises the credentials charset. */
+	private static final String CHARSET_PARAMETER = "charset";
+
 	/**
 	 * Indicates if any of the objects is null.
 	 * 
@@ -357,6 +360,13 @@ public class AuthenticatorUtils {
 			realm = challengeRequest.getRealm();
 			nonce = challengeRequest.getServerNonce();
 			challengeResponse.setOpaque(challengeRequest.getOpaque());
+
+			// Credentials charset advertised by the server (RFC 7617, section 2.1)
+			String charset = challengeRequest.getParameters().getFirstValue(CHARSET_PARAMETER, true);
+			if (HttpBasicHelper.isUtf8Enabled() && ChallengeScheme.HTTP_BASIC.equals(challengeResponse.getScheme())
+					&& charset != null && challengeResponse.getParameters().getFirstValue(CHARSET_PARAMETER, true) == null) {
+				challengeResponse.getParameters().add(CHARSET_PARAMETER, charset);
+			}
 		}
 
 		challengeResponse.setRealm(realm);

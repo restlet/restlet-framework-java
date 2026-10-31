@@ -35,6 +35,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.security.HttpBasicHelper;
 
 /**
  * Restlet unit tests for HTTP Basic authentication client/server.
@@ -43,6 +44,12 @@ import org.restlet.data.Status;
  * @author Jerome Louvel
  */
 public class HttpBasicTestCase {
+
+	public static final String LATIN1_USERNAME = "jos\u00e9";
+	public static final String LATIN1_PASSWORD = "p\u00e4ssw\u00f6rd";
+	/** The euro sign does not exist in ISO-8859-1. */
+	public static final String UTF8_USERNAME = "zo\u00eb";
+	public static final String UTF8_PASSWORD = "p\u20acss";
 
 	public static class AuthenticatedRestlet extends Restlet {
 		@Override
@@ -55,6 +62,8 @@ public class HttpBasicTestCase {
 		public TestVerifier() {
 			getLocalSecrets().put(SHORT_USERNAME, SHORT_PASSWORD.toCharArray());
 			getLocalSecrets().put(LONG_USERNAME, LONG_PASSWORD.toCharArray());
+			getLocalSecrets().put(LATIN1_USERNAME, LATIN1_PASSWORD.toCharArray());
+			getLocalSecrets().put(UTF8_USERNAME, UTF8_PASSWORD.toCharArray());
 		}
 
 		@Override
@@ -152,6 +161,36 @@ public class HttpBasicTestCase {
 			assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
 		}
 
+		/** Clients that predate RFC 7617 and send ISO-8859-1 must keep working. */
+		@Test
+		void testLatin1CredentialsWithoutCharset() {
+			request.setChallengeResponse(
+					new ChallengeResponse(ChallengeScheme.HTTP_BASIC, LATIN1_USERNAME, LATIN1_PASSWORD));
+
+			assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+		}
+
+		/** Issue #1455: credentials sent as UTF-8 are accepted by the server. */
+		@Test
+		void testUtf8CredentialsWithCharset() {
+			System.setProperty(HttpBasicHelper.UTF8_PROPERTY, "true");
+			ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, UTF8_USERNAME,
+					UTF8_PASSWORD);
+			authentication.getParameters().add("charset", "UTF-8");
+			request.setChallengeResponse(authentication);
+
+			assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+		}
+
+		/** Issue #1455: the server challenge carries charset="UTF-8" when enabled. */
+		@Test
+		void testChallengeAdvertisesUtf8() {
+			System.setProperty(HttpBasicHelper.UTF8_PROPERTY, "true");
+			Response response = client.handle(request);
+			assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+			assertEquals("UTF-8", response.getChallengeRequests().get(0).getParameters().getFirstValue("charset"));
+		}
+
 		@BeforeEach
 		public void makeServer() throws Exception {
 			final String REALM = HttpBasicTestCase.class.getSimpleName();
@@ -177,6 +216,7 @@ public class HttpBasicTestCase {
 
 		@AfterEach
 		public void cleanup() throws Exception {
+			System.clearProperty(HttpBasicHelper.UTF8_PROPERTY);
 			client.stop();
 			if (this.component.isStarted()) {
 				this.component.stop();
