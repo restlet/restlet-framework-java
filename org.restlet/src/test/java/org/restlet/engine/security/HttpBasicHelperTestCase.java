@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -24,12 +25,18 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.engine.Engine;
 
 /**
  * Unit tests for the credentials charset handling of {@link HttpBasicHelper} (RFC 7617 section
  * 2.1), without any network.
  */
 class HttpBasicHelperTestCase {
+
+    @BeforeEach
+    void registerEngine() {
+        Engine.register(); // other tests may leave an engine without the Basic helper
+    }
 
     private static final String LATIN1_LOGIN = "josé";
     private static final String LATIN1_PASSWORD = "pässwörd";

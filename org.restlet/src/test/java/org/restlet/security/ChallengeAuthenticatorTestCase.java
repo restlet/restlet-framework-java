@@ -25,6 +25,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorUtils;
 
 /** Unit tests for {@link ChallengeAuthenticator}. */
@@ -334,6 +335,7 @@ class ChallengeAuthenticatorTestCase {
 
     private static boolean authenticate(
             ChallengeAuthenticator authenticator, String id, String secret, Charset charset) {
+        Engine.register(); // other tests may leave an engine without the Basic helper
         Request request = new Request(Method.GET, "http://localhost/");
         String header =
                 "Basic "

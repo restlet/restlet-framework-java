@@ -22,6 +22,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.engine.Engine;
 
 class AuthenticatorUtilsTestCase {
 
@@ -198,6 +199,7 @@ class AuthenticatorUtilsTestCase {
 
     @Test
     void parseRequest_twoChallenges_eachGetsItsSchemeAndRealm() {
+        Engine.register(); // other tests may leave an engine without the Basic helper
         List<ChallengeRequest> result =
                 AuthenticatorUtils.parseRequest(
                         new Response(new Request(Method.GET, "http://localhost/")),
