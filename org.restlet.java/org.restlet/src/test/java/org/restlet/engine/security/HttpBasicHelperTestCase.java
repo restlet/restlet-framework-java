@@ -22,6 +22,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.engine.Engine;
 
 /**
  * Unit tests for the credentials charset handling of {@link HttpBasicHelper} (RFC 7617 section
@@ -31,6 +32,7 @@ class HttpBasicHelperTestCase {
 
 	@BeforeEach
 	void enableUtf8() {
+		Engine.register(); // other tests may leave an engine without the Basic helper
 		System.setProperty(HttpBasicHelper.UTF8_PROPERTY, "true");
 	}
 
