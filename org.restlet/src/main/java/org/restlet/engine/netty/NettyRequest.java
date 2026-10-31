@@ -344,7 +344,7 @@ class NettyRequest extends Request {
     public Series<Cookie> getCookies() {
         Series<Cookie> result = super.getCookies();
         if (!cookiesAdded) {
-            String cookies = headers.getValues(HeaderConstants.HEADER_COOKIE);
+            String cookies = headers.getValues(HeaderConstants.HEADER_COOKIE, "; ", true);
             if (cookies != null) {
                 new CookieReader(cookies).addValues(result);
             }

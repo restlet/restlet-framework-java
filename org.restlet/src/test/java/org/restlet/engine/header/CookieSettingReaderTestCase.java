@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.SameSite;
 
 class CookieSettingReaderTestCase {
 
@@ -48,14 +49,13 @@ class CookieSettingReaderTestCase {
     }
 
     @Test
-    void read_comment_setsComment() {
-        CookieSetting cookieSetting = CookieSettingReader.read("name=value; comment=hello");
-        assertEquals("hello", cookieSetting.getComment());
-    }
-
-    @Test
-    void read_discard_setsMaxAgeToNegativeOne() {
-        CookieSetting cookieSetting = CookieSettingReader.read("name=value; discard");
+    void read_legacyAttributes_areIgnored() {
+        CookieSetting cookieSetting =
+                CookieSettingReader.read(
+                        "name=\"value\"; Version=\"1\"; Comment=hello; CommentURL=http://x; Discard; Port=80; Path=\"/app\"");
+        assertEquals("name", cookieSetting.getName());
+        assertEquals("value", cookieSetting.getValue());
+        assertEquals("/app", cookieSetting.getPath());
         assertEquals(-1, cookieSetting.getMaxAge());
     }
 
@@ -84,9 +84,38 @@ class CookieSettingReaderTestCase {
     }
 
     @Test
-    void read_version_setsVersion() {
-        CookieSetting cookieSetting = CookieSettingReader.read("name=value; version=1");
-        assertEquals(1, cookieSetting.getVersion());
+    void read_sameSite_setsSameSite() {
+        assertEquals(
+                SameSite.STRICT,
+                CookieSettingReader.read("name=value; SameSite=Strict").getSameSite());
+        assertEquals(
+                SameSite.NONE, CookieSettingReader.read("name=value; samesite=none").getSameSite());
+        assertNull(CookieSettingReader.read("name=value; SameSite=bogus").getSameSite());
+        assertNull(CookieSettingReader.read("name=value").getSameSite());
+    }
+
+    @Test
+    void read_maxAgeAndExpires_maxAgeWinsWhateverTheOrder() {
+        String expires =
+                org.restlet.engine.util.DateUtils.format(
+                        new java.util.Date(System.currentTimeMillis() + 7_200_000L),
+                        org.restlet.engine.util.DateUtils.FORMAT_RFC_1123.getFirst());
+        assertEquals(
+                60,
+                CookieSettingReader.read("name=value; Max-Age=60; Expires=" + expires).getMaxAge());
+        assertEquals(
+                60,
+                CookieSettingReader.read("name=value; Expires=" + expires + "; Max-Age=60")
+                        .getMaxAge());
+    }
+
+    @Test
+    void roundTrip_writtenCookieSetting_isReadBack() {
+        CookieSetting written =
+                new CookieSetting("id", "123", "/app", "example.com", 600, true, true);
+        written.setSameSite(SameSite.LAX);
+        CookieSetting read = CookieSettingReader.read(CookieSettingWriter.write(written));
+        assertEquals(written, read);
     }
 
     @Test

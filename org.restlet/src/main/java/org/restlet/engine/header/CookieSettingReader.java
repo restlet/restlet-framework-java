@@ -18,23 +18,21 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
+import org.restlet.data.SameSite;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
 
 /**
  * Cookie setting header reader.
  *
- * <p>The commentURL and port attributes are not supported yet.
+ * <p>Reads RFC 6265 cookies. The attributes of the obsolete RFC 2109 and RFC 2965 formats (Version,
+ * Comment, CommentURL, Discard, Port) are silently ignored.
  *
  * @author Jerome Louvel
  */
 public class CookieSettingReader extends HeaderReader<CookieSetting> {
 
     private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
-
-    private static final String NAME_SET_COMMENT = "comment";
-
-    private static final String NAME_SET_DISCARD = "discard";
 
     private static final String NAME_SET_DOMAIN = "domain";
 
@@ -44,9 +42,9 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 
     private static final String NAME_SET_PATH = "path";
 
-    private static final String NAME_SET_SECURE = "secure";
+    private static final String NAME_SET_SAME_SITE = "samesite";
 
-    private static final String NAME_SET_VERSION = "version";
+    private static final String NAME_SET_SECURE = "secure";
 
     /**
      * Parses the given String to a CookieSetting
@@ -68,9 +66,6 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
     /** The cached pair. Used by the readPair() method. */
     private volatile Parameter cachedPair;
 
-    /** The global cookie specification version. */
-    private final int globalVersion;
-
     /**
      * Constructor.
      *
@@ -79,7 +74,6 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
     public CookieSettingReader(String header) {
         super(header);
         this.cachedPair = null;
-        this.globalVersion = -1;
     }
 
     /**
@@ -120,11 +114,8 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                     }
                 } else if (nextChar == '=') {
                     readingName = false;
-                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
-                    nameBuffer.append((char) nextChar);
                 } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your cookie header");
+                    nameBuffer.append((char) nextChar);
                 }
             } else {
                 // reading value
@@ -137,11 +128,8 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                     // Step back
                     unread();
                     valueBuffer.append(readQuotedString());
-                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
-                    valueBuffer.append((char) nextChar);
                 } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your cookie header");
+                    valueBuffer.append((char) nextChar);
                 }
             }
         }
@@ -164,15 +152,15 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
         // Set the cookie name and value
         CookieSetting result = new CookieSetting(pair.getName(), pair.getValue());
 
+        // Max-Age takes precedence over Expires, whatever their order (RFC 6265 section 5.3)
+        Integer maxAge = null;
+        Integer expiresMaxAge = null;
+
         while ((pair = readPair()) != null) {
             if (NAME_SET_PATH.equalsIgnoreCase(pair.getName())) {
                 result.setPath(pair.getValue());
             } else if (NAME_SET_DOMAIN.equalsIgnoreCase(pair.getName())) {
                 result.setDomain(pair.getValue());
-            } else if (NAME_SET_COMMENT.equalsIgnoreCase(pair.getName())) {
-                result.setComment(pair.getValue());
-            } else if (NAME_SET_DISCARD.equalsIgnoreCase(pair.getName())) {
-                result.setMaxAge(-1);
             } else if (NAME_SET_EXPIRES.equalsIgnoreCase(pair.getName())) {
                 Date expires = parseExpiresDate(pair);
                 if (expires == null) {
@@ -182,13 +170,13 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                                     "Ignoring cookie setting expiration date. Unable to parse the date: "
                                             + pair.getValue());
                 } else {
-                    result.setMaxAge(fromExpirationDateToMaxAge(expires));
+                    expiresMaxAge = fromExpirationDateToMaxAge(expires);
                 }
             } else if (NAME_SET_MAX_AGE.equalsIgnoreCase(pair.getName())) {
                 try {
-                    result.setMaxAge(Integer.parseInt(pair.getValue()));
+                    maxAge = Integer.parseInt(pair.getValue());
                 } catch (NumberFormatException numberFormatException) {
-                    result.setMaxAge(Integer.MAX_VALUE);
+                    maxAge = Integer.MAX_VALUE;
                     Context.getCurrentLogger()
                             .warning(
                                     "Unable to parse the cookie setting max-age value \""
@@ -204,17 +192,23 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                 if (StringUtils.isNullOrEmpty(pair.getValue())) {
                     result.setAccessRestricted(true);
                 }
-            } else if (NAME_SET_VERSION.equalsIgnoreCase(pair.getName())) {
-                result.setVersion(Integer.parseInt(pair.getValue()));
+            } else if (NAME_SET_SAME_SITE.equalsIgnoreCase(pair.getName())) {
+                result.setSameSite(SameSite.parse(pair.getValue()));
             } else {
-                // Silently ignore the parameter as it may have been introduced by new
-                // specifications
+                // Silently ignore the parameter, such as the obsolete RFC 2965 ones, or as it may
+                // have been introduced by new specifications
                 Context.getCurrentLogger()
                         .log(
                                 Level.FINE,
                                 "The \"{0}\" attribute is not supported yet for cookie settings. Ignoring it.",
                                 pair.getName());
             }
+        }
+
+        if (maxAge != null) {
+            result.setMaxAge(maxAge);
+        } else if (expiresMaxAge != null) {
+            result.setMaxAge(expiresMaxAge);
         }
 
         return result;

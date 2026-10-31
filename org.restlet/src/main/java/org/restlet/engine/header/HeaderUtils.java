@@ -67,7 +67,6 @@ import static org.restlet.engine.header.HeaderConstants.HEADER_REFERRER;
 import static org.restlet.engine.header.HeaderConstants.HEADER_RETRY_AFTER;
 import static org.restlet.engine.header.HeaderConstants.HEADER_SERVER;
 import static org.restlet.engine.header.HeaderConstants.HEADER_SET_COOKIE;
-import static org.restlet.engine.header.HeaderConstants.HEADER_SET_COOKIE2;
 import static org.restlet.engine.header.HeaderConstants.HEADER_TRAILER;
 import static org.restlet.engine.header.HeaderConstants.HEADER_TRANSFER_ENCODING;
 import static org.restlet.engine.header.HeaderConstants.HEADER_TRANSFER_EXTENSION;
@@ -173,7 +172,6 @@ public class HeaderUtils {
                                     HEADER_RETRY_AFTER,
                                     HEADER_SERVER,
                                     HEADER_SET_COOKIE,
-                                    HEADER_SET_COOKIE2,
                                     HEADER_USER_AGENT,
                                     HEADER_VARY,
                                     HEADER_VIA,
@@ -259,23 +257,6 @@ public class HeaderUtils {
                                 }),
                         Map.entry(
                                 HEADER_SET_COOKIE.toLowerCase(),
-                                (h, r, all) -> {
-                                    try {
-                                        CookieSettingReader cr =
-                                                new CookieSettingReader(h.getValue());
-                                        r.getCookieSettings().add(cr.readValue());
-                                    } catch (Exception e) {
-                                        Context.getCurrentLogger()
-                                                .log(
-                                                        Level.WARNING,
-                                                        e,
-                                                        () ->
-                                                                "Error during cookie setting parsing. Header: "
-                                                                        + h.getValue());
-                                    }
-                                }),
-                        Map.entry(
-                                HEADER_SET_COOKIE2.toLowerCase(),
                                 (h, r, all) -> {
                                     try {
                                         CookieSettingReader cr =

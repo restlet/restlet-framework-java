@@ -61,6 +61,16 @@ Changes log
         - Removed the `Protocol.WAR` constant ("war" scheme, Web Archive Access Protocol), a
           leftover of the Servlet mode, which is no longer supported. `Protocol.valueOf("war")`
           now returns a new, unknown protocol. Use CLAP or FILE references instead.
+        - Cookies now follow RFC 6265 only, the obsolete RFC 2109 and RFC 2965 formats are dropped.
+          Removed `Cookie.get/setVersion()`, `CookieSetting.get/setComment()` and the constructors
+          of `Cookie` and `CookieSetting` taking a version or a comment, as well as the
+          `Set-Cookie2` support (`HeaderConstants.HEADER_SET_COOKIE2`): a `Set-Cookie2` response
+          header is no longer parsed as a cookie setting. `Set-Cookie` no longer writes `Version`,
+          `Comment` or `Discard`, nor quotes values and attributes, and writes `Max-Age` together
+          with `Expires`. The request `Cookie` header no longer writes `$Version`, `$Path` and
+          `$Domain`. When reading, these legacy pairs and attributes are silently ignored, and a
+          comma is no longer a separator between cookies (several `Cookie` headers are joined with
+          semicolons). `Max-Age` now takes precedence over `Expires` when both are present.
     - Enhancements
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
@@ -93,10 +103,15 @@ Changes log
         - HTTP/2 and HTTP/3 requests advertise `te: trailers`; stream header names are normalized
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
+        - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
+          `SameSite` enum), read and written in `Set-Cookie`.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
+        - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
+        - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
+          a login. Issue #554.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

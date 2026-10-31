@@ -9,6 +9,7 @@
 package org.restlet.engine.header;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -120,6 +121,46 @@ class CookieReaderTestCase {
         }
     }
 
+    /**
+     * Test the lenient reading of a cookie header in the obsolete RFC 2109 format.
+     *
+     * @param headerValue The legacy cookie header value.
+     * @param expected The expected RFC 6265 header once rewritten.
+     */
+    private void testLegacyCookie(String headerValue, String expected) throws IOException {
+        CookieReader cr = new CookieReader(headerValue);
+        List<Cookie> cookies = new ArrayList<>();
+        Cookie cookie = cr.readValue();
+
+        while (cookie != null) {
+            assertNull(cookie.getPath(), "The legacy $Path must be ignored");
+            assertNull(cookie.getDomain(), "The legacy $Domain must be ignored");
+            cookies.add(cookie);
+            cookie = cr.readValue();
+        }
+
+        assertEquals(expected, CookieWriter.write(cookies));
+    }
+
+    /**
+     * Test a set cookie header in the obsolete RFC 2109 format.
+     *
+     * @param headerValue The legacy set cookie header value.
+     * @param expected The expected RFC 6265 header once rewritten.
+     */
+    private void testCookieSetting(String headerValue, String expected) throws IOException {
+        CookieSetting cookie = new CookieSettingReader(headerValue).readValue();
+        assertEquals(expected, CookieSettingWriter.write(cookie));
+    }
+
+    @Test
+    void read_commaIsNotASeparator() throws IOException {
+        // RFC 6265 section 4.2.1: cookies are separated by semicolons only
+        Cookie cookie = new CookieReader("a=1, b=2; c=3").readValue();
+        assertEquals("a", cookie.getName());
+        assertEquals("1, b=2", cookie.getValue());
+    }
+
     /** Tests the parsing of cookies. */
     @Test
     void testParsing() throws IOException {
@@ -136,23 +177,26 @@ class CookieReaderTestCase {
 
         testCookieDate("Tuesday, 09-Nov-99 23:12:40 GMT");
 
-        // RFC 2109
-        testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"");
-        testCookie(
-                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
-        testCookie(
-                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Path=\"/acme\"");
-        testCookie(
-                "$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
+        // Obsolete RFC 2109 samples: read leniently, written back as RFC 6265
+        testLegacyCookie(
+                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"",
+                "Customer=WILE_E_COYOTE");
+        testLegacyCookie(
+                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"",
+                "Customer=WILE_E_COYOTE; Part_Number=Rocket_Launcher_0001");
+        testLegacyCookie(
+                "$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Domain=\"example.com\"",
+                "Customer=WILE_E_COYOTE; Part_Number=Rocket_Launcher_0001; Shipping=FedEx");
+        testLegacyCookie(
+                "$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"",
+                "Part_Number=Riding_Rocket_0023; Part_Number=Rocket_Launcher_0001");
 
-        testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"", true);
         testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
-        testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"", true);
+                "Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"; Comment=\"x\"; Discard",
+                "Customer=WILE_E_COYOTE; Path=/acme");
         testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
-        testCookieSetting(
-                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"", true);
+                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"",
+                "Part_Number=Riding_Rocket_0023; Path=/acme/ammo");
 
         // Bug #49
         testCookieSetting(

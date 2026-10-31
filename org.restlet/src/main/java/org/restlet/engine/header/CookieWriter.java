@@ -63,80 +63,35 @@ public class CookieWriter extends HeaderWriter<Cookie> {
     public CookieWriter append(Cookie cookie) throws IllegalArgumentException {
         String name = cookie.getName();
         String value = cookie.getValue();
-        int version = cookie.getVersion();
 
         if ((name == null) || (name.isEmpty())) {
             throw new IllegalArgumentException("Can't write cookie. Invalid name detected");
         }
 
-        appendValue(name, 0).append('=');
+        append(name).append('=');
 
-        // Append the value
         if ((value != null) && (!value.isEmpty())) {
-            appendValue(value, version);
-        }
-
-        if (version > 0) {
-            // Append the path
-            String path = cookie.getPath();
-
-            if ((path != null) && (!path.isEmpty())) {
-                append("; $Path=");
-                appendQuotedString(path);
-            }
-
-            // Append the domain
-            String domain = cookie.getDomain();
-
-            if ((domain != null) && (!domain.isEmpty())) {
-                append("; $Domain=");
-                appendQuotedString(domain);
-            }
+            append(value);
         }
 
         return this;
     }
 
     /**
-     * Appends a list of cookies as an HTTP header.
+     * Appends a list of cookies as an HTTP header, separated by semicolons (RFC 6265 section 5.4).
      *
      * @param cookies The list of cookies to format.
      * @return This writer.
      */
     public CookieWriter append(List<Cookie> cookies) {
         if ((cookies != null) && !cookies.isEmpty()) {
-            Cookie cookie;
-
             for (int i = 0; i < cookies.size(); i++) {
-                cookie = cookies.get(i);
-
-                if (i == 0) {
-                    if (cookie.getVersion() > 0) {
-                        append("$Version=\"").append(cookie.getVersion()).append("\"; ");
-                    }
-                } else {
+                if (i > 0) {
                     append("; ");
                 }
 
-                append(cookie);
+                append(cookies.get(i));
             }
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a source string as an HTTP comment.
-     *
-     * @param value The source string to format.
-     * @param version The cookie version.
-     * @return This writer.
-     */
-    public CookieWriter appendValue(String value, int version) {
-        if (version == 0) {
-            append(value);
-        } else {
-            appendQuotedString(value);
         }
 
         return this;

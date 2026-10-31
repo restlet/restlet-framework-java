@@ -434,7 +434,7 @@ class ServerResourceTestCase {
         EchoServerResource resource = createInitializedResource(Method.GET);
         org.restlet.util.Series<org.restlet.data.CookieSetting> cookieSettings =
                 new org.restlet.util.Series<>(org.restlet.data.CookieSetting.class);
-        cookieSettings.add(new org.restlet.data.CookieSetting(0, "name", "value"));
+        cookieSettings.add(new org.restlet.data.CookieSetting("name", "value"));
 
         resource.setCookieSettings(cookieSettings);
 

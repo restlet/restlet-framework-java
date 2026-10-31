@@ -39,36 +39,20 @@ public class Cookie implements NamedValue<String> {
     /** The value. */
     private volatile String value;
 
-    /** The version number. */
-    private volatile int version;
-
     /** Default constructor. */
     public Cookie() {
-        this(0, null, null, null, null);
+        this(null, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param version The version number.
-     * @param name The name.
-     * @param value The value.
-     */
-    public Cookie(int version, String name, String value) {
-        this(version, name, value, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param version The version number.
      * @param name The name.
      * @param value The value.
      * @param path The validity path.
      * @param domain The domain name.
      */
-    public Cookie(int version, String name, String value, String path, String domain) {
-        this.version = version;
+    public Cookie(String name, String value, String path, String domain) {
         this.name = name;
         this.value = value;
         this.path = path;
@@ -82,7 +66,7 @@ public class Cookie implements NamedValue<String> {
      * @param value The value.
      */
     public Cookie(String name, String value) {
-        this(0, name, value, null, null);
+        this(name, value, null, null);
     }
 
     /** {@inheritDoc} */
@@ -97,7 +81,6 @@ public class Cookie implements NamedValue<String> {
 
         return Objects.equals(getName(), that.getName())
                 && Objects.equals(getValue(), that.getValue())
-                && (this.version == that.version)
                 && Objects.equals(getDomain(), that.getDomain())
                 && Objects.equals(getPath(), that.getPath());
     }
@@ -138,19 +121,10 @@ public class Cookie implements NamedValue<String> {
         return value;
     }
 
-    /**
-     * Returns the cookie specification version.
-     *
-     * @return The cookie specification version.
-     */
-    public int getVersion() {
-        return this.version;
-    }
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(getName(), getValue(), getVersion(), getPath(), getDomain());
+        return SystemUtils.hashCode(getName(), getValue(), getPath(), getDomain());
     }
 
     /**
@@ -189,15 +163,6 @@ public class Cookie implements NamedValue<String> {
         this.value = value;
     }
 
-    /**
-     * Sets the cookie specification version.
-     *
-     * @param version The cookie specification version.
-     */
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
     @Override
     public String toString() {
         return "Cookie [domain="
@@ -208,8 +173,6 @@ public class Cookie implements NamedValue<String> {
                 + path
                 + ", value="
                 + value
-                + ", version="
-                + version
                 + "]";
     }
 }

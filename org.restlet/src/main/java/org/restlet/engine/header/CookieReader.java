@@ -15,15 +15,12 @@ import org.restlet.data.Parameter;
 /**
  * Cookie header reader.
  *
+ * <p>Reads the RFC 6265 format: cookies are separated by semicolons. The pairs of the obsolete RFC
+ * 2109 format ($Version, $Path and $Domain) are silently ignored.
+ *
  * @author Jerome Louvel
  */
 public class CookieReader extends HeaderReader<Cookie> {
-
-    private static final String NAME_DOMAIN = "$Domain";
-
-    private static final String NAME_PATH = "$Path";
-
-    private static final String NAME_VERSION = "$Version";
 
     /**
      * Parses the given String to a Cookie
@@ -42,9 +39,6 @@ public class CookieReader extends HeaderReader<Cookie> {
         }
     }
 
-    /** The global cookie specification version. */
-    private volatile int globalVersion;
-
     /**
      * Constructor.
      *
@@ -52,74 +46,86 @@ public class CookieReader extends HeaderReader<Cookie> {
      */
     public CookieReader(String header) {
         super(header);
-        this.globalVersion = -1;
     }
+
+    /** Returned by {@link #readName} when the next pair is not a legacy attribute. */
+    private static final int NOT_LEGACY = -2;
 
     /**
      * Reads the next pair as a parameter.
      *
-     * @param readAttribute True, if the intention is to only read the cookie attribute.
+     * @param legacyOnly True, if the pair must be left unread unless it is a legacy attribute whose
+     *     name starts with '$'.
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    private Parameter readPair(boolean readAttribute) throws IOException {
-        Parameter result = null;
+    private Parameter readPair(boolean legacyOnly) throws IOException {
+        StringBuilder name = new StringBuilder();
+        int end = readName(name, legacyOnly);
 
-        boolean readingName = true;
-        StringBuilder nameBuffer = new StringBuilder();
-        StringBuilder valueBuffer = new StringBuilder();
-        int nextChar = 0;
+        if (end == NOT_LEGACY) {
+            return null;
+        } else if (end == '=') {
+            return Parameter.create(name, readPairValue());
+        } else if (!name.isEmpty()) {
+            // End of a pair with no value
+            return Parameter.create(name, null);
+        } else if (end == ';') {
+            throw new IOException("Empty cookie name detected. Please check your cookies");
+        }
 
-        while ((result == null) && (nextChar != -1)) {
-            nextChar = read();
+        // End of the header
+        return null;
+    }
 
-            if (readingName) {
-                if (nameBuffer.isEmpty() && HeaderUtils.isSpace(nextChar)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ';') || (nextChar == ',')) {
-                    if (!nameBuffer.isEmpty()) {
-                        // End of a pair with no value
-                        result = Parameter.create(nameBuffer, null);
-                    } else if (nextChar == -1) {
-                        // Do nothing and return a null preference
-                    } else {
-                        throw new IOException(
-                                "Empty cookie name detected. Please check your cookies");
-                    }
-                } else if (nextChar == '=') {
-                    readingName = false;
-                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
-                    if (readAttribute && nextChar != '$' && (nameBuffer.isEmpty())) {
-                        unread();
-                        nextChar = -1;
-                    } else {
-                        nameBuffer.append((char) nextChar);
-                    }
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your cookie header");
-                }
+    /**
+     * Reads the name of a pair, skipping the leading spaces.
+     *
+     * @param name The buffer receiving the name.
+     * @param legacyOnly True, if the pair must be left unread unless its name starts with '$'.
+     * @return The character ending the name: '=', ';' or -1 at the end of the header, or {@link
+     *     #NOT_LEGACY}.
+     */
+    private int readName(StringBuilder name, boolean legacyOnly) {
+        int next;
+
+        while (((next = read()) != -1) && (next != ';') && (next != '=')) {
+            if (name.isEmpty() && HeaderUtils.isSpace(next)) {
+                // Skip spaces
+            } else if (legacyOnly && name.isEmpty() && next != '$') {
+                unread();
+                return NOT_LEGACY;
             } else {
-                // reading value
-                if (valueBuffer.isEmpty() && HeaderUtils.isSpace(nextChar)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ';')) {
-                    // End of a pair
-                    result = Parameter.create(nameBuffer, valueBuffer);
-                } else if ((nextChar == '"') && (valueBuffer.isEmpty())) {
-                    // Step back
-                    unread();
-                    valueBuffer.append(readQuotedString());
-                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
-                    valueBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your cookie header");
-                }
+                name.append((char) next);
             }
         }
 
-        return result;
+        return next;
+    }
+
+    /**
+     * Reads the value of a pair, up to the next semicolon. Quotes are tolerated around the value.
+     *
+     * @return The value.
+     * @throws IOException
+     */
+    private StringBuilder readPairValue() throws IOException {
+        StringBuilder value = new StringBuilder();
+        int next;
+
+        while (((next = read()) != -1) && (next != ';')) {
+            if (value.isEmpty() && HeaderUtils.isSpace(next)) {
+                // Skip spaces
+            } else if ((next == '"') && value.isEmpty()) {
+                // Step back
+                unread();
+                value.append(readQuotedString());
+            } else {
+                value.append((char) next);
+            }
+        }
+
+        return value;
     }
 
     @Override
@@ -127,49 +133,20 @@ public class CookieReader extends HeaderReader<Cookie> {
         Cookie result = null;
         Parameter pair = readPair(false);
 
-        if (pair != null && this.globalVersion == -1) {
-            // Cookies version not yet detected
-            this.globalVersion = getVersion(pair);
-        }
-
+        // Silently ignore the legacy $Version, $Path and $Domain pairs
         while ((pair != null) && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
-            // Unexpected special attribute
-            // Silently ignore it as it may have been introduced by new specifications
             pair = readPair(false);
         }
 
         if (pair != null) {
-            // Set the cookie name and value
-            result = new Cookie(this.globalVersion, pair.getName(), pair.getValue());
-            pair = readPair(true);
-        }
+            result = new Cookie(pair.getName(), pair.getValue());
 
-        while ((pair != null) && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
-            if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
-                result.setPath(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
-                result.setDomain(pair.getValue());
-            } else {
-                // Unexpected special attribute
-                // Silently ignore it as it may have been introduced by new specifications
-            }
-
-            pair = readPair(true);
+            // Skip the legacy attributes following the cookie
+            do {
+                pair = readPair(true);
+            } while (pair != null);
         }
 
         return result;
-    }
-
-    private int getVersion(final Parameter pair) throws IOException {
-        if (NAME_VERSION.equalsIgnoreCase(pair.getName())) {
-            if (pair.getValue() != null) {
-                return Integer.parseInt(pair.getValue());
-            } else {
-                throw new IOException(
-                        "Empty cookies version attribute detected. Please check your cookie header");
-            }
-        } else { // Set the default version for old Netscape cookies
-            return 0;
-        }
     }
 }
