@@ -93,6 +93,10 @@ Changes log
         - HTTP/2 and HTTP/3 requests advertise `te: trailers`; stream header names are normalized
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
+        - Added the `Template.MODE_STARTS_WITH_SEGMENT` matching mode: like `MODE_STARTS_WITH`, but
+          the match must end on a URI path segment boundary, so a route attached to "/mcp" matches
+          "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
+          routers or applications under path prefixes on one connector.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
