@@ -12,12 +12,14 @@ package org.restlet.engine.application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Dimension;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.util.SetUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 /**
@@ -26,8 +28,9 @@ import java.util.logging.Logger;
  * GET and POST. Any other methods should send a preflight request with the
  * method OPTIONS.
  * 
- * @see <a href="http://www.w3.org/TR/cors">W3C CORS Specification</a>
- * @see <a href="http://www.w3.org/TR/cors/#simple-method">Simple methods</a>
+ * @see <a href="https://fetch.spec.whatwg.org/#http-cors-protocol">Fetch Standard, CORS protocol</a>
+ * @see <a href="https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches">Fetch Standard, CORS protocol and HTTP caches</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9110#section-12.5.5">RFC 9110, Vary</a>
  * 
  * @author Manuel Boillod
  */
@@ -56,6 +59,12 @@ public class CorsResponseHelper {
 	/** The value of 'Access-Control-Allow-Origin' header. Default is '*'. */
 	public Set<String> allowedOrigins = SetUtils.newHashSet("*");
 
+	/**
+	 * Optional additional rule to accept an origin that is not listed in {@link #allowedOrigins}.
+	 * Default is null.
+	 */
+	public Predicate<String> allowedOriginMatcher = null;
+
 	/** The value of 'Access-Control-Expose-Headers' response header. */
 	public Set<String> exposedHeaders = null;
 
@@ -73,6 +82,14 @@ public class CorsResponseHelper {
 	 */
 	public void addCorsResponseHeaders(Request request, Response response) {
 
+		// When the answer depends on the Origin request header (allow-list or credentials),
+		// caches must key on it, including for requests without Origin, whose response lacks
+		// CORS headers (Fetch standard, "CORS protocol and HTTP caches"; RFC 9110, 12.5.5).
+		// A static "*" must not use Vary.
+		if (allowedCredentials || !allowedOrigins.contains("*")) {
+			response.getDimensions().add(Dimension.ORIGIN);
+		}
+
 		String origin = request.getHeaders().getFirstValue("Origin", true);
 
 		if (origin == null) {
@@ -84,7 +101,7 @@ public class CorsResponseHelper {
 		// Header 'Allow' is not relevant in CORS request.
 		response.getAllowedMethods().clear();
 
-		if (!allowedOrigins.contains("*") && !allowedOrigins.contains(origin)) {
+		if (!isOriginAllowed(origin)) {
 			// Origin not allowed
 			LOGGER.fine("Origin " + origin + " not allowed for CORS request");
 			return;
@@ -311,6 +328,42 @@ public class CorsResponseHelper {
 	 */
 	public void setAllowedHeaders(Set<String> allowedHeaders) {
 		this.allowedHeaders = allowedHeaders;
+	}
+
+	/**
+	 * Returns the optional rule used to accept origins that are not listed in the allowed origins.
+	 *
+	 * @return The origin matcher, or null.
+	 * @since 2.6.2
+	 */
+	public Predicate<String> getAllowedOriginMatcher() {
+		return allowedOriginMatcher;
+	}
+
+	/**
+	 * Indicates if the given request origin is allowed: "*", a listed origin, or accepted by the
+	 * origin matcher. The comparison is exact and case-sensitive, as in the Fetch standard.
+	 *
+	 * @param origin The value of the 'Origin' request header.
+	 * @return True if the origin is allowed.
+	 */
+	private boolean isOriginAllowed(String origin) {
+		return allowedOrigins.contains("*")
+				|| allowedOrigins.contains(origin)
+				|| (allowedOriginMatcher != null && allowedOriginMatcher.test(origin));
+	}
+
+	/**
+	 * Sets an optional rule to accept origins that are not listed in the allowed origins, for
+	 * example {@code origin -> origin.endsWith(".example.com")}. The response always contains the
+	 * exact request origin. The set of allowed origins must not contain "*", otherwise every origin
+	 * is accepted. By default no matcher is used.
+	 *
+	 * @param allowedOriginMatcher The origin matcher, or null for none.
+	 * @since 2.6.2
+	 */
+	public void setAllowedOriginMatcher(Predicate<String> allowedOriginMatcher) {
+		this.allowedOriginMatcher = allowedOriginMatcher;
 	}
 
 	/**

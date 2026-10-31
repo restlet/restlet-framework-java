@@ -2,10 +2,14 @@ Changes log
 ===========
 
 - 2.6.2 (??-??-2026)
+    - Misc
+        - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin; it has no effect while the allowed origins contain `*`. Issue #1611.
+        - CorsService and CorsFilter now log a warning when `*` is allowed as origin together with credentials (any web site could then send credentialed requests), and their Javadoc references the Fetch standard instead of the W3C CORS draft. Issue #1611.
     - Bugs fixed
         - Missing throw in JsonConverter.java. Issue #729.
         - Type mismatch on container access in MethodAnnotationInfo. Issue #1278.
         - Boolean canAppend in ZipClientHelper can only be false. Issue #1279.
+        - CorsService and CorsFilter now add `Vary: Origin` to every response when the CORS answer depends on the request origin (origin allow-list or credentials allowed), including requests without an `Origin` header, so shared caches no longer serve the response of one origin to another. A static `*` without credentials still sends no `Vary`, as recommended by the Fetch standard. Issue #1611.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed
