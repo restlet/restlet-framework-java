@@ -260,6 +260,59 @@ class GraphqlWebSocketServerTestCase {
     }
 
     @Test
+    void invalidPayloadsAndLongReasonsClose() throws Exception {
+        for (String text :
+                List.of(
+                        "{\"type\": \"ping\", \"payload\": []}",
+                        "{\"type\": \"pong\", \"payload\": \"x\"}",
+                        "{\"type\": \"" + "x".repeat(300) + "\"}")) {
+            Peer invalid = initialized(null);
+            invalid.socket.sendText(text, true).get(5, TimeUnit.SECONDS);
+            assertEquals(4400, invalid.closeCode(), text);
+        }
+        // Truncated to whole characters within 123 UTF-8 bytes.
+        assertEquals("é".repeat(61), GraphqlWebSocketSupport.closeReason("é".repeat(100)));
+        assertEquals("short", GraphqlWebSocketSupport.closeReason("short"));
+    }
+
+    @Test
+    void subscriptionLimitIsCheckedBeforeExecution() throws Exception {
+        GraphqlServerAdapter limited = new GraphqlServerAdapter();
+        limited.setGraphQL(GraphqlTestSchemas.graphQL(new AtomicInteger()));
+        limited.getSubscriptionTransports().add(GraphqlTransport.WEBSOCKET);
+        limited.setMaxSubscriptions(1);
+        component.getDefaultHost().attach("/limited", limited);
+        limited.start();
+        Peer peer = new Peer();
+        peer.socket =
+                http.newWebSocketBuilder()
+                        .subprotocols(GraphqlWebSocketSupport.SUBPROTOCOL)
+                        .buildAsync(
+                                URI.create("ws://" + base.replace("/graphql", "/limited")), peer)
+                        .get(5, TimeUnit.SECONDS);
+        peer.send(Map.of("type", "connection_init"));
+        assertEquals(Map.of("type", "connection_ack"), peer.next());
+
+        // An ID completed by the server can be reused at once.
+        for (int i = 0; i < 20; i++) {
+            peer.send(subscribe("q", "{ hello }"));
+            assertEquals("next", peer.next().get("type"));
+            assertEquals(Map.of("id", "q", "type", "complete"), peer.next());
+        }
+
+        peer.send(subscribe("a", "subscription { idle }"));
+        await(() -> limited.getActiveSubscriptions() == 1);
+        int created = TickPublisher.CREATED.get();
+        peer.send(subscribe("b", "subscription { idle }"));
+        Map<String, Object> error = peer.next();
+        assertEquals("error", error.get("type"));
+        assertEquals("b", error.get("id"));
+        assertEquals(created, TickPublisher.CREATED.get());
+        peer.close();
+        limited.stop();
+    }
+
+    @Test
     void configurationIsValidated() {
         GraphqlServerAdapter other = new GraphqlServerAdapter();
         assertEquals(
