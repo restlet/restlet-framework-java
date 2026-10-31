@@ -7,11 +7,14 @@ Changes log
     - Upgraded Jackson library to version 2.22.4.
     - Upgraded org.json library to version 20260814.
     - Deprecated the legacy RFC 2109/2965 cookie API (cookie version, comment and related constructors), to be removed in Restlet 3.0 in favor of RFC 6265.
+    - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin; it has no effect while the allowed origins contain `*`. Issue #1611.
+    - CorsService and CorsFilter now log a warning when `*` is allowed as origin together with credentials (any web site could then send credentialed requests), and their Javadoc references the Fetch standard instead of the W3C CORS draft. Issue #1611.
   - Bugs fixed
     - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
     - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
     - The Max-Age and Path attributes of a version 1 cookie are no longer quoted in the Set-Cookie header, as browsers ignore them otherwise. Issue #1334.
     - CookieAuthenticator no longer lets the next restlet overwrite the redirection sent after a login. Issue #554.
+    - CorsService and CorsFilter now add `Vary: Origin` to every response when the CORS answer depends on the request origin (origin allow-list or credentials allowed), including requests without an `Origin` header, so shared caches no longer serve the response of one origin to another. A static `*` without credentials still sends no `Vary`, as recommended by the Fetch standard. Issue #1611.
 
 - 2.7.0 (30-09-2026)
   - Misc

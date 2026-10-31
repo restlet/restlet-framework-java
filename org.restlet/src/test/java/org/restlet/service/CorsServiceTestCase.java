@@ -11,6 +11,7 @@ package org.restlet.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
@@ -79,5 +80,17 @@ class CorsServiceTestCase {
         Filter filter = service.createInboundFilter(new Context());
 
         assertInstanceOf(CorsFilter.class, filter);
+    }
+
+    @Test
+    void createInboundFilter_transmitsOriginMatcher() {
+        CorsService service = new CorsService();
+        service.setAllowedOrigins(Set.of());
+        service.setAllowedOriginMatcher(origin -> origin.endsWith(".example.com"));
+
+        CorsFilter filter = (CorsFilter) service.createInboundFilter(new Context());
+
+        assertNotNull(filter.getAllowedOriginMatcher());
+        assertTrue(filter.getAllowedOriginMatcher().test("https://a.example.com"));
     }
 }
