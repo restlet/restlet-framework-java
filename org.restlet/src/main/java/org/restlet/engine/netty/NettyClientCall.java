@@ -236,12 +236,12 @@ class NettyClientCall {
 
     /** Indicates whether the exchange goes through a CONNECT tunnel of the HTTP proxy. */
     private boolean isTunneled() {
-        return secure && (helper.getProxy(true) != null);
+        return secure && (helper.getProxy(true, targetHost) != null);
     }
 
     /** Indicates whether the exchange is sent to an HTTP forward proxy. */
     private boolean isForwardProxied() {
-        return !secure && (helper.getProxy(false) != null);
+        return !secure && (helper.getProxy(false, targetHost) != null);
     }
 
     /**

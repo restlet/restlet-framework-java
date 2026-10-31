@@ -55,6 +55,7 @@ import java.net.SocketAddress;
 import java.security.GeneralSecurityException;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -166,6 +167,15 @@ import org.restlet.representation.Representation;
  * <td>The max size in bytes of the response status line and headers.</td>
  * </tr>
  * <tr>
+ * <td>nonProxyHosts</td>
+ * <td>String</td>
+ * <td>System property "http.nonProxyHosts" or "localhost|127.*|[::1]|0.0.0.0|[::0]"</td>
+ * <td>The hosts to connect to directly, without proxy, separated by "|". A host name can start or
+ * end with a "*" wildcard, e.g. "localhost|*.example.com|192.168.*", and is matched ignoring
+ * case. As with the JDK, the loopback addresses are excluded by default, and an empty value
+ * excludes no host.</td>
+ * </tr>
+ * <tr>
  * <td>proxyHost</td>
  * <td>String</td>
  * <td>System property "http.proxyHost" for HTTP requests, "https.proxyHost" for HTTPS
@@ -208,6 +218,9 @@ public abstract class NettyClientHelper extends ClientHelper {
     /** The negotiated application protocol of a new connection. */
     private static final AttributeKey<Promise<String>> READY =
             AttributeKey.valueOf(NettyClientHelper.class, "ready");
+
+    /** The hosts connected to directly by default, as with the JDK. */
+    private static final String DEFAULT_NON_PROXY_HOSTS = "localhost|127.*|[::1]|0.0.0.0|[::0]";
 
     /** The pool owning a connection. */
     private static final AttributeKey<OriginPool> POOL =
@@ -316,7 +329,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         boolean secure = "https".equalsIgnoreCase(scheme);
-        boolean forwardProxy = !secure && (getProxy(false) != null);
+        boolean forwardProxy = !secure && (getProxy(false, ref.getHostDomain()) != null);
         String target = ReferenceUtils.format(request.getResourceRef(), forwardProxy, request);
         return new NettyClientCall(this, request.getMethod().toString(), ref, target, secure);
     }
@@ -469,7 +482,7 @@ public abstract class NettyClientHelper extends ClientHelper {
     Channel acquire(NettyClientCall call) throws IOException {
         if (call.isConfidential()
                 && getTransportMode() == TransportMode.HTTP3
-                && getProxy(true) == null) {
+                && getProxy(true, call.getTargetHost()) == null) {
             return acquireHttp3(call);
         }
 
@@ -664,7 +677,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         boolean acquired = true;
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
-            final InetSocketAddress proxyRef = getProxy(pool.secure);
+            final InetSocketAddress proxyRef = getProxy(pool.secure, pool.host);
             final InetSocketAddress proxy =
                     (proxyRef == null)
                             ? null
@@ -1115,14 +1128,70 @@ public abstract class NettyClientHelper extends ClientHelper {
      * server.
      *
      * @param secure True for an HTTPS request, false for an HTTP request.
+     * @param targetHost The host name of the origin server.
      * @return The unresolved address of the HTTP proxy, or null.
      */
-    InetSocketAddress getProxy(boolean secure) {
+    InetSocketAddress getProxy(boolean secure, String targetHost) {
         String host = secure ? getHttpsProxyHost() : getProxyHost();
-        return (host == null)
+        return ((host == null) || isNonProxyHost(targetHost))
                 ? null
                 : InetSocketAddress.createUnresolved(
                         host, secure ? getHttpsProxyPort() : getProxyPort());
+    }
+
+    /**
+     * Returns the hosts to connect to directly, without proxy, separated by "|": the
+     * "nonProxyHosts" parameter, or the "http.nonProxyHosts" system property, the loopback
+     * addresses otherwise.
+     *
+     * @return The hosts to connect to directly, possibly empty.
+     */
+    public String getNonProxyHosts() {
+        return getHelpedParameters()
+                .getFirstValue(
+                        "nonProxyHosts",
+                        System.getProperty("http.nonProxyHosts", DEFAULT_NON_PROXY_HOSTS));
+    }
+
+    /**
+     * Indicates whether a host must be connected to directly, without proxy.
+     *
+     * @param host The host name.
+     * @return True if the host matches one of the {@link #getNonProxyHosts()} patterns.
+     */
+    boolean isNonProxyHost(String host) {
+        String patterns = getNonProxyHosts();
+        if ((patterns == null) || (host == null)) {
+            return false;
+        }
+
+        String name = host.toLowerCase(Locale.ROOT);
+        for (String pattern : patterns.split("\\|")) {
+            if (matchesHost(pattern.trim().toLowerCase(Locale.ROOT), name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Matches a host name against a pattern with an optional leading or trailing wildcard. */
+    private static boolean matchesHost(String pattern, String host) {
+        if (pattern.isEmpty()) {
+            return false;
+        } else if ("*".equals(pattern)) {
+            return true;
+        }
+        boolean leading = pattern.startsWith("*");
+        boolean trailing = pattern.endsWith("*");
+        String core = pattern.substring(leading ? 1 : 0, pattern.length() - (trailing ? 1 : 0));
+        if (leading && trailing) {
+            return host.contains(core);
+        } else if (leading) {
+            return host.endsWith(core);
+        } else if (trailing) {
+            return host.startsWith(core);
+        }
+        return host.equals(core);
     }
 
     /**
