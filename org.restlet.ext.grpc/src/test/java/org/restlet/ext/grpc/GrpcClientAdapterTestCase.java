@@ -614,6 +614,27 @@ class GrpcClientAdapterTestCase {
     }
 
     @Test
+    void interceptorCannotExtendAdapterDuration() throws Exception {
+        adapter.setMaxCallDuration(Duration.ofSeconds(3));
+        adapter.getInterceptors()
+                .add(
+                        new io.grpc.ClientInterceptor() {
+                            @Override
+                            public <Q, S> ClientCall<Q, S> interceptCall(
+                                    MethodDescriptor<Q, S> method,
+                                    CallOptions options,
+                                    io.grpc.Channel next) {
+                                return next.newCall(
+                                        method, options.withDeadlineAfter(1, TimeUnit.HOURS));
+                            }
+                        });
+        Pending pending = startBlocked();
+        var failure = assertThrows(StatusRuntimeException.class, () -> call("block"));
+        assertEquals(Status.Code.DEADLINE_EXCEEDED, failure.getStatus().getCode());
+        assertTrue(pending.cancelled().await(30, TimeUnit.SECONDS));
+    }
+
+    @Test
     void callerDeadlineCanShortenAdapterDuration() throws Exception {
         adapter.setMaxCallDuration(Duration.ofSeconds(20));
         Pending pending = startBlocked();
