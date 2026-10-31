@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -21,6 +22,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.engine.Engine;
 
 class AuthenticatorUtilsTestCase {
 
@@ -193,5 +195,21 @@ class AuthenticatorUtilsTestCase {
                 request.getResourceRef(),
                 AuthenticatorUtils.updateReference(
                         request.getResourceRef(), challengeResponse, request));
+    }
+
+    @Test
+    void parseRequest_twoChallenges_eachGetsItsSchemeAndRealm() {
+        Engine.register(); // other tests may leave an engine without the Basic helper
+        List<ChallengeRequest> result =
+                AuthenticatorUtils.parseRequest(
+                        new Response(new Request(Method.GET, "http://localhost/")),
+                        "Basic realm=\"my realm\", Bearer error=\"x\"",
+                        null);
+
+        assertEquals(2, result.size());
+        assertEquals(ChallengeScheme.HTTP_BASIC, result.get(0).getScheme());
+        assertEquals("my realm", result.get(0).getRealm());
+        assertEquals("Bearer", result.get(1).getScheme().getTechnicalName());
+        assertEquals("error=x", result.get(1).getRawValue());
     }
 }

@@ -11,6 +11,11 @@ package org.restlet.engine.security;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
 import org.restlet.Context;
@@ -50,7 +55,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             Response response,
             Series<Header> httpHeaders) {
         String realm = challenge.getRealm();
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (realm != null) {
             cw.appendQuotedChallengeParameter(REALM, realm);
@@ -122,7 +127,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
         while (param != null) {
             try {
-                if (REALM.equals(param.getName())) {
+                if (REALM.equalsIgnoreCase(param.getName())) {
                     challenge.setRealm(param.getValue());
                 } else {
                     challenge.getParameters().add(param);
@@ -152,29 +157,64 @@ public class HttpBasicHelper extends AuthenticatorHelper {
         }
 
         try {
-            String charset = getCharset(challenge);
-
-            byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
-
-            String credentials = new String(credentialsEncoded, charset);
-            int separator = credentials.indexOf(':');
-
-            if (separator == -1) {
+            if (!parseCredentials(challenge, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1)) {
                 // Log the blocking
                 getLogger()
                         .log(
                                 Level.INFO,
                                 "Invalid credentials given by client with IP: {0}",
                                 request != null ? request.getClientInfo().getAddress() : "?");
-            } else {
-                challenge.setIdentifier(credentials.substring(0, separator));
-                challenge.setSecret(credentials.substring(separator + 1));
             }
-        } catch (UnsupportedEncodingException e) {
-            getLogger().log(Level.INFO, "Unsupported HTTP Basic encoding error", e);
         } catch (IllegalArgumentException e) {
             getLogger().log(Level.INFO, "Unable to decode the HTTP Basic credential", e);
         }
+    }
+
+    /**
+     * Decodes the Base64 credentials of a challenge response and sets its identifier and secret.
+     * The server advertises {@code charset="UTF-8"} (RFC 7617 section 2.1) but the header does not
+     * tell which charset the client used, so the bytes are decoded with the primary charset and, if
+     * they are not valid in it, with the fallback charset.
+     *
+     * @param challenge The challenge response, with its raw value set.
+     * @param primary The charset tried first.
+     * @param fallback The charset used if the bytes are not valid in the primary one, or null for
+     *     none.
+     * @return True if the identifier and secret were set, false if the decoded credentials have no
+     *     ":" separator.
+     * @throws IllegalArgumentException If the raw value is not valid Base64 or the bytes are not
+     *     valid in the primary charset without a fallback.
+     */
+    public static boolean parseCredentials(
+            ChallengeResponse challenge, Charset primary, Charset fallback) {
+        byte[] bytes = Base64.getDecoder().decode(challenge.getRawValue());
+        String credentials;
+
+        try {
+            credentials =
+                    primary.newDecoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .decode(ByteBuffer.wrap(bytes))
+                            .toString();
+        } catch (CharacterCodingException e) {
+            if (fallback == null) {
+                throw new IllegalArgumentException(
+                        "The credentials are not valid in " + primary.name(), e);
+            }
+
+            credentials = new String(bytes, fallback);
+        }
+
+        int separator = credentials.indexOf(':');
+
+        if (separator == -1) {
+            return false;
+        }
+
+        challenge.setIdentifier(credentials.substring(0, separator));
+        challenge.setSecret(credentials.substring(separator + 1));
+        return true;
     }
 
     /**
@@ -185,7 +225,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
      * @return The charset.
      */
     private String getCharset(final ChallengeResponse challenge) {
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (charset == null) {
             charset = ISO_8859_1;
