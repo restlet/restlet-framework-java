@@ -69,11 +69,8 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
         if ((path != null) && (!path.isEmpty())) {
             append("; Path=");
 
-            if (version == 0) {
-                append(path);
-            } else {
-                appendQuotedString(path);
-            }
+            // Browsers don't unquote attribute values (RFC 6265)
+            append(path);
         }
 
         // Append the expiration date
@@ -91,7 +88,8 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
                         DateUtils.format(expires, DateUtils.FORMAT_RFC_1123.getFirst()), version);
             } else {
                 append("; Max-Age=");
-                appendValue(Integer.toString(cookieSetting.getMaxAge()), version);
+                // Must not be quoted, browsers would ignore it (issue #1334)
+                append(Integer.toString(maxAge));
             }
         } else if ((maxAge == -1) && (version > 0)) {
             // Discard the cookie at the end of the user's session (RFC 2965)

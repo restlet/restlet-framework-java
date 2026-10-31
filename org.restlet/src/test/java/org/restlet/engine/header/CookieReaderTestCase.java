@@ -145,14 +145,12 @@ class CookieReaderTestCase {
         testCookie(
                 "$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
 
-        testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"", true);
+        testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=/acme", true);
+        testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=/acme", true);
+        testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=/acme", true);
+        testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=/acme", true);
         testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
-        testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"", true);
-        testCookieSetting(
-                "Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
-        testCookieSetting(
-                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"", true);
+                "Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=/acme/ammo", true);
 
         // Bug #49
         testCookieSetting(
