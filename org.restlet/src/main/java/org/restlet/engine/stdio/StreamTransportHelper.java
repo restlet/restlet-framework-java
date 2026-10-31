@@ -31,6 +31,7 @@ public final class StreamTransportHelper {
     private final ReentrantLock readLock = new ReentrantLock();
     private final ReentrantLock writeLock = new ReentrantLock();
     private final Set<Thread> operations = new HashSet<>();
+    private final Set<Thread> lockWaiters = new HashSet<>();
     private InputStream input;
     private OutputStream output;
     private Process process;
@@ -177,14 +178,13 @@ public final class StreamTransportHelper {
             enter();
             try {
                 int count = input.read(buffer, offset, Math.min(length, maxOperationBytes));
-                if (count == -1 && process != null) {
-                    if (!process.waitFor(shutdownTimeout.toNanos(), TimeUnit.NANOSECONDS)) {
-                        throw new IOException(
-                                "Subprocess stdout ended without process termination");
-                    }
-                    if (process.exitValue() != 0 && !isStopped()) {
-                        throw new IOException("Subprocess exited with code " + process.exitValue());
-                    }
+                // EOF does not imply termination: only report an exit failure seen within grace.
+                if (count == -1
+                        && process != null
+                        && process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS)
+                        && process.exitValue() != 0
+                        && !isStopped()) {
+                    throw new IOException("Subprocess exited with code " + process.exitValue());
                 }
                 return count;
             } catch (InterruptedException e) {
@@ -216,11 +216,25 @@ public final class StreamTransportHelper {
         }
     }
 
-    private static void lock(ReentrantLock lock) throws InterruptedIOException {
+    /** Acquires an I/O lock, unless the transport stops while waiting for it. */
+    private void lock(ReentrantLock lock) throws IOException {
+        synchronized (this) {
+            if (!isStarted()) {
+                throw new IOException("Stream transport is not accepting I/O");
+            }
+            lockWaiters.add(Thread.currentThread());
+        }
         try {
             lock.lockInterruptibly();
         } catch (InterruptedException e) {
+            if (isStopped()) {
+                throw new IOException("Stream transport is not accepting I/O");
+            }
             throw interrupted("Interrupted awaiting stream I/O", e);
+        } finally {
+            synchronized (this) {
+                lockWaiters.remove(Thread.currentThread());
+            }
         }
     }
 
@@ -302,10 +316,12 @@ public final class StreamTransportHelper {
 
     private void cleanup() {
         try {
+            long deadline = System.nanoTime() + shutdownTimeout.toNanos();
             synchronized (this) {
                 operations.forEach(Thread::interrupt);
+                lockWaiters.forEach(Thread::interrupt);
             }
-            IOException failure = process != null ? stopProcess() : cancelBorrowedIo();
+            IOException failure = process != null ? stopProcess(deadline) : cancelBorrowedIo();
             failure = awaitOperations(failure);
             if (process == null) {
                 failure = flushBorrowedOutput(failure);
@@ -326,22 +342,41 @@ public final class StreamTransportHelper {
         }
     }
 
-    private IOException stopProcess() throws InterruptedException {
-        boolean exited = process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS);
+    /**
+     * Delivers EOF on the child's stdin, then terminates it if it does not exit within the grace
+     * period. The forcible kill happens halfway between the grace period and the shutdown deadline,
+     * leaving the rest of the shutdown timeout for pipe cleanup.
+     *
+     * @param deadline The {@link System#nanoTime()} shutdown deadline.
+     */
+    private IOException stopProcess(long deadline) throws InterruptedException {
+        long grace = processExitGrace.toNanos();
+        long killDeadline = deadline - (shutdownTimeout.toNanos() - grace) / 2;
+        // Closing may block behind a stuck write, which the process termination releases.
+        CompletableFuture<IOException> stdinClosed =
+                CompletableFuture.supplyAsync(() -> close(output), Thread.ofVirtual()::start);
+        boolean exited = waitForExit(grace, killDeadline);
         IOException failure =
                 exited && process.exitValue() != 0
                         ? new IOException("Subprocess exited with code " + process.exitValue())
                         : null;
         if (!exited) {
             process.destroy();
-            if (!process.waitFor(processExitGrace.toNanos(), TimeUnit.NANOSECONDS)) {
+            if (!waitForExit(grace, killDeadline)) {
                 process.destroyForcibly();
             }
         }
         process.waitFor();
-        failure = closePipes(failure);
+        failure = append(failure, stdinClosed.join());
+        failure = append(failure, close(input));
         stderrReader.join();
         return failure;
+    }
+
+    /** Waits for the process exit for at most the given duration and before the deadline. */
+    private boolean waitForExit(long nanos, long deadline) throws InterruptedException {
+        long remaining = Math.min(nanos, deadline - System.nanoTime());
+        return process.waitFor(Math.max(0, remaining), TimeUnit.NANOSECONDS);
     }
 
     private IOException cancelBorrowedIo() {
@@ -373,19 +408,22 @@ public final class StreamTransportHelper {
     }
 
     private IOException closePipes(IOException failure) {
-        for (java.io.Closeable pipe : List.<java.io.Closeable>of(input, output)) {
-            try {
-                pipe.close();
-            } catch (IOException e) {
-                failure = append(failure, e);
-            }
+        failure = append(failure, close(input));
+        return append(failure, close(output));
+    }
+
+    private static IOException close(java.io.Closeable pipe) {
+        try {
+            pipe.close();
+            return null;
+        } catch (IOException e) {
+            return e;
         }
-        return failure;
     }
 
     private static IOException append(IOException failure, IOException next) {
-        if (failure == null) {
-            return next;
+        if (failure == null || next == null) {
+            return failure == null ? next : failure;
         }
         failure.addSuppressed(next);
         return failure;
