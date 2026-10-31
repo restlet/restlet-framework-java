@@ -84,7 +84,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 	public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge, Response response,
 			Series<Header> httpHeaders) throws IOException {
 		String realm = challenge.getRealm();
-		String charset = challenge.getParameters().getFirstValue("charset");
+		String charset = challenge.getParameters().getFirstValue("charset", true);
 
 		if (realm != null) {
 			cw.appendQuotedChallengeParameter("realm", realm);
@@ -109,7 +109,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 			if (challenge == null) {
 				throw new RuntimeException("No challenge provided, unable to encode credentials");
 			} else {
-				String charset = challenge.getParameters().getFirstValue("charset");
+				String charset = challenge.getParameters().getFirstValue("charset", true);
 
 				if (charset != null) {
 					if ("UTF-8".equalsIgnoreCase(charset)) {
@@ -146,7 +146,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
 				while (param != null) {
 					try {
-						if ("realm".equals(param.getName())) {
+						if ("realm".equalsIgnoreCase(param.getName())) {
 							challenge.setRealm(param.getValue());
 						} else {
 							challenge.getParameters().add(param);
@@ -177,7 +177,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 		}
 
 		try {
-			String charset = challenge.getParameters().getFirstValue("charset");
+			String charset = challenge.getParameters().getFirstValue("charset", true);
 
 			if (charset != null) {
 				if ("UTF-8".equalsIgnoreCase(charset)) {

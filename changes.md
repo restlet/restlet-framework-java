@@ -12,6 +12,7 @@ Changes log
         - Boolean canAppend in ZipClientHelper can only be false. Issue #1279.
         - CorsService and CorsFilter now add `Vary: Origin` to every response when the CORS answer depends on the request origin (origin allow-list or credentials allowed), including requests without an `Origin` header, so shared caches no longer serve the response of one origin to another. A static `*` without credentials still sends no `Vary`, as recommended by the Fetch standard. Issue #1611.
         - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=` (such as a `Negotiate` token): the whole header was dropped. Issue #191.
+        - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed

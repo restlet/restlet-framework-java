@@ -184,4 +184,25 @@ class HttpBasicHelperTestCase {
 				"Basic " + base64Of(UTF8_LOGIN, UTF8_PASSWORD, StandardCharsets.UTF_8),
 				AuthenticatorUtils.formatResponse(cr, response.getRequest(), null));
 	}
+
+	// ---- Case insensitivity of the parameter names (RFC 9110 section 11.2) -----------------------
+
+	@Test
+	void parseRequest_parameterNamesInAnyCase_realmAndCharsetRecognized() {
+		Response response = new Response(new Request(Method.GET, "http://localhost/"));
+		ChallengeRequest challenge =
+				AuthenticatorUtils.parseRequest(
+								response, "Basic REALM=\"r\", Charset=\"utf-8\"", null)
+						.get(0);
+
+		assertEquals("r", challenge.getRealm());
+		assertEquals("utf-8", challenge.getParameters().getFirstValue("charset", true));
+
+		response.getChallengeRequests().add(challenge);
+		ChallengeResponse cr =
+				new ChallengeResponse(challenge, response, UTF8_LOGIN, UTF8_PASSWORD.toCharArray());
+		assertEquals(
+				"Basic " + base64Of(UTF8_LOGIN, UTF8_PASSWORD, StandardCharsets.UTF_8),
+				AuthenticatorUtils.formatResponse(cr, response.getRequest(), null));
+	}
 }
