@@ -100,7 +100,10 @@ Changes log
           queries over `GET` when enabled (off by default), applies the draft's status codes per
           response media type, limits the request size (1 MiB by default) and the parser per
           adapter (`ParserOptions`, never the process-wide defaults), and gives data fetchers the
-          Restlet request and client info through `RestletGraphql` context keys. Issue #1581.
+          Restlet request and client info through `RestletGraphql` context keys. The client can
+          validate documents locally against a `GraphQLSchema` without a network call, bounds
+          responses (10 MiB by default, never truncated) and accepts a request customizer for API
+          key headers. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
