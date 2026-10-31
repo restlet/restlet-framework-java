@@ -34,6 +34,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import org.restlet.Client;
@@ -46,9 +47,9 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     private final Semaphore admission;
     private final Set<Transport> transports = new HashSet<>();
     private final ExecutorService io = Executors.newVirtualThreadPerTaskExecutor();
-    private final ScheduledExecutorService timer =
-            Executors.newSingleThreadScheduledExecutor(
-                    Thread.ofPlatform().daemon().name("restlet-grpc-timer").factory());
+    private final ScheduledThreadPoolExecutor timer =
+            new ScheduledThreadPoolExecutor(
+                    1, Thread.ofPlatform().daemon().name("restlet-grpc-timer").factory());
     private boolean closed;
 
     public RestletTransportFactory(Client client, int maxBytes, int maxCalls, Duration timeout) {
@@ -56,6 +57,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
         this.maxBytes = maxBytes;
         admission = new Semaphore(maxCalls);
         shutdownTimeout = timeout;
+        // Cancelled deadline timers of completed calls must not stay queued until they expire.
+        timer.setRemoveOnCancelPolicy(true);
     }
 
     @Override
