@@ -548,16 +548,42 @@ public class GraphqlServerAdapter extends Restlet {
     }
 
     /**
-     * Executes an operation.
+     * Customizes and builds the execution input of an operation.
      *
      * @param request The request.
      * @param input The execution input, before customization.
      * @param initPayload The payload of a WebSocket connection_init message, or null.
+     * @return The execution input.
+     */
+    ExecutionInput prepare(
+            Request request, ExecutionInput.Builder input, Map<String, Object> initPayload) {
+        return customize(request, input, initPayload).build();
+    }
+
+    /**
+     * Indicates if an execution input selects a subscription. Invalid documents are left to the
+     * execution, which reports their errors.
+     *
+     * @param input The execution input.
+     * @return True if the selected operation is a subscription.
+     */
+    boolean isSubscription(ExecutionInput input) {
+        try {
+            return selectOperation(input.getQuery(), input.getOperationName())
+                    == OperationDefinition.Operation.SUBSCRIPTION;
+        } catch (InvalidSyntaxException | RequestException _) {
+            return false;
+        }
+    }
+
+    /**
+     * Executes an operation.
+     *
+     * @param input The execution input, customized.
      * @return The result.
      */
-    ExecutionResult execute(
-            Request request, ExecutionInput.Builder input, Map<String, Object> initPayload) {
-        return graphQL.execute(customize(request, input, initPayload).build());
+    ExecutionResult execute(ExecutionInput input) {
+        return graphQL.execute(input);
     }
 
     private ExecutionInput.Builder customize(

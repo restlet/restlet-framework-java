@@ -13,6 +13,9 @@ import graphql.ExecutionResult;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +54,17 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
 
     static final int TOO_MANY_INIT = 4429;
 
+    /** The maximum size of a close reason, in UTF-8 bytes. */
+    private static final int MAX_CLOSE_REASON_BYTES = 123;
+
+    /** The time given to the open connections to close when stopping. */
+    private static final Duration CLOSE_TIMEOUT = Duration.ofSeconds(5);
+
     private final GraphqlServerAdapter adapter;
 
     private final Set<Connection> connections = ConcurrentHashMap.newKeySet();
+
+    private volatile boolean stopped;
 
     GraphqlWebSocketSupport(GraphqlServerAdapter adapter) {
         this.adapter = adapter;
@@ -77,9 +88,51 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
 
     @Override
     public void stop() {
+        // Set before the snapshot, so that connections registered later close themselves.
+        stopped = true;
+        // Closed concurrently, as each close waits for the peer's close handshake.
+        List<Thread> closing = new ArrayList<>();
         for (Connection connection : List.copyOf(connections)) {
-            connection.close(WebSocketSession.GOING_AWAY, "The GraphQL endpoint is stopping");
+            closing.add(
+                    Thread.ofVirtual()
+                            .name("restlet-graphql-ws-close")
+                            .start(connection::closeGoingAway));
         }
+        long deadline = System.nanoTime() + CLOSE_TIMEOUT.toNanos();
+        try {
+            for (Thread thread : closing) {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0 || !thread.join(Duration.ofNanos(remaining))) {
+                    break;
+                }
+            }
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /** Truncates a close reason to the size allowed in a close frame. */
+    static String closeReason(String reason) {
+        if (reason == null
+                || reason.getBytes(StandardCharsets.UTF_8).length <= MAX_CLOSE_REASON_BYTES) {
+            return reason;
+        }
+        StringBuilder result = new StringBuilder();
+        int bytes = 0;
+        for (int i = 0; i < reason.length(); ) {
+            int codePoint = reason.codePointAt(i);
+            int size =
+                    new String(Character.toChars(codePoint))
+                            .getBytes(StandardCharsets.UTF_8)
+                            .length;
+            if (bytes + size > MAX_CLOSE_REASON_BYTES) {
+                break;
+            }
+            result.appendCodePoint(codePoint);
+            bytes += size;
+            i += Character.charCount(codePoint);
+        }
+        return result.toString();
     }
 
     private static String message(String type, String id, Object payload) {
@@ -113,6 +166,10 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
 
         private final Object sendLock = new Object();
 
+        private final Object initLock = new Object();
+
+        private boolean initTimedOut;
+
         private volatile boolean initialized;
 
         private volatile Map<String, Object> initPayload;
@@ -124,6 +181,12 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
 
         void run() throws IOException {
             connections.add(this);
+            if (stopped) {
+                // Accepted while the endpoint was stopping, after its connections were closed.
+                connections.remove(this);
+                closeGoingAway();
+                return;
+            }
             Thread timeout =
                     Thread.ofVirtual().name("restlet-graphql-ws-init").start(this::awaitInit);
             try {
@@ -160,9 +223,13 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
             } catch (InterruptedException _) {
                 return;
             }
-            if (!initialized) {
-                close(INIT_TIMEOUT, "Connection initialisation timeout");
+            synchronized (initLock) {
+                if (initialized) {
+                    return;
+                }
+                initTimedOut = true;
             }
+            close(INIT_TIMEOUT, "Connection initialisation timeout");
         }
 
         /** Handles a message. Returns false once the connection is closed. */
@@ -180,14 +247,25 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
                     if (payload != null && GraphqlJson.asObject(payload) == null) {
                         return close(INVALID_MESSAGE, "Invalid connection_init payload");
                     }
-                    initPayload = GraphqlJson.asObject(payload);
-                    initialized = true;
+                    synchronized (initLock) {
+                        if (initTimedOut) {
+                            return false;
+                        }
+                        initPayload = GraphqlJson.asObject(payload);
+                        initialized = true;
+                    }
                     return send(message("connection_ack", null, null));
                 }
                 case "ping" -> {
+                    if (invalidObject(message, "payload")) {
+                        return close(INVALID_MESSAGE, "Invalid ping payload");
+                    }
                     return send(message("pong", null, null));
                 }
                 case "pong" -> {
+                    if (invalidObject(message, "payload")) {
+                        return close(INVALID_MESSAGE, "Invalid pong payload");
+                    }
                     return true;
                 }
                 case "subscribe" -> {
@@ -262,10 +340,32 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
             }
         }
 
+        /**
+         * Sends a message of an operation, unless the operation is no longer registered under its
+         * ID, so that a reused ID never receives the messages of the operation it replaces. A
+         * terminal message unregisters the operation first, so the ID can be reused as soon as it
+         * is received.
+         *
+         * @return False if the operation is retired or the session is closed.
+         */
+        boolean send(Operation operation, String text, boolean terminal) {
+            synchronized (sendLock) {
+                boolean registered =
+                        terminal
+                                ? operations.remove(operation.id, operation)
+                                : operations.get(operation.id) == operation;
+                return registered && send(text);
+            }
+        }
+
+        void closeGoingAway() {
+            close(WebSocketSession.GOING_AWAY, "The GraphQL endpoint is stopping");
+        }
+
         /** Closes the connection. Returns false, as a convenience for the dispatch loop. */
         boolean close(int code, String reason) {
             try {
-                session.close(code, reason);
+                session.close(code, closeReason(reason));
             } catch (IOException e) {
                 adapter.getLogger().log(Level.FINE, "Unable to close a GraphQL WebSocket", e);
             }
@@ -302,36 +402,56 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
 
         @Override
         public void run() {
+            AtomicInteger active = adapter.getActiveSubscriptionCounter();
+            boolean reserved = false;
             try {
-                ExecutionResult result =
-                        adapter.execute(connection.request, input, connection.initPayload);
+                // A complete message or a closed connection can come before this thread starts.
+                if (cancelled) {
+                    return;
+                }
+                ExecutionInput executionInput =
+                        adapter.prepare(connection.request, input, connection.initPayload);
+                if (adapter.isSubscription(executionInput)) {
+                    // Reserved before execution, which sets up the subscription.
+                    if (active.incrementAndGet() > adapter.getMaxSubscriptions()) {
+                        active.decrementAndGet();
+                        send(message("error", id, error("Too many active subscriptions")), true);
+                        return;
+                    }
+                    reserved = true;
+                }
+                if (cancelled) {
+                    return;
+                }
+                ExecutionResult result = adapter.execute(executionInput);
                 if (cancelled) {
                     return;
                 }
                 if (!result.isDataPresent()) {
-                    connection.send(message("error", id, errors(result.getErrors())));
+                    send(message("error", id, errors(result.getErrors())), true);
                 } else if (result.getData() instanceof Publisher<?> publisher) {
                     @SuppressWarnings("unchecked")
                     Publisher<ExecutionResult> results = (Publisher<ExecutionResult>) publisher;
                     stream(results);
-                } else if (connection.send(message("next", id, result.toSpecification()))) {
-                    connection.send(message("complete", id, null));
+                } else if (send(message("next", id, result.toSpecification()), false)) {
+                    send(message("complete", id, null), true);
                 }
             } catch (RuntimeException e) {
                 adapter.getLogger().log(Level.WARNING, "GraphQL operation failed", e);
-                connection.send(message("error", id, error("The operation failed")));
+                send(message("error", id, error("The operation failed")), true);
             } finally {
+                if (reserved) {
+                    active.decrementAndGet();
+                }
                 connection.operations.remove(id, this);
             }
         }
 
+        private boolean send(String text, boolean terminal) {
+            return connection.send(this, text, terminal);
+        }
+
         private void stream(Publisher<ExecutionResult> results) {
-            AtomicInteger active = adapter.getActiveSubscriptionCounter();
-            if (active.incrementAndGet() > adapter.getMaxSubscriptions()) {
-                active.decrementAndGet();
-                connection.send(message("error", id, error("Too many active subscriptions")));
-                return;
-            }
             GraphqlResultQueue current = new GraphqlResultQueue(adapter.getMaxQueuedBytes());
             queue = current;
             try {
@@ -342,12 +462,13 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
                 while (true) {
                     GraphqlResultQueue.Signal signal = current.take();
                     if (signal instanceof GraphqlResultQueue.Next next) {
-                        if (!connection.send(
+                        if (!send(
                                 "{\"id\":"
                                         + GraphqlJson.writeString(id)
                                         + ",\"type\":\"next\",\"payload\":"
                                         + next.json()
-                                        + "}")) {
+                                        + "}",
+                                false)) {
                             return;
                         }
                         current.request();
@@ -359,10 +480,10 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
                                             "GraphQL subscription failed",
                                             failure.cause());
                         }
-                        connection.send(message("error", id, error(failure.message())));
+                        send(message("error", id, error(failure.message())), true);
                         return;
                     } else if (signal instanceof GraphqlResultQueue.Completed) {
-                        connection.send(message("complete", id, null));
+                        send(message("complete", id, null), true);
                         return;
                     } else {
                         return;
@@ -372,7 +493,6 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
                 Thread.currentThread().interrupt();
             } finally {
                 current.cancel();
-                active.decrementAndGet();
             }
         }
     }
