@@ -82,6 +82,12 @@ Changes log
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
           `server.maxEventStreams` parameter limits concurrent event streams.
+        - Added the `MultipartStreamRepresentation` and `MultipartStreamReader` APIs for streaming
+          `multipart/*` content whose parts are produced over time, such as `multipart/mixed`
+          responses of incremental protocols. Each part is flushed with its trailing delimiter so
+          that readers process it at once; content containing the delimiter is rejected. The
+          reader returns parts as they arrive, with a maximum part size. Added the
+          `MediaType.MULTIPART_MIXED` constant. Issue #1587.
         - Added the experimental `org.restlet.ext.websocket` extension, on HTTP/1.1 upgrades.
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
@@ -112,7 +118,10 @@ Changes log
           the server adapter also accepts `graphql-transport-ws` WebSocket upgrades on its own path
           (HTTP/1.1 only), with several operations per connection, a `connection_init` timeout
           and the protocol's close codes; `org.restlet.ext.websocket` is an optional dependency,
-          loaded only then. Issue #1581.
+          loaded only then. Incremental delivery of `@defer` results over `multipart/mixed` is
+          available on both sides when enabled (experimental, off by default): the client
+          returns graphql-java's `IncrementalExecutionResult`, whose item publisher reads the
+          delayed results. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
