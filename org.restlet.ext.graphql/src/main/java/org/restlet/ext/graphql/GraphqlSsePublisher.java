@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -58,6 +59,9 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
         subscriber.onSubscribe(subscription);
         if (!adapter.register(subscription)) {
             subscription.stop();
+        } else if (subscription.isDone()) {
+            // Cancelled or finished from onSubscribe(), before being registered.
+            adapter.unregister(subscription);
         }
     }
 
@@ -70,9 +74,11 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
 
         private boolean started;
 
-        private boolean invalidDemand;
+        private volatile boolean invalidDemand;
 
         private volatile boolean cancelled;
+
+        private volatile boolean finished;
 
         private volatile boolean stopped;
 
@@ -84,22 +90,43 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
 
         @Override
         public void request(long n) {
+            boolean signal = false;
+            boolean start = false;
             synchronized (this) {
                 if (cancelled) {
                     return;
                 }
                 if (n <= 0) {
                     invalidDemand = true;
+                    // Without a reader thread, signal from here and prevent one from starting.
+                    signal = !started;
+                    if (signal) {
+                        cancelled = true;
+                    }
                 } else {
                     demand = demand + n < 0 ? Long.MAX_VALUE : demand + n;
-                }
-                notifyAll();
-                if (started) {
-                    return;
+                    start = !started;
                 }
                 started = true;
+                notifyAll();
             }
-            Thread.ofVirtual().name("restlet-graphql-sse").start(this::run);
+            if (signal) {
+                subscriber.onError(invalidDemandError());
+                adapter.unregister(this);
+            } else if (start) {
+                Thread.ofVirtual().name("restlet-graphql-sse").start(this::run);
+            } else if (n <= 0) {
+                // Unblocks a pending read, then the reader thread signals the error.
+                Request current = request;
+                if (current != null) {
+                    current.abort();
+                }
+            }
+        }
+
+        /** Indicates if the subscription is cancelled or its reader thread is done. */
+        boolean isDone() {
+            return cancelled || finished;
         }
 
         @Override
@@ -136,6 +163,10 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
             cancel();
         }
 
+        private IllegalArgumentException invalidDemandError() {
+            return new IllegalArgumentException("The requested number of results must be positive");
+        }
+
         private GraphqlTransportException stoppedError() {
             return new GraphqlTransportException(
                     "The GraphQL client was stopped", null, null, null);
@@ -145,7 +176,8 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
             Response response = null;
             try {
                 Request current =
-                        adapter.createEventStreamRequest(document, operationName, variables);
+                        adapter.createEventStreamRequest(
+                                new EventStreamRequest(), document, operationName, variables);
                 request = current;
                 if (cancelled) {
                     terminateIfStopped();
@@ -184,6 +216,7 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
                 if (response != null && response.getEntity() != null) {
                     response.getEntity().release();
                 }
+                finished = true;
                 adapter.unregister(this);
             }
         }
@@ -243,9 +276,7 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
                 }
                 if (invalidDemand) {
                     cancelled = true;
-                    subscriber.onError(
-                            new IllegalArgumentException(
-                                    "The requested number of results must be positive"));
+                    subscriber.onError(invalidDemandError());
                     return false;
                 }
                 if (demand != Long.MAX_VALUE) {
@@ -266,7 +297,23 @@ final class GraphqlSsePublisher implements Publisher<ExecutionResult> {
                 subscriber.onError(stoppedError());
             } else if (!cancelled) {
                 cancelled = true;
-                subscriber.onError(error);
+                // A read aborted by invalid demand reports that demand.
+                subscriber.onError(invalidDemand ? invalidDemandError() : error);
+            }
+        }
+
+        /**
+         * A request aborted as soon as its connector can abort it, when cancelled before the
+         * exchange started.
+         */
+        private final class EventStreamRequest extends Request {
+
+            @Override
+            public void setAbortAction(BooleanSupplier action) {
+                super.setAbortAction(action);
+                if (action != null && (cancelled || invalidDemand)) {
+                    action.getAsBoolean();
+                }
             }
         }
     }

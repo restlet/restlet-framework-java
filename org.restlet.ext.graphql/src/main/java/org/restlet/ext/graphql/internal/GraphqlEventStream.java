@@ -159,12 +159,12 @@ public final class GraphqlEventStream implements EventWriter {
             sink.send(COMPLETE);
             return;
         }
-        // An empty comment sends the response head at once, before the first result.
-        sink.send(OPEN);
         QueueingSubscriber subscriber = new QueueingSubscriber(maxQueuedBytes);
         this.subscriber = subscriber;
         openStreams.add(this);
         try {
+            // An empty comment sends the response head at once, before the first result.
+            sink.send(OPEN);
             // Registered before checking, so that a concurrent stop of the adapter sees it.
             if (stopped || endpointStopped.getAsBoolean()) {
                 subscriber.fail(new Failure("The GraphQL endpoint is stopping", null));

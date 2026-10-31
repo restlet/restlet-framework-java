@@ -353,8 +353,10 @@ public class GraphqlServerAdapter extends Restlet {
             if (parserOptions == null) {
                 parserOptions = ParserOptions.getDefaultOperationParserOptions();
             }
-            subscriptionTransports =
-                    Collections.unmodifiableSet(EnumSet.copyOf(subscriptionTransports));
+            // A typed copy, as EnumSet.copyOf() fails on an empty set once it is wrapped.
+            EnumSet<GraphqlTransport> transports = EnumSet.noneOf(GraphqlTransport.class);
+            transports.addAll(subscriptionTransports);
+            subscriptionTransports = Collections.unmodifiableSet(transports);
             super.start();
         }
     }
@@ -437,10 +439,10 @@ public class GraphqlServerAdapter extends Restlet {
             operation =
                     selectOperation(executionInput.getQuery(), executionInput.getOperationName());
         } catch (InvalidSyntaxException e) {
-            write(response, responseType, failure(e.toInvalidSyntaxError()));
+            write(response, responseType, failure(e.toInvalidSyntaxError()), sse);
             return;
         } catch (RequestException e) {
-            write(response, responseType, failure(error(e.getMessage())));
+            write(response, responseType, failure(error(e.getMessage())), sse);
             return;
         }
 
