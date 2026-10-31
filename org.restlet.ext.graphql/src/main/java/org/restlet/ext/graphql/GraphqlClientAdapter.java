@@ -441,16 +441,17 @@ public class GraphqlClientAdapter {
     }
 
     /**
-     * Creates the HTTP request of an operation sent for an event stream.
+     * Fills the HTTP request of an operation sent for an event stream.
      *
+     * @param request The new request to fill.
      * @param document The document.
      * @param operationName The name of the operation to execute, or null.
      * @param variables The variables, or null.
      * @return The request, customized.
      */
     Request createEventStreamRequest(
-            String document, String operationName, Map<String, Object> variables) {
-        Request request = createRequest(document, operationName, variables);
+            Request request, String document, String operationName, Map<String, Object> variables) {
+        createRequest(request, document, operationName, variables);
         request.getClientInfo()
                 .getAcceptedMediaTypes()
                 .add(new Preference<>(MediaType.TEXT_EVENT_STREAM, 1F));
@@ -491,6 +492,11 @@ public class GraphqlClientAdapter {
      * @return The request, customized.
      */
     Request createRequest(String document, String operationName, Map<String, Object> variables) {
+        return createRequest(new Request(), document, operationName, variables);
+    }
+
+    private Request createRequest(
+            Request request, String document, String operationName, Map<String, Object> variables) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("query", document);
         if (operationName != null) {
@@ -500,7 +506,8 @@ public class GraphqlClientAdapter {
             body.put("variables", variables);
         }
 
-        Request request = new Request(Method.POST, endpoint);
+        request.setMethod(Method.POST);
+        request.setResourceRef(endpoint);
         request.setEntity(
                 new StringRepresentation(
                         GraphqlJson.writeString(body),
