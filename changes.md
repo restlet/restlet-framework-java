@@ -107,6 +107,9 @@ Changes log
         - The HTTP client uses the "https.proxyHost" and "https.proxyPort" system properties for
           HTTPS requests, instead of "http.proxyHost" and "http.proxyPort", like the JDK. The
           "proxyHost" and "proxyPort" parameters still apply to both. Issue #1570.
+        - In the "HTTP2" transport mode, the HTTP client uses HTTP/1.1 for cleartext requests
+          sent through a forward proxy, instead of HTTP/2 with prior knowledge that HTTP proxies
+          generally refuse. Issue #1571.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
