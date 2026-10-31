@@ -23,6 +23,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerKeepAliveHandler;
 import io.netty.handler.codec.http.HttpServerUpgradeHandler;
@@ -405,7 +406,14 @@ public abstract class NettyServerHelper extends ServerHelper {
                     return null;
                 };
         HttpServerUpgradeHandler upgradeHandler =
-                new HttpServerUpgradeHandler(sourceCodec, upgradeCodecFactory);
+                new HttpServerUpgradeHandler(sourceCodec, upgradeCodecFactory) {
+                    @Override
+                    protected boolean shouldHandleUpgradeRequest(HttpRequest request) {
+                        // An upgrade pipelined behind an HTTP/1.1 exchange is served over HTTP/1.1.
+                        NettyServerHandler handler = pipeline.get(NettyServerHandler.class);
+                        return handler == null || !handler.isExchangeActive();
+                    }
+                };
 
         // Prior knowledge: the connection starts directly with the HTTP/2 preface.
         ChannelInitializer<Channel> priorKnowledge =

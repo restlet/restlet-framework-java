@@ -148,9 +148,21 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             pendingBytes -= pendingSize(msg);
             channelRead(ctx, msg);
         }
-        if (pending.isEmpty()) {
+        // Bytes following an upgrade or tunnel request belong to the replacement protocol.
+        if (pending.isEmpty()
+                && (activeCall.get() == null || currentBody != null || readAfterBody)) {
             ctx.read();
         }
+    }
+
+    /**
+     * Indicates whether an HTTP/1.1 exchange is in progress or queued on this connection. Must be
+     * called on the event loop.
+     *
+     * @return True if an exchange is in progress or queued.
+     */
+    boolean isExchangeActive() {
+        return activeCall.get() != null || !pending.isEmpty();
     }
 
     private void onRequest(ChannelHandlerContext ctx, HttpRequest request) {
