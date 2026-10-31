@@ -320,10 +320,10 @@ class NettyClientCall {
 
         boolean backgroundWriterStarted = false;
         try {
-            this.channel = helper.acquire(this);
             if (cancelled.get()) {
                 throw new IOException("Request cancelled by client");
             }
+            attachChannel(helper.acquire(this));
             backgroundWriterStarted = sendRequestBody(request, entity, connectorService);
             awaitHead();
             result = new Status(statusCode, reasonPhrase);
@@ -341,6 +341,28 @@ class NettyClientCall {
         }
 
         return result;
+    }
+
+    /**
+     * Attaches the acquired channel, unless the exchange was cancelled during the acquisition, in
+     * which case the channel is released at once.
+     *
+     * @param ch The acquired channel.
+     * @throws IOException If the exchange was cancelled.
+     */
+    private void attachChannel(Channel ch) throws IOException {
+        boolean alreadyReleased;
+        lock.lock();
+        try {
+            this.channel = ch;
+            alreadyReleased = released;
+        } finally {
+            lock.unlock();
+        }
+        if (alreadyReleased) {
+            helper.release(ch, false);
+            throw new IOException("Request cancelled by client");
+        }
     }
 
     private boolean sendRequestBody(
@@ -387,6 +409,7 @@ class NettyClientCall {
     }
 
     private Status handleConnectFailure(ConnectException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure("Unable to connect to the remote HTTP server", cause);
         abort();
@@ -394,6 +417,7 @@ class NettyClientCall {
     }
 
     private Status handleCommunicationFailure(IOException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure(
                 "An error occurred during the communication with the remote HTTP server", cause);
@@ -402,6 +426,7 @@ class NettyClientCall {
     }
 
     private Status handleInternalFailure(RuntimeException cause) {
+        currentRequest.notifyDisconnect(cause);
         completeEntityRelease();
         helper.logFailure("An unexpected error occurred while sending the request", cause);
         abort();
@@ -819,10 +844,6 @@ class NettyClientCall {
                 currentResponse.getTrailers().add(name, trailer.getValue());
             }
         }
-        ChannelInputStream stream = this.body;
-        if (stream != null) {
-            stream.end();
-        }
         Representation emptyEntity;
         lock.lock();
         try {
@@ -831,6 +852,10 @@ class NettyClientCall {
             pendingEmptyEntity = null;
         } finally {
             lock.unlock();
+        }
+        ChannelInputStream stream = this.body;
+        if (stream != null) {
+            stream.end();
         }
         if (emptyEntity != null) {
             emptyEntity.release();
@@ -868,6 +893,10 @@ class NettyClientCall {
             lock.unlock();
         }
         ChannelInputStream stream = this.body;
+        org.restlet.Request request = currentRequest;
+        if (request != null) {
+            request.notifyDisconnect(cause);
+        }
         if (stream != null) {
             stream.fail(cause);
         }
@@ -931,6 +960,7 @@ class NettyClientCall {
 
     /** Releases the channel without reusing it. */
     private void abort() {
+        Channel ch;
         lock.lock();
         try {
             if (released) {
@@ -938,11 +968,12 @@ class NettyClientCall {
             }
             released = true;
             reusable = false;
+            // Read under the lock: a channel attached later is released by attachChannel().
+            ch = this.channel;
         } finally {
             lock.unlock();
         }
         clearAbortAction();
-        Channel ch = this.channel;
         if (ch != null) {
             helper.release(ch, false);
         }

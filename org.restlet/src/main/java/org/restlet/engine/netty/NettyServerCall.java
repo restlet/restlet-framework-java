@@ -131,6 +131,16 @@ class NettyServerCall {
     /** Indicates whether the exchange was completed. */
     private volatile boolean completed;
 
+    private NettyRequest restletRequest;
+
+    private Throwable disconnectCause;
+
+    /** Indicates whether the terminal response write was flushed, or the exchange handed over. */
+    private boolean responseDelivered;
+
+    /** The write of a response head that also ends the response, if any. */
+    private ChannelFuture responseEndFuture;
+
     /** The response body stream, if any. */
     private volatile ChannelOutputStream responseBody;
 
@@ -215,8 +225,12 @@ class NettyServerCall {
      * @param context The context of the server connector.
      * @return The Restlet request.
      */
-    NettyRequest toRequest(Context context) {
+    synchronized NettyRequest toRequest(Context context) {
         NettyRequest result = new NettyRequest(context, this);
+        restletRequest = result;
+        if (disconnectCause != null) {
+            result.notifyDisconnect(disconnectCause);
+        }
         result.getAttributes().put(ATTRIBUTE_HEADERS, requestHeaders);
         result.getAttributes().put(ATTRIBUTE_VERSION, kind.version());
 
@@ -242,6 +256,15 @@ class NettyServerCall {
         }
 
         return result;
+    }
+
+    synchronized void onDisconnect(Throwable cause) {
+        if (!responseDelivered && disconnectCause == null) {
+            disconnectCause = cause;
+            if (restletRequest != null) {
+                restletRequest.notifyDisconnect(cause);
+            }
+        }
     }
 
     /**
@@ -409,6 +432,7 @@ class NettyServerCall {
      */
     private void upgrade(Response response, NettyConnectionUpgrade upgrade) {
         completed = true;
+        markResponseDelivered();
         responseHeadWritten = true;
         requestBody.close();
         try {
@@ -629,7 +653,10 @@ class NettyServerCall {
             setHttp1Framing(head, emptyBody, hasTrailers, bodyAllowed);
         }
 
-        channel.write(head);
+        ChannelFuture future = channel.write(head);
+        if (responseEndedWithHead) {
+            responseEndFuture = future;
+        }
     }
 
     /** Creates the response head with the status and the response headers. */
@@ -701,6 +728,7 @@ class NettyServerCall {
                 return;
             }
             if (responseEndedWithHead) {
+                trackDelivery(responseEndFuture);
                 channel.flush();
                 requestBody.close();
                 return;
@@ -714,16 +742,11 @@ class NettyServerCall {
                 copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
                 lastContent = withTrailers;
             }
-            ChannelFuture future = channel.writeAndFlush(lastContent);
+            ChannelFuture future = trackDelivery(channel.writeAndFlush(lastContent));
             requestBody.close();
 
             if (!kind.isStream()) {
-                if (keepAlive) {
-                    // Ready for the next request on this connection.
-                    future.addListener(f -> channel.read());
-                } else {
-                    future.addListener(ChannelFutureListener.CLOSE);
-                }
+                completeHttp1(future, keepAlive);
             }
         } finally {
             if (eventStreamPermit) {
@@ -732,6 +755,48 @@ class NettyServerCall {
                 eventStreamPermit = false;
             }
         }
+    }
+
+    /**
+     * Reports a failed terminal response write as a disconnect, and stops reporting disconnects
+     * once it is flushed.
+     *
+     * @param future The terminal write.
+     * @return The terminal write.
+     */
+    private ChannelFuture trackDelivery(ChannelFuture future) {
+        future.addListener(
+                f -> {
+                    if (f.isSuccess()) {
+                        markResponseDelivered();
+                    } else {
+                        onDisconnect(f.cause());
+                    }
+                });
+        return future;
+    }
+
+    private synchronized void markResponseDelivered() {
+        responseDelivered = true;
+    }
+
+    private void completeHttp1(ChannelFuture future, boolean keepAlive) {
+        if (!keepAlive) {
+            future.addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        future.addListener(
+                f -> {
+                    if (!f.isSuccess()) {
+                        channel.close();
+                        return;
+                    }
+                    var context = channel.pipeline().context(NettyServerHandler.class);
+                    if (context != null
+                            && context.handler() instanceof NettyServerHandler handler) {
+                        handler.responseComplete(context, this);
+                    }
+                });
     }
 
     static void setTrailerNames(

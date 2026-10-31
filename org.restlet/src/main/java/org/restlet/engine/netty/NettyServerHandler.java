@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
@@ -25,7 +26,10 @@ import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import org.restlet.engine.Engine;
 
@@ -33,9 +37,9 @@ import org.restlet.engine.Engine;
  * Inbound handler that converts Netty HTTP messages into {@link NettyServerCall}s and runs them on
  * the call executor. One instance per HTTP/1.1 connection, or per HTTP/2 or HTTP/3 stream.
  *
- * <p>HTTP/1.1 requests on a connection are processed one at a time: reading is suspended while a
- * call is in progress and resumed when its response is complete. This keeps pipelined requests in
- * order without buffering them.
+ * <p>HTTP/1.1 requests are processed one at a time. After a request body ends, one read observes
+ * peer disconnects even while the application is idle. Pipelined messages from that read are
+ * retained within finite limits until the preceding response is flushed.
  */
 class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
@@ -55,8 +59,17 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /** The call receiving the current request body. */
     private NettyServerCall currentCall;
 
+    private final AtomicReference<NettyServerCall> activeCall = new AtomicReference<>();
+
+    private final Deque<Object> pending = new ArrayDeque<>();
+    private long pendingBytes;
+    private static final int MAX_PENDING_MESSAGES = 1024;
+    private static final int MAX_PENDING_BYTES = 1024 * 1024;
+
     /** Whether to read the rest of the current HTTP/1.1 request once the channel read completes. */
     private boolean readRequestBody;
+
+    private boolean readAfterBody;
 
     NettyServerHandler(NettyServerHelper helper, boolean confidential, StreamKind kind) {
         this.helper = helper;
@@ -85,6 +98,18 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (kind == StreamKind.HTTP1 && currentBody == null && activeCall.get() != null) {
+            long bytes = pendingSize(msg);
+            if (pending.size() >= MAX_PENDING_MESSAGES
+                    || pendingBytes + bytes > MAX_PENDING_BYTES) {
+                ReferenceCountUtil.release(msg);
+                exceptionCaught(ctx, new IOException("HTTP/1.1 pipelined request limit exceeded"));
+            } else {
+                pending.addLast(msg);
+                pendingBytes += bytes;
+            }
+            return;
+        }
         try {
             if (msg instanceof HttpRequest request) {
                 onRequest(ctx, request);
@@ -99,12 +124,57 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private static long pendingSize(Object msg) {
+        long bytes = msg instanceof HttpContent content ? content.content().readableBytes() : 0;
+        if (msg instanceof HttpRequest request) {
+            bytes += 2L * request.uri().length();
+            for (var header : request.headers()) {
+                bytes += 2L * (header.getKey().length() + header.getValue().length());
+            }
+        }
+        if (msg instanceof LastHttpContent content) {
+            for (var header : content.trailingHeaders()) {
+                bytes += 2L * (header.getKey().length() + header.getValue().length());
+            }
+        }
+        return bytes;
+    }
+
+    /** Invoked on the event loop after the previous response has been flushed. */
+    void responseComplete(ChannelHandlerContext ctx, NettyServerCall call) {
+        activeCall.compareAndSet(call, null);
+        while (!pending.isEmpty() && (activeCall.get() == null || currentBody != null)) {
+            Object msg = pending.removeFirst();
+            pendingBytes -= pendingSize(msg);
+            channelRead(ctx, msg);
+        }
+        // Bytes following an upgrade or tunnel request belong to the replacement protocol.
+        if (pending.isEmpty()
+                && (activeCall.get() == null || currentBody != null || readAfterBody)) {
+            ctx.read();
+        }
+    }
+
+    /**
+     * Indicates whether an HTTP/1.1 exchange is in progress or queued on this connection. Must be
+     * called on the event loop.
+     *
+     * @return True if an exchange is in progress or queued.
+     */
+    boolean isExchangeActive() {
+        return activeCall.get() != null || !pending.isEmpty();
+    }
+
     private void onRequest(ChannelHandlerContext ctx, HttpRequest request) {
         DecoderResult result = request.decoderResult();
         if (result.isFailure()) {
             sendError(ctx, HttpResponseStatus.BAD_REQUEST);
             return;
         }
+        // Upgrade/tunnel bytes belong to the replacement protocol, not the HTTP decoder.
+        readAfterBody =
+                !request.headers().contains(HttpHeaderNames.UPGRADE)
+                        && !request.method().equals(HttpMethod.CONNECT);
 
         if (HttpUtil.is100ContinueExpected(request)) {
             ctx.writeAndFlush(
@@ -124,6 +194,7 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         NettyServerCall call =
                 new NettyServerCall(helper, ctx.channel(), kind, request, body, confidential);
         currentCall = call;
+        activeCall.set(call);
         if (kind != StreamKind.HTTP3) {
             call.setAltSvc(helper.getAltSvc());
         }
@@ -131,6 +202,8 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if (!helper.tryAcquireCall()) {
             body.close();
             currentBody = null;
+            currentCall = null;
+            activeCall.compareAndSet(call, null);
             sendError(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE);
             return;
         }
@@ -141,6 +214,8 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             helper.releaseCall();
             body.close();
             currentBody = null;
+            currentCall = null;
+            activeCall.compareAndSet(call, null);
             sendError(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE);
         }
 
@@ -187,8 +262,9 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if (last) {
             body.end();
             currentBody = null;
-            // Do not read the next HTTP/1.1 request until the current response is complete; the
-            // call requests the next read when it completes.
+            if (kind == StreamKind.HTTP1 && readAfterBody && pending.isEmpty()) {
+                ctx.read();
+            }
         } else if (readMore) {
             ctx.read();
         }
@@ -214,6 +290,9 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             try {
                 call.complete();
             } finally {
+                if (kind.isStream()) {
+                    activeCall.compareAndSet(call, null);
+                }
                 helper.endCall();
                 Engine.clearThreadLocalVariables();
             }
@@ -223,7 +302,21 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         failBody(new ClosedChannelException());
+        releasePending();
         super.channelInactive(ctx);
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        releasePending();
+        super.handlerRemoved(ctx);
+    }
+
+    private void releasePending() {
+        while (!pending.isEmpty()) {
+            ReferenceCountUtil.release(pending.removeFirst());
+        }
+        pendingBytes = 0;
     }
 
     @Override
@@ -249,6 +342,10 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void failBody(Throwable cause) {
+        NettyServerCall call = activeCall.get();
+        if (call != null) {
+            call.onDisconnect(cause);
+        }
         ChannelInputStream body = currentBody;
         if (body != null) {
             body.fail(cause);
