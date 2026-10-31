@@ -71,6 +71,12 @@ Changes log
           `$Domain`. When reading, these legacy pairs and attributes are silently ignored, and a
           comma is no longer a separator between cookies (several `Cookie` headers are joined with
           semicolons). `Max-Age` now takes precedence over `Expires` when both are present.
+        - CORS: allowing credentials together with the `*` origin (`CorsService`, `CorsFilter`) is now
+          rejected with an `IllegalStateException` (when the service creates its filter, or when the
+          filter starts), because it required echoing any request origin. List the allowed origins
+          explicitly. Without a valid configuration, `CorsFilter` adds no CORS headers. Issue #1611.
+        - CORS: `CorsFilter` now applies configuration changes made after the first request (the
+          internal `CorsResponseHelper` is rebuilt by the setters). Issue #1611.
     - Enhancements
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
@@ -103,6 +109,7 @@ Changes log
         - HTTP/2 and HTTP/3 requests advertise `te: trailers`; stream header names are normalized
           to lowercase at the HTTP boundary.
         - Added the `Protocol.STDIO` pseudo-protocol constant for standard input/output connectors.
+        - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin. Issue #1611.
         - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
           `SameSite` enum), read and written in `Set-Cookie`.
     - Bugs fixed
@@ -110,8 +117,10 @@ Changes log
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
+        - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
           a login. Issue #554.
+        - CorsService and CorsFilter now add `Vary: Origin` to every response when the CORS answer depends on the request origin (origin allow-list or credentials allowed), including requests without an `Origin` header, so shared caches no longer serve the response of one origin to another. A static `*` without credentials still sends no `Vary`, as recommended by the Fetch standard. Issue #1611.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

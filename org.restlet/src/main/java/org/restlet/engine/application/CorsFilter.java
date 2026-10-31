@@ -11,6 +11,8 @@ package org.restlet.engine.application;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -22,6 +24,12 @@ import org.restlet.routing.Filter;
 /**
  * Filter that helps support CORS requests. This filter lets the target resources specify the
  * allowed methods.
+ *
+ * <p><b>Credentials:</b> the Fetch standard does not accept the wildcard {@code *} in {@code
+ * Access-Control-Allow-Origin} for requests with credentials. Allowing credentials together with
+ * the {@code *} origin would therefore require echoing any request origin, so this configuration is
+ * rejected with an {@link IllegalStateException}: list the allowed origins explicitly (or use an
+ * origin matcher) when credentials are allowed.
  *
  * <p>Example:
  *
@@ -56,8 +64,13 @@ public class CorsFilter extends Filter {
     /** The value of the 'Access-Control-Allow-Origin' header. Default is '*'. */
     private Set<String> allowedOrigins = SetUtils.newHashSet("*");
 
+    /**
+     * Optional additional rule to accept an origin that is not listed in {@link #allowedOrigins}.
+     */
+    private Predicate<String> allowedOriginMatcher = null;
+
     /** Helper for generating CORS response. */
-    private CorsResponseHelper corsResponseHelper;
+    private volatile CorsResponseHelper corsResponseHelper;
 
     /**
      * The set of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is
@@ -114,6 +127,15 @@ public class CorsFilter extends Filter {
      */
     @Override
     protected void afterHandle(Request request, Response response) {
+        try {
+            CorsResponseHelper.checkCredentialsConfiguration(allowedCredentials, allowedOrigins);
+        } catch (IllegalStateException e) {
+            // Never add CORS headers with an unsafe configuration, even if the filter
+            // could not be started
+            getLogger().log(Level.SEVERE, "CORS headers not added", e);
+            return;
+        }
+
         getCorsResponseHelper().addCorsResponseHeaders(request, response);
     }
 
@@ -163,19 +185,34 @@ public class CorsFilter extends Filter {
 
     /**
      * Returns a lazy-initialized instance of {@link
-     * org.restlet.engine.application.CorsResponseHelper}.
+     * org.restlet.engine.application.CorsResponseHelper}. The instance is rebuilt after any change
+     * of the configuration of this filter.
      */
     protected CorsResponseHelper getCorsResponseHelper() {
-        if (corsResponseHelper == null) {
-            corsResponseHelper = new CorsResponseHelper();
-            corsResponseHelper.setAllowedCredentials(allowedCredentials);
-            corsResponseHelper.setAllowedOrigins(allowedOrigins);
-            corsResponseHelper.setAllowAllRequestedHeaders(allowAllRequestedHeaders);
-            corsResponseHelper.setAllowedHeaders(allowedHeaders);
-            corsResponseHelper.setExposedHeaders(exposedHeaders);
-            corsResponseHelper.setMaxAge(maxAge);
+        CorsResponseHelper helper = corsResponseHelper;
+        if (helper == null) {
+            helper = new CorsResponseHelper();
+            helper.setAllowedCredentials(allowedCredentials);
+            helper.setAllowedOrigins(allowedOrigins);
+            helper.setAllowedOriginMatcher(allowedOriginMatcher);
+            helper.setAllowAllRequestedHeaders(allowAllRequestedHeaders);
+            helper.setAllowedHeaders(allowedHeaders);
+            helper.setExposedHeaders(exposedHeaders);
+            helper.setMaxAge(maxAge);
+            corsResponseHelper = helper;
         }
-        return corsResponseHelper;
+        return helper;
+    }
+
+    /**
+     * Checks the configuration before starting.
+     *
+     * @throws IllegalStateException If credentials are allowed together with the "*" origin.
+     */
+    @Override
+    public synchronized void start() throws Exception {
+        CorsResponseHelper.checkCredentialsConfiguration(allowedCredentials, allowedOrigins);
+        super.start();
     }
 
     /**
@@ -254,6 +291,7 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowedCredentials(boolean allowedCredentials) {
         this.allowedCredentials = allowedCredentials;
+        this.corsResponseHelper = null;
         return this;
     }
 
@@ -266,7 +304,32 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
+        this.corsResponseHelper = null;
         return this;
+    }
+
+    /**
+     * Sets an optional rule to accept origins that are not listed in the allowed origins, for
+     * example {@code origin -> origin.endsWith(".example.com")}. The response always contains the
+     * exact request origin. The set of allowed origins must not contain "*", otherwise every origin
+     * is accepted.
+     *
+     * @param allowedOriginMatcher The origin matcher, or null for none.
+     * @return Itself for chaining methods calls.
+     */
+    public CorsFilter setAllowedOriginMatcher(Predicate<String> allowedOriginMatcher) {
+        this.allowedOriginMatcher = allowedOriginMatcher;
+        this.corsResponseHelper = null;
+        return this;
+    }
+
+    /**
+     * Returns the optional rule used to accept origins that are not listed in the allowed origins.
+     *
+     * @return The origin matcher, or null.
+     */
+    public Predicate<String> getAllowedOriginMatcher() {
+        return allowedOriginMatcher;
     }
 
     /**
@@ -277,6 +340,7 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
+        this.corsResponseHelper = null;
         return this;
     }
 
@@ -291,6 +355,7 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowingAllRequestedHeaders(boolean allowingAllRequestedHeaders) {
         this.allowAllRequestedHeaders = allowingAllRequestedHeaders;
+        this.corsResponseHelper = null;
         return this;
     }
 
@@ -315,6 +380,7 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
+        this.corsResponseHelper = null;
         return this;
     }
 
@@ -326,6 +392,7 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setMaxAge(int maxAge) {
         this.maxAge = maxAge;
+        this.corsResponseHelper = null;
         return this;
     }
 
