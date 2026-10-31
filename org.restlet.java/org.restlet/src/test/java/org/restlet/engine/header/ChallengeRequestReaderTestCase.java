@@ -20,14 +20,14 @@ import org.restlet.data.ChallengeRequest;
 class ChallengeRequestReaderTestCase {
 
 	@Test
-	void readValue_schemeOnly_parsesSchemeName() throws IOException {
+	void readValue_schemeOnly_parsesSchemeName() {
 		ChallengeRequestReader reader = new ChallengeRequestReader("Basic");
 		ChallengeRequest result = reader.readValue();
 		assertEquals("Basic", result.getScheme().getTechnicalName());
 	}
 
 	@Test
-	void readValue_schemeWithParameters_capturesRawValue() throws IOException {
+	void readValue_schemeWithParameters_capturesRawValue() {
 		ChallengeRequestReader reader = new ChallengeRequestReader("Digest realm=\"testrealm\"");
 		ChallengeRequest result = reader.readValue();
 		assertEquals("Digest", result.getScheme().getTechnicalName());
@@ -35,13 +35,13 @@ class ChallengeRequestReaderTestCase {
 	}
 
 	@Test
-	void readValue_emptyHeader_returnsNull() throws IOException {
+	void readValue_emptyHeader_returnsNull() {
 		ChallengeRequestReader reader = new ChallengeRequestReader("");
 		assertNull(reader.readValue());
 	}
 
 	@Test
-	void readValues_twoChallenges_returnsBoth() throws IOException {
+	void readValues_twoChallenges_returnsBoth() {
 		List<ChallengeRequest> result =
 				new ChallengeRequestReader("Basic realm=\"a\", Digest realm=\"b\", nonce=\"x\"")
 						.readValues();
@@ -53,7 +53,7 @@ class ChallengeRequestReaderTestCase {
 	}
 
 	@Test
-	void readValues_schemeWithoutParametersThenChallenge_returnsBoth() throws IOException {
+	void readValues_schemeWithoutParametersThenChallenge_returnsBoth() {
 		List<ChallengeRequest> result =
 				new ChallengeRequestReader("Negotiate, Basic realm=\"a\"").readValues();
 		assertEquals(2, result.size());
@@ -62,7 +62,7 @@ class ChallengeRequestReaderTestCase {
 	}
 
 	@Test
-	void readValues_commaInsideQuotedValue_staysInOneChallenge() throws IOException {
+	void readValues_commaInsideQuotedValue_staysInOneChallenge() {
 		List<ChallengeRequest> result =
 				new ChallengeRequestReader("Basic realm=\"a, Digest b\"").readValues();
 		assertEquals(1, result.size());
@@ -71,7 +71,7 @@ class ChallengeRequestReaderTestCase {
 
 	/** RFC 9110 section 11.2: token68 may end with "=" padding, as Negotiate tokens do. */
 	@Test
-	void readValues_token68Challenge_keepsToken() throws IOException {
+	void readValues_token68Challenge_keepsToken() {
 		List<ChallengeRequest> result =
 				new ChallengeRequestReader("Negotiate YIIabc==, Basic realm=\"a\"").readValues();
 		assertEquals(2, result.size());

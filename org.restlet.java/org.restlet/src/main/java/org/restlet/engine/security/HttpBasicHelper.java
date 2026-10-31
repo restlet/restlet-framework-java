@@ -26,7 +26,6 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -46,6 +45,12 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 	 * in UTF-8.
 	 */
 	public static final String UTF8_PROPERTY = "org.restlet.engine.security.basic.utf8";
+
+	private static final String CHARSET = "charset";
+
+	private static final String UTF_8 = "UTF-8";
+
+	private static final String ISO_8859_1 = "ISO-8859-1";
 
 	/**
 	 * Indicates if the UTF-8 handling of the HTTP Basic credentials is enabled.
@@ -84,7 +89,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 	public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge, Response response,
 			Series<Header> httpHeaders) throws IOException {
 		String realm = challenge.getRealm();
-		String charset = challenge.getParameters().getFirstValue("charset", true);
+		String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
 		if (realm != null) {
 			cw.appendQuotedChallengeParameter("realm", realm);
@@ -94,8 +99,8 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 		}
 
 		if (charset != null) {
-			if ("UTF-8".equalsIgnoreCase(charset)) {
-				cw.appendQuotedChallengeParameter("charset", "UTF-8");
+			if (UTF_8.equalsIgnoreCase(charset)) {
+				cw.appendQuotedChallengeParameter(CHARSET, UTF_8);
 			} else {
 				getLogger().warning("The \"charset\" parameter must be \"UTF-8\" per RFC 7617.");
 			}
@@ -109,18 +114,18 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 			if (challenge == null) {
 				throw new RuntimeException("No challenge provided, unable to encode credentials");
 			} else {
-				String charset = challenge.getParameters().getFirstValue("charset", true);
+				String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
 				if (charset != null) {
-					if ("UTF-8".equalsIgnoreCase(charset)) {
-						charset = "UTF-8";
+					if (UTF_8.equalsIgnoreCase(charset)) {
+						charset = UTF_8;
 					} else {
 						getLogger().warning(
 								"The \"charset\" parameter must be \"UTF-8\" per RFC 7617. Using \"ISO-8859-1\" instead.");
-						charset = "ISO-8859-1";
+						charset = ISO_8859_1;
 					}
 				} else {
-					charset = "ISO-8859-1";
+					charset = ISO_8859_1;
 				}
 
 				CharArrayWriter credentials = new CharArrayWriter();
@@ -177,18 +182,18 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 		}
 
 		try {
-			String charset = challenge.getParameters().getFirstValue("charset", true);
+			String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
 			if (charset != null) {
-				if ("UTF-8".equalsIgnoreCase(charset)) {
-					charset = "UTF-8";
+				if (UTF_8.equalsIgnoreCase(charset)) {
+					charset = UTF_8;
 				} else {
 					getLogger().warning(
 							"The \"charset\" parameter must be \"UTF-8\" per RFC 7617. Using \"ISO-8859-1\" instead.");
-					charset = "ISO-8859-1";
+					charset = ISO_8859_1;
 				}
 			} else {
-				charset = "ISO-8859-1";
+				charset = ISO_8859_1;
 			}
 
 			byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
