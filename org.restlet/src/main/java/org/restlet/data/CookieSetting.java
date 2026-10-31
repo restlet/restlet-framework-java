@@ -55,7 +55,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(int version, String name, String value) {
         this(version, name, value, null, null);
     }
@@ -71,7 +71,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(int version, String name, String value, String path, String domain) {
         this(version, name, value, path, domain, null, -1, false, false);
     }
@@ -92,7 +92,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(
             int version,
             String name,
@@ -123,7 +123,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public CookieSetting(
             int version,
             String name,
@@ -175,7 +175,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public String getComment() {
         return this.comment;
     }
@@ -241,7 +241,7 @@ public final class CookieSetting extends Cookie {
      * @deprecated Legacy RFC 2109/2965 cookie support is dropped in Restlet 3.0, use RFC 6265
      *     cookies.
      */
-    @Deprecated
+    @Deprecated(since = "2.7.1", forRemoval = true)
     public void setComment(String comment) {
         this.comment = comment;
     }
