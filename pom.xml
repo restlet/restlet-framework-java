@@ -53,6 +53,7 @@
         <!-- dependencies -->
         <lib-freemarker-version>2.3.35</lib-freemarker-version>
         <lib-gson-version>2.14.0</lib-gson-version>
+        <lib-graphql-java-version>26.1</lib-graphql-java-version>
         <lib-jackson-version>2.22.3</lib-jackson-version>
         <lib-jackson3-version>3.2.3</lib-jackson3-version>
         <lib-jackson-annotations-version>2.22</lib-jackson-annotations-version>
@@ -76,6 +77,7 @@
         <module>org.restlet</module>
         <module>org.restlet.ext.crypto</module>
         <module>org.restlet.ext.freemarker</module>
+        <module>org.restlet.ext.graphql</module>
         <module>org.restlet.ext.gson</module>
         <module>org.restlet.ext.jaas</module>
         <module>org.restlet.ext.jackson</module>
