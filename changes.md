@@ -70,11 +70,14 @@ Changes log
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
           virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
-          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server
+          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs; it is configured
+          with setters, which are rejected while it is started, and can be stopped, reconfigured
+          and started again (`connect` starts a stopped client). The server
           answers pings, pings idle sessions, and supports the "websocket.maxSessions",
           "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
-          enabled by default.
+          enabled by default. `WebSocketClient.setClient` shares the I/O threads of a borrowed,
+          started Netty HTTP `Client` instead of creating its own.
         - Added the experimental `org.restlet.ext.graphql` extension, on graphql-java.
           `GraphqlServerAdapter` serves a `graphql.GraphQL` instance as a Restlet, following the
           GraphQL over HTTP draft (`application/graphql-response+json` and `application/json`);
@@ -96,10 +99,14 @@ Changes log
           the server adapter also accepts `graphql-transport-ws` WebSocket upgrades on its own path
           (HTTP/1.1 only), with several operations per connection, a `connection_init` timeout
           and the protocol's close codes; `org.restlet.ext.websocket` is an optional dependency,
-          loaded only then. Issue #1581.
+          loaded only then. `GraphqlClientAdapter.setSubscriptionTransport(WEBSOCKET)` multiplexes
+          subscriptions over one `graphql-transport-ws` connection sharing the borrowed client's
+          event loop. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.
+          `NettyClientHelper.getEventLoopGroup()` lets extensions share the event loop of the Netty
+          HTTP client connector.
         - Added `Response.getProtocol()` and `setProtocol()`: the protocol, with its version,
           used by the server to reply (for example HTTP/1.1, HTTP/2.0 or HTTP/3.0), set by the HTTP
           client connector. When unknown, the protocol of the request is returned.
@@ -119,6 +126,9 @@ Changes log
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
         - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
+        - `Client.setContext()` now stores the connector helper in the "org.restlet.engine.helper"
+          context attribute, as the constructors do, so clients added with
+          `Component.getClients().add(Protocol)` expose it too.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
