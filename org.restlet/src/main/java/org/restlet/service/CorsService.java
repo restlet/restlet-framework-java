@@ -11,6 +11,7 @@ package org.restlet.service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.engine.application.CorsFilter;
@@ -20,6 +21,12 @@ import org.restlet.routing.Filter;
 /**
  * Application service that adds support of CORS. This service lets the target resource specify the
  * allowed methods.
+ *
+ * <p><b>Security note:</b> the Fetch standard does not accept the wildcard {@code *} in {@code
+ * Access-Control-Allow-Origin} for requests with credentials, so when credentials are allowed the
+ * request origin is echoed back. Combining {@code *} in the allowed origins with allowed
+ * credentials therefore lets any web site send credentialed requests: list the allowed origins
+ * explicitly instead.
  *
  * <p>Example:
  *
@@ -44,6 +51,9 @@ public class CorsService extends Service {
 
     /** The value of the 'Access-Control-Allow-Origin' header. Default is '*'. */
     private Set<String> allowedOrigins = SetUtils.newHashSet("*");
+
+    /** Optional additional rule to accept an origin that is not listed in the allowed origins. */
+    private Predicate<String> allowedOriginMatcher = null;
 
     /**
      * If true, copies the value of 'Access-Control-Request-Headers' request header into the
@@ -94,6 +104,7 @@ public class CorsService extends Service {
     @Override
     public Filter createInboundFilter(Context context) {
         return new CorsFilter()
+                .setAllowedOriginMatcher(allowedOriginMatcher)
                 .setAllowedCredentials(allowedCredentials)
                 .setAllowedOrigins(allowedOrigins)
                 .setAllowingAllRequestedHeaders(allowingAllRequestedHeaders)
@@ -214,6 +225,29 @@ public class CorsService extends Service {
      */
     public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
+    }
+
+    /**
+     * Returns the optional rule used to accept origins that are not listed in the allowed origins.
+     *
+     * @return The origin matcher, or null.
+     * @since 2.7.1
+     */
+    public Predicate<String> getAllowedOriginMatcher() {
+        return allowedOriginMatcher;
+    }
+
+    /**
+     * Sets an optional rule to accept origins that are not listed in the allowed origins, for
+     * example {@code origin -> origin.endsWith(".example.com")}. The response always contains the
+     * exact request origin. The set of allowed origins must not contain "*", otherwise every origin
+     * is accepted. By default no matcher is used.
+     *
+     * @param allowedOriginMatcher The origin matcher, or null for none.
+     * @since 2.7.1
+     */
+    public void setAllowedOriginMatcher(Predicate<String> allowedOriginMatcher) {
+        this.allowedOriginMatcher = allowedOriginMatcher;
     }
 
     /**

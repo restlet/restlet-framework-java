@@ -11,6 +11,7 @@ package org.restlet.engine.application;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -22,6 +23,12 @@ import org.restlet.routing.Filter;
 /**
  * Filter that helps support CORS requests. This filter lets the target resources specify the
  * allowed methods.
+ *
+ * <p><b>Security note:</b> the Fetch standard does not accept the wildcard {@code *} in {@code
+ * Access-Control-Allow-Origin} for requests with credentials, so when credentials are allowed the
+ * request origin is echoed back. Combining {@code *} in the allowed origins with allowed
+ * credentials therefore lets any web site send credentialed requests: list the allowed origins
+ * explicitly instead.
  *
  * <p>Example:
  *
@@ -55,6 +62,11 @@ public class CorsFilter extends Filter {
 
     /** The value of the 'Access-Control-Allow-Origin' header. Default is '*'. */
     private Set<String> allowedOrigins = SetUtils.newHashSet("*");
+
+    /**
+     * Optional additional rule to accept an origin that is not listed in {@link #allowedOrigins}.
+     */
+    private Predicate<String> allowedOriginMatcher = null;
 
     /** Helper for generating CORS response. */
     private CorsResponseHelper corsResponseHelper;
@@ -174,6 +186,13 @@ public class CorsFilter extends Filter {
             corsResponseHelper.setAllowedHeaders(allowedHeaders);
             corsResponseHelper.setExposedHeaders(exposedHeaders);
             corsResponseHelper.setMaxAge(maxAge);
+            corsResponseHelper.setAllowedOriginMatcher(allowedOriginMatcher);
+            if (allowedCredentials && allowedOrigins != null && allowedOrigins.contains("*")) {
+                getLogger()
+                        .warning(
+                                "CORS: allowed origins contain '*' and credentials are allowed, so any web site "
+                                        + "can send credentialed requests. List the allowed origins explicitly.");
+            }
         }
         return corsResponseHelper;
     }
@@ -266,6 +285,32 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
+        return this;
+    }
+
+    /**
+     * Returns the optional rule used to accept origins that are not listed in the allowed origins.
+     *
+     * @return The origin matcher, or null.
+     * @since 2.7.1
+     */
+    public Predicate<String> getAllowedOriginMatcher() {
+        return allowedOriginMatcher;
+    }
+
+    /**
+     * Sets an optional rule to accept origins that are not listed in the allowed origins, for
+     * example {@code origin -> origin.endsWith(".example.com")}. The response always contains the
+     * exact request origin. The set of allowed origins must not contain "*", otherwise every origin
+     * is accepted. By default no matcher is used.
+     *
+     * @param allowedOriginMatcher The origin matcher, or null for none.
+     * @return Itself for chaining methods calls.
+     * @since 2.7.1
+     */
+    public CorsFilter setAllowedOriginMatcher(Predicate<String> allowedOriginMatcher) {
+        this.allowedOriginMatcher = allowedOriginMatcher;
+        this.corsResponseHelper = null;
         return this;
     }
 
