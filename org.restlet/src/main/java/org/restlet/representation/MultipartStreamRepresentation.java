@@ -23,7 +23,8 @@ import org.restlet.util.Series;
  * such as {@code multipart/mixed} responses of incremental protocols. The writer runs on the
  * connector's call thread; each part is flushed, followed by the next delimiter, before {@link
  * PartSink#send(Series, byte[])} returns, so that readers can process it at once. The close
- * delimiter is written when the writer returns.
+ * delimiter is written when the writer returns, but not when it throws, so that readers see a
+ * truncated stream rather than a complete one.
  *
  * @see MultipartStreamReader
  */
@@ -96,9 +97,15 @@ public final class MultipartStreamRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        try (PartSink sink = new PartSink(outputStream, boundary)) {
+        PartSink sink = new PartSink(outputStream, boundary);
+        try {
             writer.write(sink);
+        } catch (IOException | RuntimeException | Error e) {
+            // Don't write the close delimiter, which would make a truncated stream look complete.
+            sink.abort();
+            throw e;
         }
+        sink.close();
     }
 
     /** Writes parts for the lifetime of the response. */
@@ -198,6 +205,11 @@ public final class MultipartStreamRepresentation extends OutputRepresentation {
                 outputStream.write("--\r\n".getBytes(StandardCharsets.US_ASCII));
                 outputStream.flush();
             }
+        }
+
+        /** Closes the sink after a failure, without writing the close delimiter. */
+        private synchronized void abort() {
+            closed = true;
         }
 
         /** Searches a pattern with the Knuth-Morris-Pratt algorithm. */
