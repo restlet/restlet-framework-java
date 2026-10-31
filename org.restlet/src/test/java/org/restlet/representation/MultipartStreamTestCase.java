@@ -173,6 +173,42 @@ class MultipartStreamTestCase {
     }
 
     @Test
+    void writerFailuresLeaveTheStreamTruncated() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MultipartStreamRepresentation.PartSink[] sinks = {null};
+        MultipartStreamRepresentation representation =
+                new MultipartStreamRepresentation(
+                        MediaType.MULTIPART_MIXED,
+                        "b",
+                        sink -> {
+                            sinks[0] = sink;
+                            sink.send(null, "one".getBytes());
+                            throw new IOException("failed");
+                        });
+        IOException failure = assertThrows(IOException.class, () -> representation.write(out));
+        assertEquals("failed", failure.getMessage());
+        assertEquals("\r\n--b\r\n\r\none\r\n--b", out.toString(StandardCharsets.UTF_8));
+        assertThrows(IOException.class, () -> sinks[0].send(null, new byte[0]));
+        assertThrows(
+                UncheckedIOException.class,
+                () ->
+                        new MultipartStreamReader(
+                                        new ByteArrayInputStream(out.toByteArray()), "b", 100)
+                                .forEachRemaining(part -> {}));
+
+        ByteArrayOutputStream runtime = new ByteArrayOutputStream();
+        assertThrows(
+                IllegalStateException.class,
+                () ->
+                        new MultipartStreamRepresentation(
+                                        sink -> {
+                                            throw new IllegalStateException();
+                                        })
+                                .write(runtime));
+        assertFalse(runtime.toString(StandardCharsets.UTF_8).contains("--\r\n"));
+    }
+
+    @Test
     void validatesTheEntityBeforeAcquiringItsStream() {
         AtomicBoolean acquired = new AtomicBoolean();
         Function<MediaType, Representation> entity =
