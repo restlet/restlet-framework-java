@@ -20,14 +20,14 @@ import org.restlet.data.ChallengeRequest;
 class ChallengeRequestReaderTestCase {
 
 	@Test
-	void readValue_schemeOnly_parsesSchemeName() {
+	void readValue_schemeOnly_parsesSchemeName() throws IOException {
 		ChallengeRequestReader reader = new ChallengeRequestReader("Basic");
 		ChallengeRequest result = reader.readValue();
 		assertEquals("Basic", result.getScheme().getTechnicalName());
 	}
 
 	@Test
-	void readValue_schemeWithParameters_capturesRawValue() {
+	void readValue_schemeWithParameters_capturesRawValue() throws IOException {
 		ChallengeRequestReader reader = new ChallengeRequestReader("Digest realm=\"testrealm\"");
 		ChallengeRequest result = reader.readValue();
 		assertEquals("Digest", result.getScheme().getTechnicalName());
@@ -35,7 +35,7 @@ class ChallengeRequestReaderTestCase {
 	}
 
 	@Test
-	void readValue_emptyHeader_returnsNull() {
+	void readValue_emptyHeader_returnsNull() throws IOException {
 		ChallengeRequestReader reader = new ChallengeRequestReader("");
 		assertNull(reader.readValue());
 	}
