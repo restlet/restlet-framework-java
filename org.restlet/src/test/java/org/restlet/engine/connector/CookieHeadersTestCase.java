@@ -19,9 +19,13 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -135,24 +139,20 @@ class CookieHeadersTestCase {
         assertFalse(setCookies.get(0).contains("Version"), response);
     }
 
-    @Test
-    void cookie_sentInOneHeader_isRead() throws Exception {
-        startEchoingServer();
-        assertTrue(exchange("Cookie: a=1; b=2\r\n").endsWith("a=1|b=2|"));
+    static Stream<Arguments> requestCookieHeaders() {
+        return Stream.of(
+                // One header
+                Arguments.of("Cookie: a=1; b=2\r\n"),
+                // HTTP/2 clients split the cookies, HTTP/1.1 allows it as well
+                Arguments.of("Cookie: a=1\r\nCookie: b=2\r\n"),
+                // Obsolete RFC 2109 format, read leniently
+                Arguments.of("Cookie: $Version=\"1\"; a=\"1\"; $Path=\"/x\"; b=\"2\"\r\n"));
     }
 
-    @Test
-    void cookie_splitInSeveralHeaders_isRead() throws Exception {
-        // HTTP/2 clients split the cookies, HTTP/1.1 allows it as well
+    @ParameterizedTest
+    @MethodSource("requestCookieHeaders")
+    void cookie_isRead(String requestHeaders) throws Exception {
         startEchoingServer();
-        assertTrue(exchange("Cookie: a=1\r\nCookie: b=2\r\n").endsWith("a=1|b=2|"));
-    }
-
-    @Test
-    void cookie_inLegacyFormat_isReadLeniently() throws Exception {
-        startEchoingServer();
-        assertTrue(
-                exchange("Cookie: $Version=\"1\"; a=\"1\"; $Path=\"/x\"; b=\"2\"\r\n")
-                        .endsWith("a=1|b=2|"));
+        assertTrue(exchange(requestHeaders).endsWith("a=1|b=2|"));
     }
 }

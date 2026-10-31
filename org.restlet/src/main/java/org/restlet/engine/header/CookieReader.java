@@ -48,63 +48,85 @@ public class CookieReader extends HeaderReader<Cookie> {
         super(header);
     }
 
+    /** Returned by {@link #readName} when the next pair is not a legacy attribute. */
+    private static final int NOT_LEGACY = -2;
+
     /**
      * Reads the next pair as a parameter.
      *
-     * @param skipUnlessLegacy True, if the pair must be left unread unless it is a legacy attribute
-     *     whose name starts with '$'.
+     * @param legacyOnly True, if the pair must be left unread unless it is a legacy attribute whose
+     *     name starts with '$'.
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    private Parameter readPair(boolean skipUnlessLegacy) throws IOException {
-        Parameter result = null;
+    private Parameter readPair(boolean legacyOnly) throws IOException {
+        StringBuilder name = new StringBuilder();
+        int end = readName(name, legacyOnly);
 
-        boolean readingName = true;
-        StringBuilder nameBuffer = new StringBuilder();
-        StringBuilder valueBuffer = new StringBuilder();
-        int nextChar = 0;
+        if (end == NOT_LEGACY) {
+            return null;
+        } else if (end == '=') {
+            return Parameter.create(name, readPairValue());
+        } else if (!name.isEmpty()) {
+            // End of a pair with no value
+            return Parameter.create(name, null);
+        } else if (end == ';') {
+            throw new IOException("Empty cookie name detected. Please check your cookies");
+        }
 
-        while ((result == null) && (nextChar != -1)) {
-            nextChar = read();
+        // End of the header
+        return null;
+    }
 
-            if (readingName) {
-                if (nameBuffer.isEmpty() && HeaderUtils.isSpace(nextChar)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ';')) {
-                    if (!nameBuffer.isEmpty()) {
-                        // End of a pair with no value
-                        result = Parameter.create(nameBuffer, null);
-                    } else if (nextChar == -1) {
-                        // Do nothing and return a null preference
-                    } else {
-                        throw new IOException(
-                                "Empty cookie name detected. Please check your cookies");
-                    }
-                } else if (nextChar == '=') {
-                    readingName = false;
-                } else if (skipUnlessLegacy && nextChar != '$' && nameBuffer.isEmpty()) {
-                    unread();
-                    nextChar = -1;
-                } else {
-                    nameBuffer.append((char) nextChar);
-                }
+    /**
+     * Reads the name of a pair, skipping the leading spaces.
+     *
+     * @param name The buffer receiving the name.
+     * @param legacyOnly True, if the pair must be left unread unless its name starts with '$'.
+     * @return The character ending the name: '=', ';' or -1 at the end of the header, or {@link
+     *     #NOT_LEGACY}.
+     * @throws IOException
+     */
+    private int readName(StringBuilder name, boolean legacyOnly) throws IOException {
+        int next;
+
+        while (((next = read()) != -1) && (next != ';') && (next != '=')) {
+            if (name.isEmpty() && HeaderUtils.isSpace(next)) {
+                // Skip spaces
+            } else if (legacyOnly && name.isEmpty() && next != '$') {
+                unread();
+                return NOT_LEGACY;
             } else {
-                if (valueBuffer.isEmpty() && HeaderUtils.isSpace(nextChar)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ';')) {
-                    // End of a pair
-                    result = Parameter.create(nameBuffer, valueBuffer);
-                } else if ((nextChar == '"') && (valueBuffer.isEmpty())) {
-                    // Step back, quotes are tolerated around the value
-                    unread();
-                    valueBuffer.append(readQuotedString());
-                } else {
-                    valueBuffer.append((char) nextChar);
-                }
+                name.append((char) next);
             }
         }
 
-        return result;
+        return next;
+    }
+
+    /**
+     * Reads the value of a pair, up to the next semicolon. Quotes are tolerated around the value.
+     *
+     * @return The value.
+     * @throws IOException
+     */
+    private StringBuilder readPairValue() throws IOException {
+        StringBuilder value = new StringBuilder();
+        int next;
+
+        while (((next = read()) != -1) && (next != ';')) {
+            if (value.isEmpty() && HeaderUtils.isSpace(next)) {
+                // Skip spaces
+            } else if ((next == '"') && value.isEmpty()) {
+                // Step back
+                unread();
+                value.append(readQuotedString());
+            } else {
+                value.append((char) next);
+            }
+        }
+
+        return value;
     }
 
     @Override
