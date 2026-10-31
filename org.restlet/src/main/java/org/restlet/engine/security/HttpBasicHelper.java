@@ -74,7 +74,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             Response response,
             Series<Header> httpHeaders) {
         String realm = challenge.getRealm();
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (realm != null) {
             cw.appendQuotedChallengeParameter(REALM, realm);
@@ -146,7 +146,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
         while (param != null) {
             try {
-                if (REALM.equals(param.getName())) {
+                if (REALM.equalsIgnoreCase(param.getName())) {
                     challenge.setRealm(param.getValue());
                 } else {
                     challenge.getParameters().add(param);
@@ -232,7 +232,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
      * @return The charset.
      */
     private String getCharset(final ChallengeResponse challenge) {
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (charset == null) {
             charset = ISO_8859_1;
