@@ -11,15 +11,23 @@ package org.restlet.service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.engine.application.CorsFilter;
+import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.engine.util.SetUtils;
 import org.restlet.routing.Filter;
 
 /**
  * Application service that adds support of CORS. This service lets the target resource specify the
  * allowed methods.
+ *
+ * <p><b>Credentials:</b> the Fetch standard does not accept the wildcard {@code *} in {@code
+ * Access-Control-Allow-Origin} for requests with credentials. Allowing credentials together with
+ * the {@code *} origin would therefore require echoing any request origin, so this configuration is
+ * rejected with an {@link IllegalStateException}: list the allowed origins explicitly (or use an
+ * origin matcher) when credentials are allowed.
  *
  * <p>Example:
  *
@@ -44,6 +52,9 @@ public class CorsService extends Service {
 
     /** The value of the 'Access-Control-Allow-Origin' header. Default is '*'. */
     private Set<String> allowedOrigins = SetUtils.newHashSet("*");
+
+    /** Optional additional rule to accept an origin that is not listed in the allowed origins. */
+    private Predicate<String> allowedOriginMatcher = null;
 
     /**
      * If true, copies the value of 'Access-Control-Request-Headers' request header into the
@@ -93,7 +104,9 @@ public class CorsService extends Service {
 
     @Override
     public Filter createInboundFilter(Context context) {
+        CorsResponseHelper.checkCredentialsConfiguration(allowedCredentials, allowedOrigins);
         return new CorsFilter()
+                .setAllowedOriginMatcher(allowedOriginMatcher)
                 .setAllowedCredentials(allowedCredentials)
                 .setAllowedOrigins(allowedOrigins)
                 .setAllowingAllRequestedHeaders(allowingAllRequestedHeaders)
@@ -214,6 +227,27 @@ public class CorsService extends Service {
      */
     public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
+    }
+
+    /**
+     * Sets an optional rule to accept origins that are not listed in the allowed origins, for
+     * example {@code origin -> origin.endsWith(".example.com")}. The response always contains the
+     * exact request origin. The set of allowed origins must not contain "*", otherwise every origin
+     * is accepted.
+     *
+     * @param allowedOriginMatcher The origin matcher, or null for none.
+     */
+    public void setAllowedOriginMatcher(Predicate<String> allowedOriginMatcher) {
+        this.allowedOriginMatcher = allowedOriginMatcher;
+    }
+
+    /**
+     * Returns the optional rule used to accept origins that are not listed in the allowed origins.
+     *
+     * @return The origin matcher, or null.
+     */
+    public Predicate<String> getAllowedOriginMatcher() {
+        return allowedOriginMatcher;
     }
 
     /**
