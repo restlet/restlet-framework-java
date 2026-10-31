@@ -194,7 +194,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                             .disableServiceConfigLookUp()
                             .proxyDetector(address -> null)
                             .maxInboundMessageSize(maxMessageBytes)
-                            .intercept(List.copyOf(interceptors))
+                            // Registered first so that it clamps the final call options.
                             .intercept(
                                     new ClientInterceptor() {
                                         @Override
@@ -214,7 +214,9 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                                                     ? cap
                                                                     : deadline.minimum(cap)));
                                         }
-                                    });
+                                    })
+                            // Registered last so they run first, before the duration cap.
+                            .intercept(List.copyOf(interceptors));
             if (executor != null) {
                 builder.executor(executor);
             }
