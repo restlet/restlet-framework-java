@@ -8,6 +8,9 @@
  */
 package org.restlet.security;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -17,6 +20,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
+import org.restlet.engine.security.HttpBasicHelper;
 
 /**
  * Authenticator based on a challenge scheme. This is typically used to support the HTTP BASIC and
@@ -28,6 +32,18 @@ import org.restlet.data.Status;
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
+
+    /**
+     * The charset of the HTTP Basic credentials, advertised in the challenge when it is UTF-8 (RFC
+     * 7617).
+     */
+    private volatile Charset credentialsCharset = StandardCharsets.UTF_8;
+
+    /**
+     * The charset used when the HTTP Basic credentials are not valid in the credentials charset, or
+     * null for none.
+     */
+    private volatile Charset credentialsFallbackCharset = StandardCharsets.ISO_8859_1;
 
     /** The authentication realm. */
     private volatile String realm;
@@ -120,6 +136,8 @@ public class ChallengeAuthenticator extends Authenticator {
         boolean loggable = request.isLoggable() && getLogger().isLoggable(Level.FINE);
 
         if (getVerifier() != null) {
+            decodeBasicCredentials(request);
+
             switch (getVerifier().verify(request, response)) {
                 case Verifier.RESULT_VALID:
                     // Valid credentials provided
@@ -224,8 +242,9 @@ public class ChallengeAuthenticator extends Authenticator {
     protected ChallengeRequest createChallengeRequest(boolean stale) {
         ChallengeRequest result = new ChallengeRequest(getScheme(), getRealm());
 
-        if (ChallengeScheme.HTTP_BASIC.equals(getScheme())) {
-            // RFC 7617 section 2.1: credentials are expected in UTF-8
+        if (ChallengeScheme.HTTP_BASIC.equals(getScheme())
+                && StandardCharsets.UTF_8.equals(getCredentialsCharset())) {
+            // RFC 7617 section 2.1: the only charset that can be advertised is UTF-8
             result.getParameters().add("charset", "UTF-8");
         }
 
@@ -252,6 +271,51 @@ public class ChallengeAuthenticator extends Authenticator {
         }
 
         response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+    }
+
+    /**
+     * Decodes again the HTTP Basic credentials with the charsets of this authenticator, when they
+     * differ from the default decoding (UTF-8, then ISO-8859-1).
+     *
+     * @param request The request holding the challenge response.
+     */
+    private void decodeBasicCredentials(Request request) {
+        ChallengeResponse cr = request.getChallengeResponse();
+
+        if (cr != null
+                && ChallengeScheme.HTTP_BASIC.equals(cr.getScheme())
+                && cr.getRawValue() != null
+                && (!StandardCharsets.UTF_8.equals(credentialsCharset)
+                        || !StandardCharsets.ISO_8859_1.equals(credentialsFallbackCharset))) {
+            try {
+                HttpBasicHelper.parseCredentials(
+                        cr, credentialsCharset, credentialsFallbackCharset);
+            } catch (IllegalArgumentException e) {
+                getLogger().log(Level.INFO, "Unable to decode the HTTP Basic credential", e);
+                cr.setIdentifier(null);
+                cr.setSecret((char[]) null);
+            }
+        }
+    }
+
+    /**
+     * Returns the charset of the HTTP Basic credentials. Defaults to UTF-8.
+     *
+     * @return The credentials charset.
+     * @see #setCredentialsCharset(Charset)
+     */
+    public Charset getCredentialsCharset() {
+        return credentialsCharset;
+    }
+
+    /**
+     * Returns the charset used when the HTTP Basic credentials are not valid in the credentials
+     * charset. Defaults to ISO-8859-1.
+     *
+     * @return The fallback charset, or null if there is none.
+     */
+    public Charset getCredentialsFallbackCharset() {
+        return credentialsFallbackCharset;
     }
 
     /**
@@ -290,6 +354,28 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     public boolean isRechallenging() {
         return this.rechallenging;
+    }
+
+    /**
+     * Sets the charset of the HTTP Basic credentials (RFC 7617 section 2.1). The credentials are
+     * read with it, and the challenge advertises {@code charset="UTF-8"} when it is UTF-8, the only
+     * value allowed by the RFC. Defaults to UTF-8.
+     *
+     * @param credentialsCharset The credentials charset.
+     */
+    public void setCredentialsCharset(Charset credentialsCharset) {
+        this.credentialsCharset = Objects.requireNonNull(credentialsCharset);
+    }
+
+    /**
+     * Sets the charset used when the HTTP Basic credentials are not valid in the credentials
+     * charset, as clients that predate RFC 7617 send ISO-8859-1. Defaults to ISO-8859-1. Use null
+     * to reject such credentials.
+     *
+     * @param credentialsFallbackCharset The fallback charset, or null for none.
+     */
+    public void setCredentialsFallbackCharset(Charset credentialsFallbackCharset) {
+        this.credentialsFallbackCharset = credentialsFallbackCharset;
     }
 
     /**

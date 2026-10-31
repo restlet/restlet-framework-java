@@ -81,7 +81,10 @@ Changes log
           ISO-8859-1 when the bytes are not valid UTF-8. A `ChallengeAuthenticator` using
           `ChallengeScheme.HTTP_BASIC` now advertises `charset="UTF-8"` in its challenge (RFC 7617),
           and a `ChallengeResponse` built from a challenge request copies that `charset`
-          parameter, so the client encodes its credentials in UTF-8. Issue #1455.
+          parameter, so the client encodes its credentials in UTF-8. The charsets can be changed per
+          authenticator with `ChallengeAuthenticator.setCredentialsCharset()` (UTF-8 by default,
+          advertised in the challenge only when it is UTF-8) and `setCredentialsFallbackCharset()`
+          (ISO-8859-1 by default, null to reject invalid UTF-8). Issue #1455.
     - Enhancements
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
@@ -128,6 +131,8 @@ Changes log
         - CorsService and CorsFilter now add `Vary: Origin` to every response when the CORS answer depends on the request origin (origin allow-list or credentials allowed), including requests without an `Origin` header, so shared caches no longer serve the response of one origin to another. A static `*` without credentials still sends no `Vary`, as recommended by the Fetch standard. Issue #1611.
         - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=`
           (such as a `Negotiate` token): the whole header was dropped. Issue #191.
+        - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever
+          their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

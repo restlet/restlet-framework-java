@@ -9,7 +9,11 @@
 package org.restlet.engine.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.junit.jupiter.api.Test;
@@ -34,12 +38,12 @@ class HttpBasicHelperTestCase {
     /** The euro sign does not exist in ISO-8859-1. */
     private static final String UTF8_PASSWORD = "p€ss";
 
-    private static String basicHeader(String login, String password, java.nio.charset.Charset cs) {
+    private static String basicHeader(String login, String password, Charset cs) {
         byte[] bytes = (login + ":" + password).getBytes(cs);
         return "Basic " + Base64.getEncoder().encodeToString(bytes);
     }
 
-    private static String base64Of(String login, String password, java.nio.charset.Charset cs) {
+    private static String base64Of(String login, String password, Charset cs) {
         return Base64.getEncoder().encodeToString((login + ":" + password).getBytes(cs));
     }
 
@@ -143,5 +147,60 @@ class HttpBasicHelperTestCase {
         assertEquals(
                 "Basic " + base64Of(UTF8_LOGIN, UTF8_PASSWORD, StandardCharsets.UTF_8),
                 AuthenticatorUtils.formatResponse(cr, response.getRequest(), null));
+    }
+
+    // ---- Case insensitivity of the parameter names (RFC 9110 section 11.2)
+    // -----------------------
+
+    @Test
+    void parseRequest_parameterNamesInAnyCase_realmAndCharsetRecognized() {
+        Response response = new Response(new Request(Method.GET, "http://localhost/"));
+        ChallengeRequest challenge =
+                AuthenticatorUtils.parseRequest(
+                                response, "Basic REALM=\"r\", Charset=\"utf-8\"", null)
+                        .get(0);
+
+        assertEquals("r", challenge.getRealm());
+        assertEquals("utf-8", challenge.getParameters().getFirstValue("charset", true));
+
+        response.getChallengeRequests().add(challenge);
+        ChallengeResponse cr =
+                new ChallengeResponse(challenge, response, UTF8_LOGIN, UTF8_PASSWORD.toCharArray());
+        assertEquals(
+                "Basic " + base64Of(UTF8_LOGIN, UTF8_PASSWORD, StandardCharsets.UTF_8),
+                AuthenticatorUtils.formatResponse(cr, response.getRequest(), null));
+    }
+
+    // ---- parseCredentials --------------------------------------------------------------------
+
+    private static ChallengeResponse rawResponse(String login, String password, Charset cs) {
+        ChallengeResponse cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC);
+        cr.setRawValue(base64Of(login, password, cs));
+        return cr;
+    }
+
+    @Test
+    void parseCredentials_invalidInPrimaryWithoutFallback_throws() {
+        ChallengeResponse cr =
+                rawResponse(LATIN1_LOGIN, LATIN1_PASSWORD, StandardCharsets.ISO_8859_1);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> HttpBasicHelper.parseCredentials(cr, StandardCharsets.UTF_8, null));
+    }
+
+    @Test
+    void parseCredentials_iso88591Primary_readsUtf8BytesAsLatin1() {
+        ChallengeResponse cr = rawResponse("zoë", "pw", StandardCharsets.UTF_8);
+        assertTrue(HttpBasicHelper.parseCredentials(cr, StandardCharsets.ISO_8859_1, null));
+        assertEquals("zoÃ«", cr.getIdentifier());
+    }
+
+    @Test
+    void parseCredentials_noSeparator_returnsFalse() {
+        ChallengeResponse cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC);
+        cr.setRawValue(Base64.getEncoder().encodeToString("nocolon".getBytes()));
+        assertFalse(
+                HttpBasicHelper.parseCredentials(
+                        cr, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1));
     }
 }
