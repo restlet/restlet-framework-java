@@ -394,8 +394,7 @@ public class Response extends Message {
      * Returns the modifiable series of cookie settings provided by the server. Creates a new
      * instance if no one has been set.<br>
      * <br>
-     * Note that when used with HTTP connectors, this property maps to the "Set-Cookie" and
-     * "Set-Cookie2" headers.
+     * Note that when used with HTTP connectors, this property maps to the "Set-Cookie" header.
      *
      * @return The cookie settings provided by the server.
      */
@@ -859,8 +858,8 @@ public class Response extends Message {
 
     /**
      * Sets the modifiable series of cookie settings provided by the server. Note that when used
-     * with HTTP connectors, this property maps to the "Set-Cookie" and "Set-Cookie2" headers. This
-     * method clears the current series and adds all entries in the parameter series.
+     * with HTTP connectors, this property maps to the "Set-Cookie" header. This method clears the
+     * current series and adds all entries in the parameter series.
      *
      * @param cookieSettings A series of cookie settings provided by the server.
      */

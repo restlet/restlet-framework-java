@@ -11,6 +11,7 @@ package org.restlet.engine.header;
 import java.util.Date;
 import java.util.List;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.SameSite;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -44,7 +45,6 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
     public CookieSettingWriter append(CookieSetting cookieSetting) throws IllegalArgumentException {
         String name = cookieSetting.getName();
         String value = cookieSetting.getValue();
-        int version = cookieSetting.getVersion();
 
         if ((name == null) || (name.isEmpty())) {
             throw new IllegalArgumentException("Can't write cookie. Invalid name detected");
@@ -52,97 +52,45 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 
         append(name).append('=');
 
-        // Append the value
         if ((value != null) && (!value.isEmpty())) {
-            appendValue(value, version);
+            append(value);
         }
 
-        // Append the version
-        if (version > 0) {
-            append("; Version=");
-            appendValue(Integer.toString(version), version);
-        }
-
-        // Append the path
+        // RFC 6265 section 5.2.3 and 5.2.4: attribute values are never quoted
         String path = cookieSetting.getPath();
 
         if ((path != null) && (!path.isEmpty())) {
-            append("; Path=");
-
-            if (version == 0) {
-                append(path);
-            } else {
-                appendQuotedString(path);
-            }
+            append("; Path=").append(path);
         }
 
-        // Append the expiration date
+        // Max-Age is preferred by recent user agents, Expires is still needed by old ones
         int maxAge = cookieSetting.getMaxAge();
 
         if (maxAge >= 0) {
-            if (version == 0) {
-                long currentTime = System.currentTimeMillis();
-                long maxTime = (maxAge * 1000L);
-                long expiresTime = currentTime + maxTime;
-                Date expires = new Date(expiresTime);
-
-                append("; Expires=");
-                appendValue(
-                        DateUtils.format(expires, DateUtils.FORMAT_RFC_1123.getFirst()), version);
-            } else {
-                append("; Max-Age=");
-                appendValue(Integer.toString(cookieSetting.getMaxAge()), version);
-            }
-        } else if ((maxAge == -1) && (version > 0)) {
-            // Discard the cookie at the end of the user's session (RFC 2965)
-            append("; Discard");
-        } else {
-            // NetScape cookies automatically expire at the end of the user's session
+            Date expires = new Date(System.currentTimeMillis() + (maxAge * 1000L));
+            append("; Expires=")
+                    .append(DateUtils.format(expires, DateUtils.FORMAT_RFC_1123.getFirst()));
+            append("; Max-Age=").append(Integer.toString(maxAge));
         }
 
-        // Append the domain
         String domain = cookieSetting.getDomain();
 
         if ((domain != null) && (!domain.isEmpty())) {
-            append("; Domain=");
-            appendValue(domain.toLowerCase(), version);
+            append("; Domain=").append(domain.toLowerCase());
         }
 
-        // Append the secure flag
         if (cookieSetting.isSecure()) {
             append("; Secure");
         }
 
-        // Append the secure flag
         if (cookieSetting.isAccessRestricted()) {
             append("; HttpOnly");
         }
 
-        // Append the comment
-        if (version > 0) {
-            String comment = cookieSetting.getComment();
+        SameSite sameSite = cookieSetting.getSameSite();
 
-            if ((comment != null) && (!comment.isEmpty())) {
-                append("; Comment=");
-                appendValue(comment, version);
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a source string as an HTTP comment.
-     *
-     * @param value The source string to format.
-     * @param version The cookie version.
-     * @return This writer.
-     */
-    public CookieSettingWriter appendValue(String value, int version) {
-        if (version == 0) {
-            append(value);
-        } else {
-            appendQuotedString(value);
+        if (sameSite != null) {
+            append("; SameSite=").append(sameSite.getHeaderValue());
         }
 
         return this;

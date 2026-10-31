@@ -164,8 +164,6 @@ public final class HeaderConstants {
 
     public static final String HEADER_SET_COOKIE = "Set-Cookie";
 
-    public static final String HEADER_SET_COOKIE2 = "Set-Cookie2";
-
     public static final String HEADER_SLUG = "Slug";
 
     public static final String HEADER_TRAILER = "Trailer";

@@ -8,7 +8,6 @@
  */
 package org.restlet.data;
 
-import java.util.Objects;
 import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
 
@@ -16,8 +15,7 @@ import org.restlet.engine.util.SystemUtils;
  * Cookie setting provided by a server. This allows a server side application to add, modify, or
  * remove a cookie on the client.<br>
  * <br>
- * Note that when used with HTTP connectors, this class maps to the "Set-Cookie" and "Set-Cookie2"
- * headers.
+ * Note that when used with HTTP connectors, this class maps to the "Set-Cookie" header (RFC 6265).
  *
  * @see Response#getCookieSettings()
  * @author Jerome Louvel
@@ -27,13 +25,10 @@ public final class CookieSetting extends Cookie {
     private static final String DESCRIPTION = "Cookie setting";
 
     /**
-     * Indicates whether to restrict cookie access to untrusted parties. Currently, this toggles the
-     * non-standard but widely supported HttpOnly cookie parameter.
+     * Indicates whether to restrict cookie access to untrusted parties. This toggles the HttpOnly
+     * cookie attribute.
      */
     private volatile boolean accessRestricted;
-
-    /** The user's comment. */
-    private volatile String comment;
 
     /** The maximum age in seconds. Use 0 to discard an existing cookie. */
     private volatile int maxAge;
@@ -41,89 +36,66 @@ public final class CookieSetting extends Cookie {
     /** Indicates if the cookie should only be transmitted by secure means. */
     private volatile boolean secure;
 
+    /** The SameSite attribute, or null if not set. */
+    private volatile SameSite sameSite;
+
     /** Default constructor. */
     public CookieSetting() {
-        this(0, null, null);
+        this(null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param version The cookie's version.
-     * @param name The cookie's name.
-     * @param value The cookie's value.
-     */
-    public CookieSetting(int version, String name, String value) {
-        this(version, name, value, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param version The cookie's version.
      * @param name The cookie's name.
      * @param value The cookie's value.
      * @param path The cookie's path.
      * @param domain The cookie's domain name.
      */
-    public CookieSetting(int version, String name, String value, String path, String domain) {
-        this(version, name, value, path, domain, null, -1, false, false);
+    public CookieSetting(String name, String value, String path, String domain) {
+        this(name, value, path, domain, -1, false, false);
     }
 
     /**
      * Constructor.
      *
-     * @param version The cookie's version.
      * @param name The cookie's name.
      * @param value The cookie's value.
      * @param path The cookie's path.
      * @param domain The cookie's domain name.
-     * @param comment The cookie's comment.
      * @param maxAge Sets the maximum age in seconds.<br>
      *     Use 0 to immediately discard an existing cookie.<br>
      *     Use -1 to discard the cookie at the end of the session (default).
      * @param secure Indicates if the cookie should only be transmitted by secure means.
      */
     public CookieSetting(
-            int version,
-            String name,
-            String value,
-            String path,
-            String domain,
-            String comment,
-            int maxAge,
-            boolean secure) {
-        this(version, name, value, path, domain, comment, maxAge, secure, false);
+            String name, String value, String path, String domain, int maxAge, boolean secure) {
+        this(name, value, path, domain, maxAge, secure, false);
     }
 
     /**
      * Constructor.
      *
-     * @param version The cookie's version.
      * @param name The cookie's name.
      * @param value The cookie's value.
      * @param path The cookie's path.
      * @param domain The cookie's domain name.
-     * @param comment The cookie's comment.
      * @param maxAge Sets the maximum age in seconds.<br>
      *     Use 0 to immediately discard an existing cookie.<br>
      *     Use -1 to discard the cookie at the end of the session (default).
      * @param secure Indicates if the cookie should only be transmitted by secure means.
      * @param accessRestricted Indicates whether to restrict cookie access to untrusted parties.
-     *     Currently, this toggles the non-standard but widely supported HttpOnly cookie parameter.
+     *     This toggles the HttpOnly cookie attribute.
      */
     public CookieSetting(
-            int version,
             String name,
             String value,
             String path,
             String domain,
-            String comment,
             int maxAge,
             boolean secure,
             boolean accessRestricted) {
-        super(version, name, value, path, domain);
-        this.comment = comment;
+        super(name, value, path, domain);
         this.maxAge = maxAge;
         this.secure = secure;
         this.accessRestricted = accessRestricted;
@@ -136,7 +108,7 @@ public final class CookieSetting extends Cookie {
      * @param value The cookie's value.
      */
     public CookieSetting(String name, String value) {
-        this(0, name, value, null, null);
+        this(name, value, null, null);
     }
 
     /** {@inheritDoc} */
@@ -153,16 +125,7 @@ public final class CookieSetting extends Cookie {
                 && this.maxAge == that.maxAge
                 && this.secure == that.secure
                 && accessRestricted == that.accessRestricted
-                && Objects.equals(this.comment, that.comment);
-    }
-
-    /**
-     * Returns the comment for the user.
-     *
-     * @return The comment for the user.
-     */
-    public String getComment() {
-        return this.comment;
+                && this.sameSite == that.sameSite;
     }
 
     /**
@@ -187,17 +150,27 @@ public final class CookieSetting extends Cookie {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(super.hashCode(), getComment(), getMaxAge(), isSecure());
+        return SystemUtils.hashCode(
+                super.hashCode(), getMaxAge(), isSecure(), isAccessRestricted(), getSameSite());
     }
 
     /**
-     * Indicates if cookie access is restricted for untrusted parties. Currently, this toggles the
-     * non-standard but widely supported HttpOnly cookie parameter.
+     * Indicates if cookie access is restricted for untrusted parties. This toggles the HttpOnly
+     * cookie attribute.
      *
      * @return accessRestricted True if cookie access should be restricted
      */
     public boolean isAccessRestricted() {
         return this.accessRestricted;
+    }
+
+    /**
+     * Returns the SameSite attribute (RFC 6265bis).
+     *
+     * @return The SameSite attribute, or null if not set.
+     */
+    public SameSite getSameSite() {
+        return this.sameSite;
     }
 
     /**
@@ -210,8 +183,8 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Indicates whether to restrict cookie access to untrusted parties. Currently, this toggles the
-     * non-standard but widely supported HttpOnly cookie parameter.
+     * Indicates whether to restrict cookie access to untrusted parties. This toggles the HttpOnly
+     * cookie attribute.
      *
      * @param accessRestricted True if cookie access should be restricted
      */
@@ -220,12 +193,13 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Sets the comment for the user.
+     * Sets the SameSite attribute (RFC 6265bis). Note that browsers require the Secure attribute
+     * when SameSite is {@link SameSite#NONE}.
      *
-     * @param comment The comment for the user.
+     * @param sameSite The SameSite attribute, or null to not send it.
      */
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setSameSite(SameSite sameSite) {
+        this.sameSite = sameSite;
     }
 
     /**
@@ -251,12 +225,12 @@ public final class CookieSetting extends Cookie {
     public String toString() {
         return "CookieSetting [accessRestricted="
                 + accessRestricted
-                + ", comment="
-                + comment
                 + ", maxAge="
                 + maxAge
                 + ", secure="
                 + secure
+                + ", sameSite="
+                + sameSite
                 + ", domain="
                 + getDomain()
                 + ", name="
@@ -265,8 +239,6 @@ public final class CookieSetting extends Cookie {
                 + getPath()
                 + ", value="
                 + getValue()
-                + ", version="
-                + getVersion()
                 + "]";
     }
 }

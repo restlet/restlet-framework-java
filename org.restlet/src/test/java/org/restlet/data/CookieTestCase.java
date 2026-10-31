@@ -23,26 +23,25 @@ class CookieTestCase {
     /** Equality tests. */
     @Test
     void testEquals() {
-        Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
-        Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
+        Cookie c1 = new Cookie("name1", "value1", "path1", "domain1");
+        Cookie c2 = new Cookie("name1", "value1", "path1", "domain1");
 
         assertEquals(c1, c2);
         assertEquals(c1.hashCode(), c2.hashCode());
-        assertEquals(c1, c2);
     }
 
     /** Inequality tests. */
     @Test
     void testUnEquals() {
-        Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
-        Cookie c2 = new Cookie(2, "name2", "value2", "path2", "domain2");
+        Cookie c1 = new Cookie("name1", "value1", "path1", "domain1");
+        Cookie c2 = new Cookie("name2", "value2", "path2", "domain2");
         assertNotEquals(c1, c2);
         assertNotEquals(c1.hashCode(), c2.hashCode());
         assertNotEquals(null, c1);
         assertNotEquals(null, c2);
 
-        c1 = new Cookie(1, "name", "value", "path", "domain");
-        c2 = new Cookie(2, "name", "value", "path", "domain");
+        c1 = new Cookie("name", "value", "path", "domain");
+        c2 = new Cookie("name", "value", "path", "other-domain");
         assertNotEquals(c1, c2);
         assertNotEquals(c1.hashCode(), c2.hashCode());
     }

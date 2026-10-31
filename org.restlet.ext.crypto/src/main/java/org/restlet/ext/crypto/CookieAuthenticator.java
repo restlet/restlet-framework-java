@@ -47,7 +47,8 @@ import org.restlet.security.ChallengeAuthenticator;
  * <br>
  * Note that credentials, both identifier and secret, are stored in a cookie in an encrypted manner.
  * The default encryption algorithm is AES but can be changed with {@link
- * #setEncryptAlgorithm(String)}. It is also strongly recommended to
+ * #setEncryptAlgorithm(String)}. It is also strongly recommended to serve the application over
+ * HTTPS, as the cookie is otherwise exposed to eavesdroppers, and to keep the secret key private.
  *
  * @author Remi Dewitte
  * @author Jerome Louvel
@@ -172,7 +173,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
             getLogger().log(Level.SEVERE, "Could not format credentials cookie", e);
         }
 
-        return super.authenticated(request, response);
+        int result = super.authenticated(request, response);
+
+        // Don't let the next restlet overwrite a login redirection (issue #554)
+        return response.getStatus().isRedirection() ? STOP : result;
     }
 
     /**
@@ -267,8 +271,12 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Returns the credentials cookie setting. It first try to find an existing cookie. If
-     * necessary, it creates a new one.
+     * Returns the credentials cookie setting. It first try to find an existing cookie setting in
+     * the response. If necessary, it creates a new one.<br>
+     * <br>
+     * Note that the cookie sent by the client is not looked up here: a new setting is created, and
+     * so the cookie is re-issued, on each authenticated request. This renews its expiration date
+     * (sliding expiration).
      *
      * @param request The current request.
      * @param response The current response.
@@ -280,13 +288,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         if (credentialsCookie == null) {
             credentialsCookie = new CookieSetting(getCookieName(), null);
             credentialsCookie.setAccessRestricted(true);
-            // authCookie.setVersion(1);
 
             if (request.getRootRef() != null) {
                 String p = request.getRootRef().getPath();
                 credentialsCookie.setPath(p == null ? "/" : p);
-            } else {
-                // authCookie.setPath("/");
             }
 
             response.getCookieSettings().add(credentialsCookie);

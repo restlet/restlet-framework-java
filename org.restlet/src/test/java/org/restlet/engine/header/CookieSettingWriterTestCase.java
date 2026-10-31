@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.SameSite;
 
 class CookieSettingWriterTestCase {
 
@@ -27,55 +28,53 @@ class CookieSettingWriterTestCase {
 
     @Test
     void write_missingName_throwsIllegalArgumentException() {
-        CookieSetting cookieSetting = new CookieSetting(0, "", "value");
+        CookieSetting cookieSetting = new CookieSetting("", "value");
         assertThrows(
                 IllegalArgumentException.class, () -> CookieSettingWriter.write(cookieSetting));
     }
 
     @Test
-    void write_versionOne_appendsQuotedVersion() {
-        CookieSetting cookieSetting = new CookieSetting(1, "name", "value");
-        assertTrue(
-                CookieSettingWriter.write(cookieSetting)
-                        .startsWith("name=\"value\"; Version=\"1\""));
+    void write_neverWritesLegacyAttributes() {
+        CookieSetting cookieSetting = new CookieSetting("name", "value", "/path", "example.com");
+        String result = CookieSettingWriter.write(cookieSetting);
+        assertFalse(result.contains("Version"));
+        assertFalse(result.contains("Comment"));
+        assertFalse(result.contains("Discard"));
+        assertFalse(result.contains("\""));
     }
 
     @Test
-    void write_pathVersionZero_appendsUnquotedPath() {
-        CookieSetting cookieSetting = new CookieSetting(0, "name", "value", "/path", null);
+    void write_path_isNotQuoted() {
+        CookieSetting cookieSetting = new CookieSetting("name", "value", "/path", null);
         assertEquals("name=value; Path=/path", CookieSettingWriter.write(cookieSetting));
     }
 
     @Test
-    void write_pathVersionOne_appendsQuotedPath() {
-        CookieSetting cookieSetting = new CookieSetting(1, "name", "value", "/path", null);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Path=\"/path\""));
-    }
-
-    @Test
-    void write_maxAgeVersionZero_appendsExpiresDate() {
+    void write_maxAge_appendsExpiresAndUnquotedMaxAge() {
         CookieSetting cookieSetting = new CookieSetting("name", "value");
         cookieSetting.setMaxAge(3600);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Expires="));
+        String result = CookieSettingWriter.write(cookieSetting);
+        assertTrue(result.contains("; Expires="));
+        assertTrue(result.endsWith("; Max-Age=3600"));
     }
 
     @Test
-    void write_maxAgeVersionOne_appendsMaxAge() {
-        CookieSetting cookieSetting = new CookieSetting(1, "name", "value");
-        cookieSetting.setMaxAge(3600);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Max-Age=\"3600\""));
+    void write_maxAgeZero_appendsMaxAgeZero() {
+        CookieSetting cookieSetting = new CookieSetting("name", "value");
+        cookieSetting.setMaxAge(0);
+        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Max-Age=0"));
     }
 
     @Test
-    void write_discardVersionOne_appendsDiscard() {
-        CookieSetting cookieSetting = new CookieSetting(1, "name", "value");
+    void write_sessionCookie_appendsNoExpirationAttribute() {
+        CookieSetting cookieSetting = new CookieSetting("name", "value");
         cookieSetting.setMaxAge(-1);
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Discard"));
+        assertEquals("name=value", CookieSettingWriter.write(cookieSetting));
     }
 
     @Test
     void write_domain_isLowercased() {
-        CookieSetting cookieSetting = new CookieSetting(0, "name", "value", null, "EXAMPLE.COM");
+        CookieSetting cookieSetting = new CookieSetting("name", "value", null, "EXAMPLE.COM");
         assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Domain=example.com"));
     }
 
@@ -94,17 +93,12 @@ class CookieSettingWriterTestCase {
     }
 
     @Test
-    void write_commentVersionOne_appendsQuotedComment() {
-        CookieSetting cookieSetting = new CookieSetting(1, "name", "value");
-        cookieSetting.setComment("a comment");
-        assertTrue(CookieSettingWriter.write(cookieSetting).contains("; Comment=\"a comment\""));
-    }
-
-    @Test
-    void write_commentVersionZero_isIgnored() {
+    void write_sameSite_appendsSameSite() {
         CookieSetting cookieSetting = new CookieSetting("name", "value");
-        cookieSetting.setComment("a comment");
-        assertFalse(CookieSettingWriter.write(cookieSetting).contains("Comment"));
+        cookieSetting.setSameSite(SameSite.LAX);
+        assertEquals("name=value; SameSite=Lax", CookieSettingWriter.write(cookieSetting));
+        cookieSetting.setSameSite(SameSite.NONE);
+        assertEquals("name=value; SameSite=None", CookieSettingWriter.write(cookieSetting));
     }
 
     @Test
