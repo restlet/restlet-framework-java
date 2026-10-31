@@ -103,7 +103,12 @@ Changes log
           Restlet request and client info through `RestletGraphql` context keys. The client can
           validate documents locally against a `GraphQLSchema` without a network call, bounds
           responses (10 MiB by default, never truncated) and accepts a request customizer for API
-          key headers. Issue #1581.
+          key headers. Subscriptions are served and consumed over Server-Sent Events
+          (`graphql-sse`, distinct connections mode) when `GraphqlTransport.SSE` is enabled: one
+          result requested at a time, client disconnects cancel the subscription, and finite
+          limits apply (64 active subscriptions and 1 MiB of queued bytes per subscription by
+          default). `GraphqlClientAdapter.subscribe` returns a `Publisher<ExecutionResult>`
+          honoring demand; cancelling it aborts the request. Issue #1581.
         - Added the `NettyConnectionUpgrade` engine hook: a Restlet returning a "101 Switching
           Protocols" response with this response attribute takes over the HTTP/1.1 connection
           (`NettyUpgradeContext`), which the WebSocket extension relies on.

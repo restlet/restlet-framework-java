@@ -27,7 +27,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -94,6 +98,9 @@ public class GraphqlClientAdapter {
     private volatile Consumer<Request> requestCustomizer;
 
     private volatile State state = State.NEW;
+
+    private final Set<GraphqlSsePublisher.EventStreamSubscription> subscriptions =
+            ConcurrentHashMap.newKeySet();
 
     /** Constructor. */
     public GraphqlClientAdapter() {
@@ -263,9 +270,16 @@ public class GraphqlClientAdapter {
         state = State.STARTED;
     }
 
-    /** Stops the adapter. The borrowed client is left running. */
+    /**
+     * Stops the adapter. Open subscriptions are cancelled, and their subscribers receive a {@link
+     * GraphqlTransportException}. The borrowed client is left running.
+     */
     public synchronized void stop() {
         state = State.STOPPED;
+        for (GraphqlSsePublisher.EventStreamSubscription subscription :
+                List.copyOf(subscriptions)) {
+            subscription.stop();
+        }
     }
 
     /**
@@ -325,6 +339,128 @@ public class GraphqlClientAdapter {
         return send(document, operationName, variables);
     }
 
+    /**
+     * Subscribes to a parsed operation, usually a subscription, with {@code graphql-sse} in
+     * distinct connections mode.
+     *
+     * @param document The document, printed before sending.
+     * @param operationName The name of the operation to execute, or null.
+     * @param variables The variables, or null.
+     * @return A cold publisher: each subscriber sends its own request on its first demand.
+     * @see #subscribe(String, String, Map)
+     */
+    public Publisher<ExecutionResult> subscribe(
+            Document document, String operationName, Map<String, Object> variables) {
+        Objects.requireNonNull(document, "document");
+        checkStarted();
+        ExecutionResult invalid = validate(document);
+        return invalid != null
+                ? single(invalid)
+                : new GraphqlSsePublisher(
+                        this, AstPrinter.printAst(document), operationName, variables);
+    }
+
+    /**
+     * Subscribes to an operation, usually a subscription, with {@code graphql-sse} in distinct
+     * connections mode. The request is sent with {@code POST}, accepting {@code text/event-stream},
+     * when the first result is requested; each {@code next} event becomes a result, honoring
+     * demand, and the {@code complete} event completes the publisher.
+     *
+     * <p>Request errors are published as a single result with errors. Transport failures, events
+     * larger than {@link #getMaxResponseBytes()} and streams that end without a {@code complete}
+     * event are signalled with a {@link GraphqlTransportException}. Cancelling the subscription
+     * aborts the request.
+     *
+     * @param document The document.
+     * @param operationName The name of the operation to execute, or null.
+     * @param variables The variables, or null.
+     * @return A cold publisher: each subscriber sends its own request on its first demand.
+     */
+    public Publisher<ExecutionResult> subscribe(
+            String document, String operationName, Map<String, Object> variables) {
+        Objects.requireNonNull(document, "document");
+        checkStarted();
+        if (schema != null) {
+            ExecutionResult invalid;
+            try {
+                invalid = validate(parse(document));
+            } catch (InvalidSyntaxException e) {
+                invalid = failure(List.of(e.toInvalidSyntaxError()));
+            }
+            if (invalid != null) {
+                return single(invalid);
+            }
+        }
+        return new GraphqlSsePublisher(this, document, operationName, variables);
+    }
+
+    /** A publisher of one result, for documents that fail local validation. */
+    private static Publisher<ExecutionResult> single(ExecutionResult result) {
+        return subscriber ->
+                subscriber.onSubscribe(
+                        new Subscription() {
+                            private boolean done;
+
+                            @Override
+                            public void request(long n) {
+                                synchronized (this) {
+                                    if (done) {
+                                        return;
+                                    }
+                                    done = true;
+                                }
+                                if (n <= 0) {
+                                    subscriber.onError(
+                                            new IllegalArgumentException(
+                                                    "The requested number of results must be"
+                                                            + " positive"));
+                                } else {
+                                    subscriber.onNext(result);
+                                    subscriber.onComplete();
+                                }
+                            }
+
+                            @Override
+                            public synchronized void cancel() {
+                                done = true;
+                            }
+                        });
+    }
+
+    /** Registers an open subscription. Returns false if the adapter is not started. */
+    synchronized boolean register(GraphqlSsePublisher.EventStreamSubscription subscription) {
+        if (state != State.STARTED) {
+            return false;
+        }
+        subscriptions.add(subscription);
+        return true;
+    }
+
+    void unregister(GraphqlSsePublisher.EventStreamSubscription subscription) {
+        subscriptions.remove(subscription);
+    }
+
+    /**
+     * Fills the HTTP request of an operation sent for an event stream.
+     *
+     * @param request The new request to fill.
+     * @param document The document.
+     * @param operationName The name of the operation to execute, or null.
+     * @param variables The variables, or null.
+     * @return The request, customized.
+     */
+    Request createEventStreamRequest(
+            Request request, String document, String operationName, Map<String, Object> variables) {
+        createRequest(request, document, operationName, variables);
+        request.getClientInfo()
+                .getAcceptedMediaTypes()
+                .add(new Preference<>(MediaType.TEXT_EVENT_STREAM, 1F));
+        request.getClientInfo()
+                .getAcceptedMediaTypes()
+                .add(new Preference<>(MediaType.APPLICATION_JSON, 0.5F));
+        return request;
+    }
+
     private Document parse(String document) {
         return Parser.parse(
                 ParserEnvironment.newParserEnvironment()
@@ -356,6 +492,11 @@ public class GraphqlClientAdapter {
      * @return The request, customized.
      */
     Request createRequest(String document, String operationName, Map<String, Object> variables) {
+        return createRequest(new Request(), document, operationName, variables);
+    }
+
+    private Request createRequest(
+            Request request, String document, String operationName, Map<String, Object> variables) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("query", document);
         if (operationName != null) {
@@ -365,7 +506,8 @@ public class GraphqlClientAdapter {
             body.put("variables", variables);
         }
 
-        Request request = new Request(Method.POST, endpoint);
+        request.setMethod(Method.POST);
+        request.setResourceRef(endpoint);
         request.setEntity(
                 new StringRepresentation(
                         GraphqlJson.writeString(body),
@@ -401,7 +543,14 @@ public class GraphqlClientAdapter {
         }
     }
 
-    private ExecutionResult toResult(Response response) throws GraphqlTransportException {
+    /**
+     * Converts a response with a single GraphQL result.
+     *
+     * @param response The response.
+     * @return The result.
+     * @throws GraphqlTransportException If the response is not a GraphQL result.
+     */
+    ExecutionResult toResult(Response response) throws GraphqlTransportException {
         Status status = response.getStatus();
         if (status.isConnectorError()) {
             throw new GraphqlTransportException(
