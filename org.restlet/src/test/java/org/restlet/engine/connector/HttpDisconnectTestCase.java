@@ -245,4 +245,37 @@ class HttpDisconnectTestCase {
             client.start();
         }
     }
+
+    @Test
+    void preCancelledRequestDoesNotRetainItsConnection() throws Exception {
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP1_1");
+        server =
+                new Server(
+                        serverContext,
+                        Protocol.HTTP,
+                        0,
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                response.setEntity("healthy", MediaType.TEXT_PLAIN);
+                            }
+                        });
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().add("httpClientTransportMode", "HTTP1_1");
+        clientContext.getParameters().add("maxConnectionsPerDestination", "1");
+        clientContext.getParameters().add("connectTimeout", "1000");
+        client = new Client(clientContext, Protocol.HTTP);
+        client.start();
+        String uri = "http://localhost:" + server.getActualPort() + "/";
+        for (int i = 0; i < 2; i++) {
+            Request cancelled = new Request(Method.GET, uri);
+            assertFalse(cancelled.abort());
+            assertTrue(client.handle(cancelled).getStatus().isConnectorError());
+        }
+        Response response = client.handle(new Request(Method.GET, uri));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("healthy", response.getEntityAsText());
+    }
 }

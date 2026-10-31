@@ -320,10 +320,10 @@ class NettyClientCall {
 
         boolean backgroundWriterStarted = false;
         try {
-            this.channel = helper.acquire(this);
             if (cancelled.get()) {
                 throw new IOException("Request cancelled by client");
             }
+            attachChannel(helper.acquire(this));
             backgroundWriterStarted = sendRequestBody(request, entity, connectorService);
             awaitHead();
             result = new Status(statusCode, reasonPhrase);
@@ -341,6 +341,28 @@ class NettyClientCall {
         }
 
         return result;
+    }
+
+    /**
+     * Attaches the acquired channel, unless the exchange was cancelled during the acquisition, in
+     * which case the channel is released at once.
+     *
+     * @param ch The acquired channel.
+     * @throws IOException If the exchange was cancelled.
+     */
+    private void attachChannel(Channel ch) throws IOException {
+        boolean alreadyReleased;
+        lock.lock();
+        try {
+            this.channel = ch;
+            alreadyReleased = released;
+        } finally {
+            lock.unlock();
+        }
+        if (alreadyReleased) {
+            helper.release(ch, false);
+            throw new IOException("Request cancelled by client");
+        }
     }
 
     private boolean sendRequestBody(
@@ -938,6 +960,7 @@ class NettyClientCall {
 
     /** Releases the channel without reusing it. */
     private void abort() {
+        Channel ch;
         lock.lock();
         try {
             if (released) {
@@ -945,11 +968,12 @@ class NettyClientCall {
             }
             released = true;
             reusable = false;
+            // Read under the lock: a channel attached later is released by attachChannel().
+            ch = this.channel;
         } finally {
             lock.unlock();
         }
         clearAbortAction();
-        Channel ch = this.channel;
         if (ch != null) {
             helper.release(ch, false);
         }
