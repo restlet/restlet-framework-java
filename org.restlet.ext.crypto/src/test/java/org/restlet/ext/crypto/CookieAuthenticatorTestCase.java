@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -21,6 +22,7 @@ import org.restlet.Restlet;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -99,5 +101,37 @@ class CookieAuthenticatorTestCase {
         assertEquals(Status.SUCCESS_OK, logoutCr.getStatus());
         cs = logoutCr.getCookieSettings().getFirst("Credentials");
         assertEquals(0, cs.getMaxAge());
+    }
+
+    @Test
+    void login_withTargetUri_redirectsWithoutCallingNextRestlet() {
+        AtomicInteger nextCalls = new AtomicInteger();
+        CookieAuthenticator co =
+                new CookieAuthenticator(null, false, "realm", "MyExtraSecretKey".getBytes());
+        MapVerifier mapVerifier = new MapVerifier();
+        mapVerifier.getLocalSecrets().put("scott", "tiger".toCharArray());
+        co.setVerifier(mapVerifier);
+        co.setNext(
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        nextCalls.incrementAndGet();
+                        response.setStatus(Status.SUCCESS_OK);
+                    }
+                });
+
+        Request request = new Request(Method.POST, "http://toto.com/login?targetUri=/home");
+        Form form = new Form();
+        form.add("login", "scott");
+        form.add("password", "tiger");
+        request.getResourceRef().setBaseRef("http://toto.com");
+        request.setEntity(form.getWebRepresentation());
+        Response response = new Response(request);
+        co.handle(request, response);
+
+        assertEquals(Status.REDIRECTION_SEE_OTHER, response.getStatus());
+        assertNotNull(response.getLocationRef());
+        assertNotNull(response.getCookieSettings().getFirst("Credentials"));
+        assertEquals(0, nextCalls.get());
     }
 }
