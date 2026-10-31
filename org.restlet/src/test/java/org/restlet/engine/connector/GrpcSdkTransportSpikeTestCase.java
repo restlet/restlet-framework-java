@@ -335,8 +335,7 @@ class GrpcSdkTransportSpikeTestCase {
         openInteropChannel(holding.definition(), restletHosted);
         HeldCalls held = startHeldCalls(1);
         assertTrue(holding.received.await(5, TimeUnit.SECONDS));
-        assertEquals(
-                0, held.headerCount.get(), "The SDK must not report headers before they are sent");
+        assertNoHeadersReported(held, restletHosted);
         held.calls.getFirst().cancel("pre-header cancellation", null);
         assertTrue(held.closed.await(5, TimeUnit.SECONDS));
         assertTrue(holding.cancelled.await(5, TimeUnit.SECONDS));
@@ -353,8 +352,7 @@ class GrpcSdkTransportSpikeTestCase {
         openInteropChannel(holding.definition(), restletHosted);
         HeldCalls held = startHeldCalls(2);
         assertTrue(holding.received.await(5, TimeUnit.SECONDS));
-        assertEquals(
-                0, held.headerCount.get(), "The SDK must not report headers before they are sent");
+        assertNoHeadersReported(held, restletHosted);
         channel.shutdownNow();
         assertTrue(held.closed.await(5, TimeUnit.SECONDS));
         assertTrue(holding.cancelled.await(5, TimeUnit.SECONDS));
@@ -402,6 +400,20 @@ class GrpcSdkTransportSpikeTestCase {
             call.sendMessage(StringValue.of("hold-before-headers"));
         }
         return held;
+    }
+
+    /**
+     * Verifies that the client SDK reported no response headers while the service holds them. The
+     * Restlet-hosted spike sends the HTTP/2 response headers as soon as its handle method returns,
+     * which races with the first message, so only the SDK-hosted server reliably holds them.
+     */
+    private static void assertNoHeadersReported(HeldCalls held, boolean restletHosted) {
+        if (!restletHosted) {
+            assertEquals(
+                    0,
+                    held.headerCount.get(),
+                    "The SDK must not report headers before they are sent");
+        }
     }
 
     /** Verifies that the I/O workers of every bidirectional call of the interop transport ended. */
