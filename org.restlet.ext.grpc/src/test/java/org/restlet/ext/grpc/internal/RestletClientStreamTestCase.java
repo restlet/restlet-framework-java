@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,20 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 
 class RestletClientStreamTestCase {
+    @Test
+    void cancelledTimersDoNotStayQueued() {
+        var factory = new RestletTransportFactory(null, 1024, 1, java.time.Duration.ofSeconds(1));
+        try {
+            var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
+            for (int i = 0; i < 100; i++) {
+                timer.schedule(() -> {}, 1, TimeUnit.HOURS).cancel(false);
+            }
+            assertEquals(0, timer.getQueue().size());
+        } finally {
+            factory.close();
+        }
+    }
+
     @Test
     void shutdownBeforeListenerInstallationIsReplayedOnceAndReleasesAdmission() {
         var marshaller =
