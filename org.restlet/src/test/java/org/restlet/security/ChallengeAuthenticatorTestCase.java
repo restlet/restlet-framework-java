@@ -305,4 +305,22 @@ class ChallengeAuthenticatorTestCase {
         authenticator.setRechallenging(false);
         assertFalse(authenticator.isRechallenging());
     }
+
+    /** Issue #1455: a Basic challenge advertises UTF-8 credentials (RFC 7617 section 2.1). */
+    @Test
+    void createChallengeRequest_basic_advertisesUtf8() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertEquals("realm", challenge.getRealm());
+        assertEquals("UTF-8", challenge.getParameters().getFirstValue("charset"));
+    }
+
+    @Test
+    void createChallengeRequest_digest_hasNoCharsetParameter() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_DIGEST, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertNull(challenge.getParameters().getFirstValue("charset"));
+    }
 }

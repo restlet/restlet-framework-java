@@ -222,7 +222,14 @@ public class ChallengeAuthenticator extends Authenticator {
      * @return A new challenge request.
      */
     protected ChallengeRequest createChallengeRequest(boolean stale) {
-        return new ChallengeRequest(getScheme(), getRealm());
+        ChallengeRequest result = new ChallengeRequest(getScheme(), getRealm());
+
+        if (ChallengeScheme.HTTP_BASIC.equals(getScheme())) {
+            // RFC 7617 section 2.1: credentials are expected in UTF-8
+            result.getParameters().add("charset", "UTF-8");
+        }
+
+        return result;
     }
 
     /**

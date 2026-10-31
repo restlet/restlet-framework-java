@@ -11,6 +11,10 @@ package org.restlet.engine.security;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
 import org.restlet.Context;
@@ -152,11 +156,9 @@ public class HttpBasicHelper extends AuthenticatorHelper {
         }
 
         try {
-            String charset = getCharset(challenge);
-
             byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
 
-            String credentials = new String(credentialsEncoded, charset);
+            String credentials = decode(credentialsEncoded);
             int separator = credentials.indexOf(':');
 
             if (separator == -1) {
@@ -170,10 +172,30 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                 challenge.setIdentifier(credentials.substring(0, separator));
                 challenge.setSecret(credentials.substring(separator + 1));
             }
-        } catch (UnsupportedEncodingException e) {
-            getLogger().log(Level.INFO, "Unsupported HTTP Basic encoding error", e);
         } catch (IllegalArgumentException e) {
             getLogger().log(Level.INFO, "Unable to decode the HTTP Basic credential", e);
+        }
+    }
+
+    /**
+     * Decodes the credentials sent by a client. The server advertises {@code charset="UTF-8"} (RFC
+     * 7617 section 2.1) but the header does not tell which charset the client used, so the bytes
+     * are read as UTF-8 first and, if they are not valid UTF-8, as ISO-8859-1, the historical
+     * default.
+     *
+     * @param bytes The decoded Base64 credentials.
+     * @return The "user-id:password" string.
+     */
+    private static String decode(byte[] bytes) {
+        try {
+            return StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
+        } catch (CharacterCodingException e) {
+            return new String(bytes, StandardCharsets.ISO_8859_1);
         }
     }
 
