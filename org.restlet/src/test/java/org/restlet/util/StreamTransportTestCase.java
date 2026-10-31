@@ -23,11 +23,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -234,6 +236,47 @@ class StreamTransportTestCase {
     }
 
     @Test
+    void rejectsQueuedReadsWhenStopTimesOut() throws Exception {
+        CountDownLatch reading = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        InputStream input =
+                new InputStream() {
+                    @Override
+                    public int read() {
+                        reading.countDown();
+                        boolean done = false;
+                        while (!done) {
+                            try {
+                                release.await();
+                                done = true;
+                            } catch (InterruptedException _) {
+                                // Deliberately models an input that does not support interruption.
+                            }
+                        }
+                        return -1;
+                    }
+                };
+        var transport = new StreamTransport(input, new ByteArrayOutputStream(), () -> {});
+        transport.setProcessExitGrace(Duration.ZERO);
+        transport.setShutdownTimeout(Duration.ofMillis(100));
+        transport.start();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            try {
+                executor.submit(() -> transport.read(new byte[1], 0, 1));
+                assertTrue(reading.await(5, TimeUnit.SECONDS));
+                var queued = executor.submit(() -> transport.read(new byte[1], 0, 1));
+                assertThrows(IOException.class, transport::stop);
+                ExecutionException failure =
+                        assertThrows(
+                                ExecutionException.class, () -> queued.get(5, TimeUnit.SECONDS));
+                assertInstanceOf(IOException.class, failure.getCause());
+            } finally {
+                release.countDown();
+            }
+        }
+    }
+
+    @Test
     void propagatesIoAndCancellationFailures() throws Exception {
         var transport =
                 new StreamTransport(
@@ -287,6 +330,41 @@ class StreamTransportTestCase {
         } finally {
             transport.stop();
         }
+        assertFalse(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false));
+    }
+
+    @Test
+    void returnsEofWhenStdoutClosesBeforeProcessExit() throws Exception {
+        var transport = new StreamTransport(command("close-stdout"));
+        transport.start();
+        try {
+            assertEquals(
+                    -1,
+                    assertTimeoutPreemptively(
+                            Duration.ofSeconds(3), () -> transport.read(new byte[1], 0, 1)));
+        } finally {
+            transport.stop();
+        }
+    }
+
+    @Test
+    void deliversStdinEofBeforeTerminatingOwnedProcess() throws Exception {
+        var transport = new StreamTransport(command("graceful"));
+        transport.setProcessExitGrace(Duration.ofSeconds(4));
+        transport.start();
+        transport.stop();
+        assertEquals(
+                "clean-exit", new String(transport.getStderrTail(), StandardCharsets.US_ASCII));
+    }
+
+    @Test
+    void killsOwnedProcessWithinTheShutdownTimeout() throws Exception {
+        var transport = new StreamTransport(command("stubborn"));
+        transport.setShutdownTimeout(Duration.ofSeconds(3));
+        transport.setProcessExitGrace(Duration.ofSeconds(2));
+        transport.start();
+        long pid = transport.getProcessId();
+        assertTimeoutPreemptively(Duration.ofSeconds(5), transport::stop);
         assertFalse(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false));
     }
 
@@ -361,6 +439,31 @@ class StreamTransportTestCase {
         public static void main(String[] args) throws Exception {
             if ("fail".equals(args[0])) {
                 System.exit(23);
+            }
+            if ("close-stdout".equals(args[0])) {
+                System.out.close();
+                System.in.transferTo(OutputStream.nullOutputStream());
+                return;
+            }
+            if ("graceful".equals(args[0])) {
+                System.in.transferTo(OutputStream.nullOutputStream());
+                System.err.print("clean-exit");
+                System.err.flush();
+                return;
+            }
+            if ("stubborn".equals(args[0])) {
+                // Ignores stdin EOF and delays its exit on normal termination signals.
+                Runtime.getRuntime()
+                        .addShutdownHook(
+                                new Thread(
+                                        () -> {
+                                            try {
+                                                Thread.sleep(60000);
+                                            } catch (InterruptedException _) {
+                                                Thread.currentThread().interrupt();
+                                            }
+                                        }));
+                args = new String[] {"idle"};
             }
             if ("idle".equals(args[0])) {
                 if (!new CountDownLatch(1).await(1, TimeUnit.MINUTES)) {
