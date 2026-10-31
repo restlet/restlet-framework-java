@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.websocket;
 
+import io.netty.channel.EventLoopGroup;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -17,6 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
+import org.restlet.Client;
+import org.restlet.engine.netty.NettyClientHelper;
 import org.restlet.ext.websocket.internal.NettyWebSocketConnector;
 
 /**
@@ -24,8 +27,12 @@ import org.restlet.ext.websocket.internal.NettyWebSocketConnector;
  * its own connection.
  *
  * <p>Configure the client before starting it. {@link #connect(String)} starts a stopped client,
- * like {@link org.restlet.Restlet#handle(org.restlet.Request)}. Stop or close the client to release
- * its I/O threads; it can be started again afterwards.
+ * like {@link org.restlet.Restlet#handle(org.restlet.Request)}. Stop or close the client to close
+ * its sessions; it can be started again afterwards.
+ *
+ * <p>By default, the client creates its own I/O threads, released when it stops. To share the I/O
+ * threads of the application instead, set a borrowed HTTP {@link Client} with {@link
+ * #setClient(Client)}.
  */
 public final class WebSocketClient implements AutoCloseable {
 
@@ -42,6 +49,8 @@ public final class WebSocketClient implements AutoCloseable {
     private boolean compression = true;
 
     private boolean hostnameVerification = true;
+
+    private Client client;
 
     private NettyWebSocketConnector connector;
 
@@ -191,14 +200,40 @@ public final class WebSocketClient implements AutoCloseable {
     }
 
     /**
-     * Starts the client, creating its I/O threads. Does nothing if already started.
+     * Returns the borrowed HTTP client whose I/O threads are shared.
+     *
+     * @return The borrowed client, or null if the WebSocket client creates its own I/O threads.
+     */
+    public synchronized Client getClient() {
+        return client;
+    }
+
+    /**
+     * Sets a borrowed HTTP client whose I/O threads are shared, instead of creating new ones. The
+     * client must use the Netty HTTP connector of the core, have a context, and be started before
+     * this WebSocket client. Its owner stops it, after this WebSocket client: stopping it closes
+     * the sessions. Only the I/O threads are shared; the other settings, including TLS, are those
+     * of this WebSocket client.
+     *
+     * @param client The borrowed client, or null to create new I/O threads.
+     */
+    public synchronized void setClient(Client client) {
+        requireStopped();
+        this.client = client;
+    }
+
+    /**
+     * Starts the client, creating its I/O threads unless a borrowed client is set. Does nothing if
+     * already started.
      *
      * @throws IOException If the client cannot be started.
+     * @throws IllegalStateException If the borrowed client is not a started Netty HTTP client.
      */
     public synchronized void start() throws IOException {
         if (connector == null) {
             connector =
                     new NettyWebSocketConnector(
+                            borrowedEventLoopGroup(),
                             sslContext,
                             connectTimeout.toMillis(),
                             idleTimeout.toMillis(),
@@ -219,7 +254,10 @@ public final class WebSocketClient implements AutoCloseable {
         return connector != null;
     }
 
-    /** Stops the client, releasing its I/O threads. Does nothing if already stopped. */
+    /**
+     * Stops the client, closing its sessions and releasing its own I/O threads, if any. Does
+     * nothing if already stopped.
+     */
     public synchronized void stop() {
         if (connector != null) {
             connector.close();
@@ -264,6 +302,31 @@ public final class WebSocketClient implements AutoCloseable {
     @Override
     public void close() {
         stop();
+    }
+
+    /**
+     * Returns the event loop group of the borrowed client.
+     *
+     * @return The event loop group, or null if no client is borrowed.
+     */
+    private EventLoopGroup borrowedEventLoopGroup() {
+        if (client == null) {
+            return null;
+        }
+        Object helper =
+                (client.getContext() == null)
+                        ? null
+                        : client.getContext().getAttributes().get("org.restlet.engine.helper");
+        if (!(helper instanceof NettyClientHelper nettyHelper)) {
+            throw new IllegalStateException(
+                    "The borrowed client must have a context and use the Netty HTTP connector");
+        }
+        EventLoopGroup group = nettyHelper.getEventLoopGroup();
+        if (group == null || group.isShuttingDown()) {
+            throw new IllegalStateException(
+                    "Start the borrowed client before the WebSocket client");
+        }
+        return group;
     }
 
     private void requireStopped() {

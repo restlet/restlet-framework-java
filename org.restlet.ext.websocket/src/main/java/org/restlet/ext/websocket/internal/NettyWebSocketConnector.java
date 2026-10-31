@@ -18,6 +18,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -42,6 +44,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.Promise;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -66,6 +69,16 @@ public final class NettyWebSocketConnector implements AutoCloseable {
 
     private final EventLoopGroup group;
 
+    /** Whether the event loop group was created by this connector, which then shuts it down. */
+    private final boolean ownedGroup;
+
+    /**
+     * The open connections, closed with the connector. The group stays closed, closing the late
+     * connections of concurrent connect() calls, which a borrowed event loop would keep open.
+     */
+    private final ChannelGroup channels =
+            new DefaultChannelGroup("restlet-websocket-client", GlobalEventExecutor.INSTANCE, true);
+
     private final SslContext sslContext;
 
     private final long connectTimeoutMs;
@@ -85,6 +98,8 @@ public final class NettyWebSocketConnector implements AutoCloseable {
     /**
      * Constructor.
      *
+     * @param sharedGroup The event loop group to share, which this connector never shuts down, or
+     *     null to create one.
      * @param sslContext The JDK SSL context used for "wss" URIs, or null to use the default one.
      * @param connectTimeoutMs The connect and handshake timeout in milliseconds, 0 for none.
      * @param idleTimeoutMs The idle time after which the connection is pinged, then closed, 0 for
@@ -97,6 +112,7 @@ public final class NettyWebSocketConnector implements AutoCloseable {
      * @throws IOException If the SSL context cannot be created.
      */
     public NettyWebSocketConnector(
+            EventLoopGroup sharedGroup,
             SSLContext sslContext,
             long connectTimeoutMs,
             long idleTimeoutMs,
@@ -128,7 +144,11 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         this.compression = compression;
         this.hostnameVerification = hostnameVerification;
         this.logger = logger;
-        this.group = new MultiThreadIoEventLoopGroup(0, NioIoHandler.newFactory());
+        this.ownedGroup = (sharedGroup == null);
+        this.group =
+                ownedGroup
+                        ? new MultiThreadIoEventLoopGroup(0, NioIoHandler.newFactory())
+                        : sharedGroup;
     }
 
     /**
@@ -158,6 +178,11 @@ public final class NettyWebSocketConnector implements AutoCloseable {
         int defaultPort = secure ? 443 : 80;
         int port = (uri.getPort() > 0) ? uri.getPort() : defaultPort;
 
+        if (group.isShuttingDown()) {
+            throw new IOException(
+                    "The shared event loop is shut down: the borrowed client was stopped");
+        }
+
         HttpHeaders extraHeaders = new DefaultHttpHeaders();
         headers.forEach(extraHeaders::add);
         WebSocketClientHandshaker handshaker =
@@ -179,6 +204,7 @@ public final class NettyWebSocketConnector implements AutoCloseable {
                                 new ChannelInitializer<SocketChannel>() {
                                     @Override
                                     protected void initChannel(SocketChannel ch) {
+                                        channels.add(ch);
                                         initPipeline(ch, secure, host, port, handshaker, ready);
                                     }
                                 });
@@ -273,7 +299,11 @@ public final class NettyWebSocketConnector implements AutoCloseable {
 
     @Override
     public void close() {
-        group.shutdownGracefully(0, 2, TimeUnit.SECONDS).awaitUninterruptibly(5, TimeUnit.SECONDS);
+        channels.close().awaitUninterruptibly(5, TimeUnit.SECONDS);
+        if (ownedGroup) {
+            group.shutdownGracefully(0, 2, TimeUnit.SECONDS)
+                    .awaitUninterruptibly(5, TimeUnit.SECONDS);
+        }
     }
 
     /** Sends the handshake request and installs the session once the response is accepted. */
