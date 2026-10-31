@@ -64,9 +64,9 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
             throws GraphqlTransportException {
         Status status = response.getStatus();
         boolean keep = false;
+        MultipartStreamReader reader = null;
         try {
-            MultipartStreamReader reader =
-                    new MultipartStreamReader(response.getEntity(), maxPartBytes);
+            reader = new MultipartStreamReader(response.getEntity(), maxPartBytes);
             Map<String, Object> initial = part(reader.readPart(), status);
             boolean hasNext = Boolean.TRUE.equals(initial.get("hasNext"));
             IncrementalExecutionResultImpl.Builder result =
@@ -77,6 +77,8 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
             if (hasNext) {
                 result.incrementalItemPublisher(new GraphqlIncrementalPublisher(response, reader));
                 keep = true;
+            } else {
+                checkEnd(reader, status);
             }
             return result.build();
         } catch (IOException e) {
@@ -84,9 +86,32 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
                     "Unable to read the GraphQL incremental response", status, null, e);
         } finally {
             if (!keep) {
-                response.getEntity().release();
+                release(response, reader);
             }
         }
+    }
+
+    /** Checks that the last part is followed by the close delimiter. */
+    private static void checkEnd(MultipartStreamReader reader, Status status) throws IOException {
+        if (reader.readPart() != null) {
+            throw new GraphqlTransportException(
+                    "The GraphQL incremental response has parts after the last result",
+                    status,
+                    null,
+                    null);
+        }
+    }
+
+    /** Closes the reader, which owns the stream of the entity, and releases the entity. */
+    private static void release(Response response, MultipartStreamReader reader) {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException _) {
+                // Released anyway
+            }
+        }
+        response.getEntity().release();
     }
 
     private static Map<String, Object> part(MultiPartRepresentation.Part part, Status status)
@@ -182,7 +207,7 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
 
         private boolean started;
 
-        private boolean invalidDemand;
+        private volatile boolean invalidDemand;
 
         private volatile boolean cancelled;
 
@@ -192,34 +217,59 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
 
         @Override
         public void request(long n) {
+            boolean signal = false;
+            boolean start = false;
             synchronized (this) {
                 if (cancelled) {
                     return;
                 }
                 if (n <= 0) {
                     invalidDemand = true;
+                    // Without a reader thread, signal from here and prevent one from starting.
+                    signal = !started;
+                    if (signal) {
+                        cancelled = true;
+                    }
                 } else {
                     demand = demand + n < 0 ? Long.MAX_VALUE : demand + n;
-                }
-                notifyAll();
-                if (started) {
-                    return;
+                    start = !started;
                 }
                 started = true;
+                notifyAll();
             }
-            Thread.ofVirtual().name("restlet-graphql-incremental").start(this::run);
+            if (signal) {
+                release(response, reader);
+                subscriber.onError(invalidDemandError());
+            } else if (start) {
+                Thread.ofVirtual().name("restlet-graphql-incremental").start(this::run);
+            } else if (n <= 0) {
+                // Unblocks a pending read, then the reader thread signals the error.
+                response.abort();
+            }
         }
 
         @Override
         public void cancel() {
+            boolean idle;
             synchronized (this) {
                 if (cancelled) {
                     return;
                 }
                 cancelled = true;
+                // Without a reader thread to clean up, prevent one from starting.
+                idle = !started;
+                started = true;
                 notifyAll();
             }
-            response.abort();
+            if (idle) {
+                release(response, reader);
+            } else {
+                response.abort();
+            }
+        }
+
+        private IllegalArgumentException invalidDemandError() {
+            return new IllegalArgumentException("The requested number of results must be positive");
         }
 
         private void run() {
@@ -233,7 +283,11 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
                                     .incrementalItems(payloads(part.get("incremental")));
                     Map<String, Object> extensions = GraphqlJson.asObject(part.get("extensions"));
                     if (extensions != null) {
-                        result.extensions(Map.copyOf(extensions));
+                        // Extensions can have null values.
+                        result.extensions(new LinkedHashMap<Object, Object>(extensions));
+                    }
+                    if (!hasNext) {
+                        checkEnd(reader, response.getStatus());
                     }
                     if (!awaitDemand()) {
                         return;
@@ -249,18 +303,22 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
             } catch (IOException | RuntimeException e) {
                 if (!cancelled) {
                     cancelled = true;
-                    subscriber.onError(
-                            e instanceof GraphqlTransportException transport
-                                    ? transport
-                                    : new GraphqlTransportException(
-                                            "Unable to read the GraphQL incremental response",
-                                            response.getStatus(),
-                                            null,
-                                            e));
+                    subscriber.onError(invalidDemand ? invalidDemandError() : failure(e));
                 }
             } finally {
-                response.getEntity().release();
+                release(response, reader);
             }
+        }
+
+        /** Returns the error of a failed read, unless the read was aborted by invalid demand. */
+        private GraphqlTransportException failure(Exception e) {
+            return e instanceof GraphqlTransportException transport
+                    ? transport
+                    : new GraphqlTransportException(
+                            "Unable to read the GraphQL incremental response",
+                            response.getStatus(),
+                            null,
+                            e);
         }
 
         /** Waits for demand. Returns false if cancelled meanwhile. */
@@ -279,9 +337,7 @@ final class GraphqlIncrementalPublisher implements Publisher<DelayedIncrementalP
                 }
                 if (invalidDemand) {
                     cancelled = true;
-                    subscriber.onError(
-                            new IllegalArgumentException(
-                                    "The requested number of results must be positive"));
+                    subscriber.onError(invalidDemandError());
                     return false;
                 }
                 if (demand != Long.MAX_VALUE) {
