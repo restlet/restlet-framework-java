@@ -21,6 +21,7 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.engine.security.HttpBasicHelper;
 
 /** Unit tests for {@link ChallengeAuthenticator}. */
 class ChallengeAuthenticatorTestCase {
@@ -304,5 +305,44 @@ class ChallengeAuthenticatorTestCase {
         assertTrue(authenticator.isRechallenging());
         authenticator.setRechallenging(false);
         assertFalse(authenticator.isRechallenging());
+    }
+
+    /** Issue #1455: a Basic challenge advertises UTF-8 credentials (RFC 7617 section 2.1). */
+    @Test
+    void createChallengeRequest_basic_advertisesUtf8() {
+        System.setProperty(HttpBasicHelper.UTF8_PROPERTY, "true");
+        try {
+            assertAdvertisesUtf8();
+        } finally {
+            System.clearProperty(HttpBasicHelper.UTF8_PROPERTY);
+        }
+    }
+
+    /** The default is unchanged: without the opt-in, no charset is advertised. */
+    @Test
+    void createChallengeRequest_basic_utf8Disabled_hasNoCharsetParameter() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "realm");
+        assertNull(
+                authenticator
+                        .createChallengeRequest(false)
+                        .getParameters()
+                        .getFirstValue("charset"));
+    }
+
+    private void assertAdvertisesUtf8() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertEquals("realm", challenge.getRealm());
+        assertEquals("UTF-8", challenge.getParameters().getFirstValue("charset"));
+    }
+
+    @Test
+    void createChallengeRequest_digest_hasNoCharsetParameter() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_DIGEST, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertNull(challenge.getParameters().getFirstValue("charset"));
     }
 }
