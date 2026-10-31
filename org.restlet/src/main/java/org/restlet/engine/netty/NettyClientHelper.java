@@ -311,6 +311,8 @@ public abstract class NettyClientHelper extends ClientHelper {
                 handleOnce(current, response);
                 next = (redirects < getMaxRedirects()) ? nextRedirect(current, response) : null;
                 if (next != null) {
+                    // The redirected exchange still belongs to the caller's logical request.
+                    next.getDisconnectSignal().thenAccept(request::notifyDisconnect);
                     if (response.getEntity() != null) {
                         response.getEntity().release();
                     }

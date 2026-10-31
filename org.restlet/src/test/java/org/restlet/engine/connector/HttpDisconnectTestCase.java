@@ -278,4 +278,25 @@ class HttpDisconnectTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("healthy", response.getEntityAsText());
     }
+
+    @Test
+    void notifiesOriginalRequestWhenRedirectedExchangeFails() throws Exception {
+        int closedPort;
+        try (var socket = new java.net.ServerSocket(0)) {
+            closedPort = socket.getLocalPort();
+        }
+        start(
+                "HTTP1_1",
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.redirectTemporary("http://localhost:" + closedPort + "/gone");
+                    }
+                });
+        Request request = new Request(Method.GET, "http://localhost:" + server.getActualPort());
+        Request copy = new Request(request);
+        assertTrue(client.handle(request).getStatus().isConnectorError());
+        assertNotNull(request.getDisconnectSignal().toCompletableFuture().get(5, TimeUnit.SECONDS));
+        assertFalse(copy.getDisconnectSignal().toCompletableFuture().isDone());
+    }
 }
