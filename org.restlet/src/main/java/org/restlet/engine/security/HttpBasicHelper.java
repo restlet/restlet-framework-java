@@ -11,6 +11,10 @@ package org.restlet.engine.security;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
 import org.restlet.Context;
@@ -33,10 +37,30 @@ import org.restlet.util.Series;
  */
 public class HttpBasicHelper extends AuthenticatorHelper {
 
+    /**
+     * Name of the system property that enables the UTF-8 handling of the HTTP Basic credentials
+     * (RFC 7617, section 2.1). Disabled by default, to keep the historical ISO-8859-1 behavior.
+     * When set to "true": a server challenge advertises {@code charset="UTF-8"}, credentials
+     * received by a server are decoded as UTF-8 (falling back to ISO-8859-1 if they are not valid
+     * UTF-8) and a client answering a challenge that advertises UTF-8 encodes its credentials in
+     * UTF-8.
+     */
+    public static final String UTF8_PROPERTY = "org.restlet.engine.security.basic.utf8";
+
     private static final String CHARSET = "charset";
     private static final String REALM = "realm";
     private static final String UTF_8 = "UTF-8";
     private static final String ISO_8859_1 = "ISO-8859-1";
+
+    /**
+     * Indicates if the UTF-8 handling of the HTTP Basic credentials is enabled.
+     *
+     * @return True if the {@link #UTF8_PROPERTY} system property is "true".
+     * @see #UTF8_PROPERTY
+     */
+    public static boolean isUtf8Enabled() {
+        return Boolean.getBoolean(UTF8_PROPERTY);
+    }
 
     /** Constructor. */
     public HttpBasicHelper() {
@@ -50,7 +74,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             Response response,
             Series<Header> httpHeaders) {
         String realm = challenge.getRealm();
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (realm != null) {
             cw.appendQuotedChallengeParameter(REALM, realm);
@@ -122,7 +146,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
         while (param != null) {
             try {
-                if (REALM.equals(param.getName())) {
+                if (REALM.equalsIgnoreCase(param.getName())) {
                     challenge.setRealm(param.getValue());
                 } else {
                     challenge.getParameters().add(param);
@@ -152,11 +176,12 @@ public class HttpBasicHelper extends AuthenticatorHelper {
         }
 
         try {
-            String charset = getCharset(challenge);
-
             byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
 
-            String credentials = new String(credentialsEncoded, charset);
+            String credentials =
+                    isUtf8Enabled()
+                            ? decode(credentialsEncoded)
+                            : new String(credentialsEncoded, getCharset(challenge));
             int separator = credentials.indexOf(':');
 
             if (separator == -1) {
@@ -178,6 +203,28 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     /**
+     * Decodes the credentials sent by a client. The server advertises {@code charset="UTF-8"} (RFC
+     * 7617 section 2.1) but the header does not tell which charset the client used, so the bytes
+     * are read as UTF-8 first and, if they are not valid UTF-8, as ISO-8859-1, the historical
+     * default.
+     *
+     * @param bytes The decoded Base64 credentials.
+     * @return The "user-id:password" string.
+     */
+    private static String decode(byte[] bytes) {
+        try {
+            return StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
+        } catch (CharacterCodingException e) {
+            return new String(bytes, StandardCharsets.ISO_8859_1);
+        }
+    }
+
+    /**
      * Returns the charset from the given ChallengeResponse. If the charset is not specified, or if
      * it is not UTF-8, then ISO-8859-1 is returned as per RFC 7617.
      *
@@ -185,7 +232,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
      * @return The charset.
      */
     private String getCharset(final ChallengeResponse challenge) {
-        String charset = challenge.getParameters().getFirstValue(CHARSET);
+        String charset = challenge.getParameters().getFirstValue(CHARSET, true);
 
         if (charset == null) {
             charset = ISO_8859_1;
