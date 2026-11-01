@@ -391,7 +391,26 @@ class GrpcClientAdapterTestCase {
                                         }))
                         .build();
         start(service);
+        warmUp();
         return new Pending(entered, cancelled);
+    }
+
+    /**
+     * Makes a first call so that later deadlines measure the call, not class loading and the HTTP/2
+     * connection: in a cold JVM they can exhaust a 3-second deadline before the request reaches the
+     * peer. The warm-up is retried when it hits such a deadline itself.
+     */
+    private void warmUp() {
+        for (int attempt = 1; ; attempt++) {
+            try {
+                assertEquals("warm", call("warm").getValue());
+                return;
+            } catch (StatusRuntimeException e) {
+                if (e.getStatus().getCode() != Status.Code.DEADLINE_EXCEEDED || attempt == 5) {
+                    throw e;
+                }
+            }
+        }
     }
 
     @Test

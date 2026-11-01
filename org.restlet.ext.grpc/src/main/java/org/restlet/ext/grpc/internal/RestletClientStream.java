@@ -11,6 +11,7 @@ package org.restlet.ext.grpc.internal;
 import io.grpc.Attributes;
 import io.grpc.CallOptions;
 import io.grpc.ClientStreamTracer;
+import io.grpc.Deadline;
 import io.grpc.InternalMetadata;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
@@ -58,6 +59,7 @@ final class RestletClientStream extends AbstractClientStream {
     private Metadata headers;
     private volatile Request request;
     private volatile Thread worker;
+    private volatile Deadline deadline;
     private volatile boolean done;
     private boolean sent;
 
@@ -130,6 +132,12 @@ final class RestletClientStream extends AbstractClientStream {
     }
 
     @Override
+    public void setDeadline(Deadline value) {
+        deadline = value;
+        super.setDeadline(value);
+    }
+
+    @Override
     public void setAuthority(String value) {
         if (!authority.equals(value)) {
             throw new UnsupportedOperationException("Per-call authority override is not supported");
@@ -184,10 +192,22 @@ final class RestletClientStream extends AbstractClientStream {
     }
 
     private void fail(Status status) {
+        Deadline current = deadline;
+        Status reported =
+                (status.getCode() == Status.Code.UNAVAILABLE
+                                && current != null
+                                && current.isExpired())
+                        // A peer whose deadline expired resets the stream with CANCEL, which
+                        // Restlet reports as a closed connection. Report it like grpc-netty, so
+                        // that the SDK call turns it into DEADLINE_EXCEEDED.
+                        ? Status.CANCELLED
+                                .withDescription("gRPC stream ended after the deadline")
+                                .withCause(status.getCause())
+                        : status;
         serial.execute(
                 () -> {
                     if (!done) {
-                        state.fail(status);
+                        state.fail(reported);
                     }
                 });
         Request active = request;
