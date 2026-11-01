@@ -717,7 +717,7 @@ class NettyClientCall {
             InputStream stream = getResponseEntityStream();
             // Multiplexed streams may remain idle after their response headers arrive.
             if (!kind.isStream()) {
-                stream = nonEmpty(stream);
+                stream = nonEmpty(stream, size == 0);
             }
             if (stream != null) {
                 result = new InputRepresentation(stream, null);
@@ -728,8 +728,16 @@ class NettyClientCall {
         return HeaderUtils.extractEntityHeaders(responseHeaders, result);
     }
 
-    /** Returns a stream equivalent to the given one, or null if it is null or empty. */
-    private static InputStream nonEmpty(InputStream stream) {
+    /**
+     * Returns a stream equivalent to the given one, or null if it is null or empty. A stream
+     * failing before its first byte is returned as is, so that reading it reports the truncated
+     * response, unless the response announced an empty body.
+     *
+     * @param stream The response entity stream.
+     * @param emptyAnnounced True if the response announced an empty body.
+     * @return An equivalent stream, or null.
+     */
+    private static InputStream nonEmpty(InputStream stream, boolean emptyAnnounced) {
         if (stream == null) {
             return null;
         }
@@ -744,7 +752,8 @@ class NettyClientCall {
                 return result;
             }
         } catch (IOException _) {
-            // End of the response entity stream.
+            // Each later read of the stream reports the failure again.
+            return emptyAnnounced ? null : stream;
         }
         return null;
     }
