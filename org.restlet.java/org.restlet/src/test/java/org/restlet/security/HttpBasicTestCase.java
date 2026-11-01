@@ -12,6 +12,7 @@ package org.restlet.security;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -68,14 +69,10 @@ public class HttpBasicTestCase {
 
 		@Override
 		public int verify(String identifier, char[] inputSecret) {
-			// NOTE: Allocating Strings are not really secure treatment of passwords
-			String almostSecret = new String(inputSecret);
-
 			try {
 				return super.verify(identifier, inputSecret);
 			} finally {
-				// Clear secret from memory as soon as possible (This is better
-				// treatment, but useless due to our almostSecret copy)
+				// Clear secret from memory as soon as possible
 				Arrays.fill(inputSecret, '\000');
 			}
 		}
@@ -135,14 +132,14 @@ public class HttpBasicTestCase {
 		private Client client;
 
 		@Test
-		public void HttpBasicNone() throws Exception {
+		void HttpBasicNone() {
 			final Response response = client.handle(request);
 			assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 		}
 
 		@ParameterizedTest
 		@MethodSource("org.restlet.security.HttpBasicTestCase#invalidCredentials")
-		void testInvalidCredentials(final String login, final String password) throws Exception {
+		void testInvalidCredentials(final String login, final String password) {
 			ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, login, password);
 			request.setChallengeResponse(authentication);
 
@@ -152,7 +149,7 @@ public class HttpBasicTestCase {
 
 		@ParameterizedTest
 		@MethodSource("org.restlet.security.HttpBasicTestCase#validCredentials")
-		void testValidCredentials(final String login, final String password) throws Exception {
+		void testValidCredentials(final String login, final String password) throws IOException {
 			ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, login, password);
 			request.setChallengeResponse(authentication);
 
@@ -192,7 +189,7 @@ public class HttpBasicTestCase {
 		}
 
 		@BeforeEach
-		public void makeServer() throws Exception {
+		void makeServer() throws Exception {
 			final String REALM = HttpBasicTestCase.class.getSimpleName();
 			this.component = new Component();
 			final Server server = this.component.getServers().add(Protocol.HTTP, 0);
@@ -215,7 +212,7 @@ public class HttpBasicTestCase {
 		}
 
 		@AfterEach
-		public void cleanup() throws Exception {
+		void cleanup() throws Exception {
 			System.clearProperty(HttpBasicHelper.UTF8_PROPERTY);
 			client.stop();
 			if (this.component.isStarted()) {

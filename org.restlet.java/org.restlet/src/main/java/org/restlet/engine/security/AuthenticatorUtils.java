@@ -59,40 +59,42 @@ public class AuthenticatorUtils {
 	 * @return The {@link HeaderConstants#HEADER_AUTHENTICATION_INFO} header value.
 	 */
 	public static String formatAuthenticationInfo(AuthenticationInfo info) {
-		ChallengeWriter cw = new ChallengeWriter();
-		boolean firstParameter = true;
+		final ChallengeWriter cw = new ChallengeWriter();
 
-		if (info != null) {
-			if (info.getNextServerNonce() != null && !info.getNextServerNonce().isEmpty()) {
-				cw.setFirstChallengeParameter(firstParameter);
-				cw.appendQuotedChallengeParameter("nextnonce", info.getNextServerNonce());
-				firstParameter = false;
-			}
-
-			if (info.getQuality() != null && !info.getQuality().isEmpty()) {
-				cw.setFirstChallengeParameter(firstParameter);
-				cw.appendChallengeParameter("qop", info.getQuality());
-				firstParameter = false;
-
-				if (info.getNonceCount() > 0) {
-					cw.appendChallengeParameter("nc", formatNonceCount(info.getNonceCount()));
-				}
-			}
-
-			if (info.getResponseDigest() != null && !info.getResponseDigest().isEmpty()) {
-				cw.setFirstChallengeParameter(firstParameter);
-				cw.appendQuotedChallengeParameter("rspauth", info.getResponseDigest());
-				firstParameter = false;
-			}
-
-			if (info.getClientNonce() != null && !info.getClientNonce().isEmpty()) {
-				cw.setFirstChallengeParameter(firstParameter);
-				cw.appendChallengeParameter("cnonce", info.getClientNonce());
-				firstParameter = false;
-			}
+		if (info == null) {
+			return cw.toString();
 		}
 
-		return cw.toString();
+		boolean firstParameter = true;
+		if (info.getNextServerNonce() != null && !info.getNextServerNonce().isEmpty()) {
+            cw.setFirstChallengeParameter(firstParameter);
+            cw.appendQuotedChallengeParameter("nextnonce", info.getNextServerNonce());
+            firstParameter = false;
+        }
+
+        if (info.getQuality() != null && !info.getQuality().isEmpty()) {
+            cw.setFirstChallengeParameter(firstParameter);
+            cw.appendChallengeParameter("qop", info.getQuality());
+            firstParameter = false;
+
+            if (info.getNonceCount() > 0) {
+                cw.appendChallengeParameter("nc", formatNonceCount(info.getNonceCount()));
+            }
+        }
+
+        if (info.getResponseDigest() != null && !info.getResponseDigest().isEmpty()) {
+            cw.setFirstChallengeParameter(firstParameter);
+            cw.appendQuotedChallengeParameter("rspauth", info.getResponseDigest());
+            firstParameter = false;
+        }
+
+        if (info.getClientNonce() != null && !info.getClientNonce().isEmpty()) {
+            cw.setFirstChallengeParameter(firstParameter);
+            cw.appendChallengeParameter("cnonce", info.getClientNonce());
+            firstParameter = false;
+        }
+
+        return cw.toString();
 	}
 
 	/**
@@ -133,33 +135,42 @@ public class AuthenticatorUtils {
 		} else if (challenge.getScheme().getTechnicalName() == null) {
 			Context.getCurrentLogger().warning("A challenge scheme must have a technical name defined.");
 		} else {
-			ChallengeWriter cw = new ChallengeWriter();
-			cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
-			int cwInitialLength = cw.getBuffer().length();
-
-			if (challenge.getRawValue() != null) {
-				cw.append(challenge.getRawValue());
-			} else {
-				AuthenticatorHelper helper = Engine.getInstance().findHelper(challenge.getScheme(), false, true);
-
-				if (helper != null) {
-					try {
-						helper.formatRequest(cw, challenge, response, httpHeaders);
-					} catch (Exception e) {
-						Context.getCurrentLogger().log(Level.WARNING,
-								"Unable to format the challenge request: " + challenge, e);
-					}
-				} else {
-					result = "?";
-					Context.getCurrentLogger().warning(
-							"Challenge scheme " + challenge.getScheme() + " not supported by the Restlet engine.");
-				}
-			}
-
-			result = (cw.getBuffer().length() > cwInitialLength) ? cw.toString() : null;
+			result = doFormatRequest(challenge, response, httpHeaders);
 		}
 
 		return result;
+	}
+
+	private static String doFormatRequest(ChallengeRequest challenge, Response response, Series<Header> httpHeaders) {
+		ChallengeWriter cw = new ChallengeWriter();
+		cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
+		int cwInitialLength = cw.getBuffer().length();
+
+		if (challenge.getRawValue() == null) {
+			AuthenticatorHelper helper = Engine.getInstance().findHelper(challenge.getScheme(), false, true);
+
+			if (helper == null) {
+				logUnsupportedChallengeScheme(challenge.getScheme());
+			} else {
+				try {
+					helper.formatRequest(cw, challenge, response, httpHeaders);
+				} catch (Exception e) {
+					Context.getCurrentLogger().log(Level.WARNING, e,
+						() -> "Unable to format the challenge request: " + challenge);
+				}
+			}
+		} else {
+			cw.append(challenge.getRawValue());
+		}
+
+		return (cw.getBuffer().length() > cwInitialLength)
+				? cw.toString()
+				: null;
+	}
+
+	private static void logUnsupportedChallengeScheme(ChallengeScheme challengeScheme) {
+		Context.getCurrentLogger().log(Level.WARNING,
+				() -> "Challenge scheme " + challengeScheme + " not supported by the Restlet engine.");
 	}
 
 	/**
@@ -185,32 +196,37 @@ public class AuthenticatorUtils {
 		} else if (challenge.getScheme().getTechnicalName() == null) {
 			Context.getCurrentLogger().warning("A challenge scheme must have a technical name defined.");
 		} else {
-			ChallengeWriter cw = new ChallengeWriter();
-			cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
-			int cwInitialLength = cw.getBuffer().length();
-
-			if (challenge.getRawValue() != null) {
-				cw.append(challenge.getRawValue());
-			} else {
-				AuthenticatorHelper helper = Engine.getInstance().findHelper(challenge.getScheme(), true, false);
-
-				if (helper != null) {
-					try {
-						helper.formatResponse(cw, challenge, request, httpHeaders);
-					} catch (Exception e) {
-						Context.getCurrentLogger().log(Level.WARNING,
-								"Unable to format the challenge response: " + challenge, e);
-					}
-				} else {
-					Context.getCurrentLogger().warning(
-							"Challenge scheme " + challenge.getScheme() + " not supported by the Restlet engine.");
-				}
-			}
-
-			result = (cw.getBuffer().length() > cwInitialLength) ? cw.toString() : null;
+			result = doFormatResponse(challenge, request, httpHeaders);
 		}
 
 		return result;
+	}
+
+	private static String doFormatResponse(ChallengeResponse challenge, Request request, Series<Header> httpHeaders) {
+		ChallengeWriter cw = new ChallengeWriter();
+		cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
+		int cwInitialLength = cw.getBuffer().length();
+
+        if (challenge.getRawValue() == null) {
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(challenge.getScheme(), true, false);
+
+            if (helper == null) {
+                logUnsupportedChallengeScheme(challenge.getScheme());
+            } else {
+                try {
+                    helper.formatResponse(cw, challenge, request, httpHeaders);
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(Level.WARNING, e,
+                                                () -> "Unable to format the challenge response: " + challenge);
+                }
+            }
+        } else {
+            cw.append(challenge.getRawValue());
+        }
+
+        return (cw.getBuffer().length() > cwInitialLength)
+				? cw.toString()
+				: null;
 	}
 
 	/**
@@ -221,7 +237,7 @@ public class AuthenticatorUtils {
 	 */
 	public static AuthenticationInfo parseAuthenticationInfo(String header) {
 		AuthenticationInfo result = null;
-		HeaderReader<Parameter> hr = new HeaderReader<Parameter>(header);
+		HeaderReader<Parameter> hr = new HeaderReader<>(header);
 
 		try {
 			String nextNonce = null;
@@ -258,8 +274,8 @@ public class AuthenticatorUtils {
 
 			result = new AuthenticationInfo(nextNonce, nonceCount, cnonce, qop, responseAuth);
 		} catch (IOException e) {
-			Context.getCurrentLogger().log(Level.WARNING, "Unable to parse the authentication info header: " + header,
-					e);
+			Context.getCurrentLogger().log(Level.WARNING, e,
+					() -> "Unable to parse the authentication info header: " + header);
 		}
 
 		return result;
@@ -274,22 +290,20 @@ public class AuthenticatorUtils {
 	 * @return The list of parsed challenge request.
 	 */
 	public static List<ChallengeRequest> parseRequest(Response response, String header, Series<Header> httpHeaders) {
-		List<ChallengeRequest> result = new ArrayList<ChallengeRequest>();
+		List<ChallengeRequest> result = new ArrayList<>();
 
 		if (header != null) {
 			result = new ChallengeRequestReader(header).readValues();
 			for (ChallengeRequest cr : result) {
-				// Give a chance to the authenticator helper to do further
-				// parsing
+				// Give a chance to the authenticator helper to do further parsing
 				AuthenticatorHelper helper = Engine.getInstance().findHelper(cr.getScheme(), true, false);
 
-				if (helper != null) {
-					helper.parseRequest(cr, response, httpHeaders);
-				} else {
-					Context.getCurrentLogger()
-							.warning("Couldn't find any helper support the " + cr.getScheme() + " challenge scheme.");
-				}
-			}
+                if (helper == null) {
+                    logUnsupportedChallengeScheme(cr.getScheme());
+                } else {
+                    helper.parseRequest(cr, response, httpHeaders);
+                }
+            }
 		}
 
 		return result;
@@ -323,13 +337,12 @@ public class AuthenticatorUtils {
 			// Give a chance to the authenticator helper to do further parsing
 			AuthenticatorHelper helper = Engine.getInstance().findHelper(result.getScheme(), true, false);
 
-			if (helper != null) {
-				helper.parseResponse(result, request, httpHeaders);
-			} else {
-				Context.getCurrentLogger()
-						.warning("Couldn't find any helper support the " + result.getScheme() + " challenge scheme.");
-			}
-		}
+            if (helper == null) {
+                logUnsupportedChallengeScheme(result.getScheme());
+            } else {
+                helper.parseResponse(result, request, httpHeaders);
+            }
+        }
 
 		return result;
 
@@ -394,8 +407,7 @@ public class AuthenticatorUtils {
 			if (helper != null) {
 				resourceRef = helper.updateReference(resourceRef, challengeResponse, request);
 			} else {
-				Context.getCurrentLogger().warning(
-						"Challenge scheme " + challengeResponse.getScheme() + " not supported by the Restlet engine.");
+				logUnsupportedChallengeScheme(challengeResponse.getScheme());
 			}
 		}
 

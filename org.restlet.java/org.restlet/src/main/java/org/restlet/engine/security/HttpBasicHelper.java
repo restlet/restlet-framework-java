@@ -143,36 +143,38 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
 	@Override
 	public void parseRequest(ChallengeRequest challenge, Response response, Series<Header> httpHeaders) {
-		if (challenge.getRawValue() != null) {
-			HeaderReader<Object> hr = new HeaderReader<Object>(challenge.getRawValue());
+        if (challenge.getRawValue() == null) {
+            return;
+        }
 
-			try {
-				Parameter param = hr.readParameter();
+        HeaderReader<Object> hr = new HeaderReader<>(challenge.getRawValue());
 
-				while (param != null) {
-					try {
-						if ("realm".equalsIgnoreCase(param.getName())) {
-							challenge.setRealm(param.getValue());
-						} else {
-							challenge.getParameters().add(param);
-						}
+        try {
+            Parameter param = hr.readParameter();
 
-						if (hr.skipValueSeparator()) {
-							param = hr.readParameter();
-						} else {
-							param = null;
-						}
-					} catch (Exception e) {
-						Context.getCurrentLogger().log(Level.WARNING,
-								"Unable to parse the challenge request header parameter", e);
-					}
-				}
-			} catch (Exception e) {
-				Context.getCurrentLogger().log(Level.WARNING, "Unable to parse the challenge request header parameter",
-						e);
-			}
-		}
-	}
+            while (param != null) {
+                try {
+                    if ("realm".equalsIgnoreCase(param.getName())) {
+                        challenge.setRealm(param.getValue());
+                    } else {
+                        challenge.getParameters().add(param);
+                    }
+
+                    if (hr.skipValueSeparator()) {
+                        param = hr.readParameter();
+                    } else {
+                        param = null;
+                    }
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Unable to parse the challenge request header parameter", e);
+                }
+            }
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING, "Unable to parse the challenge request header parameter",
+                    e);
+        }
+    }
 
 	@Override
 	public void parseResponse(ChallengeResponse challenge, Request request, Series<Header> httpHeaders) {
@@ -204,7 +206,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
 			if (separator == -1) {
 				// Log the blocking
-				getLogger().info("Invalid credentials given by client with IP: "
+				getLogger().log(Level.INFO, () -> "Invalid credentials given by client with IP: "
 						+ ((request != null) ? request.getClientInfo().getAddress() : "?"));
 			} else {
 				challenge.setIdentifier(credentials.substring(0, separator));
