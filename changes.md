@@ -218,6 +218,9 @@ Changes log
           their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
         - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes
           (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
+        - The gRPC client could reject a call with `RESOURCE_EXHAUSTED` ("gRPC call limit exceeded")
+          right after the end of the previous one: the call slot was released after the caller was
+          notified. Issue #1622.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
