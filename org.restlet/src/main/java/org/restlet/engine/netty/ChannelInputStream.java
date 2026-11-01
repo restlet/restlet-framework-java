@@ -58,6 +58,12 @@ final class ChannelInputStream extends InputStream {
 
     private boolean readPaused;
 
+    /** The total number of content bytes offered, consumed or not. */
+    private long receivedBytes;
+
+    /** Whether content offered after closing is discarded without pausing channel reads. */
+    private boolean discarding;
+
     /**
      * Constructor.
      *
@@ -79,9 +85,10 @@ final class ChannelInputStream extends InputStream {
     public boolean offer(ByteBuf buf) {
         lock.lock();
         try {
+            receivedBytes += buf.readableBytes();
             if (closed || endOfStream || !buf.isReadable()) {
                 buf.release();
-                return !closed;
+                return !closed || discarding;
             }
             buffers.addLast(buf);
             bufferedBytes += buf.readableBytes();
@@ -128,17 +135,46 @@ final class ChannelInputStream extends InputStream {
     }
 
     /**
-     * Indicates whether the whole content has been received and consumed.
+     * Indicates whether the whole content has been received, consumed or not.
      *
-     * @return True if the whole content has been received and consumed.
+     * @return True if the whole content has been received.
      */
-    public boolean isFullyConsumed() {
+    public boolean isFullyReceived() {
         lock.lock();
         try {
-            return endOfStream && buffers.isEmpty();
+            return endOfStream;
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * Returns the number of content bytes received so far, consumed or not.
+     *
+     * @return The number of content bytes received so far.
+     */
+    public long getReceivedBytes() {
+        lock.lock();
+        try {
+            return receivedBytes;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Closes the stream and discards the rest of the content: buffered content is released, and
+     * content offered later is released as it arrives, without pausing channel reads. The caller is
+     * responsible for bounding the content still expected.
+     */
+    public void discard() {
+        lock.lock();
+        try {
+            discarding = true;
+        } finally {
+            lock.unlock();
+        }
+        close();
     }
 
     @Override
