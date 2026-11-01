@@ -18,16 +18,16 @@ import org.junit.jupiter.api.Test;
 /**
  * Test {@link org.restlet.data.ChallengeScheme}.
  */
-public class ChallengeSchemeTestCase {
+class ChallengeSchemeTestCase {
 
 	@Test
-	public void valueOf_isCaseInsensitive() {
+	void valueOf_isCaseInsensitive() {
 		Assertions.assertSame(ChallengeScheme.HTTP_BASIC, ChallengeScheme.valueOf("http_basic"));
 	}
 
 	/** Issue #1618: the Bearer and MAC schemes used to be mapped to HTTP_OAUTH. */
 	@Test
-	public void valueOf_oauthBearerAndMac_returnTheirOwnConstants() {
+	void valueOf_oauthBearerAndMac_returnTheirOwnConstants() {
 		Assertions.assertSame(ChallengeScheme.HTTP_OAUTH_BEARER, ChallengeScheme.valueOf("HTTP_Bearer"));
 		Assertions.assertSame(ChallengeScheme.HTTP_OAUTH_BEARER, ChallengeScheme.valueOf("http_bearer"));
 		Assertions.assertSame(ChallengeScheme.HTTP_OAUTH_MAC, ChallengeScheme.valueOf("HTTP_MAC"));
@@ -40,7 +40,7 @@ public class ChallengeSchemeTestCase {
 	 * HTTP_AWS_QUERY are deliberately resolved to HTTP_AWS_S3.
 	 */
 	@Test
-	public void valueOf_everyConstant_isFoundByItsName() throws IllegalAccessException {
+	void valueOf_everyConstant_isFoundByItsName() throws IllegalAccessException {
 		int checked = 0;
 		for (Field field : ChallengeScheme.class.getFields()) {
 			if (field.getType() != ChallengeScheme.class || !Modifier.isStatic(field.getModifiers())) {

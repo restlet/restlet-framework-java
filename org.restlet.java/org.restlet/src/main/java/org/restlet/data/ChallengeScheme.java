@@ -169,7 +169,7 @@ public final class ChallengeScheme {
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(final Object object) {
-		return (object instanceof ChallengeScheme) && ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
+		return (object instanceof ChallengeScheme other) && other.getName().equalsIgnoreCase(getName());
 	}
 
 	/**
