@@ -172,6 +172,8 @@ Changes log
           (such as a `Negotiate` token): the whole header was dropped. Issue #191.
         - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever
           their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
+        - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes
+          (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
