@@ -950,15 +950,11 @@ class NettyClientCall {
                         : response.protocolVersion().majorVersion()
                                 + "."
                                 + response.protocolVersion().minorVersion();
-        ChannelInputStream stream = new ChannelInputStream(channel, helper.getIdleTimeout());
-        // The response is complete with its head when it announces an empty body.
+        this.body = new ChannelInputStream(channel, helper.getIdleTimeout());
+        // A failure after the head of a response announcing an empty body loses nothing.
         boolean empty =
                 HttpUtil.getContentLength(response, -1L) == 0
                         && !HttpUtil.isTransferEncodingChunked(response);
-        if (empty) {
-            stream.end();
-        }
-        this.body = stream;
 
         lock.lock();
         try {
@@ -1007,6 +1003,9 @@ class NettyClientCall {
         } finally {
             lock.unlock();
         }
+        // Release the connection first, so that a synchronous caller resuming at the end of the
+        // body finds it back in the pool for its next request.
+        maybeRelease();
         ChannelInputStream stream = this.body;
         if (stream != null) {
             stream.end();
@@ -1014,7 +1013,6 @@ class NettyClientCall {
         if (emptyEntity != null) {
             emptyEntity.release();
         }
-        maybeRelease();
     }
 
     /**
