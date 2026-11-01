@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.ChallengeRequest;
 
@@ -37,5 +38,45 @@ class ChallengeRequestReaderTestCase {
     void readValue_emptyHeader_returnsNull() throws IOException {
         ChallengeRequestReader reader = new ChallengeRequestReader("");
         assertNull(reader.readValue());
+    }
+
+    @Test
+    void readValues_twoChallenges_returnsBoth() {
+        List<ChallengeRequest> result =
+                new ChallengeRequestReader("Basic realm=\"a\", Digest realm=\"b\", nonce=\"x\"")
+                        .readValues();
+        assertEquals(2, result.size());
+        assertEquals("Basic", result.get(0).getScheme().getTechnicalName());
+        assertEquals("realm=a", result.get(0).getRawValue());
+        assertEquals("Digest", result.get(1).getScheme().getTechnicalName());
+        assertEquals("realm=b, nonce=x", result.get(1).getRawValue());
+    }
+
+    @Test
+    void readValues_schemeWithoutParametersThenChallenge_returnsBoth() {
+        List<ChallengeRequest> result =
+                new ChallengeRequestReader("Negotiate, Basic realm=\"a\"").readValues();
+        assertEquals(2, result.size());
+        assertEquals("Negotiate", result.get(0).getScheme().getTechnicalName());
+        assertEquals("Basic", result.get(1).getScheme().getTechnicalName());
+    }
+
+    @Test
+    void readValues_commaInsideQuotedValue_staysInOneChallenge() {
+        List<ChallengeRequest> result =
+                new ChallengeRequestReader("Basic realm=\"a, Digest b\"").readValues();
+        assertEquals(1, result.size());
+        assertEquals("Basic", result.get(0).getScheme().getTechnicalName());
+    }
+
+    /** RFC 9110 section 11.2: token68 may end with "=" padding, as Negotiate tokens do. */
+    @Test
+    void readValues_token68Challenge_keepsToken() {
+        List<ChallengeRequest> result =
+                new ChallengeRequestReader("Negotiate YIIabc==, Basic realm=\"a\"").readValues();
+        assertEquals(2, result.size());
+        assertEquals("Negotiate", result.get(0).getScheme().getTechnicalName());
+        assertTrue(result.get(0).getRawValue().contains("YIIabc"));
+        assertEquals("Basic", result.get(1).getScheme().getTechnicalName());
     }
 }

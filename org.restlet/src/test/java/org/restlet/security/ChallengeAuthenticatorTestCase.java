@@ -14,13 +14,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.security.AuthenticatorUtils;
 
 /** Unit tests for {@link ChallengeAuthenticator}. */
 class ChallengeAuthenticatorTestCase {
@@ -304,5 +310,88 @@ class ChallengeAuthenticatorTestCase {
         assertTrue(authenticator.isRechallenging());
         authenticator.setRechallenging(false);
         assertFalse(authenticator.isRechallenging());
+    }
+
+    /** Issue #1455: a Basic challenge advertises UTF-8 credentials (RFC 7617 section 2.1). */
+    @Test
+    void createChallengeRequest_basic_advertisesUtf8() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertEquals("realm", challenge.getRealm());
+        assertEquals("UTF-8", challenge.getParameters().getFirstValue("charset"));
+    }
+
+    @Test
+    void createChallengeRequest_digest_hasNoCharsetParameter() {
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_DIGEST, "realm");
+        ChallengeRequest challenge = authenticator.createChallengeRequest(false);
+        assertNull(challenge.getParameters().getFirstValue("charset"));
+    }
+
+    // ---- HTTP Basic credentials charset (RFC 7617 section 2.1)
+    // -----------------------------------
+
+    private static boolean authenticate(
+            ChallengeAuthenticator authenticator, String id, String secret, Charset charset) {
+        Engine.register(); // other tests may leave an engine without the Basic helper
+        Request request = new Request(Method.GET, "http://localhost/");
+        String header =
+                "Basic "
+                        + Base64.getEncoder().encodeToString((id + ":" + secret).getBytes(charset));
+        request.setChallengeResponse(AuthenticatorUtils.parseResponse(request, header, null));
+        return authenticator.authenticate(request, new Response(request));
+    }
+
+    private static ChallengeAuthenticator basicAuthenticator(String id, String secret) {
+        MapVerifier verifier = new MapVerifier();
+        verifier.getLocalSecrets().put(id, secret.toCharArray());
+        ChallengeAuthenticator authenticator =
+                new ChallengeAuthenticator(null, ChallengeScheme.HTTP_BASIC, "realm");
+        authenticator.setVerifier(verifier);
+        return authenticator;
+    }
+
+    @Test
+    void credentialsCharset_defaults_utf8WithIso88591Fallback() {
+        ChallengeAuthenticator authenticator = basicAuthenticator("zoë", "p€ss");
+        assertEquals(StandardCharsets.UTF_8, authenticator.getCredentialsCharset());
+        assertEquals(StandardCharsets.ISO_8859_1, authenticator.getCredentialsFallbackCharset());
+        assertTrue(authenticate(authenticator, "zoë", "p€ss", StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void credentialsCharset_defaults_latin1ClientStillAccepted() {
+        ChallengeAuthenticator authenticator = basicAuthenticator("josé", "pässwörd");
+        assertTrue(authenticate(authenticator, "josé", "pässwörd", StandardCharsets.ISO_8859_1));
+    }
+
+    /** A Latin-1 password whose bytes are valid UTF-8 ("Ã©") is read as UTF-8 by default. */
+    @Test
+    void credentialsCharset_defaults_latin1PasswordThatIsValidUtf8_collides() {
+        ChallengeAuthenticator authenticator = basicAuthenticator("user", "Ã©");
+        assertFalse(authenticate(authenticator, "user", "Ã©", StandardCharsets.ISO_8859_1));
+    }
+
+    /** The collision above is solved by configuring ISO-8859-1 on the authenticator. */
+    @Test
+    void credentialsCharset_iso88591_latin1PasswordThatIsValidUtf8_accepted() {
+        ChallengeAuthenticator authenticator = basicAuthenticator("user", "Ã©");
+        authenticator.setCredentialsCharset(StandardCharsets.ISO_8859_1);
+        assertTrue(authenticate(authenticator, "user", "Ã©", StandardCharsets.ISO_8859_1));
+        assertNull(
+                authenticator
+                        .createChallengeRequest(false)
+                        .getParameters()
+                        .getFirstValue("charset"));
+    }
+
+    @Test
+    void credentialsFallbackCharset_null_rejectsLatin1Credentials() {
+        ChallengeAuthenticator authenticator = basicAuthenticator("josé", "pässwörd");
+        authenticator.setCredentialsFallbackCharset(null);
+        assertFalse(authenticate(authenticator, "josé", "pässwörd", StandardCharsets.ISO_8859_1));
+        assertTrue(authenticate(authenticator, "josé", "pässwörd", StandardCharsets.UTF_8));
     }
 }
