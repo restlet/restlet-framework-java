@@ -80,6 +80,12 @@ import org.restlet.util.Series;
  */
 class NettyServerCall {
 
+    /**
+     * Maximum number of unread HTTP/1.1 request body bytes still in transit that a response can
+     * discard while keeping the connection alive.
+     */
+    static final long MAX_DISCARDED_BYTES = ChannelInputStream.HIGH_WATER_MARK;
+
     /** The parent helper. */
     private final NettyServerHelper helper;
 
@@ -124,6 +130,9 @@ class NettyServerCall {
 
     /** Indicates whether the response head was written. */
     private volatile boolean responseHeadWritten;
+
+    /** Indicates whether the HTTP/1.1 response head announced a persistent connection. */
+    private volatile boolean keepAliveAnnounced;
 
     /** Indicates that an empty multiplexed response ended with its initial headers. */
     private boolean responseEndedWithHead;
@@ -699,9 +708,33 @@ class NettyServerCall {
                 headers.set(HttpHeaderNames.CONTENT_LENGTH, 0);
             }
         }
-        if (!HttpUtil.isKeepAlive(request)) {
+        if (!HttpUtil.isKeepAlive(request) || !isRequestBodyDiscardable()) {
             headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         }
+        keepAliveAnnounced = HttpUtil.isKeepAlive(head);
+    }
+
+    /**
+     * Indicates whether the rest of the HTTP/1.1 request body, if left unread by the application,
+     * can be discarded without closing the connection. It can when it was fully received, or when
+     * its declared length leaves at most {@link #MAX_DISCARDED_BYTES} bytes to receive. A chunked
+     * body still in transit has an unknown length, so the connection must then be closed.
+     *
+     * <p>This is decided when the response head is written, so that a connection which can't be
+     * reused is announced with a "Connection: close" header instead of being closed without notice
+     * after the response.
+     *
+     * @return True if the rest of the request body can be discarded.
+     */
+    private boolean isRequestBodyDiscardable() {
+        if (requestBody.isFullyReceived()) {
+            return true;
+        }
+        if (HttpUtil.isTransferEncodingChunked(request)) {
+            return false;
+        }
+        long length = HttpUtil.getContentLength(request, -1L);
+        return length >= 0 && length - requestBody.getReceivedBytes() <= MAX_DISCARDED_BYTES;
     }
 
     /** Completes the exchange: ends the response and frees the connection for the next request. */
@@ -734,7 +767,9 @@ class NettyServerCall {
                 return;
             }
 
-            boolean keepAlive = HttpUtil.isKeepAlive(request) && requestBody.isFullyConsumed();
+            // The response head announced whether the connection persists. If so, the unread
+            // request body is discarded: it is either already received or bounded.
+            boolean keepAlive = !kind.isStream() && keepAliveAnnounced;
             LastHttpContent lastContent = LastHttpContent.EMPTY_LAST_CONTENT;
             if (responseTrailersEnabled) {
                 DefaultLastHttpContent withTrailers =
@@ -743,7 +778,11 @@ class NettyServerCall {
                 lastContent = withTrailers;
             }
             ChannelFuture future = trackDelivery(channel.writeAndFlush(lastContent));
-            requestBody.close();
+            if (keepAlive) {
+                requestBody.discard();
+            } else {
+                requestBody.close();
+            }
 
             if (!kind.isStream()) {
                 completeHttp1(future, keepAlive);

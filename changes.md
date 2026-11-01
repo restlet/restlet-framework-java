@@ -232,6 +232,11 @@ Changes log
         - The gRPC client could reject a call with `RESOURCE_EXHAUSTED` ("gRPC call limit exceeded")
           right after the end of the previous one: the call slot was released after the caller was
           notified. Issue #1622.
+        - The HTTP/1.1 server connector no longer closes a kept-alive connection without notice when
+          the application answers without reading the request body (for example an early 401, 403
+          or 406). The unread body is discarded when it is already received, or when at most
+          256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
+          Clients reusing the connection failed with a "Communication Error" (1001).
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
