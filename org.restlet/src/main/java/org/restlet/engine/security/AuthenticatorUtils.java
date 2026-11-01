@@ -366,10 +366,12 @@ public class AuthenticatorUtils {
             challengeResponse.setOpaque(challengeRequest.getOpaque());
 
             // Credentials charset advertised by the server (RFC 7617, section 2.1)
-            String charset = challengeRequest.getParameters().getFirstValue(CHARSET_PARAMETER, true);
+            String charset =
+                    challengeRequest.getParameters().getFirstValue(CHARSET_PARAMETER, true);
             if (ChallengeScheme.HTTP_BASIC.equals(challengeResponse.getScheme())
                     && charset != null
-                    && challengeResponse.getParameters().getFirstValue(CHARSET_PARAMETER, true) == null) {
+                    && challengeResponse.getParameters().getFirstValue(CHARSET_PARAMETER, true)
+                            == null) {
                 challengeResponse.getParameters().add(CHARSET_PARAMETER, charset);
             }
         }
