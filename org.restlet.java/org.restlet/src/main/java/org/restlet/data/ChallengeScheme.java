@@ -107,8 +107,8 @@ public final class ChallengeScheme {
 		schemes.put(HTTP_DIGEST.getName().toLowerCase(), HTTP_DIGEST);
 		schemes.put(HTTP_NTLM.getName().toLowerCase(), HTTP_NTLM);
 		schemes.put(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH);
-		schemes.put(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH);
-		schemes.put(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH);
+		schemes.put(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH_BEARER);
+		schemes.put(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH_MAC);
 
 		ChallengeScheme.SCHEMES = Collections.unmodifiableMap(schemes);
 	}
