@@ -210,6 +210,39 @@ public class ReferenceTestCase {
         assertEquals(originalRef.getHostPort(), 123);
     }
 
+    @Test
+    public void testOriginalRefForwardedPortList() {
+        Reference ref = new Reference("http://localhost/test");
+        int defaultPort = ref.getTargetRef().getHostPort();
+
+        Series<Header> headers = new Series<>(Header.class);
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "443,80");
+        Reference originalRef = ReferenceUtils.getOriginalRef(ref, headers);
+        assertEquals(443, originalRef.getHostPort());
+    }
+
+    @Test
+    public void testOriginalRefForwardedPortNonNumeric() {
+        Reference ref = new Reference("http://localhost/test");
+        int defaultPort = ref.getTargetRef().getHostPort();
+
+        Series<Header> headers = new Series<>(Header.class);
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "foo,bar");
+        Reference originalRef = ReferenceUtils.getOriginalRef(ref, headers);
+        assertEquals(defaultPort, originalRef.getHostPort());
+    }
+
+    @Test
+    public void testOriginalRefForwardedPortEmpty() {
+        Reference ref = new Reference("http://localhost/test");
+        int defaultPort = ref.getTargetRef().getHostPort();
+
+        Series<Header> headers = new Series<>(Header.class);
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "");
+        Reference originalRef = ReferenceUtils.getOriginalRef(ref, headers);
+        assertEquals(defaultPort, originalRef.getHostPort());
+    }
+
     /**
      * Test the computation of parent references, for absolute and relative
      * URIs.
