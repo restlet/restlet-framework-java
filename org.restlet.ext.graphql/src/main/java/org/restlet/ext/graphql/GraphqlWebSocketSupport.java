@@ -221,6 +221,8 @@ final class GraphqlWebSocketSupport implements GraphqlUpgradeSupport {
             try {
                 Thread.sleep(adapter.getConnectionInitTimeout());
             } catch (InterruptedException _) {
+                // Interrupted once the connection ends.
+                Thread.currentThread().interrupt();
                 return;
             }
             synchronized (initLock) {
