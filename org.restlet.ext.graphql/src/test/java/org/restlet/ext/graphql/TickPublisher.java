@@ -24,6 +24,9 @@ final class TickPublisher implements Publisher<Integer> {
 
     static final AtomicInteger CANCELLED = new AtomicInteger();
 
+    /** Counts subscriptions, which can start after the subscription slot is reserved. */
+    static final AtomicInteger SUBSCRIBED = new AtomicInteger();
+
     private final int count;
 
     private final boolean idle;
@@ -41,6 +44,7 @@ final class TickPublisher implements Publisher<Integer> {
     @Override
     public void subscribe(Subscriber<? super Integer> subscriber) {
         subscriber.onSubscribe(new Ticks(subscriber));
+        SUBSCRIBED.incrementAndGet();
     }
 
     private final class Ticks implements Subscription {

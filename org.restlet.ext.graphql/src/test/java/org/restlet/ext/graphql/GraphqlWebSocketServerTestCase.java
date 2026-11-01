@@ -58,8 +58,8 @@ class GraphqlWebSocketServerTestCase {
         adapter = new GraphqlServerAdapter();
         adapter.setGraphQL(GraphqlTestSchemas.graphQL(new AtomicInteger()));
         adapter.getSubscriptionTransports().add(GraphqlTransport.WEBSOCKET);
-        // Long enough for slow CI runners to send connection_init, short enough for the 4408 test.
-        adapter.setConnectionInitTimeout(Duration.ofSeconds(2));
+        // Long enough for a cold or busy JVM to send connection_init. The 4408 test has its own.
+        adapter.setConnectionInitTimeout(Duration.ofSeconds(10));
         component.getDefaultHost().attach("/graphql", adapter);
         component.start();
         base = "localhost:" + component.getServers().get(0).getActualPort() + "/graphql";
@@ -68,16 +68,21 @@ class GraphqlWebSocketServerTestCase {
 
     @AfterEach
     void tearDown() throws Exception {
-        http.close();
+        // Not close(), which waits for every WebSocket, forever if a failed test left one open.
+        http.shutdownNow();
         component.stop();
     }
 
     private Peer connect() throws Exception {
+        return connect(base);
+    }
+
+    private Peer connect(String target) throws Exception {
         Peer peer = new Peer();
         peer.socket =
                 http.newWebSocketBuilder()
                         .subprotocols(GraphqlWebSocketSupport.SUBPROTOCOL)
-                        .buildAsync(URI.create("ws://" + base), peer)
+                        .buildAsync(URI.create("ws://" + target), peer)
                         .get(5, TimeUnit.SECONDS);
         return peer;
     }
@@ -162,10 +167,13 @@ class GraphqlWebSocketServerTestCase {
     @Test
     void severalSubscriptionsPerConnection() throws Exception {
         int cancelled = TickPublisher.CANCELLED.get();
+        int subscribed = TickPublisher.SUBSCRIBED.get();
         Peer peer = initialized(null);
         peer.send(subscribe("a", "subscription { idle }"));
         peer.send(subscribe("b", "subscription { idle }"));
-        await(() -> adapter.getActiveSubscriptions() == 2);
+        // Slots are reserved before execution: wait for both publishers to be subscribed.
+        await(() -> TickPublisher.SUBSCRIBED.get() == subscribed + 2);
+        assertEquals(2, adapter.getActiveSubscriptions());
         peer.send(Map.of("id", "a", "type", "complete"));
         await(() -> adapter.getActiveSubscriptions() == 1);
         assertEquals(cancelled + 1, TickPublisher.CANCELLED.get());
@@ -186,8 +194,15 @@ class GraphqlWebSocketServerTestCase {
         early.send(subscribe("1", "{ hello }"));
         assertEquals(4401, early.closeCode());
 
-        Peer slow = connect();
+        GraphqlServerAdapter impatient = new GraphqlServerAdapter();
+        impatient.setGraphQL(GraphqlTestSchemas.graphQL(new AtomicInteger()));
+        impatient.getSubscriptionTransports().add(GraphqlTransport.WEBSOCKET);
+        impatient.setConnectionInitTimeout(Duration.ofMillis(500));
+        component.getDefaultHost().attach("/impatient", impatient);
+        impatient.start();
+        Peer slow = connect(base.replace("/graphql", "/impatient"));
         assertEquals(4408, slow.closeCode());
+        impatient.stop();
 
         Peer twice = initialized(null);
         twice.send(Map.of("type", "connection_init"));
@@ -300,8 +315,10 @@ class GraphqlWebSocketServerTestCase {
             assertEquals(Map.of("id", "q", "type", "complete"), peer.next());
         }
 
+        int subscribed = TickPublisher.SUBSCRIBED.get();
         peer.send(subscribe("a", "subscription { idle }"));
-        await(() -> limited.getActiveSubscriptions() == 1);
+        await(() -> TickPublisher.SUBSCRIBED.get() == subscribed + 1);
+        assertEquals(1, limited.getActiveSubscriptions());
         int created = TickPublisher.CREATED.get();
         peer.send(subscribe("b", "subscription { idle }"));
         Map<String, Object> error = peer.next();
