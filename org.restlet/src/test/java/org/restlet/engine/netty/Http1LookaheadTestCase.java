@@ -47,6 +47,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.connector.HttpClientHelper;
 import org.restlet.engine.connector.HttpServerHelper;
 
 class Http1LookaheadTestCase {
@@ -288,10 +289,12 @@ class Http1LookaheadTestCase {
 
     @Test
     void publishesClientCompletionBeforeReleasingAnEmptyBodyConsumer() throws Exception {
+        var helper = new HttpClientHelper(null);
         var trailers = new io.netty.handler.codec.http.DefaultHttpHeaders();
-        new NettyClientCall(null, "GET", new Reference("http://localhost/"), "/", false)
+        new NettyClientCall(helper, "GET", new Reference("http://localhost/"), "/", false)
                 .onResponseComplete(trailers);
-        var call = new NettyClientCall(null, "GET", new Reference("http://localhost/"), "/", false);
+        var call =
+                new NettyClientCall(helper, "GET", new Reference("http://localhost/"), "/", false);
         var body = new ChannelInputStream(null, 0);
         var bodyField = NettyClientCall.class.getDeclaredField("body");
         bodyField.setAccessible(true);
