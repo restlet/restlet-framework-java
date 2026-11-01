@@ -146,7 +146,7 @@ class HttpBasicTestCase {
 
         /** Clients that predate RFC 7617 and send ISO-8859-1 must keep working. */
         @Test
-        void testLatin1CredentialsWithoutCharset() throws Exception {
+        void testLatin1CredentialsWithoutCharset() {
             request.setChallengeResponse(
                     new ChallengeResponse(
                             ChallengeScheme.HTTP_BASIC, LATIN1_USERNAME, LATIN1_PASSWORD));
@@ -157,7 +157,7 @@ class HttpBasicTestCase {
 
         /** Issue #1455: credentials sent as UTF-8 are accepted by the server. */
         @Test
-        void testUtf8CredentialsWithCharset() throws Exception {
+        void testUtf8CredentialsWithCharset() {
             ChallengeResponse authentication =
                     new ChallengeResponse(ChallengeScheme.HTTP_BASIC, UTF8_USERNAME, UTF8_PASSWORD);
             authentication.getParameters().add("charset", "UTF-8");
@@ -175,7 +175,7 @@ class HttpBasicTestCase {
             assertEquals(
                     "UTF-8",
                     response.getChallengeRequests()
-                            .get(0)
+                            .getFirst()
                             .getParameters()
                             .getFirstValue("charset"));
         }
