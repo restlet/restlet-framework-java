@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.logging.Level;
 import org.reactivestreams.Publisher;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -490,6 +491,7 @@ public class GraphqlServerAdapter extends Restlet {
         MediaType responseType = GraphqlMediaTypes.negotiate(accepted);
         if (responseType == null) {
             if (!sse && !multipart) {
+                discardBody(request);
                 response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                 return;
             }
@@ -706,6 +708,32 @@ public class GraphqlServerAdapter extends Restlet {
             return GraphqlJson.parse(value);
         } catch (GraphqlJson.InvalidJsonException e) {
             throw new RequestException("Invalid JSON in '" + name + "': " + e.getMessage());
+        }
+    }
+
+    /**
+     * Reads and discards the body of a request answered without reading it, up to {@link
+     * #getMaxRequestBytes()}. Otherwise the server connector closes the connection after the
+     * response, possibly once the client has already reused it for its next request.
+     */
+    private void discardBody(Request request) {
+        Representation entity = request.getEntity();
+        if (entity == null || !entity.isAvailable() || entity.getSize() > maxRequestBytes) {
+            return;
+        }
+        try (InputStream in = entity.getStream()) {
+            if (in != null) {
+                byte[] buffer = new byte[8192];
+                long remaining = maxRequestBytes;
+                int read;
+                while (remaining > 0
+                        && (read = in.read(buffer, 0, (int) Math.min(buffer.length, remaining)))
+                                != -1) {
+                    remaining -= read;
+                }
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.FINE, "Unable to discard a GraphQL request body", e);
         }
     }
 
