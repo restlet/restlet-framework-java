@@ -85,7 +85,40 @@ Changes log
           authenticator with `ChallengeAuthenticator.setCredentialsCharset()` (UTF-8 by default,
           advertised in the challenge only when it is UTF-8) and `setCredentialsFallbackCharset()`
           (ISO-8859-1 by default, null to reject invalid UTF-8). Issue #1455.
+        - STDIO connector construction fails fast without an explicit or uniquely registered
+          supporting helper class. Applications with multiple STDIO protocol helpers must
+          select one explicitly.
     - Enhancements
+        - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
+          connector, with explicit plaintext opt-in, bounded messages and call admission.
+          Regression tests cover authority mapping, cancellation before and after headers,
+          disconnect recovery, malformed responses and shared connector ownership. Empty
+          responses retain SDK missing-status diagnostics instead of failing on a null stream.
+          Shutdown arriving before SDK listener installation is replayed once; interrupted
+          shutdown still closes owned transport resources and preserves the interrupt.
+          TLS, streaming methods and physical gRPC connection controls remain unsupported.
+        - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
+          bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
+          owned subprocess lifecycle with separate bounded stderr capture. No protocol
+          framing, default STDIO helper or SDK dependency is added to core.
+        - STDIO connector construction now requires an explicit or uniquely registered
+          supporting helper class, rather than implicitly selecting the first protocol helper.
+        - Added `Request.getDisconnectSignal()` and connector notification of abnormal
+          termination independently of entity I/O. Abort requests made before connector
+          registration are remembered; wrappers delegate lifecycle and copies remain independent.
+        - HTTP clients publish response completion before exposing body EOF to consumers,
+          so an empty terminal response is not exposed while its exchange still appears active.
+        - HTTP/1.1 observes idle disconnects after request-body consumption while preserving
+          ordered pipelining with bounded decoded lookahead (1024 messages / 1 MiB accounted
+          content/header storage). Overflow closes the connection; protocol upgrades retain
+          their existing handoff. HTTP/2 and HTTP/3 keep stream-level disconnect notification.
+        - HTTP/2 and HTTP/3 clients deliver response headers without waiting for the first
+          response body byte. This allows idle duplex and SSE responses to expose their
+          headers before the peer sends a message.
+        - Empty HTTP/2 and HTTP/3 server responses with no entity or trailers end with their
+          initial headers, rather than a subsequent empty DATA frame.
+        - Added test-only MCP and gRPC SDK feasibility probes over the Restlet HTTP/2
+          connectors. These do not introduce production RPC extensions.
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
@@ -94,7 +127,9 @@ Changes log
           `WebSocketUpgrader` (or `WebSocketUpgrade.accept`) accepts upgrades that went through
           the normal routing, filters and authenticators, and runs a `WebSocketHandler` on its own
           virtual thread with a blocking `WebSocketSession` (`receive`, `sendText`, `sendBinary`,
-          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs. The server
+          `close`). `WebSocketClient` opens client sessions on "ws" and "wss" URIs; it is configured
+          with setters, which are rejected while it is started, and can be stopped, reconfigured
+          and started again (`connect` starts a stopped client). The server
           answers pings, pings idle sessions, and supports the "websocket.maxSessions",
           "websocket.maxMessageSize", "websocket.maxFrameSize" and "websocket.compression"
           parameters. Server and client support "permessage-deflate" compression (RFC 7692),
@@ -120,6 +155,10 @@ Changes log
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin. Issue #1611.
         - Added the `SameSite` attribute to cookie settings (`CookieSetting.get/setSameSite()`,
           `SameSite` enum), read and written in `Set-Cookie`.
+        - Added the `Template.MODE_STARTS_WITH_SEGMENT` matching mode: like `MODE_STARTS_WITH`, but
+          the match must end on a URI path segment boundary, so a route attached to "/mcp" matches
+          "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
+          routers or applications under path prefixes on one connector.
     - Bugs fixed
         - Fixed the OpenAPI extension build path for Commons Lang types inherited from Swagger.
         - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.

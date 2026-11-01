@@ -60,7 +60,8 @@ class WebSocketTestCase {
         Engine.register(false);
         Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
         Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
-        client = WebSocketClient.builder().connectTimeout(Duration.ofSeconds(5)).build();
+        client = new WebSocketClient();
+        client.setConnectTimeout(Duration.ofSeconds(5));
     }
 
     @AfterEach

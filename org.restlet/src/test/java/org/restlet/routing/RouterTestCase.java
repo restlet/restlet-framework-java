@@ -363,4 +363,39 @@ class RouterTestCase {
         router.setRoutes(routes);
         assertSame(routes, router.getRoutes());
     }
+
+    @Test
+    void segmentMatchingMode_routesPrefixesOnSegmentBoundaries() {
+        Router router = new Router(new Context());
+        router.attach("/mcp", namedRouter("mcp"), Template.MODE_STARTS_WITH_SEGMENT);
+        router.attach("/mcp-admin", namedRouter("admin"), Template.MODE_STARTS_WITH_SEGMENT);
+        router.attach("", namedRouter("root"), Template.MODE_STARTS_WITH_SEGMENT);
+
+        assertEquals("mcp:", route(router, "/mcp"));
+        assertEquals("mcp:/tools", route(router, "/mcp/tools"));
+        assertEquals("admin:/tools", route(router, "/mcp-admin/tools"));
+        assertEquals("root:/mcpx", route(router, "/mcpx"));
+    }
+
+    private static Router namedRouter(String name) {
+        Router router = new Router();
+        router.attachDefault(
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity(
+                                name + ":" + request.getResourceRef().getRemainingPart(),
+                                org.restlet.data.MediaType.TEXT_PLAIN);
+                    }
+                });
+        return router;
+    }
+
+    private static String route(Router router, String path) {
+        Request request = new Request(Method.GET, "http://localhost" + path);
+        request.getResourceRef().setBaseRef(new Reference("http://localhost"));
+        Response response = new Response(request);
+        router.handle(request, response);
+        return response.getEntityAsText();
+    }
 }

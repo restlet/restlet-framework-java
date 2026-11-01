@@ -145,7 +145,9 @@ class WebSocketCompressionTestCase {
         int port = start(new Context());
         String large = "compressible ".repeat(10_000);
 
-        try (WebSocketClient client = WebSocketClient.builder().maxMessageSize(1 << 20).build();
+        WebSocketClient client = new WebSocketClient();
+        client.setMaxMessageSize(1 << 20);
+        try (client;
                 WebSocketSession session = client.connect("ws://localhost:" + port + "/")) {
             // 130 KB of text: larger than the server default limit (64 KB) once inflated, so the
             // server would close the session if the limit were applied to compressed frames
@@ -166,7 +168,7 @@ class WebSocketCompressionTestCase {
         context.getParameters().add("websocket.maxMessageSize", "1024");
         int port = start(context);
 
-        try (WebSocketClient client = WebSocketClient.create()) {
+        try (WebSocketClient client = new WebSocketClient()) {
             WebSocketSession session = client.connect("ws://localhost:" + port + "/");
             // Compresses to far less than 1 KB on the wire, but inflates to 100 KB.
             session.sendText("a".repeat(100_000));
@@ -182,7 +184,9 @@ class WebSocketCompressionTestCase {
         context.getParameters().add("websocket.maxFrameSize", "16");
         int port = start(context);
 
-        try (WebSocketClient client = WebSocketClient.builder().compression(false).build()) {
+        WebSocketClient client = new WebSocketClient();
+        client.setCompression(false);
+        try (client) {
             WebSocketSession session = client.connect("ws://localhost:" + port + "/");
             session.sendText("small");
             assertEquals("small", session.receive().getText());
@@ -197,8 +201,10 @@ class WebSocketCompressionTestCase {
     void clientFrameSizeLimitAppliesToServerMessages() throws Exception {
         int port = start(new Context());
 
-        try (WebSocketClient client =
-                WebSocketClient.builder().compression(false).maxFrameSize(16).build()) {
+        WebSocketClient client = new WebSocketClient();
+        client.setCompression(false);
+        client.setMaxFrameSize(16);
+        try (client) {
             WebSocketSession session = client.connect("ws://localhost:" + port + "/");
             session.sendText("y".repeat(64));
             assertNull(session.receive());

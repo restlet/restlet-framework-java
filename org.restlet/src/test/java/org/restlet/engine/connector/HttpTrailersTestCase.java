@@ -9,10 +9,13 @@
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,5 +147,63 @@ class HttpTrailersTestCase {
                         new Request(Method.GET, "http://localhost:" + server.getActualPort()));
         assertEquals("firstsecond", response.getEntityAsText());
         assertEquals("late", response.getTrailers().getFirstValue(RESPONSE_TRAILER, true));
+    }
+
+    @Test
+    void keepsDelayedHttp2TrailersOfAZeroLengthResponse() throws Exception {
+        CountDownLatch headFlushed = new CountDownLatch(1);
+        CountDownLatch sendTrailers = new CountDownLatch(1);
+        Restlet delayedTrailers =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        OutputRepresentation entity =
+                                new OutputRepresentation(MediaType.APPLICATION_OCTET_STREAM) {
+                                    @Override
+                                    public void write(OutputStream output) throws IOException {
+                                        output.flush();
+                                        headFlushed.countDown();
+                                        try {
+                                            if (!sendTrailers.await(10, TimeUnit.SECONDS)) {
+                                                throw new IOException(
+                                                        "Timed out waiting to send trailers");
+                                            }
+                                        } catch (InterruptedException e) {
+                                            Thread.currentThread().interrupt();
+                                            throw new IOException(
+                                                    "Interrupted waiting to send trailers", e);
+                                        }
+                                        response.getTrailers().add(RESPONSE_TRAILER, "delayed");
+                                    }
+                                };
+                        entity.setSize(0);
+                        response.setEntity(entity);
+                    }
+                };
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        server = new Server(serverContext, Protocol.HTTP, 0, delayedTrailers);
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().add("httpClientTransportMode", "HTTP2");
+        client = new Client(clientContext, Protocol.HTTP);
+        client.start();
+
+        try {
+            Response response =
+                    client.handle(
+                            new Request(Method.GET, "http://localhost:" + server.getActualPort()));
+            assertTrue(headFlushed.await(5, TimeUnit.SECONDS));
+            assertEquals("0", response.getHeaders().getFirstValue("content-length", true));
+            sendTrailers.countDown();
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (response.getTrailers().getFirstValue(RESPONSE_TRAILER, true) == null
+                    && System.nanoTime() < deadline) {
+                Thread.sleep(10);
+            }
+            assertEquals("delayed", response.getTrailers().getFirstValue(RESPONSE_TRAILER, true));
+        } finally {
+            sendTrailers.countDown();
+        }
     }
 }
