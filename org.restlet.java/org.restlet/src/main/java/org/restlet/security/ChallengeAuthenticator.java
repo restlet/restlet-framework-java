@@ -13,6 +13,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.*;
+import org.restlet.engine.security.HttpBasicHelper;
 
 import java.util.logging.Level;
 
@@ -111,76 +112,97 @@ public class ChallengeAuthenticator extends Authenticator {
 		boolean result = false;
 		boolean loggable = request.isLoggable() && getLogger().isLoggable(Level.FINE);
 
-		if (getVerifier() != null) {
-			switch (getVerifier().verify(request, response)) {
-			case Verifier.RESULT_VALID:
-				// Valid credentials provided
-				result = true;
-
-				if (loggable) {
-					ChallengeResponse challengeResponse = request.getChallengeResponse();
-
-					if (challengeResponse != null) {
-						getLogger().fine("Authentication succeeded. Valid credentials provided for identifier: "
-								+ request.getChallengeResponse().getIdentifier() + ".");
-					} else {
-						getLogger().fine("Authentication succeeded. Valid credentials provided.");
-					}
-				}
+        if (getVerifier() == null) {
+            getLogger().warning("Authentication failed. No verifier provided.");
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, "Authentication failed. No verifier provided.");
+        } else {
+            switch (getVerifier().verify(request, response)) {
+            case Verifier.RESULT_VALID:
+                // Valid credentials provided
+				result = validCredentials(request, loggable);
 				break;
-			case Verifier.RESULT_MISSING:
-				// No credentials provided
-				if (loggable) {
-					getLogger().fine("Authentication failed. No credentials provided.");
-				}
-
-				if (!isOptional()) {
-					challenge(response, false);
-				}
+            case Verifier.RESULT_MISSING:
+                // No credentials provided
+				noCredentialsProvided(response, loggable);
 				break;
-			case Verifier.RESULT_INVALID:
-				// Invalid credentials provided
-				if (loggable) {
-					getLogger().fine("Authentication failed. Invalid credentials provided.");
-				}
-
-				if (!isOptional()) {
-					if (isRechallenging()) {
-						challenge(response, false);
-					} else {
-						forbid(response);
-					}
-				}
+            case Verifier.RESULT_INVALID:
+                // Invalid credentials provided
+				invalidCredentialsProvided(response, loggable);
 				break;
-			case Verifier.RESULT_STALE:
-				if (loggable) {
-					getLogger().fine("Authentication failed. Stale credentials provided.");
-				}
-
-				if (!isOptional()) {
-					challenge(response, true);
-				}
+            case Verifier.RESULT_STALE:
+				staleAuthentication(response, loggable);
 				break;
-			case Verifier.RESULT_UNKNOWN:
-				if (loggable) {
-					getLogger().fine("Authentication failed. Identifier is unknown.");
-				}
-
-				if (!isOptional()) {
-					if (isRechallenging()) {
-						challenge(response, false);
-					} else {
-						forbid(response);
-					}
-				}
+            case Verifier.RESULT_UNKNOWN:
+				unknownIdentifier(response, loggable);
 				break;
-			}
-		} else {
-			getLogger().warning("Authentication failed. No verifier provided.");
-			response.setStatus(Status.SERVER_ERROR_INTERNAL, "Authentication failed. No verifier provided.");
+                default:
+                       throw new IllegalStateException("Unexpected value: " + getVerifier().verify(request, response));
+}
+        }
+
+        return result;
+	}
+
+	private void unknownIdentifier(Response response, boolean loggable) {
+		if (loggable) {
+			getLogger().fine("Authentication failed. Identifier is unknown.");
 		}
 
-		return result;
+		if (!isOptional()) {
+			if (isRechallenging()) {
+				challenge(response, false);
+			} else {
+				forbid(response);
+			}
+		}
+	}
+
+	private void staleAuthentication(Response response, boolean loggable) {
+		if (loggable) {
+			getLogger().fine("Authentication failed. Stale credentials provided.");
+		}
+
+		if (!isOptional()) {
+			challenge(response, true);
+		}
+	}
+
+	private void invalidCredentialsProvided(Response response, boolean loggable) {
+		if (loggable) {
+			getLogger().fine("Authentication failed. Invalid credentials provided.");
+		}
+
+		if (!isOptional()) {
+			if (isRechallenging()) {
+				challenge(response, false);
+			} else {
+				forbid(response);
+			}
+		}
+	}
+
+	private void noCredentialsProvided(Response response, boolean loggable) {
+		if (loggable) {
+			getLogger().fine("Authentication failed. No credentials provided.");
+		}
+
+		if (!isOptional()) {
+			challenge(response, false);
+		}
+	}
+
+	private boolean validCredentials(Request request, boolean loggable) {
+		if (loggable) {
+			ChallengeResponse challengeResponse = request.getChallengeResponse();
+
+			if (challengeResponse != null) {
+				getLogger().fine("Authentication succeeded. Valid credentials provided for identifier: "
+						+ request.getChallengeResponse().getIdentifier() + ".");
+			} else {
+				getLogger().fine("Authentication succeeded. Valid credentials provided.");
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -208,7 +230,14 @@ public class ChallengeAuthenticator extends Authenticator {
 	 * @return A new challenge request.
 	 */
 	protected ChallengeRequest createChallengeRequest(boolean stale) {
-		return new ChallengeRequest(getScheme(), getRealm());
+		ChallengeRequest result = new ChallengeRequest(getScheme(), getRealm());
+
+		if (ChallengeScheme.HTTP_BASIC.equals(getScheme()) && HttpBasicHelper.isUtf8Enabled()) {
+			// RFC 7617 section 2.1: credentials are expected in UTF-8
+			result.getParameters().add("charset", "UTF-8");
+		}
+
+		return result;
 	}
 
 	/**
@@ -224,7 +253,7 @@ public class ChallengeAuthenticator extends Authenticator {
 
 		if (loggable) {
 			getLogger().log(Level.FINE,
-					"Authentication or authorization failed for this URI: " + response.getRequest().getResourceRef());
+					() -> "Authentication or authorization failed for this URI: " + response.getRequest().getResourceRef());
 		}
 
 		response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);

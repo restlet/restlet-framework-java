@@ -55,6 +55,13 @@ public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
 				}
 			};
 
+			// A challenge may carry a single token68 instead of parameters
+			// (RFC 9110, section 11.2), such as a base64 Negotiate token.
+			String token68 = readToken68();
+			if (token68 != null) {
+				w.append(token68);
+			}
+
 			boolean stop = false;
 			while (peek() != -1 && !stop) {
 				boolean sepSkipped = skipValueSeparator();
@@ -82,5 +89,42 @@ public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Reads a token68 ending with at least one "=" padding character, if the next
+	 * characters are one. A token68 without padding is read as a regular parameter,
+	 * as before.
+	 * 
+	 * @return The token68, or null (nothing consumed) if the next characters are
+	 *         not one.
+	 */
+	private String readToken68() {
+		mark();
+		StringBuilder token = new StringBuilder();
+		int next = peek();
+		while (next != -1 && isToken68Char(next)) {
+			token.append((char) read());
+			next = peek();
+		}
+
+		int padding = 0;
+		while (next == '=') {
+			token.append((char) read());
+			padding++;
+			next = peek();
+		}
+
+		if (token.length() > padding && padding > 0 && (next == -1 || next == ',' || isSpace(next))) {
+			return token.toString();
+		}
+
+		reset();
+		return null;
+	}
+
+	private static boolean isToken68Char(int c) {
+		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '.'
+				|| c == '_' || c == '~' || c == '+' || c == '/';
 	}
 }
