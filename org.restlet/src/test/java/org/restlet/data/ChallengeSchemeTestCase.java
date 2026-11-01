@@ -29,6 +29,39 @@ class ChallengeSchemeTestCase {
         assertSame(ChallengeScheme.HTTP_BASIC, ChallengeScheme.valueOf("http_basic"));
     }
 
+    /** Issue #1618: the Bearer and MAC schemes used to be mapped to HTTP_OAUTH. */
+    @Test
+    void valueOf_oauthBearerAndMac_returnTheirOwnConstants() {
+        assertSame(ChallengeScheme.HTTP_OAUTH_BEARER, ChallengeScheme.valueOf("HTTP_Bearer"));
+        assertSame(ChallengeScheme.HTTP_OAUTH_BEARER, ChallengeScheme.valueOf("http_bearer"));
+        assertSame(ChallengeScheme.HTTP_OAUTH_MAC, ChallengeScheme.valueOf("HTTP_MAC"));
+        assertSame(ChallengeScheme.HTTP_OAUTH, ChallengeScheme.valueOf("HTTP_OAuth"));
+    }
+
+    /**
+     * Every constant must be found again by its name, so that a missing or mistaken entry in the
+     * lookup table is detected. HTTP_AWS_IAM and HTTP_AWS_QUERY are deliberately resolved to
+     * HTTP_AWS_S3.
+     */
+    @Test
+    void valueOf_everyConstant_isFoundByItsName() throws IllegalAccessException {
+        int checked = 0;
+        for (java.lang.reflect.Field field : ChallengeScheme.class.getFields()) {
+            if (field.getType() != ChallengeScheme.class
+                    || !java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            ChallengeScheme constant = (ChallengeScheme) field.get(null);
+            if (constant == ChallengeScheme.HTTP_AWS_IAM
+                    || constant == ChallengeScheme.HTTP_AWS_QUERY) {
+                continue;
+            }
+            assertSame(constant, ChallengeScheme.valueOf(constant.getName()), field.getName());
+            checked++;
+        }
+        assertEquals(12, checked);
+    }
+
     @Test
     void valueOf_unknownName_createsNewInstance() {
         ChallengeScheme scheme = ChallengeScheme.valueOf("CUSTOM_SCHEME");
