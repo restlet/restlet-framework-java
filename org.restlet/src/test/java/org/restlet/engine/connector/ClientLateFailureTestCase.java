@@ -9,6 +9,7 @@
 package org.restlet.engine.connector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -105,6 +106,30 @@ class ClientLateFailureTestCase {
             Thread.sleep(10);
         }
         assertEquals("Client stopped", failure.getMessage());
+    }
+
+    @Test
+    void reportsABodyTruncatedBeforeItsFirstByte() throws Exception {
+        executor.execute(
+                () -> {
+                    try (Socket socket = serverSocket.accept()) {
+                        readRequestHead(socket.getInputStream());
+                        write(
+                                socket.getOutputStream(),
+                                "HTTP/1.1 200 OK\r\n"
+                                        + "Content-Type: text/plain\r\n"
+                                        + "Content-Length: 10\r\n\r\n");
+                    } catch (IOException _) {
+                        // Connection closed by the client.
+                    }
+                });
+
+        Response response = client.handle(new Request(Method.GET, uri("/")));
+
+        // The status is kept, and reading the entity reports the truncated body.
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertNotNull(response.getEntity());
+        assertThrows(IOException.class, response.getEntity().getStream()::readAllBytes);
     }
 
     @Test
