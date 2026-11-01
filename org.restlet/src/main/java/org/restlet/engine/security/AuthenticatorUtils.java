@@ -37,6 +37,8 @@ import org.restlet.util.Series;
  */
 public class AuthenticatorUtils {
 
+    private static final String CHARSET_PARAMETER = "charset";
+
     /**
      * Indicates if any of the objects is null.
      *
@@ -366,12 +368,12 @@ public class AuthenticatorUtils {
             challengeResponse.setOpaque(challengeRequest.getOpaque());
 
             // Credentials charset advertised by the server (RFC 7617, section 2.1)
-            String charset = challengeRequest.getParameters().getFirstValue("charset", true);
+            String charset = challengeRequest.getParameters().getFirstValue(CHARSET_PARAMETER, true);
             if (HttpBasicHelper.isUtf8Enabled()
                     && ChallengeScheme.HTTP_BASIC.equals(challengeResponse.getScheme())
                     && charset != null
-                    && challengeResponse.getParameters().getFirstValue("charset", true) == null) {
-                challengeResponse.getParameters().add("charset", charset);
+                    && challengeResponse.getParameters().getFirstValue(CHARSET_PARAMETER, true) == null) {
+                challengeResponse.getParameters().add(CHARSET_PARAMETER, charset);
             }
         }
 

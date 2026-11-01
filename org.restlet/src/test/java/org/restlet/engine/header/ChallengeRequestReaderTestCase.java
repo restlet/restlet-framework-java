@@ -41,7 +41,7 @@ class ChallengeRequestReaderTestCase {
     }
 
     @Test
-    void readValues_twoChallenges_returnsBoth() throws IOException {
+    void readValues_twoChallenges_returnsBoth() {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Basic realm=\"a\", Digest realm=\"b\", nonce=\"x\"")
                         .readValues();
@@ -53,7 +53,7 @@ class ChallengeRequestReaderTestCase {
     }
 
     @Test
-    void readValues_schemeWithoutParametersThenChallenge_returnsBoth() throws IOException {
+    void readValues_schemeWithoutParametersThenChallenge_returnsBoth() {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Negotiate, Basic realm=\"a\"").readValues();
         assertEquals(2, result.size());
@@ -62,16 +62,16 @@ class ChallengeRequestReaderTestCase {
     }
 
     @Test
-    void readValues_commaInsideQuotedValue_staysInOneChallenge() throws IOException {
+    void readValues_commaInsideQuotedValue_staysInOneChallenge() {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Basic realm=\"a, Digest b\"").readValues();
         assertEquals(1, result.size());
-        assertEquals("Basic", result.get(0).getScheme().getTechnicalName());
+        assertEquals("Basic", result.getFirst().getScheme().getTechnicalName());
     }
 
     /** RFC 9110 section 11.2: token68 may end with "=" padding, as Negotiate tokens do. */
     @Test
-    void readValues_token68Challenge_keepsToken() throws IOException {
+    void readValues_token68Challenge_keepsToken() {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Negotiate YIIabc==, Basic realm=\"a\"").readValues();
         assertEquals(2, result.size());
