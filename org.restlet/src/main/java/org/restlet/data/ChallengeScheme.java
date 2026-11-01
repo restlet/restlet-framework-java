@@ -108,8 +108,8 @@ public final class ChallengeScheme {
                     Map.entry(HTTP_DIGEST.getName().toLowerCase(), HTTP_DIGEST),
                     Map.entry(HTTP_NTLM.getName().toLowerCase(), HTTP_NTLM),
                     Map.entry(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH),
-                    Map.entry(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH),
-                    Map.entry(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH));
+                    Map.entry(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH_BEARER),
+                    Map.entry(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH_MAC));
 
     /**
      * Returns the challenge scheme associated with a scheme name. If an existing constant exists,
