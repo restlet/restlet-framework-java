@@ -9,6 +9,7 @@
 package org.restlet.ext.grpc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -187,6 +188,41 @@ class GrpcHttpValidationTestCase {
                 });
         assertEquals(Status.Code.UNAVAILABLE, failure().getCode());
         assertRecovered();
+    }
+
+    /**
+     * The call slot must be free as soon as the caller is told that a call failed, otherwise the
+     * next call of the same thread is rejected with RESOURCE_EXHAUSTED.
+     */
+    @Test
+    void failedCallReleasesItsSlotBeforeTheCallerIsNotified() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        AtomicInteger requests = new AtomicInteger();
+        start(
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        if (requests.incrementAndGet() % 2 == 1) {
+                            response.setEntity("", MediaType.valueOf("application/grpc"));
+                        } else {
+                            response.setEntity(
+                                    new ByteArrayRepresentation(
+                                            frame("recovered"),
+                                            MediaType.valueOf("application/grpc")));
+                            response.getTrailers().add("grpc-status", "0");
+                        }
+                    }
+                });
+        for (int i = 0; i < 200; i++) {
+            int call = i;
+            Status status = failure();
+            // Only the slot matters here: depending on timing the failure is UNKNOWN or
+            // UNAVAILABLE.
+            assertNotEquals(Status.Code.OK, status.getCode(), () -> call + ": " + status);
+            assertNotEquals(
+                    Status.Code.RESOURCE_EXHAUSTED, status.getCode(), () -> call + ": " + status);
+            assertRecovered();
+        }
     }
 
     @Test

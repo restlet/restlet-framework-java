@@ -380,14 +380,13 @@ final class RestletClientStream extends AbstractClientStream {
 
         @Override
         public void deframerClosed(boolean partial) {
-            try {
-                super.deframerClosed(partial);
-            } finally {
-                if (!done) {
-                    done = true;
-                    finished.accept(RestletClientStream.this);
-                }
+            // Release the call slot first: the SDK notifies the caller from super.deframerClosed(),
+            // and a caller that starts its next call right away must not find the slot still taken.
+            if (!done) {
+                done = true;
+                finished.accept(RestletClientStream.this);
             }
+            super.deframerClosed(partial);
         }
     }
 
