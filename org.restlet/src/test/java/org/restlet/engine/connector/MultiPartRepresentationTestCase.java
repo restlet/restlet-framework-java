@@ -110,6 +110,14 @@ class MultiPartRepresentationTestCase {
                                 new MediaType("multipart/related", parameters), "b")
                         .toString());
         assertNull(MultiPartRepresentation.setBoundary(null, "b"));
+        assertEquals(
+                MediaType.MULTIPART_FORM_DATA.getDescription(),
+                MultiPartRepresentation.setBoundary(MediaType.MULTIPART_FORM_DATA, "b")
+                        .getDescription());
+        assertEquals(
+                "b",
+                MultiPartRepresentation.getBoundary(
+                        MultiPartRepresentation.setBoundary(new MediaType((String) null), "b")));
 
         MultiPartRepresentation rep =
                 new MultiPartRepresentation(
