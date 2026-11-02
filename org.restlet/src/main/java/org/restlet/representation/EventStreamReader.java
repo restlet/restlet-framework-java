@@ -24,8 +24,14 @@ import org.restlet.data.ServerSentEvent;
  * A blocking reader of Server-Sent Events. When created with an {@link EventStreamSource}, it
  * reconnects after EOF, honoring the server's {@code retry:} field and passing the latest event ID
  * to the source for use in a {@code Last-Event-ID} request header.
+ *
+ * <p>The size of an event is limited (see {@link #setMaxEventSize(int)}), so that a server can't
+ * make the reader buffer an unbounded line or event in memory.
  */
 public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoCloseable {
+
+    /** The default maximum size of an event, in characters. */
+    public static final int DEFAULT_MAX_EVENT_SIZE = 1024 * 1024;
 
     private static final long DEFAULT_RETRY_MS = 3000;
 
@@ -41,7 +47,11 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
 
     private volatile long retryDelayMs = DEFAULT_RETRY_MS;
 
+    private volatile int maxEventSize = DEFAULT_MAX_EVENT_SIZE;
+
     private boolean beginning = true;
+
+    private boolean skipLineFeed;
 
     private boolean currentEof;
 
@@ -105,6 +115,31 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
     }
 
     /**
+     * Returns the maximum size of an event: the number of characters of its lines, without line
+     * terminators. Defaults to {@link #DEFAULT_MAX_EVENT_SIZE}.
+     *
+     * @return The maximum size of an event, in characters.
+     */
+    public int getMaxEventSize() {
+        return maxEventSize;
+    }
+
+    /**
+     * Sets the maximum size of an event: the number of characters of its lines, without line
+     * terminators. When an event exceeds it, {@link #readEvent()} throws an {@link IOException} and
+     * the reader is closed.
+     *
+     * @param maxEventSize The maximum size of an event, in characters.
+     * @throws IllegalArgumentException If the size is not positive.
+     */
+    public void setMaxEventSize(int maxEventSize) {
+        if (maxEventSize <= 0) {
+            throw new IllegalArgumentException("The maximum event size must be positive");
+        }
+        this.maxEventSize = maxEventSize;
+    }
+
+    /**
      * Reads the next event, blocking as needed.
      *
      * @return The next event, or null at EOF for a one-shot stream or when a source stops.
@@ -160,25 +195,66 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
     private ServerSentEvent readCurrentEvent() throws IOException {
         PendingEvent pending = new PendingEvent();
         ServerSentEvent result = null;
+        int size = 0;
         while (result == null && !closed) {
-            String line = reader.readLine();
+            String line = readLine(maxEventSize - size);
             if (line == null) {
                 currentEof = true;
                 return pending.build();
             }
-            result = processLine(stripBom(line), pending);
+            size = line.isEmpty() ? 0 : size + line.length();
+            result = processLine(line, pending);
         }
         return result;
     }
 
-    private String stripBom(String line) {
-        if (beginning) {
-            beginning = false;
-            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
-                return line.substring(1);
+    /**
+     * Reads a line ended by CRLF, LF or CR, like {@link BufferedReader#readLine()}, but no longer
+     * than the given number of characters. A line feed following a carriage return is skipped on
+     * the next read, so that a CR doesn't block until the next character arrives. The optional byte
+     * order mark at the start of the stream is skipped, and not counted in the limit.
+     */
+    private String readLine(int limit) throws IOException {
+        StringBuilder line = new StringBuilder();
+        while (true) {
+            int c = reader.read();
+            if (skipLineFeed) {
+                skipLineFeed = false;
+                if (c == '\n') {
+                    continue;
+                }
             }
+            if (beginning) {
+                beginning = false;
+                if (c == '\uFEFF') {
+                    continue;
+                }
+            }
+            if (c < 0) {
+                return line.isEmpty() ? null : line.toString();
+            }
+            if (c == '\n') {
+                return line.toString();
+            }
+            if (c == '\r') {
+                skipLineFeed = true;
+                return line.toString();
+            }
+            if (line.length() >= limit) {
+                IOException failure =
+                        new IOException(
+                                "The event exceeds the maximum size of "
+                                        + maxEventSize
+                                        + " characters");
+                try {
+                    close();
+                } catch (IOException e) {
+                    failure.addSuppressed(e);
+                }
+                throw failure;
+            }
+            line.append((char) c);
         }
-        return line;
     }
 
     private ServerSentEvent processLine(String line, PendingEvent pending) {
@@ -251,6 +327,7 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
         }
         reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         beginning = true;
+        skipLineFeed = false;
         currentEof = false;
         return true;
     }
