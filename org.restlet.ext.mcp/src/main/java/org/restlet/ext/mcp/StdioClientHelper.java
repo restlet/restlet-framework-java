@@ -47,6 +47,13 @@ public final class StdioClientHelper extends ClientHelper {
         getContext().getAttributes().put(TRANSPORT_ATTRIBUTE, this);
     }
 
+    /** Applies an MCP client's limits to this connector's transport before it connects. */
+    synchronized McpClientTransport bind(int maxMessageBytes, int maxCalls, Duration timeout) {
+        StdioMcpClientTransport bound = (StdioMcpClientTransport) getTransport();
+        bound.setLimits(maxMessageBytes, maxCalls, timeout);
+        return bound;
+    }
+
     /** Returns the native SDK transport owned by this connector. One SDK client may bind it. */
     public synchronized McpClientTransport getTransport() {
         if (transport == null) {

@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,9 +23,11 @@ import java.nio.channels.Channels;
 import java.nio.channels.Pipe;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
@@ -33,6 +36,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.ext.mcp.internal.McpMessages;
+import org.restlet.ext.mcp.internal.StdioMcpClientTransport;
 
 class McpStdioTestCase {
     @Test
@@ -196,6 +200,87 @@ class McpStdioTestCase {
                 stream.start();
                 assertThrows(IOException.class, () -> McpMessages.readFrame(stream, 4));
             }
+        }
+    }
+
+    private static org.restlet.util.StreamTransport stream(Pipe in, Pipe out) {
+        return new org.restlet.util.StreamTransport(
+                Channels.newInputStream(in.source()),
+                Channels.newOutputStream(out.sink()),
+                () -> {
+                    try {
+                        in.source().close();
+                        out.sink().close();
+                    } catch (IOException e) {
+                        throw new java.io.UncheckedIOException(e);
+                    }
+                });
+    }
+
+    @Test
+    void borrowedHelperTransportTakesTheClientLimits() throws Exception {
+        Context context = new Context();
+        context.getAttributes()
+                .put(McpProtocol.STREAM_TRANSPORT_ATTRIBUTE, stream(Pipe.open(), Pipe.open()));
+        StdioClientHelper helper = new StdioClientHelper(new Client(context, List.of()));
+        helper.start();
+        try {
+            var transport = helper.bind(16, 1, Duration.ofSeconds(3));
+            transport.connect(message -> message).block();
+            assertThrows(
+                    RuntimeException.class,
+                    () ->
+                            transport
+                                    .sendMessage(
+                                            new McpSchema.JSONRPCRequest(
+                                                    "2.0", "ping", 1, Map.of()))
+                                    .block(Duration.ofSeconds(5)));
+            assertThrows(
+                    IllegalStateException.class, () -> helper.bind(1024, 1, Duration.ofSeconds(3)));
+        } finally {
+            helper.stop();
+        }
+    }
+
+    @Test
+    void unansweredCallFreesItsSlotAfterTheTimeoutAndItsLateReplyIsDropped() throws Exception {
+        Pipe requests = Pipe.open();
+        Pipe responses = Pipe.open();
+        var transport =
+                new StdioMcpClientTransport(
+                        stream(responses, requests), 1024, 1, Duration.ofMillis(200));
+        List<McpSchema.JSONRPCMessage> delivered = new CopyOnWriteArrayList<>();
+        var peer = Channels.newOutputStream(responses.sink());
+        try {
+            transport.connect(message -> message.doOnNext(delivered::add)).block();
+            transport
+                    .sendMessage(new McpSchema.JSONRPCRequest("2.0", "ping", 1, Map.of()))
+                    .block(Duration.ofSeconds(5));
+            assertThrows(
+                    RuntimeException.class,
+                    () ->
+                            transport
+                                    .sendMessage(
+                                            new McpSchema.JSONRPCRequest(
+                                                    "2.0", "ping", 2, Map.of()))
+                                    .block(Duration.ofSeconds(5)));
+            TimeUnit.MILLISECONDS.sleep(300);
+            transport
+                    .sendMessage(new McpSchema.JSONRPCRequest("2.0", "ping", 3, Map.of()))
+                    .block(Duration.ofSeconds(5));
+            peer.write(
+                    ("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{}}\n"
+                                    + "{\"jsonrpc\":\"2.0\",\"id\":3,\"result\":{}}\n")
+                            .getBytes(StandardCharsets.UTF_8));
+            peer.flush();
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3);
+            while (delivered.isEmpty() && System.nanoTime() < deadline) {
+                Thread.onSpinWait();
+            }
+            assertEquals(1, delivered.size());
+            assertEquals(3, ((McpSchema.JSONRPCResponse) delivered.getFirst()).id());
+        } finally {
+            transport.closeGracefully().block(Duration.ofSeconds(5));
         }
     }
 

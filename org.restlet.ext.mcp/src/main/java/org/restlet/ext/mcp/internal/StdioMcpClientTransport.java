@@ -16,10 +16,12 @@ import io.modelcontextprotocol.spec.McpSchema;
 import java.io.EOFException;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -27,15 +29,19 @@ import java.util.logging.Logger;
 import org.restlet.ext.mcp.McpProtocol;
 import reactor.core.publisher.Mono;
 
-/** One reader per pipe, finite outstanding IDs for admission only; the SDK owns correlation. */
+/**
+ * One reader per pipe, finite outstanding IDs for admission only; the SDK owns correlation. An ID
+ * left unanswered past the call timeout frees its slot, and its late reply is dropped.
+ */
 public final class StdioMcpClientTransport implements McpClientTransport {
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
     private final org.restlet.util.StreamTransport stream;
-    private final int maxMessageBytes;
-    private final int maxPendingCalls;
-    private final Duration timeout;
-    private final McpWorkers writers;
-    private final Set<Object> outstanding = ConcurrentHashMap.newKeySet();
+    private volatile int maxMessageBytes;
+    private volatile int maxPendingCalls;
+    private volatile Duration timeout;
+    private volatile McpWorkers writers;
+    private final Map<Object, Long> outstanding = new HashMap<>();
+    private final Set<Object> expired = new HashSet<>();
     private volatile Function<Mono<McpSchema.JSONRPCMessage>, Mono<McpSchema.JSONRPCMessage>>
             incoming;
     private volatile Consumer<Throwable> exceptionHandler =
@@ -52,13 +58,25 @@ public final class StdioMcpClientTransport implements McpClientTransport {
             int maxPendingCalls,
             Duration timeout) {
         this.stream = Objects.requireNonNull(stream, "stream");
-        if (maxMessageBytes <= 0 || maxMessageBytes == Integer.MAX_VALUE || maxPendingCalls <= 0) {
-            throw new IllegalArgumentException("Positive finite MCP byte/call limits required");
+        setLimits(maxMessageBytes, maxPendingCalls, timeout);
+    }
+
+    /** Replaces the byte, call and timeout limits; only allowed before connecting. */
+    public synchronized void setLimits(int maxMessageBytes, int maxPendingCalls, Duration timeout) {
+        if (closed || incoming != null) {
+            throw new IllegalStateException("MCP STDIO limits are fixed once connected");
+        }
+        if (maxMessageBytes <= 0
+                || maxMessageBytes == Integer.MAX_VALUE
+                || maxPendingCalls <= 0
+                || timeout.isZero()
+                || timeout.isNegative()) {
+            throw new IllegalArgumentException(
+                    "Positive finite MCP byte/call/time limits required");
         }
         this.maxMessageBytes = maxMessageBytes;
         this.maxPendingCalls = maxPendingCalls;
         this.timeout = timeout;
-        writers = new McpWorkers(maxPendingCalls, timeout);
     }
 
     @Override
@@ -70,6 +88,7 @@ public final class StdioMcpClientTransport implements McpClientTransport {
         try {
             stream.setMaxOperationBytes(maxMessageBytes + 1);
             stream.start();
+            writers = new McpWorkers(maxPendingCalls, timeout);
             incoming = Objects.requireNonNull(handler, "handler");
             reader = Thread.ofVirtual().name("restlet-mcp-stdio-reader").start(this::read);
             return Mono.empty();
@@ -90,31 +109,68 @@ public final class StdioMcpClientTransport implements McpClientTransport {
 
     @Override
     public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
-        return writers.submit(
+        McpWorkers current = writers;
+        if (current == null) {
+            return Mono.error(new IOException("MCP STDIO is not connected"));
+        }
+        return current.submit(
                 () -> {
                     if (closed || failure != null || incoming == null) {
                         throw new IOException("MCP STDIO is not connected", failure);
                     }
                     Object id = message instanceof McpSchema.JSONRPCRequest rpc ? rpc.id() : null;
                     if (id != null) {
-                        synchronized (outstanding) {
-                            if (outstanding.size() >= maxPendingCalls || !outstanding.add(id)) {
-                                throw new IOException(
-                                        "MCP STDIO pending call limit or duplicate id");
-                            }
-                        }
+                        admit(id);
                     }
                     try {
                         McpMessages.writeFrame(
                                 stream, McpMessages.encode(mapper, message, maxMessageBytes));
                     } catch (IOException | RuntimeException e) {
                         if (id != null) {
-                            outstanding.remove(id);
+                            synchronized (outstanding) {
+                                outstanding.remove(id);
+                            }
                         }
                         throw e;
                     }
                 },
                 () -> {});
+    }
+
+    /**
+     * Takes a pending slot for a request ID, first freeing the slots of IDs whose call timed out.
+     * At most maxPendingCalls expired IDs are remembered to drop their late replies; beyond that,
+     * the peer is considered unresponsive and sending fails.
+     */
+    private void admit(Object id) throws IOException {
+        synchronized (outstanding) {
+            long now = System.nanoTime();
+            outstanding
+                    .entrySet()
+                    .removeIf(entry -> now - entry.getValue() >= 0 && expired.add(entry.getKey()));
+            if (expired.size() > maxPendingCalls) {
+                throw new IOException("MCP STDIO peer left too many calls unanswered");
+            }
+            if (outstanding.size() >= maxPendingCalls
+                    || outstanding.containsKey(id)
+                    || expired.contains(id)) {
+                throw new IOException("MCP STDIO pending call limit or duplicate id");
+            }
+            outstanding.put(id, now + timeout.toNanos());
+        }
+    }
+
+    /** Returns false for the late reply of an expired call, which the SDK no longer awaits. */
+    private boolean correlate(McpSchema.JSONRPCResponse response) throws IOException {
+        synchronized (outstanding) {
+            if (outstanding.remove(response.id()) != null) {
+                return true;
+            }
+            if (expired.remove(response.id())) {
+                return false;
+            }
+        }
+        throw new IOException("Unsolicited MCP STDIO response id");
     }
 
     private void read() {
@@ -123,12 +179,10 @@ public final class StdioMcpClientTransport implements McpClientTransport {
             while (!closed && (bytes = McpMessages.readFrame(stream, maxMessageBytes)) != null) {
                 McpSchema.JSONRPCMessage message =
                         McpSchema.deserializeJsonRpcMessage(mapper, McpMessages.utf8(bytes));
-                if (message instanceof McpSchema.JSONRPCResponse response) {
-                    if (!outstanding.remove(response.id())) {
-                        throw new IOException("Unsolicited MCP STDIO response id");
-                    }
+                if (!(message instanceof McpSchema.JSONRPCResponse response)
+                        || correlate(response)) {
+                    incoming.apply(Mono.just(message)).block(timeout);
                 }
-                incoming.apply(Mono.just(message)).block(timeout);
             }
             if (!closed) {
                 throw new EOFException("MCP subprocess or pipe ended");
@@ -158,7 +212,9 @@ public final class StdioMcpClientTransport implements McpClientTransport {
                                 error = e;
                             }
                             try {
-                                writers.close();
+                                if (writers != null) {
+                                    writers.close();
+                                }
                             } catch (IOException e) {
                                 if (error == null) {
                                     error = e;
@@ -175,7 +231,10 @@ public final class StdioMcpClientTransport implements McpClientTransport {
                                     error.addSuppressed(join);
                                 }
                             }
-                            outstanding.clear();
+                            synchronized (outstanding) {
+                                outstanding.clear();
+                                expired.clear();
+                            }
                             if (error != null) {
                                 throw error;
                             }
