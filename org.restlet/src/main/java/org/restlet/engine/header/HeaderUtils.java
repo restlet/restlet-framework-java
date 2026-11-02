@@ -514,6 +514,17 @@ public class HeaderUtils {
      * @param existingHeaders The headers to update.
      * @param additionalHeaders The headers to add.
      */
+    /**
+     * Indicates whether a header is a standard one, set through the Restlet API rather than added
+     * as an extension header.
+     *
+     * @param name The header name, in any case.
+     * @return True if the header is standard.
+     */
+    public static boolean isStandardHeader(String name) {
+        return STANDARD_HEADERS.contains(name);
+    }
+
     public static void addUserExtensionHeaders(
             Series<Header> existingHeaders, Series<Header> additionalHeaders) {
         if (additionalHeaders != null) {

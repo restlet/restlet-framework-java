@@ -448,15 +448,17 @@ class NettyServerCall {
     }
 
     /**
-     * Invokes the "onSent" callback of the response once its terminal write is done, never on the
-     * event loop: in the calling thread if the write is already done, else in a virtual thread. If
-     * the write failed, the response status is first set to {@link
-     * Status#CONNECTOR_ERROR_COMMUNICATION} with the cause, since the response wasn't delivered.
+     * Reports the delivery of the response once its terminal write is done, then invokes its
+     * "onSent" callback, never on the event loop: in the calling thread if the write is already
+     * done, else in a virtual thread. If the write failed, the response status is first set to
+     * {@link Status#CONNECTOR_ERROR_COMMUNICATION} with the cause, since the response wasn't
+     * delivered.
      *
      * @param response The response.
      * @param delivery The terminal write.
      */
     private void notifySent(Response response, ChannelFuture delivery) {
+        delivery.addListener(f -> response.notifyDelivered(f.isSuccess() ? null : f.cause()));
         Uniform onSent = response.getOnSent();
         if (onSent == null) {
             return;

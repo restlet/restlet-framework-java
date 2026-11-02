@@ -227,6 +227,8 @@ public final class GrpcServerAdapter extends Restlet {
                             .maxInboundMessageSize(maxMessageBytes);
             List.copyOf(services).forEach(builder::addService);
             List.copyOf(interceptors).forEach(builder::intercept);
+            // Added last, so outermost: it holds a call's callback slot around all of them.
+            builder.intercept(host.callbackBudget());
             try {
                 sdk = builder.build().start();
                 super.start();
