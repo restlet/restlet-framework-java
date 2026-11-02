@@ -43,6 +43,13 @@ import org.restlet.routing.Template;
 public final class GrpcServerAdapter extends Restlet {
     private final List<ServerServiceDefinition> services = new CopyOnWriteArrayList<>();
     private final List<ServerInterceptor> interceptors = new CopyOnWriteArrayList<>();
+
+    /**
+     * Guards the configuration and lifecycle state. The adapter's own monitor, held by {@link
+     * #start()} and {@link #stop()} like any Restlet's, is taken first.
+     */
+    private final Object lock = new Object();
+
     private int maxMessageBytes = 1024 * 1024;
     private int maxQueuedBytes = 256 * 1024;
     private int maxConcurrentCalls = 128;
@@ -70,71 +77,95 @@ public final class GrpcServerAdapter extends Restlet {
         return interceptors;
     }
 
-    public synchronized void setMaxMessageBytes(int value) {
-        configurable();
-        if (value <= 0 || value > Integer.MAX_VALUE - 6) {
-            throw new IllegalArgumentException("A positive finite message budget is required");
+    public void setMaxMessageBytes(int value) {
+        synchronized (lock) {
+            configurable();
+            if (value <= 0 || value > Integer.MAX_VALUE - 6) {
+                throw new IllegalArgumentException("A positive finite message budget is required");
+            }
+            maxMessageBytes = value;
         }
-        maxMessageBytes = value;
     }
 
-    public synchronized int getMaxMessageBytes() {
-        return maxMessageBytes;
-    }
-
-    public synchronized void setMaxQueuedBytes(int value) {
-        configurable();
-        if (value < 16384) {
-            throw new IllegalArgumentException("Queue budget must be at least 16384 bytes");
+    public int getMaxMessageBytes() {
+        synchronized (lock) {
+            return maxMessageBytes;
         }
-        maxQueuedBytes = value;
     }
 
-    public synchronized int getMaxQueuedBytes() {
-        return maxQueuedBytes;
-    }
-
-    public synchronized void setMaxConcurrentCalls(int value) {
-        configurable();
-        if (value <= 0) {
-            throw new IllegalArgumentException("A positive call budget is required");
+    public void setMaxQueuedBytes(int value) {
+        synchronized (lock) {
+            configurable();
+            if (value < 16384) {
+                throw new IllegalArgumentException("Queue budget must be at least 16384 bytes");
+            }
+            maxQueuedBytes = value;
         }
-        maxConcurrentCalls = value;
     }
 
-    public synchronized int getMaxConcurrentCalls() {
-        return maxConcurrentCalls;
+    public int getMaxQueuedBytes() {
+        synchronized (lock) {
+            return maxQueuedBytes;
+        }
     }
 
-    public synchronized void setMaxCallDuration(Duration value) {
-        configurable();
-        maxCallDuration = positive(value);
+    public void setMaxConcurrentCalls(int value) {
+        synchronized (lock) {
+            configurable();
+            if (value <= 0) {
+                throw new IllegalArgumentException("A positive call budget is required");
+            }
+            maxConcurrentCalls = value;
+        }
     }
 
-    public synchronized Duration getMaxCallDuration() {
-        return maxCallDuration;
+    public int getMaxConcurrentCalls() {
+        synchronized (lock) {
+            return maxConcurrentCalls;
+        }
     }
 
-    public synchronized void setShutdownTimeout(Duration value) {
-        configurable();
-        shutdownTimeout = positive(value);
+    public void setMaxCallDuration(Duration value) {
+        synchronized (lock) {
+            configurable();
+            maxCallDuration = positive(value);
+        }
     }
 
-    public synchronized Duration getShutdownTimeout() {
-        return shutdownTimeout;
+    public Duration getMaxCallDuration() {
+        synchronized (lock) {
+            return maxCallDuration;
+        }
     }
 
-    public synchronized void setExecutor(Executor value) {
-        configurable();
-        executor = java.util.Objects.requireNonNull(value, "executor");
+    public void setShutdownTimeout(Duration value) {
+        synchronized (lock) {
+            configurable();
+            shutdownTimeout = positive(value);
+        }
+    }
+
+    public Duration getShutdownTimeout() {
+        synchronized (lock) {
+            return shutdownTimeout;
+        }
+    }
+
+    public void setExecutor(Executor value) {
+        synchronized (lock) {
+            configurable();
+            executor = java.util.Objects.requireNonNull(value, "executor");
+        }
     }
 
     /**
      * Returns the callback executor: the supplied one, the adapter-owned one once started, or null
      * before start when none was supplied.
      */
-    public synchronized Executor getExecutor() {
-        return executor;
+    public Executor getExecutor() {
+        synchronized (lock) {
+            return executor;
+        }
     }
 
     private static Duration positive(Duration value) {
@@ -144,6 +175,7 @@ public final class GrpcServerAdapter extends Restlet {
         return Duration.ofNanos(value.toNanos());
     }
 
+    /** Requires the configuration to be still open; called with {@link #lock} held. */
     private void configurable() {
         if (configured) {
             throw new IllegalStateException("Server adapter is single-use; configuration is fixed");
@@ -162,54 +194,56 @@ public final class GrpcServerAdapter extends Restlet {
 
     @Override
     public synchronized void start() throws Exception {
-        if (isStarted()) {
-            return;
-        }
-        configurable();
-        for (var service : List.copyOf(services)) {
-            for (var method : service.getMethods()) {
-                var type = method.getMethodDescriptor().getType();
-                if (type != io.grpc.MethodDescriptor.MethodType.UNARY
-                        && type != io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING) {
-                    throw new UnsupportedOperationException(
-                            "Only unary and server-streaming methods are supported");
+        synchronized (lock) {
+            if (isStarted()) {
+                return;
+            }
+            configurable();
+            for (var service : List.copyOf(services)) {
+                for (var method : service.getMethods()) {
+                    var type = method.getMethodDescriptor().getType();
+                    if (type != io.grpc.MethodDescriptor.MethodType.UNARY
+                            && type != io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING) {
+                        throw new UnsupportedOperationException(
+                                "Only unary and server-streaming methods are supported");
+                    }
                 }
             }
-        }
-        configured = true;
-        host =
-                new RestletServerHost(
-                        maxMessageBytes, maxQueuedBytes, maxConcurrentCalls, maxCallDuration);
-        if (executor == null) {
-            ownedExecutor = Executors.newVirtualThreadPerTaskExecutor();
-            executor = ownedExecutor;
-        }
-        var builder =
-                new ServerImplBuilder(
-                                (tracers, recorder) -> {
-                                    host.setTracers(tracers);
-                                    return host;
-                                })
-                        .executor(executor)
-                        .maxInboundMessageSize(maxMessageBytes);
-        List.copyOf(services).forEach(builder::addService);
-        List.copyOf(interceptors).forEach(builder::intercept);
-        try {
-            sdk = builder.build().start();
-            super.start();
-        } catch (IOException | RuntimeException e) {
-            host.close();
-            if (ownedExecutor != null) {
-                ownedExecutor.shutdownNow();
+            configured = true;
+            host =
+                    new RestletServerHost(
+                            maxMessageBytes, maxQueuedBytes, maxConcurrentCalls, maxCallDuration);
+            if (executor == null) {
+                ownedExecutor = Executors.newVirtualThreadPerTaskExecutor();
+                executor = ownedExecutor;
             }
-            throw e;
+            var builder =
+                    new ServerImplBuilder(
+                                    (tracers, recorder) -> {
+                                        host.setTracers(tracers);
+                                        return host;
+                                    })
+                            .executor(executor)
+                            .maxInboundMessageSize(maxMessageBytes);
+            List.copyOf(services).forEach(builder::addService);
+            List.copyOf(interceptors).forEach(builder::intercept);
+            try {
+                sdk = builder.build().start();
+                super.start();
+            } catch (IOException | RuntimeException e) {
+                host.close();
+                if (ownedExecutor != null) {
+                    ownedExecutor.shutdownNow();
+                }
+                throw e;
+            }
         }
     }
 
     @Override
     public void handle(Request request, Response response) {
         RestletServerHost current;
-        synchronized (this) {
+        synchronized (lock) {
             current = isStarted() ? host : null;
         }
         if (current == null) {
@@ -220,16 +254,16 @@ public final class GrpcServerAdapter extends Restlet {
     }
 
     /**
-     * Stops the adapter. The waits happen outside the adapter's monitor, so callbacks finishing
-     * meanwhile may still use its synchronized methods.
+     * Stops the adapter. The waits only hold the adapter's monitor, not {@link #lock}, so callbacks
+     * finishing meanwhile may still use its accessors.
      */
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         io.grpc.Server server;
         RestletServerHost stopping;
         ExecutorService owned;
         Duration timeout;
-        synchronized (this) {
+        synchronized (lock) {
             if (sdk == null) {
                 return;
             }
