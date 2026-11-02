@@ -54,6 +54,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import org.restlet.Context;
 import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -336,7 +337,8 @@ class NettyServerCall {
 
     /** The protocol version as reported to the application (for example "1.1" or "2.0"). */
     String getVersion() {
-        String version = kind.version();
+        String version =
+                kind == StreamKind.HTTP1 ? request.protocolVersion().text() : kind.version();
         int slash = version.lastIndexOf('/');
         return (slash >= 0 && slash + 1 < version.length())
                 ? version.substring(slash + 1)
@@ -441,10 +443,29 @@ class NettyServerCall {
         } catch (IOException | RuntimeException e) {
             handleException(response, e);
         } finally {
-            complete();
-            if (response.getOnSent() != null) {
-                response.getOnSent().handle(response.getRequest(), response);
-            }
+            notifySent(response, complete());
+        }
+    }
+
+    /**
+     * Invokes the "onSent" callback of the response once its terminal write is done, possibly on
+     * the event loop. If the write failed, the response status is first set to {@link
+     * Status#CONNECTOR_ERROR_COMMUNICATION} with the cause, since the response wasn't delivered.
+     *
+     * @param response The response.
+     * @param delivery The terminal write.
+     */
+    private static void notifySent(Response response, ChannelFuture delivery) {
+        Uniform onSent = response.getOnSent();
+        if (onSent != null) {
+            delivery.addListener(
+                    f -> {
+                        if (!f.isSuccess()) {
+                            response.setStatus(
+                                    new Status(Status.CONNECTOR_ERROR_COMMUNICATION, f.cause()));
+                        }
+                        onSent.handle(response.getRequest(), response);
+                    });
         }
     }
 
@@ -752,10 +773,14 @@ class NettyServerCall {
         return length >= 0 && length - requestBody.getReceivedBytes() <= MAX_DISCARDED_BYTES;
     }
 
-    /** Completes the exchange: ends the response and frees the connection for the next request. */
-    void complete() {
+    /**
+     * Completes the exchange: ends the response and frees the connection for the next request.
+     *
+     * @return The terminal write of the response, failed if the connection is closed.
+     */
+    ChannelFuture complete() {
         if (completed) {
-            return;
+            return channel.newSucceededFuture();
         }
         completed = true;
 
@@ -773,13 +798,13 @@ class NettyServerCall {
 
             if (!channel.isActive()) {
                 requestBody.close();
-                return;
+                return channel.newFailedFuture(new ClosedChannelException());
             }
             if (responseEndedWithHead) {
                 trackDelivery(responseEndFuture);
                 channel.flush();
                 requestBody.close();
-                return;
+                return responseEndFuture;
             }
 
             // The response head announced whether the connection persists. If so, the unread
@@ -802,6 +827,7 @@ class NettyServerCall {
             if (!kind.isStream()) {
                 completeHttp1(future, keepAlive);
             }
+            return future;
         } finally {
             if (eventStreamPermit) {
                 channel.attr(NettyServerHandler.EVENT_STREAM_ACTIVE).set(false);
@@ -875,12 +901,13 @@ class NettyServerCall {
     }
 
     /**
-     * Aborts the exchange by closing the connection.
+     * Aborts the exchange: resets its stream for HTTP/2 and HTTP/3, leaving the other streams of
+     * the connection, or closes the HTTP/1.1 connection.
      *
      * @return True.
      */
     boolean abort() {
-        connection.close();
+        channel.close();
         return true;
     }
 

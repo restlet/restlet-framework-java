@@ -219,24 +219,39 @@ public final class GrpcServerAdapter extends Restlet {
         current.handle(request, response);
     }
 
+    /**
+     * Stops the adapter. The waits happen outside the adapter's monitor, so callbacks finishing
+     * meanwhile may still use its synchronized methods.
+     */
     @Override
-    public synchronized void stop() throws Exception {
-        if (sdk == null) {
-            return;
+    public void stop() throws Exception {
+        io.grpc.Server server;
+        RestletServerHost stopping;
+        ExecutorService owned;
+        Duration timeout;
+        synchronized (this) {
+            if (sdk == null) {
+                return;
+            }
+            server = sdk;
+            stopping = host;
+            owned = ownedExecutor;
+            timeout = shutdownTimeout;
+            sdk = null;
         }
-        sdk.shutdownNow();
-        if (host != null) {
-            host.close();
+        server.shutdownNow();
+        if (stopping != null) {
+            stopping.close();
         }
         long started = System.nanoTime();
         try {
-            if (!sdk.awaitTermination(shutdownTimeout.toNanos(), TimeUnit.NANOSECONDS)) {
+            if (!server.awaitTermination(timeout.toNanos(), TimeUnit.NANOSECONDS)) {
                 throw new IllegalStateException("gRPC server shutdown timed out");
             }
-            if (ownedExecutor != null) {
-                ownedExecutor.shutdown();
-                long remaining = shutdownTimeout.toNanos() - (System.nanoTime() - started);
-                if (!ownedExecutor.awaitTermination(Math.max(0, remaining), TimeUnit.NANOSECONDS)) {
+            if (owned != null) {
+                owned.shutdown();
+                long remaining = timeout.toNanos() - (System.nanoTime() - started);
+                if (!owned.awaitTermination(Math.max(0, remaining), TimeUnit.NANOSECONDS)) {
                     throw new IllegalStateException("gRPC callback executor shutdown timed out");
                 }
             }
@@ -244,8 +259,8 @@ public final class GrpcServerAdapter extends Restlet {
             Thread.currentThread().interrupt();
             throw e;
         } finally {
-            if (ownedExecutor != null) {
-                ownedExecutor.shutdownNow();
+            if (owned != null) {
+                owned.shutdownNow();
             }
             super.stop();
         }

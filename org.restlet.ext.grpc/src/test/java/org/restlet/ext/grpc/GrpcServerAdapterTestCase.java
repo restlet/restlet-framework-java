@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -394,25 +395,222 @@ class GrpcServerAdapterTestCase {
         assertThrows(UnsupportedOperationException.class, adapter::start);
     }
 
-    private Response dispatch(MethodDescriptor<StringValue, StringValue> method, String value)
-            throws Exception {
+    private static byte[] frame(String value) throws IOException {
         var bytes = new ByteArrayOutputStream();
         var data = new DataOutputStream(bytes);
         byte[] message = StringValue.of(value).toByteArray();
         data.writeByte(0);
         data.writeInt(message.length);
         data.write(message);
+        return bytes.toByteArray();
+    }
+
+    /** A direct HTTP/2 gRPC request; its abort action, if any, stands for the stream reset. */
+    private static Request grpcRequest(
+            MethodDescriptor<StringValue, StringValue> method, InputStream body, Runnable abort) {
         Request request =
                 new Request(
                         org.restlet.data.Method.POST,
-                        "http://localhost/" + method.getFullMethodName());
-        request.setEntity(
-                new InputRepresentation(
-                        new ByteArrayInputStream(bytes.toByteArray()),
-                        MediaType.valueOf("application/grpc")));
+                        "http://localhost/" + method.getFullMethodName()) {
+                    @Override
+                    public boolean abort() {
+                        abort.run();
+                        return true;
+                    }
+                };
+        request.setProtocol(Protocol.valueOf("HTTP", "2.0"));
+        request.setEntity(new InputRepresentation(body, MediaType.valueOf("application/grpc")));
+        return request;
+    }
+
+    private Response dispatch(MethodDescriptor<StringValue, StringValue> method, String value)
+            throws Exception {
+        Request request = grpcRequest(method, new ByteArrayInputStream(frame(value)), () -> {});
         Response response = new Response(request);
         adapter.handle(request, response);
         return response;
+    }
+
+    private static String trailersAfterWriting(Response response) throws IOException {
+        response.getEntity().write(new ByteArrayOutputStream());
+        return response.getTrailers().getFirstValue("grpc-status");
+    }
+
+    @Test
+    void http1RequestsAreRejectedBeforeDispatch() throws Exception {
+        AtomicInteger calls = new AtomicInteger();
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        ECHO,
+                                        ServerCalls.asyncUnaryCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> {
+                                                    calls.incrementAndGet();
+                                                    out.onNext(request);
+                                                    out.onCompleted();
+                                                }))
+                                .build());
+        adapter.start();
+        Request request = grpcRequest(ECHO, new ByteArrayInputStream(frame("x")), () -> {});
+        request.setProtocol(Protocol.valueOf("HTTP", "1.1"));
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        assertEquals(
+                org.restlet.data.Status.SERVER_ERROR_VERSION_NOT_SUPPORTED, response.getStatus());
+        assertEquals(0, calls.get());
+    }
+
+    @Test
+    void unreadableRequestStillSendsItsGrpcStatus() throws Exception {
+        adapter.getServices().add(echo());
+        adapter.start();
+        Request request =
+                grpcRequest(
+                        ECHO,
+                        new InputStream() {
+                            @Override
+                            public int read() throws IOException {
+                                throw new IOException("broken body");
+                            }
+                        },
+                        () -> {});
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        assertEquals(
+                String.valueOf(Status.Code.INVALID_ARGUMENT.value()),
+                trailersAfterWriting(response));
+    }
+
+    @Test
+    void stalledRequestBodyIsResetAtTheDeadline() throws Exception {
+        adapter.setMaxCallDuration(Duration.ofMillis(300));
+        adapter.getServices().add(echo());
+        adapter.start();
+        CountDownLatch reset = new CountDownLatch(1);
+        InputStream stalled =
+                new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        try {
+                            reset.await();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        throw new IOException("stream reset");
+                    }
+                };
+        Request request = grpcRequest(ECHO, stalled, reset::countDown);
+        Response response = new Response(request);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            executor.submit(() -> adapter.handle(request, response)).get(10, TimeUnit.SECONDS);
+        }
+        assertEquals(0, reset.getCount());
+        assertEquals(
+                String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
+                trailersAfterWriting(response));
+    }
+
+    @Test
+    void responseWriteBlockedByThePeerIsResetAtShutdown() throws Exception {
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        WATCH,
+                                        ServerCalls.asyncServerStreamingCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) ->
+                                                        out.onNext(StringValue.of("first"))))
+                                .build());
+        adapter.start();
+        CountDownLatch reset = new CountDownLatch(1);
+        Request request =
+                grpcRequest(WATCH, new ByteArrayInputStream(frame("watch")), reset::countDown);
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        CountDownLatch writing = new CountDownLatch(1);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var writer =
+                    executor.submit(
+                            () -> {
+                                response.getEntity()
+                                        .write(
+                                                new OutputStream() {
+                                                    @Override
+                                                    public void write(int value)
+                                                            throws IOException {
+                                                        writing.countDown();
+                                                        try {
+                                                            reset.await();
+                                                        } catch (InterruptedException e) {
+                                                            Thread.currentThread().interrupt();
+                                                        }
+                                                        throw new IOException("stream reset");
+                                                    }
+                                                });
+                                return null;
+                            });
+            assertTrue(writing.await(10, TimeUnit.SECONDS));
+            adapter.stop();
+            assertTrue(reset.await(10, TimeUnit.SECONDS));
+            assertThrows(
+                    java.util.concurrent.ExecutionException.class,
+                    () -> writer.get(10, TimeUnit.SECONDS));
+        }
+    }
+
+    @Test
+    void callbacksMayUseTheAdapterWhileItStops() throws Exception {
+        CountDownLatch entered = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            CountDownLatch cancelled = new CountDownLatch(1);
+                                            io.grpc.Context.current()
+                                                    .addListener(
+                                                            context -> cancelled.countDown(),
+                                                            Runnable::run);
+                                            entered.countDown();
+                                            try {
+                                                cancelled.await();
+                                            } catch (InterruptedException e) {
+                                                Thread.currentThread().interrupt();
+                                            }
+                                            adapter.getMaxConcurrentCalls();
+                                        }))
+                        .build());
+        ClientCalls.futureUnaryCall(
+                channel.newCall(ECHO, CallOptions.DEFAULT), StringValue.of("block"));
+        assertTrue(entered.await(10, TimeUnit.SECONDS));
+        adapter.stop();
+        assertFalse(adapter.isStarted());
+        assertTrue(http.isStarted());
+    }
+
+    @Test
+    void unaryResponseLargerThanTheQueueBudgetFitsWithADirectExecutor() throws Exception {
+        adapter.setExecutor(Runnable::run);
+        String large = "x".repeat(512 * 1024);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            out.onNext(StringValue.of(large));
+                                            out.onCompleted();
+                                        }))
+                        .build());
+        assertEquals(large, call("large"));
     }
 
     @Test

@@ -112,33 +112,7 @@ class NettyRequest extends Request {
         setProtocol(Protocol.valueOf(call.getProtocol().getSchemeName(), call.getVersion()));
         setHostRef(hostRef(call.getProtocol(), headers));
 
-        String uri = call.getRequestUri();
-        if (uri == null || uri.isEmpty()) {
-            uri = "/";
-        } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-            Reference absoluteRef = new Reference(uri);
-            if (absoluteRef.getAuthority() != null
-                    && getHostRef() != null
-                    && absoluteRef.getAuthority().equals(getHostRef().getAuthority())) {
-                String path = absoluteRef.getPath();
-                String query = absoluteRef.getQuery();
-                if (path == null || path.isEmpty()) {
-                    path = "/";
-                } else if (!path.startsWith("/")) {
-                    path = "/" + path;
-                }
-                uri = path;
-                if (query != null) {
-                    uri += "?" + query;
-                }
-            }
-        } else if (!uri.startsWith("/")) {
-            uri = "/" + uri;
-        }
-
-        Reference resourceRef = new Reference(getHostRef().toString() + uri);
-        resourceRef.setBaseRef(new Reference(getHostRef().toString()));
-        setResourceRef(resourceRef);
+        setResourceRef(resourceRef(call.getRequestUri(), getHostRef()));
         setOriginalRef(ReferenceUtils.getOriginalRef(getResourceRef(), headers));
 
         String dateHeader = headers.getFirstValue(HeaderConstants.HEADER_DATE, true);
@@ -149,6 +123,55 @@ class NettyRequest extends Request {
     @Override
     public Series<Header> getTrailers() {
         return call.getRequestTrailers();
+    }
+
+    /**
+     * Returns the resource reference of a request target, relative to the host reference. An
+     * absolute target for the same authority is reduced to its path and query; another absolute
+     * target is kept as is.
+     */
+    private static Reference resourceRef(String uri, Reference hostRef) {
+        String base = hostRef.toString();
+        String target = uri;
+        if (target == null || target.isEmpty()) {
+            target = "/";
+        } else if (target.regionMatches(true, 0, "http://", 0, 7)
+                || target.regionMatches(true, 0, "https://", 0, 8)) {
+            Reference absoluteRef = new Reference(target);
+            if (!sameAuthority(absoluteRef, hostRef)) {
+                absoluteRef.setBaseRef(new Reference(base));
+                return absoluteRef;
+            }
+            String path = absoluteRef.getPath();
+            target = (path == null || path.isEmpty()) ? "/" : path;
+            if (!target.startsWith("/")) {
+                target = "/" + target;
+            }
+            if (absoluteRef.getQuery() != null) {
+                target += "?" + absoluteRef.getQuery();
+            }
+        } else if (!target.startsWith("/")) {
+            target = "/" + target;
+        }
+        Reference result = new Reference(base + target);
+        result.setBaseRef(new Reference(base));
+        return result;
+    }
+
+    /** Compares the scheme, host (ignoring case) and effective port of two references. */
+    private static boolean sameAuthority(Reference target, Reference hostRef) {
+        String host = target.getHostDomain();
+        return host != null
+                && hostRef.getHostDomain() != null
+                && target.getSchemeProtocol() != null
+                && target.getSchemeProtocol().equals(hostRef.getSchemeProtocol())
+                && host.equalsIgnoreCase(hostRef.getHostDomain())
+                && effectivePort(target) == effectivePort(hostRef);
+    }
+
+    private static int effectivePort(Reference reference) {
+        int port = reference.getHostPort();
+        return port == -1 ? reference.getSchemeProtocol().getDefaultPort() : port;
     }
 
     /** Returns the host reference built from the "Host" header. */

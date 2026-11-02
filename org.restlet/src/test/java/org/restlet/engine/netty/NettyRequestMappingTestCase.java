@@ -63,6 +63,52 @@ class NettyRequestMappingTestCase {
         }
     }
 
+    private static org.restlet.Request map(
+            StreamKind kind, HttpVersion version, String target, String host) {
+        EmbeddedChannel channel = new EmbeddedChannel();
+        try {
+            var head = new DefaultHttpRequest(version, HttpMethod.GET, target);
+            head.headers().set("host", host);
+            return new NettyServerCall(
+                            null, channel, kind, head, new ChannelInputStream(channel, 1000), false)
+                    .toRequest(new Context());
+        } finally {
+            channel.finishAndReleaseAll();
+        }
+    }
+
+    @Test
+    void absoluteTargetsWithAnEquivalentAuthorityMapToTheirPath() {
+        for (String target :
+                new String[] {
+                    "http://example.com:80/rest?q=1",
+                    "http://EXAMPLE.com/rest?q=1",
+                    "HTTP://example.com/rest?q=1"
+                }) {
+            var request = map(StreamKind.HTTP2, HttpVersion.HTTP_1_1, target, "example.com:80");
+            assertEquals("http://example.com/rest?q=1", request.getResourceRef().toString());
+            assertEquals("/rest", request.getResourceRef().getRemainingPart(false, false));
+        }
+    }
+
+    @Test
+    void absoluteTargetsForAnotherAuthorityAreKept() {
+        var request =
+                map(StreamKind.HTTP1, HttpVersion.HTTP_1_1, "http://other.test:8080/rest", "a");
+        assertEquals("http://other.test:8080/rest", request.getResourceRef().toString());
+        assertEquals("http://a", request.getResourceRef().getBaseRef().toString());
+    }
+
+    @Test
+    void http1ReportsTheVersionOfItsRequestLine() {
+        assertEquals(
+                "1.0",
+                map(StreamKind.HTTP1, HttpVersion.HTTP_1_0, "/", "a").getProtocol().getVersion());
+        assertEquals(
+                "2.0",
+                map(StreamKind.HTTP2, HttpVersion.HTTP_1_1, "/", "a").getProtocol().getVersion());
+    }
+
     @Test
     void emptyTargetMapsToRoot() {
         EmbeddedChannel channel = new EmbeddedChannel();
