@@ -31,6 +31,7 @@ import io.grpc.internal.TransportFrameUtil;
 import io.grpc.internal.TransportTracer;
 import io.grpc.internal.WritableBuffer;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -48,17 +49,22 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.util.Series;
 
 /** Pinned SDK socketless server transport; each transport represents one logical HTTP exchange. */
 @SuppressWarnings("null")
 public final class RestletServerHost implements InternalServer, AutoCloseable {
+    /** How long a cancelled call may stay blocked in one network read or write before a reset. */
+    private static final Duration STUCK_IO = Duration.ofMillis(200);
+
     private final int maxBytes;
     private final int queueBytes;
     private final Duration duration;
@@ -140,6 +146,12 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             response.setStatus(org.restlet.data.Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
             return;
         }
+        // Over HTTP/1.1, Netty decides on trailers before the entity can add grpc-status.
+        Protocol protocol = request.getProtocol();
+        if (protocol == null || !"2.0".equals(protocol.getVersion())) {
+            response.setStatus(org.restlet.data.Status.SERVER_ERROR_VERSION_NOT_SUPPORTED);
+            return;
+        }
         Call call;
         synchronized (this) {
             if (closed) {
@@ -173,11 +185,20 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         private final ArrayDeque<byte[]> queue = new ArrayDeque<>();
         private final CountDownLatch head = new CountDownLatch(1);
         private final AtomicBoolean finished = new AtomicBoolean();
+        private final AtomicLong operations = new AtomicLong();
+
+        /** The network read or write in progress, 0 if none. */
+        private final AtomicLong blocked = new AtomicLong();
+
         private ServerTransportListener transportListener;
         private SdkStream stream;
         private ScheduledFuture<?> deadline;
         private Metadata trailers;
         private int queued;
+
+        /** Bytes framed for the latest message, from the frame that started it. */
+        private int open;
+
         private boolean terminal;
 
         /** Whether the end of the call was reported to the SDK; confined to {@link #serial}. */
@@ -189,6 +210,8 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         }
 
         private void begin() throws IOException, InterruptedException {
+            // Installed first, so that a call failing below still sends its grpc-status.
+            response.setEntity(responseEntity());
             Metadata headers = fromHttp(request.getHeaders());
             String path =
                     request.getOriginalRef() == null
@@ -206,7 +229,13 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             String method = path.substring(1);
             response.setOnSent(
                     (sentRequest, sentResponse) -> {
-                        if (claim()) {
+                        // An undelivered response leaves the client without the call's status.
+                        if (sentResponse.getStatus().isConnectorError()) {
+                            cancel(
+                                    Status.CANCELLED
+                                            .withDescription("gRPC response not delivered")
+                                            .withCause(sentResponse.getStatus().getThrowable()));
+                        } else if (claim()) {
                             serial.execute(() -> finish(null));
                         }
                     });
@@ -245,7 +274,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                     .thenAccept(cause -> cancel(Status.CANCELLED.withCause(cause)));
             byte[] bytes;
             try (var input = request.getEntity().getStream()) {
-                bytes = input == null ? new byte[0] : input.readNBytes(maxBytes + 6);
+                bytes = input == null ? new byte[0] : read(input);
             }
             if (bytes.length > maxBytes + 5) {
                 cancel(Status.RESOURCE_EXHAUSTED.withDescription("Request byte budget exceeded"));
@@ -260,37 +289,85 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             if (!head.await(duration.toNanos(), TimeUnit.NANOSECONDS)) {
                 cancel(Status.DEADLINE_EXCEEDED.withDescription("Response headers timed out"));
             }
-            response.setEntity(
-                    new OutputRepresentation(MediaType.valueOf("application/grpc")) {
-                        @Override
-                        public void write(OutputStream output) throws IOException {
-                            try {
-                                for (; ; ) {
-                                    byte[] data;
-                                    synchronized (queue) {
-                                        while (queue.isEmpty() && !terminal) {
-                                            queue.wait();
-                                        }
-                                        data = queue.pollFirst();
-                                        if (data == null) {
-                                            toHttp(trailers, response.getTrailers());
-                                            return;
-                                        }
-                                        queued -= data.length;
-                                    }
-                                    output.write(data);
-                                    output.flush();
-                                    int sent = data.length;
-                                    serial.execute(() -> stream.state.onSentBytes(sent));
+        }
+
+        private byte[] read(InputStream input) throws IOException {
+            enterIo();
+            try {
+                return input.readNBytes(maxBytes + 6);
+            } finally {
+                blocked.set(0);
+            }
+        }
+
+        private OutputRepresentation responseEntity() {
+            return new OutputRepresentation(MediaType.valueOf("application/grpc")) {
+                @Override
+                public void write(OutputStream output) throws IOException {
+                    try {
+                        for (; ; ) {
+                            byte[] data;
+                            synchronized (queue) {
+                                while (queue.isEmpty() && !terminal) {
+                                    queue.wait();
                                 }
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                cancel(Status.CANCELLED.withCause(e));
-                                throw new IOException("Interrupted writing gRPC response", e);
-                            } catch (IOException e) {
-                                cancel(Status.CANCELLED.withCause(e));
-                                throw e;
+                                data = queue.pollFirst();
+                                if (data == null) {
+                                    toHttp(trailers, response.getTrailers());
+                                    return;
+                                }
+                                queued -= data.length;
                             }
+                            enterIo();
+                            try {
+                                output.write(data);
+                                output.flush();
+                            } finally {
+                                blocked.set(0);
+                            }
+                            int sent = data.length;
+                            serial.execute(() -> stream.state.onSentBytes(sent));
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        cancel(Status.CANCELLED.withCause(e));
+                        throw new IOException("Interrupted writing gRPC response", e);
+                    } catch (IOException e) {
+                        cancel(Status.CANCELLED.withCause(e));
+                        throw e;
+                    }
+                }
+            };
+        }
+
+        /** Marks the start of a network read or write, which only the peer may otherwise end. */
+        private void enterIo() {
+            blocked.set(operations.incrementAndGet());
+            if (finished.get()) {
+                abortIfStuck();
+            }
+        }
+
+        /**
+         * Resets the HTTP stream if the call stays in the same network read or write after it was
+         * ended, so a peer that stops sending or reading can't hold the handler. A call blocked
+         * elsewhere was already woken by the end of the call.
+         */
+        private void abortIfStuck() {
+            long operation = blocked.get();
+            if (operation == 0) {
+                return;
+            }
+            Thread.startVirtualThread(
+                    () -> {
+                        try {
+                            Thread.sleep(STUCK_IO);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                        if (blocked.get() == operation) {
+                            request.abort();
                         }
                     });
         }
@@ -310,11 +387,13 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             if (!claim()) {
                 return;
             }
+            abortIfStuck();
             serial.execute(
                     () -> {
                         synchronized (queue) {
                             queue.clear();
                             queued = 0;
+                            open = 0;
                             terminal = true;
                             trailers = new Metadata();
                             trailers.put(InternalStatus.CODE_KEY, status);
@@ -448,8 +527,16 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                         if (call.terminal) {
                             return;
                         }
-                        overflow = buffer.size > queueBytes - call.queued;
+                        // One message is framed whole, possibly before the writer starts: while the
+                        // queue holds only that message, it may grow up to one framed message. A
+                        // frame counting messages starts a new one.
+                        int open = messages > 0 ? buffer.size : call.open + buffer.size;
+                        boolean others = call.queued + buffer.size > open;
+                        overflow =
+                                buffer.size > queueBytes - call.queued
+                                        && (others || open > maxBytes + 5);
                         if (!overflow) {
+                            call.open = open;
                             byte[] bytes = java.util.Arrays.copyOf(buffer.bytes, buffer.size);
                             onSendingBytes(bytes.length);
                             call.queue.addLast(bytes);

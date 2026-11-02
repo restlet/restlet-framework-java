@@ -281,22 +281,32 @@ class GrpcClientAdapterTestCase {
         AtomicReference<Status> status = new AtomicReference<>();
         CountDownLatch closed = new CountDownLatch(1);
         call.cancel("cancelled before start", null);
-        call.start(
-                new ClientCall.Listener<>() {
-                    @Override
-                    public void onClose(Status value, Metadata trailers) {
-                        status.set(value);
-                        terminals.incrementAndGet();
-                        closed.countDown();
-                    }
-                },
-                new Metadata());
-        assertTrue(closed.await(30, TimeUnit.SECONDS));
-        assertEquals(Status.Code.CANCELLED, status.get().getCode());
+        boolean rejected = false;
+        try {
+            call.start(
+                    new ClientCall.Listener<>() {
+                        @Override
+                        public void onClose(Status value, Metadata trailers) {
+                            status.set(value);
+                            terminals.incrementAndGet();
+                            closed.countDown();
+                        }
+                    },
+                    new Metadata());
+        } catch (IllegalStateException e) {
+            // A call created once the channel has resolved its target rejects start() after
+            // cancel(); one created earlier is delayed and closes its listener instead.
+            assertEquals("call was cancelled", e.getMessage());
+            rejected = true;
+        }
+        if (!rejected) {
+            assertTrue(closed.await(30, TimeUnit.SECONDS));
+            assertEquals(Status.Code.CANCELLED, status.get().getCode());
+        }
         assertEquals(0, requests.get());
         assertEquals("next", call("next").getValue());
         assertEquals(1, requests.get());
-        assertEquals(1, terminals.get());
+        assertEquals(rejected ? 0 : 1, terminals.get());
     }
 
     @Test
