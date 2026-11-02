@@ -188,10 +188,11 @@ class GrpcClientAdapterTestCase {
                 assertThrows(StatusRuntimeException.class, () -> call("bad"));
         assertEquals(Status.Code.INVALID_ARGUMENT, error.getStatus().getCode());
         assertEquals("native % error: caf\u00e9", error.getStatus().getDescription());
+        Metadata trailers = java.util.Objects.requireNonNull(error.getTrailers());
         assertEquals(
                 List.of("one", "two"),
-                com.google.common.collect.ImmutableList.copyOf(error.getTrailers().getAll(TEXT)));
-        assertArrayEquals(new byte[] {0, (byte) 255, 7}, error.getTrailers().get(BINARY));
+                com.google.common.collect.ImmutableList.copyOf(trailers.getAll(TEXT)));
+        assertArrayEquals(new byte[] {0, (byte) 255, 7}, trailers.get(BINARY));
         assertEquals("recovered", call("recovered").getValue());
     }
 
@@ -390,7 +391,26 @@ class GrpcClientAdapterTestCase {
                                         }))
                         .build();
         start(service);
+        warmUp();
         return new Pending(entered, cancelled);
+    }
+
+    /**
+     * Makes a first call so that later deadlines measure the call, not class loading and the HTTP/2
+     * connection: in a cold JVM they can exhaust a 3-second deadline before the request reaches the
+     * peer. The warm-up is retried when it hits such a deadline itself.
+     */
+    private void warmUp() {
+        for (int attempt = 1; ; attempt++) {
+            try {
+                assertEquals("warm", call("warm").getValue());
+                return;
+            } catch (StatusRuntimeException e) {
+                if (e.getStatus().getCode() != Status.Code.DEADLINE_EXCEEDED || attempt == 5) {
+                    throw e;
+                }
+            }
+        }
     }
 
     @Test

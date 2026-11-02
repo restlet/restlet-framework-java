@@ -160,7 +160,9 @@ class GrpcHttpValidationTestCase {
                 response -> response.setEntity("", MediaType.valueOf("application/grpc")));
         Status status = failure();
         assertEquals(Status.Code.UNKNOWN, status.getCode(), status::toString);
-        assertTrue(status.getDescription().contains("missing GRPC status"));
+        assertTrue(
+                java.util.Objects.requireNonNull(status.getDescription())
+                        .contains("missing GRPC status"));
         assertRecovered();
     }
 
@@ -265,8 +267,8 @@ class GrpcHttpValidationTestCase {
         assertEquals(Status.Code.CANCELLED, status.getCode(), status::toString);
         assertEquals(Status.Code.INTERNAL, Status.fromThrowable(status.getCause()).getCode());
         assertTrue(
-                Status.fromThrowable(status.getCause())
-                        .getDescription()
+                java.util.Objects.requireNonNull(
+                                Status.fromThrowable(status.getCause()).getDescription())
                         .contains("More than one value"));
         assertRecovered();
     }

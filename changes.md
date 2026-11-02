@@ -242,6 +242,10 @@ Changes log
         - The gRPC client could reject a call with `RESOURCE_EXHAUSTED` ("gRPC call limit exceeded")
           right after the end of the previous one: the call slot was released after the caller was
           notified. Issue #1622.
+        - A gRPC client call whose deadline expired could end with `UNAVAILABLE` instead of
+          `DEADLINE_EXCEEDED`: the peer resets the stream when its deadline expires, which the
+          Restlet HTTP/2 client reported as a closed connection. Such failures after the deadline
+          now end the call with `DEADLINE_EXCEEDED`, as with grpc-netty.
         - The HTTP/1.1 server connector no longer closes a kept-alive connection without notice when
           the application answers without reading the request body (for example an early 401, 403
           or 406). The unread body is discarded when it is already received, or when at most
