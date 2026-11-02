@@ -61,7 +61,7 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.engine.header.HeaderUtils;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.util.Series;
 
@@ -221,8 +221,15 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             public <Q, S> ServerCall.Listener<Q> interceptCall(
                     ServerCall<Q, S> call, Metadata headers, ServerCallHandler<Q, S> next) {
                 Call owner = call.getAttributes().get(CALL);
-                if (owner == null || !owner.callbacksStarted()) {
+                if (owner == null) {
                     return next.startCall(call, headers);
+                }
+                if (!owner.callbacksStarted()) {
+                    // The call ended and released its slot before its callbacks could start.
+                    call.close(
+                            Status.CANCELLED.withDescription("gRPC call ended before it started"),
+                            new Metadata());
+                    return new ServerCall.Listener<>() {};
                 }
                 ServerCall.Listener<Q> listener;
                 try {
@@ -766,24 +773,16 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
     }
 
     /**
-     * Maps initial metadata onto the response: standard HTTP names through the Restlet properties
-     * that the connector writes back, other names as extension headers.
+     * Maps initial metadata onto the response as raw headers, written as-is whether or not their
+     * names are standard HTTP ones, with their repeated values.
      */
     private static void toResponse(Metadata metadata, Response response) {
-        var extension = new Series<Header>(Header.class);
-        var standard = new Series<Header>(Header.class);
-        toHttp(metadata, extension);
-        for (Header header : List.copyOf(extension)) {
-            if (FRAMING_HEADERS.contains(header.getName())) {
-                extension.remove(header);
-            } else if (HeaderUtils.isStandardHeader(header.getName())) {
-                extension.remove(header);
-                standard.add(header);
-            }
+        var raw = new Series<Header>(Header.class);
+        toHttp(metadata, raw);
+        raw.removeIf(header -> FRAMING_HEADERS.contains(header.getName()));
+        if (!raw.isEmpty()) {
+            response.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_RESPONSE_HEADERS, raw);
         }
-        response.getHeaders().addAll(extension);
-        HeaderUtils.copyResponseTransportHeaders(standard, response);
-        HeaderUtils.extractEntityHeaders(standard, response.getEntity());
     }
 
     private static void toHttp(Metadata metadata, Series<Header> headers) {

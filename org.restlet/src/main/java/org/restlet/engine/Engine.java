@@ -119,29 +119,37 @@ public class Engine {
      * @return The thread with proper variables ready to run the given runnable task.
      */
     public static Thread createThreadWithLocalVariables(final Runnable runnable, String name) {
+        return new Thread(withLocalVariables(runnable), name);
+    }
+
+    /**
+     * Returns a task running the given one with the thread local variables of the Restlet API and
+     * engine as they are now, in the calling thread, then clearing them.
+     *
+     * @param runnable The task to run.
+     * @return The task restoring the current thread local variables.
+     */
+    public static Runnable withLocalVariables(final Runnable runnable) {
         // Save the thread local variables
         final org.restlet.Application currentApplication = org.restlet.Application.getCurrent();
         final Context currentContext = Context.getCurrent();
         final Integer currentVirtualHost = org.restlet.routing.VirtualHost.getCurrent();
         final Response currentResponse = Response.getCurrent();
 
-        Runnable r =
-                () -> {
-                    // Copy the thread local variables
-                    Response.setCurrent(currentResponse);
-                    Context.setCurrent(currentContext);
-                    org.restlet.routing.VirtualHost.setCurrent(currentVirtualHost);
-                    org.restlet.Application.setCurrent(currentApplication);
+        return () -> {
+            // Copy the thread local variables
+            Response.setCurrent(currentResponse);
+            Context.setCurrent(currentContext);
+            org.restlet.routing.VirtualHost.setCurrent(currentVirtualHost);
+            org.restlet.Application.setCurrent(currentApplication);
 
-                    try {
-                        // Run the user task
-                        runnable.run();
-                    } finally {
-                        Engine.clearThreadLocalVariables();
-                    }
-                };
-
-        return new Thread(r, name);
+            try {
+                // Run the user task
+                runnable.run();
+            } finally {
+                Engine.clearThreadLocalVariables();
+            }
+        };
     }
 
     /** Clears the thread local variables set by the Restlet API and engine. */

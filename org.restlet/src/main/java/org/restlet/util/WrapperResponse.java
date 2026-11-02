@@ -38,6 +38,16 @@ public class WrapperResponse extends Response {
     /** The wrapped response. */
     private final Response wrappedResponse;
 
+    @Override
+    public java.util.concurrent.CompletionStage<Throwable> getDeliverySignal() {
+        return wrappedResponse.getDeliverySignal();
+    }
+
+    @Override
+    public void notifyDelivered(Throwable failure) {
+        wrappedResponse.notifyDelivered(failure);
+    }
+
     /**
      * Constructor.
      *
