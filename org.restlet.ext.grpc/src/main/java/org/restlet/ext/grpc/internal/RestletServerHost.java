@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.Attributes;
 import io.grpc.ForwardingServerCallListener;
+import io.grpc.Grpc;
 import io.grpc.InternalChannelz;
 import io.grpc.InternalInstrumented;
 import io.grpc.InternalLogId;
@@ -37,6 +38,7 @@ import io.grpc.internal.WritableBuffer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -98,6 +100,15 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
     private final ScheduledThreadPoolExecutor timer =
             new ScheduledThreadPoolExecutor(
                     1, Thread.ofPlatform().daemon().name("restlet-grpc-server-timer").factory());
+
+    /**
+     * Runs the scheduled work of the SDK, such as client deadlines whose cancellation listeners may
+     * block, apart from the call budgets of {@link #timer}.
+     */
+    private final ScheduledThreadPoolExecutor sdkTimer =
+            new ScheduledThreadPoolExecutor(
+                    1, Thread.ofPlatform().daemon().name("restlet-grpc-sdk-timer").factory());
+
     private volatile ServerListener listener;
     private List<? extends ServerStreamTracer.Factory> tracers = List.of();
     private boolean closed;
@@ -110,6 +121,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         callbacks = new Semaphore(maxCalls > Integer.MAX_VALUE / 2 ? maxCalls : maxCalls * 2);
         // Each completed call cancels its deadline, which must not stay queued until it expires.
         timer.setRemoveOnCancelPolicy(true);
+        sdkTimer.setRemoveOnCancelPolicy(true);
     }
 
     public void setTracers(List<? extends ServerStreamTracer.Factory> value) {
@@ -139,6 +151,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         shutdown();
         calls.forEach(call -> call.cancel(Status.UNAVAILABLE.withDescription("Adapter stopped")));
         timer.shutdownNow();
+        sdkTimer.shutdownNow();
     }
 
     @Override
@@ -382,7 +395,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                             return;
                         }
                         Attributes attributes =
-                                transportListener.transportReady(Attributes.EMPTY).toBuilder()
+                                transportListener.transportReady(transportAttributes()).toBuilder()
                                         .set(CALL, this)
                                         .build();
                         stream =
@@ -414,6 +427,26 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             if (!head.await(duration.toNanos(), TimeUnit.NANOSECONDS)) {
                 cancel(Status.DEADLINE_EXCEEDED.withDescription("Response headers timed out"));
             }
+        }
+
+        /** Returns the standard transport attributes: the peer and local socket addresses. */
+        private Attributes transportAttributes() {
+            Attributes.Builder result = Attributes.newBuilder();
+            SocketAddress remote =
+                    address(
+                            request.getClientInfo().getAddress(),
+                            request.getClientInfo().getPort());
+            if (remote != null) {
+                result.set(Grpc.TRANSPORT_ATTR_REMOTE_ADDR, remote);
+            }
+            SocketAddress local =
+                    address(
+                            response.getServerInfo().getAddress(),
+                            response.getServerInfo().getPort());
+            if (local != null) {
+                result.set(Grpc.TRANSPORT_ATTR_LOCAL_ADDR, local);
+            }
+            return result.build();
         }
 
         private byte[] read(InputStream input) throws IOException {
@@ -543,6 +576,10 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             }
             calls.remove(this);
             admission.release();
+            // Callbacks not started by now never will, so their slot is free at once.
+            if (callbackState.compareAndSet(0, 2)) {
+                callbacks.release();
+            }
             ScheduledFuture<?> timeout = deadline;
             if (timeout != null) {
                 timeout.cancel(false);
@@ -565,10 +602,6 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         /** Reports the end of a claimed call to the SDK, in {@link #serial}. */
         private void finish(Status failure) {
             reported = true;
-            // A call ended before the SDK started its application callbacks holds no callback.
-            if (callbackState.compareAndSet(0, 2)) {
-                callbacks.release();
-            }
             if (deadline != null) {
                 deadline.cancel(false);
             }
@@ -595,7 +628,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
 
         @Override
         public ScheduledExecutorService getScheduledExecutorService() {
-            return timer;
+            return sdkTimer;
         }
 
         @Override
@@ -757,6 +790,18 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
 
         @Override
         public void release() {}
+    }
+
+    /** Returns the socket address of an IP literal and port, or null if unknown. */
+    private static SocketAddress address(String host, int port) {
+        if (host == null || port < 0) {
+            return null;
+        }
+        try {
+            return new InetSocketAddress(InetAddress.ofLiteral(host), port);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private static Metadata fromHttp(Series<Header> headers) {

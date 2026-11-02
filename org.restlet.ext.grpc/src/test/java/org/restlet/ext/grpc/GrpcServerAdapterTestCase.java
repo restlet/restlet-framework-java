@@ -676,6 +676,122 @@ class GrpcServerAdapterTestCase {
     }
 
     @Test
+    void streamingErrorAfterMessagesKeepsItsStatusAndTrailers() throws Exception {
+        Metadata.Key<String> key = Metadata.Key.of("x-detail", Metadata.ASCII_STRING_MARSHALLER);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                WATCH,
+                                ServerCalls.asyncServerStreamingCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            out.onNext(StringValue.of("first"));
+                                            out.onNext(StringValue.of("second"));
+                                            Metadata trailers = new Metadata();
+                                            trailers.put(key, "late");
+                                            out.onError(
+                                                    Status.ABORTED
+                                                            .withDescription("after messages")
+                                                            .asRuntimeException(trailers));
+                                        }))
+                        .build());
+        var responses =
+                ClientCalls.blockingServerStreamingCall(
+                        channel,
+                        WATCH,
+                        CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.SECONDS),
+                        StringValue.of("watch"));
+        assertEquals("first", responses.next().getValue());
+        assertEquals("second", responses.next().getValue());
+        var error = assertThrows(StatusRuntimeException.class, responses::hasNext);
+        assertEquals(Status.Code.ABORTED, error.getStatus().getCode());
+        assertEquals("after messages", error.getStatus().getDescription());
+        assertEquals("late", java.util.Objects.requireNonNull(error.getTrailers()).get(key));
+    }
+
+    @Test
+    void transportAttributesCarryTheSocketAddresses() throws Exception {
+        AtomicReference<io.grpc.Attributes> seen = new AtomicReference<>();
+        adapter.getInterceptors()
+                .add(
+                        new io.grpc.ServerInterceptor() {
+                            @Override
+                            public <Q, S> io.grpc.ServerCall.Listener<Q> interceptCall(
+                                    io.grpc.ServerCall<Q, S> call,
+                                    Metadata headers,
+                                    io.grpc.ServerCallHandler<Q, S> next) {
+                                seen.set(call.getAttributes());
+                                return next.startCall(call, headers);
+                            }
+                        });
+        start(echo());
+        assertEquals("peer", call("peer"));
+        var remote =
+                (java.net.InetSocketAddress)
+                        seen.get().get(io.grpc.Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
+        var local =
+                (java.net.InetSocketAddress) seen.get().get(io.grpc.Grpc.TRANSPORT_ATTR_LOCAL_ADDR);
+        assertTrue(remote.getAddress().isLoopbackAddress(), remote::toString);
+        assertTrue(remote.getPort() > 0);
+        assertTrue(local.getAddress().isLoopbackAddress(), local::toString);
+        assertEquals(http.getActualPort(), local.getPort());
+    }
+
+    @Test
+    void blockingClientDeadlineListenerCannotDelayCallBudgets() throws Exception {
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        adapter.setMaxCallDuration(Duration.ofSeconds(1));
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        ECHO,
+                                        (call, headers) -> {
+                                            // Runs where the client deadline expires.
+                                            io.grpc.Context.current()
+                                                    .addListener(
+                                                            context -> {
+                                                                entered.countDown();
+                                                                try {
+                                                                    release.await();
+                                                                } catch (InterruptedException e) {
+                                                                    Thread.currentThread()
+                                                                            .interrupt();
+                                                                }
+                                                            },
+                                                            Runnable::run);
+                                            call.sendHeaders(new Metadata());
+                                            return new io.grpc.ServerCall.Listener<>() {};
+                                        })
+                                .addMethod(
+                                        WATCH,
+                                        (call, headers) -> {
+                                            call.sendHeaders(new Metadata());
+                                            return new io.grpc.ServerCall.Listener<>() {};
+                                        })
+                                .build());
+        adapter.start();
+        // Released before the executor waits for its tasks, which the listener may hold.
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            try {
+                Request blocking =
+                        grpcRequest(ECHO, new ByteArrayInputStream(frame("x")), () -> {});
+                blocking.getHeaders().add("grpc-timeout", "100m");
+                executor.submit(() -> adapter.handle(blocking, new Response(blocking)));
+                assertTrue(entered.await(10, TimeUnit.SECONDS));
+                Response budgeted = dispatch(WATCH, "y");
+                assertEquals(
+                        String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
+                        executor.submit(() -> trailersAfterWriting(budgeted))
+                                .get(5, TimeUnit.SECONDS));
+            } finally {
+                release.countDown();
+            }
+        }
+    }
+
+    @Test
     void http1RequestsAreRejectedBeforeDispatch() throws Exception {
         AtomicInteger calls = new AtomicInteger();
         adapter.getServices()
