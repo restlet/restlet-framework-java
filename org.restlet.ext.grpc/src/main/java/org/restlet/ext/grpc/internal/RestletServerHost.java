@@ -43,9 +43,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -70,9 +70,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
     private final Duration duration;
     private final Semaphore admission;
     private final Set<Call> calls = ConcurrentHashMap.newKeySet();
-    private final ScheduledExecutorService timer =
-            Executors.newSingleThreadScheduledExecutor(
-                    Thread.ofPlatform().daemon().name("restlet-grpc-server-timer").factory());
+    private final ScheduledThreadPoolExecutor timer =
+            new ScheduledThreadPoolExecutor(
+                    1, Thread.ofPlatform().daemon().name("restlet-grpc-server-timer").factory());
     private volatile ServerListener listener;
     private List<? extends ServerStreamTracer.Factory> tracers = List.of();
     private boolean closed;
@@ -82,6 +82,8 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         this.queueBytes = queueBytes;
         this.duration = duration;
         admission = new Semaphore(maxCalls);
+        // Each completed call cancels its deadline, which must not stay queued until it expires.
+        timer.setRemoveOnCancelPolicy(true);
     }
 
     public void setTracers(List<? extends ServerStreamTracer.Factory> value) {
@@ -138,12 +140,13 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             response.setStatus(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             return;
         }
-        String type =
-                request.getEntity() == null || request.getEntity().getMediaType() == null
-                        ? ""
-                        : request.getEntity().getMediaType().getName();
-        if (!"application/grpc".equals(type) && !type.startsWith("application/grpc+")) {
+        if (!isGrpc(request.getEntity() == null ? null : request.getEntity().getMediaType())) {
             response.setStatus(org.restlet.data.Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+            return;
+        }
+        String method = method(request);
+        if (method == null) {
+            response.setStatus(org.restlet.data.Status.CLIENT_ERROR_NOT_FOUND);
             return;
         }
         // Over HTTP/1.1, Netty decides on trailers before the entity can add grpc-status.
@@ -162,7 +165,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                 response.setStatus(org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
                 return;
             }
-            call = new Call(request, response);
+            call = new Call(request, response, method);
             calls.add(call);
             call.transportListener = listener.transportCreated(call);
         }
@@ -177,10 +180,52 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         }
     }
 
+    /** Accepts application/grpc and application/grpc+*, whatever their parameters. */
+    private static boolean isGrpc(MediaType type) {
+        return type != null
+                && "application".equalsIgnoreCase(type.getMainType())
+                && type.getSubType() != null
+                && (type.getSubType().equalsIgnoreCase("grpc")
+                        || type.getSubType()
+                                .toLowerCase(java.util.Locale.ROOT)
+                                .startsWith("grpc+"));
+    }
+
+    /**
+     * Returns the gRPC method of the raw path that the router matched, or null unless it is exactly
+     * "/service/method" without dot segments: a path normalized differently than routed could
+     * otherwise reach a method outside its route.
+     */
+    private static String method(Request request) {
+        String path = request.getResourceRef() == null ? null : request.getResourceRef().getPath();
+        if (path == null || !path.startsWith("/")) {
+            return null;
+        }
+        String[] segments = path.substring(1).split("/", -1);
+        if (segments.length != 2) {
+            return null;
+        }
+        for (String segment : segments) {
+            if (segment.isEmpty() || ".".equals(segment) || "..".equals(segment)) {
+                return null;
+            }
+        }
+        return path.substring(1);
+    }
+
     private final class Call implements ServerTransport {
         private final Request request;
         private final Response response;
-        private final SerializingExecutor serial = new SerializingExecutor(Runnable::run);
+        private final String method;
+
+        /**
+         * Runs SDK notifications, and application callbacks with a direct executor, in virtual
+         * threads: they never block the HTTP dispatch, nor its cancellation.
+         */
+        private final SerializingExecutor serial =
+                new SerializingExecutor(
+                        task -> Thread.ofVirtual().name("restlet-grpc-server-call").start(task));
+
         private final InternalLogId id = InternalLogId.allocate(Call.class, "Restlet logical call");
         private final ArrayDeque<byte[]> queue = new ArrayDeque<>();
         private final CountDownLatch head = new CountDownLatch(1);
@@ -192,7 +237,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
 
         private ServerTransportListener transportListener;
         private SdkStream stream;
-        private ScheduledFuture<?> deadline;
+        private volatile ScheduledFuture<?> deadline;
         private Metadata trailers;
         private int queued;
 
@@ -204,29 +249,16 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         /** Whether the end of the call was reported to the SDK; confined to {@link #serial}. */
         private boolean reported;
 
-        private Call(Request request, Response response) {
+        private Call(Request request, Response response, String method) {
             this.request = request;
             this.response = response;
+            this.method = method;
         }
 
         private void begin() throws IOException, InterruptedException {
             // Installed first, so that a call failing below still sends its grpc-status.
             response.setEntity(responseEntity());
             Metadata headers = fromHttp(request.getHeaders());
-            String path =
-                    request.getOriginalRef() == null
-                            ? request.getResourceRef().getPath()
-                            : request.getOriginalRef().getPath();
-            if (path == null || path.isEmpty()) {
-                path = request.getResourceRef() == null ? "/" : request.getResourceRef().getPath();
-            }
-            if (path == null || path.isEmpty()) {
-                path = "/";
-            }
-            if (!path.startsWith("/")) {
-                path = "/" + path;
-            }
-            String method = path.substring(1);
             response.setOnSent(
                     (sentRequest, sentResponse) -> {
                         // An undelivered response leaves the client without the call's status.
@@ -239,6 +271,21 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                             serial.execute(() -> finish(null));
                         }
                     });
+            // Bounded before the SDK sees the stream, which may run application code.
+            synchronized (RestletServerHost.this) {
+                if (!closed) {
+                    deadline =
+                            timer.schedule(
+                                    () ->
+                                            cancel(
+                                                    Status.DEADLINE_EXCEEDED.withDescription(
+                                                            "Call duration exceeded")),
+                                    duration.toNanos(),
+                                    TimeUnit.NANOSECONDS);
+                }
+            }
+            request.getDisconnectSignal()
+                    .thenAccept(cause -> cancel(Status.CANCELLED.withCause(cause)));
             serial.execute(
                     () -> {
                         if (reported) {
@@ -256,22 +303,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                                                 tracers, method, headers));
                         transportListener.streamCreated(stream, method, headers);
                         stream.state.onStreamAllocated();
-                        synchronized (RestletServerHost.this) {
-                            if (!closed) {
-                                deadline =
-                                        timer.schedule(
-                                                () ->
-                                                        cancel(
-                                                                Status.DEADLINE_EXCEEDED
-                                                                        .withDescription(
-                                                                                "Call duration exceeded")),
-                                                duration.toNanos(),
-                                                TimeUnit.NANOSECONDS);
-                            }
-                        }
                     });
-            request.getDisconnectSignal()
-                    .thenAccept(cause -> cancel(Status.CANCELLED.withCause(cause)));
             byte[] bytes;
             try (var input = request.getEntity().getStream()) {
                 bytes = input == null ? new byte[0] : read(input);
@@ -388,23 +420,21 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                 return;
             }
             abortIfStuck();
-            serial.execute(
-                    () -> {
-                        synchronized (queue) {
-                            queue.clear();
-                            queued = 0;
-                            open = 0;
-                            terminal = true;
-                            trailers = new Metadata();
-                            trailers.put(InternalStatus.CODE_KEY, status);
-                            if (status.getDescription() != null) {
-                                trailers.put(InternalStatus.MESSAGE_KEY, status.getDescription());
-                            }
-                            head.countDown();
-                            queue.notifyAll();
-                        }
-                        finish(status);
-                    });
+            // The response ends at once; only the SDK notification waits for earlier callbacks.
+            synchronized (queue) {
+                queue.clear();
+                queued = 0;
+                open = 0;
+                terminal = true;
+                trailers = new Metadata();
+                trailers.put(InternalStatus.CODE_KEY, status);
+                if (status.getDescription() != null) {
+                    trailers.put(InternalStatus.MESSAGE_KEY, status.getDescription());
+                }
+                head.countDown();
+                queue.notifyAll();
+            }
+            serial.execute(() -> finish(status));
         }
 
         /**
