@@ -214,7 +214,9 @@ public class MultiPartRepresentation extends InputRepresentation {
         if (mediaType != null) {
             result =
                     new MediaType(
-                            new MediaType(withoutBoundary(mediaType.getName())),
+                            new MediaType(
+                                    withoutBoundary(mediaType.getName()),
+                                    mediaType.getDescription()),
                             PARAMETER_BOUNDARY,
                             boundary);
         }
@@ -224,10 +226,10 @@ public class MultiPartRepresentation extends InputRepresentation {
 
     /**
      * Removes the boundary parameters from a media type name, which holds all the parameters,
-     * keeping the others as written.
+     * keeping the others as written. A null name, accepted by {@link MediaType}, is returned as is.
      */
     private static String withoutBoundary(String name) {
-        int index = name.indexOf(';');
+        int index = (name == null) ? -1 : name.indexOf(';');
         if (index < 0) {
             return name;
         }
