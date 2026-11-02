@@ -39,10 +39,10 @@ Upcoming enhancements include client and bidirectional streaming for gRPC, MCP s
 To learn more about Restlet Framework, please have a look at the following resources:
 
 * [Download](https://restlet.talend.com/downloads/current/)
-* [Tutorials](https://restlet.talend.com/documentation/tutorials/3.0/)
-* [User Guide](https://restlet.talend.com/documentation/user-guide/3.0/introduction/overview/)
+* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.7/)
+* [User Guide](https://restlet.talend.com/documentation/user-guide/2.7/introduction/overview/)
 * [JavaDocs](https://javadoc.io/doc/org.restlet/org.restlet/latest/index.html)
-* [Change Log](https://restlet.talend.com/documentation/3.0/changelog)
+* [Change Log](https://github.com/restlet/restlet-framework-java/blob/3.0/changes.md)
 * [Issues](https://github.com/restlet/restlet-framework-java/issues)
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
