@@ -515,20 +515,37 @@ class GrpcServerAdapterTestCase {
                                             ServerCalls.asyncUnaryCall(
                                                     (StringValue request,
                                                             io.grpc.stub.StreamObserver<StringValue>
-                                                                    out) -> block.run()))
+                                                                    out) -> {
+                                                        block.run();
+                                                        out.onNext(request);
+                                                        out.onCompleted();
+                                                    }))
                                     .build());
         }
         adapter.start();
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            Response response =
-                    executor.submit(() -> dispatch(ECHO, "blocked")).get(10, TimeUnit.SECONDS);
-            assertTrue(entered.await(10, TimeUnit.SECONDS));
+            // The call limit is 1, so blocked callbacks may hold up to 2 callback slots.
+            for (int i = 0; i < 2; i++) {
+                Response response =
+                        executor.submit(() -> dispatch(ECHO, "blocked")).get(10, TimeUnit.SECONDS);
+                assertTrue(entered.await(10, TimeUnit.SECONDS));
+                assertEquals(
+                        String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
+                        trailersAfterWriting(response));
+            }
             assertEquals(
-                    String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
-                    trailersAfterWriting(response));
-            assertTrue(
-                    org.restlet.data.Status.SUCCESS_OK.equals(
-                            dispatch(ECHO, "admitted").getStatus()));
+                    org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
+                    dispatch(ECHO, "bounded").getStatus());
+            release.countDown();
+            long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+            Response admitted = dispatch(ECHO, "admitted");
+            while (org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE.equals(
+                            admitted.getStatus())
+                    && System.nanoTime() < limit) {
+                Thread.onSpinWait();
+                admitted = dispatch(ECHO, "admitted");
+            }
+            assertEquals("0", trailersAfterWriting(admitted));
         } finally {
             release.countDown();
         }
@@ -584,6 +601,67 @@ class GrpcServerAdapterTestCase {
         } finally {
             release.countDown();
         }
+    }
+
+    @Test
+    void consecutiveCallsAtTheLimitAreAdmittedOnceDelivered() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        start(echo());
+        for (int i = 0; i < 50; i++) {
+            assertEquals("call-" + i, call("call-" + i));
+        }
+    }
+
+    @Test
+    void initialMetadataWithStandardHeaderNamesIsSent() throws Exception {
+        Metadata.Key<String> cacheControl =
+                Metadata.Key.of("cache-control", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<String> etag = Metadata.Key.of("etag", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<String> custom = Metadata.Key.of("x-detail", Metadata.ASCII_STRING_MARSHALLER);
+        adapter.getInterceptors()
+                .add(
+                        new io.grpc.ServerInterceptor() {
+                            @Override
+                            public <Q, S> io.grpc.ServerCall.Listener<Q> interceptCall(
+                                    io.grpc.ServerCall<Q, S> call,
+                                    Metadata headers,
+                                    io.grpc.ServerCallHandler<Q, S> next) {
+                                return next.startCall(
+                                        new io.grpc.ForwardingServerCall
+                                                .SimpleForwardingServerCall<>(call) {
+                                            @Override
+                                            public void sendHeaders(Metadata metadata) {
+                                                metadata.put(cacheControl, "no-cache");
+                                                metadata.put(cacheControl, "no-store");
+                                                metadata.put(etag, "\"v1\"");
+                                                metadata.put(custom, "kept");
+                                                super.sendHeaders(metadata);
+                                            }
+                                        },
+                                        headers);
+                            }
+                        });
+        start(echo());
+        AtomicReference<Metadata> received = new AtomicReference<>();
+        AtomicReference<Metadata> trailers = new AtomicReference<>();
+        var intercepted =
+                io.grpc.ClientInterceptors.intercept(
+                        channel,
+                        io.grpc.stub.MetadataUtils.newCaptureMetadataInterceptor(
+                                received, trailers));
+        assertEquals(
+                "meta",
+                ClientCalls.blockingUnaryCall(
+                                intercepted,
+                                ECHO,
+                                CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.SECONDS),
+                                StringValue.of("meta"))
+                        .getValue());
+        String directives = String.join(",", received.get().getAll(cacheControl));
+        assertTrue(directives.contains("no-cache"), directives);
+        assertTrue(directives.contains("no-store"), directives);
+        assertEquals("\"v1\"", received.get().get(etag));
+        assertEquals("kept", received.get().get(custom));
     }
 
     @Test
@@ -775,11 +853,11 @@ class GrpcServerAdapterTestCase {
             assertEquals(
                     org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
                     dispatch(ECHO, "busy").getStatus());
-            first.getOnSent().handle(first.getRequest(), first);
-            first.getOnSent().handle(first.getRequest(), first);
+            first.notifyDelivered(null);
+            first.notifyDelivered(null);
             Response next = dispatch(ECHO, "next");
             next.getEntity().write(OutputStream.nullOutputStream());
-            next.getOnSent().handle(next.getRequest(), next);
+            next.notifyDelivered(null);
             adapter.stop();
             adapter.stop();
             assertFalse(executor.isShutdown());
@@ -888,7 +966,7 @@ class GrpcServerAdapterTestCase {
         }
         assertEquals(-1, input.read());
         assertEquals("0", response.getTrailers().getFirstValue("grpc-status"));
-        response.getOnSent().handle(response.getRequest(), response);
+        response.notifyDelivered(null);
     }
 
     @Test
@@ -1126,7 +1204,7 @@ class GrpcServerAdapterTestCase {
                         executor.submit(
                                 () -> {
                                     response.getEntity().write(OutputStream.nullOutputStream());
-                                    response.getOnSent().handle(response.getRequest(), response);
+                                    response.notifyDelivered(null);
                                     return null;
                                 });
                 var disconnect =

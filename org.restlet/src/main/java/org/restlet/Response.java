@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import org.restlet.data.AuthenticationInfo;
@@ -36,6 +38,9 @@ import org.restlet.util.Series;
  */
 public class Response extends Message {
     private static final ThreadLocal<Response> CURRENT = new ThreadLocal<>();
+
+    /** Completes once the server connector has finished writing this response. */
+    private final CompletableFuture<Throwable> deliverySignal = new CompletableFuture<>();
 
     /**
      * Returns the response associated with the current thread.
@@ -154,6 +159,29 @@ public class Response extends Message {
      *
      * @param request The request associated with this response.
      */
+    /**
+     * Returns a read-only completion stage for the delivery of this response by the server
+     * connector. It completes once, when the terminal write is done: with null if it succeeded, or
+     * with the failure. Dependent actions may run on a connector I/O thread, so they must be short
+     * and must not block; the "onSent" callback is the place for other work. Not all connectors
+     * support this signal.
+     *
+     * @return The delivery signal.
+     */
+    public CompletionStage<Throwable> getDeliverySignal() {
+        return deliverySignal.minimalCompletionStage();
+    }
+
+    /**
+     * Reports the end of the delivery of this response; called by server connectors. The first
+     * report wins.
+     *
+     * @param failure The failure of the terminal write, or null if the response was delivered.
+     */
+    public void notifyDelivered(Throwable failure) {
+        deliverySignal.complete(failure);
+    }
+
     public Response(Request request) {
         this.age = 0;
         this.accessControlAllowCredentials = null;

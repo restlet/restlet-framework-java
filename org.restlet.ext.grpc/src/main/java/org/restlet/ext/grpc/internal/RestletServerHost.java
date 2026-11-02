@@ -11,12 +11,16 @@ package org.restlet.ext.grpc.internal;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.Attributes;
+import io.grpc.ForwardingServerCallListener;
 import io.grpc.InternalChannelz;
 import io.grpc.InternalInstrumented;
 import io.grpc.InternalLogId;
 import io.grpc.InternalMetadata;
 import io.grpc.InternalStatus;
 import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
 import io.grpc.ServerStreamTracer;
 import io.grpc.Status;
 import io.grpc.internal.AbstractServerStream;
@@ -49,6 +53,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -56,6 +61,7 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.util.Series;
 
@@ -65,10 +71,29 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
     /** How long a cancelled call may stay blocked in one network read or write before a reset. */
     private static final Duration STUCK_IO = Duration.ofMillis(200);
 
+    /** The logical call of an SDK stream, among its attributes. */
+    private static final Attributes.Key<Call> CALL = Attributes.Key.create("restlet-grpc-call");
+
+    /** Metadata that would break the gRPC framing if mapped onto the HTTP response. */
+    private static final Set<String> FRAMING_HEADERS =
+            Set.of(
+                    "content-type",
+                    "content-length",
+                    "content-encoding",
+                    "transfer-encoding",
+                    "connection");
+
     private final int maxBytes;
     private final int queueBytes;
     private final Duration duration;
     private final Semaphore admission;
+
+    /**
+     * Calls whose callbacks may still run. Cancelled or completed calls leave admission at once but
+     * keep one of these until their callbacks exit, up to as many again as admitted calls.
+     */
+    private final Semaphore callbacks;
+
     private final Set<Call> calls = ConcurrentHashMap.newKeySet();
     private final ScheduledThreadPoolExecutor timer =
             new ScheduledThreadPoolExecutor(
@@ -82,6 +107,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         this.queueBytes = queueBytes;
         this.duration = duration;
         admission = new Semaphore(maxCalls);
+        callbacks = new Semaphore(maxCalls > Integer.MAX_VALUE / 2 ? maxCalls : maxCalls * 2);
         // Each completed call cancels its deadline, which must not stay queued until it expires.
         timer.setRemoveOnCancelPolicy(true);
     }
@@ -165,6 +191,11 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                 response.setStatus(org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
                 return;
             }
+            if (!callbacks.tryAcquire()) {
+                admission.release();
+                response.setStatus(org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+                return;
+            }
             call = new Call(request, response, method);
             calls.add(call);
             call.transportListener = listener.transportCreated(call);
@@ -178,6 +209,50 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             Thread.currentThread().interrupt();
             call.cancel(Status.CANCELLED.withCause(e));
         }
+    }
+
+    /**
+     * Returns the interceptor holding a call's callback slot until the SDK reports its end to the
+     * application, after its earlier callbacks exited. It must be the outermost interceptor.
+     */
+    public ServerInterceptor callbackBudget() {
+        return new ServerInterceptor() {
+            @Override
+            public <Q, S> ServerCall.Listener<Q> interceptCall(
+                    ServerCall<Q, S> call, Metadata headers, ServerCallHandler<Q, S> next) {
+                Call owner = call.getAttributes().get(CALL);
+                if (owner == null || !owner.callbacksStarted()) {
+                    return next.startCall(call, headers);
+                }
+                ServerCall.Listener<Q> listener;
+                try {
+                    listener = next.startCall(call, headers);
+                } catch (RuntimeException | Error e) {
+                    owner.callbacksEnded();
+                    throw e;
+                }
+                return new ForwardingServerCallListener.SimpleForwardingServerCallListener<>(
+                        listener) {
+                    @Override
+                    public void onComplete() {
+                        try {
+                            super.onComplete();
+                        } finally {
+                            owner.callbacksEnded();
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        try {
+                            super.onCancel();
+                        } finally {
+                            owner.callbacksEnded();
+                        }
+                    }
+                };
+            }
+        };
     }
 
     /** Accepts application/grpc and application/grpc+*, whatever their parameters. */
@@ -232,6 +307,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         private final AtomicBoolean finished = new AtomicBoolean();
         private final AtomicLong operations = new AtomicLong();
 
+        /** 0 before the application callbacks, 1 while they may run, 2 once released. */
+        private final AtomicInteger callbackState = new AtomicInteger();
+
         /** The network read or write in progress, 0 if none. */
         private final AtomicLong blocked = new AtomicLong();
 
@@ -259,18 +337,20 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             // Installed first, so that a call failing below still sends its grpc-status.
             response.setEntity(responseEntity());
             Metadata headers = fromHttp(request.getHeaders());
-            response.setOnSent(
-                    (sentRequest, sentResponse) -> {
-                        // An undelivered response leaves the client without the call's status.
-                        if (sentResponse.getStatus().isConnectorError()) {
-                            cancel(
-                                    Status.CANCELLED
-                                            .withDescription("gRPC response not delivered")
-                                            .withCause(sentResponse.getStatus().getThrowable()));
-                        } else if (claim()) {
-                            serial.execute(() -> finish(null));
-                        }
-                    });
+            // Runs on the connector's I/O thread as soon as the terminal write is done.
+            response.getDeliverySignal()
+                    .thenAccept(
+                            failure -> {
+                                // An undelivered response leaves the client without the status.
+                                if (failure != null) {
+                                    cancel(
+                                            Status.CANCELLED
+                                                    .withDescription("gRPC response not delivered")
+                                                    .withCause(failure));
+                                } else if (claim()) {
+                                    serial.execute(() -> finish(null));
+                                }
+                            });
             // Bounded before the SDK sees the stream, which may run application code.
             synchronized (RestletServerHost.this) {
                 if (!closed) {
@@ -282,6 +362,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                                                             "Call duration exceeded")),
                                     duration.toNanos(),
                                     TimeUnit.NANOSECONDS);
+                    if (finished.get()) {
+                        deadline.cancel(false);
+                    }
                 }
             }
             request.getDisconnectSignal()
@@ -291,7 +374,10 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                         if (reported) {
                             return;
                         }
-                        Attributes attributes = transportListener.transportReady(Attributes.EMPTY);
+                        Attributes attributes =
+                                transportListener.transportReady(Attributes.EMPTY).toBuilder()
+                                        .set(CALL, this)
+                                        .build();
                         stream =
                                 new SdkStream(
                                         this,
@@ -450,12 +536,32 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             }
             calls.remove(this);
             admission.release();
+            ScheduledFuture<?> timeout = deadline;
+            if (timeout != null) {
+                timeout.cancel(false);
+            }
             return true;
+        }
+
+        /** Marks the start of the application callbacks; false if the call already ended. */
+        private boolean callbacksStarted() {
+            return callbackState.compareAndSet(0, 1);
+        }
+
+        /** Releases the callback slot once, after the application callbacks exited. */
+        private void callbacksEnded() {
+            if (callbackState.getAndSet(2) != 2) {
+                callbacks.release();
+            }
         }
 
         /** Reports the end of a claimed call to the SDK, in {@link #serial}. */
         private void finish(Status failure) {
             reported = true;
+            // A call ended before the SDK started its application callbacks holds no callback.
+            if (callbackState.compareAndSet(0, 2)) {
+                callbacks.release();
+            }
             if (deadline != null) {
                 deadline.cancel(false);
             }
@@ -540,7 +646,7 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                 public void writeHeaders(Metadata headers, boolean flush) {
                     synchronized (call.queue) {
                         if (!call.terminal) {
-                            toHttp(headers, call.response.getHeaders());
+                            toResponse(headers, call.response);
                             call.head.countDown();
                         }
                     }
@@ -657,6 +763,27 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         }
         return InternalMetadata.newMetadata(
                 TransportFrameUtil.toRawSerializedHeaders(values.toArray(byte[][]::new)));
+    }
+
+    /**
+     * Maps initial metadata onto the response: standard HTTP names through the Restlet properties
+     * that the connector writes back, other names as extension headers.
+     */
+    private static void toResponse(Metadata metadata, Response response) {
+        var extension = new Series<Header>(Header.class);
+        var standard = new Series<Header>(Header.class);
+        toHttp(metadata, extension);
+        for (Header header : List.copyOf(extension)) {
+            if (FRAMING_HEADERS.contains(header.getName())) {
+                extension.remove(header);
+            } else if (HeaderUtils.isStandardHeader(header.getName())) {
+                extension.remove(header);
+                standard.add(header);
+            }
+        }
+        response.getHeaders().addAll(extension);
+        HeaderUtils.copyResponseTransportHeaders(standard, response);
+        HeaderUtils.extractEntityHeaders(standard, response.getEntity());
     }
 
     private static void toHttp(Metadata metadata, Series<Header> headers) {
