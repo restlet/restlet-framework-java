@@ -201,8 +201,8 @@ public class MultiPartRepresentation extends InputRepresentation {
     }
 
     /**
-     * Sets a boundary to an existing media type. If the original media-type already has a
-     * "boundary" parameter, it will be erased. *
+     * Sets a boundary to an existing media type. If the original media type already has a
+     * "boundary" parameter, its value is replaced. The other parameters are kept.
      *
      * @param mediaType The media type to update.
      * @param boundary The boundary to add as a parameter.
@@ -212,13 +212,57 @@ public class MultiPartRepresentation extends InputRepresentation {
         MediaType result = null;
 
         if (mediaType != null) {
-            if (mediaType.getParameters().getFirst(PARAMETER_BOUNDARY) != null) {
-                result = new MediaType(mediaType.getParent(), PARAMETER_BOUNDARY, boundary);
-            } else {
-                result = new MediaType(mediaType, PARAMETER_BOUNDARY, boundary);
-            }
+            result =
+                    new MediaType(
+                            new MediaType(
+                                    withoutBoundary(mediaType.getName()),
+                                    mediaType.getDescription()),
+                            PARAMETER_BOUNDARY,
+                            boundary);
         }
 
+        return result;
+    }
+
+    /**
+     * Removes the boundary parameters from a media type name, which holds all the parameters,
+     * keeping the others as written. A null name, accepted by {@link MediaType}, is returned as is.
+     */
+    private static String withoutBoundary(String name) {
+        int index = (name == null) ? -1 : name.indexOf(';');
+        if (index < 0) {
+            return name;
+        }
+
+        StringBuilder result = new StringBuilder(name.substring(0, index));
+        for (String parameter : splitParameters(name.substring(index + 1))) {
+            String trimmed = parameter.trim();
+            int equals = trimmed.indexOf('=');
+            String parameterName = (equals < 0) ? trimmed : trimmed.substring(0, equals).trim();
+            if (!trimmed.isEmpty() && !PARAMETER_BOUNDARY.equalsIgnoreCase(parameterName)) {
+                result.append("; ").append(trimmed);
+            }
+        }
+        return result.toString();
+    }
+
+    /** Splits parameters on ';', except inside quoted strings. */
+    private static List<String> splitParameters(String parameters) {
+        List<String> result = new ArrayList<>();
+        boolean quoted = false;
+        int start = 0;
+        for (int i = 0; i < parameters.length(); i++) {
+            char c = parameters.charAt(i);
+            if (quoted && c == '\\') {
+                i++;
+            } else if (c == '"') {
+                quoted = !quoted;
+            } else if (c == ';' && !quoted) {
+                result.add(parameters.substring(start, i));
+                start = i + 1;
+            }
+        }
+        result.add(parameters.substring(start));
         return result;
     }
 

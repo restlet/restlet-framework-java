@@ -226,6 +226,8 @@ Changes log
           entity stream only, and is ignored after the head of a response announcing an empty
           body. The failures caused by stopping the client report "Client stopped". Issue #1601.
         - The `Max-Age` and `Path` attributes of a cookie setting are no longer quoted. Issue #1334.
+        - `MultiPartRepresentation.setBoundary` kept only the boundary parameter when replacing an
+          existing boundary, dropping the media type's other parameters. Issue #1600.
         - `Restlet.handle()` no longer fails with a `NullPointerException` when the Restlet has no context and cannot be started.
         - `CookieAuthenticator` no longer lets the next restlet overwrite the redirection sent after
           a login. Issue #554.
