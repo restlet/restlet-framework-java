@@ -48,6 +48,7 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -113,6 +114,23 @@ class NettyServerCall {
 
     /** The response headers. */
     private final Series<Header> responseHeaders = new Series<>(Header.class);
+
+    /** Raw response headers that would break the message framing. */
+    private static final Set<String> FRAMING_HEADERS =
+            Set.of(
+                    "content-type",
+                    "content-length",
+                    "content-encoding",
+                    "transfer-encoding",
+                    "connection",
+                    "keep-alive",
+                    "proxy-connection",
+                    "upgrade",
+                    "te",
+                    "trailer");
+
+    /** A failure writing the response body that left the connection open, if any. */
+    private volatile Throwable bodyFailure;
 
     /** The trailing headers received with the request entity. */
     private final Series<Header> requestTrailers = new Series<>(Header.class);
@@ -458,28 +476,62 @@ class NettyServerCall {
      * @param delivery The terminal write.
      */
     private void notifySent(Response response, ChannelFuture delivery) {
-        delivery.addListener(f -> response.notifyDelivered(f.isSuccess() ? null : f.cause()));
+        delivery.addListener(f -> response.notifyDelivered(deliveryFailure(f)));
         Uniform onSent = response.getOnSent();
         if (onSent == null) {
             return;
         }
         if (delivery.isDone() && !channel.eventLoop().inEventLoop()) {
-            sent(onSent, response, delivery);
+            sent(onSent, response, deliveryFailure(delivery));
         } else {
+            // The thread local variables of the call are captured here, on its worker.
+            var failure = new java.util.concurrent.atomic.AtomicReference<Throwable>();
+            Runnable task = Engine.withLocalVariables(() -> sent(onSent, response, failure.get()));
             delivery.addListener(
-                    f ->
-                            Thread.ofVirtual()
-                                    .name("restlet-response-sent")
-                                    .start(() -> sent(onSent, response, f)));
+                    f -> {
+                        failure.set(deliveryFailure(f));
+                        Thread.ofVirtual().name("restlet-response-sent").start(task);
+                    });
         }
     }
 
-    private static void sent(
-            Uniform onSent, Response response, io.netty.util.concurrent.Future<?> delivery) {
-        if (!delivery.isSuccess()) {
-            response.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION, delivery.cause()));
+    /** Returns the failure of the body or terminal write, or null if the response was sent. */
+    private Throwable deliveryFailure(io.netty.util.concurrent.Future<?> delivery) {
+        Throwable failure = bodyFailure;
+        if (failure == null && !delivery.isSuccess()) {
+            failure = delivery.cause();
+        }
+        return failure;
+    }
+
+    private static void sent(Uniform onSent, Response response, Throwable failure) {
+        if (failure != null) {
+            response.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION, failure));
         }
         onSent.handle(response.getRequest(), response);
+    }
+
+    /**
+     * Writes the headers of the {@link HeaderConstants#ATTRIBUTE_RAW_RESPONSE_HEADERS} attribute,
+     * each name replacing the values produced from the Restlet API.
+     */
+    private void addRawHeaders(Response response) {
+        if (!(response.getAttributes().get(HeaderConstants.ATTRIBUTE_RAW_RESPONSE_HEADERS)
+                instanceof Series<?> raw)) {
+            return;
+        }
+        Set<String> replaced = new java.util.HashSet<>();
+        for (Object item : raw) {
+            if (item instanceof Header header) {
+                String name = header.getName().toLowerCase(Locale.ROOT);
+                if (!FRAMING_HEADERS.contains(name)) {
+                    if (replaced.add(name)) {
+                        responseHeaders.removeAll(header.getName(), true);
+                    }
+                    responseHeaders.add(header.getName(), header.getValue());
+                }
+            }
+        }
     }
 
     /**
@@ -585,6 +637,7 @@ class NettyServerCall {
         try {
             HeaderUtils.addGeneralHeaders(response, responseHeaders);
             HeaderUtils.addResponseHeaders(response, responseHeaders);
+            addRawHeaders(response);
             if (response.getStatus() != null) {
                 setStatus(response.getStatus().getCode(), response.getStatus().getReasonPhrase());
             }
@@ -603,6 +656,7 @@ class NettyServerCall {
 
     private void handleException(Response response, Exception exception) {
         if (isConnectionBroken(exception)) {
+            bodyFailure = exception;
             getLogger()
                     .log(
                             Level.INFO,

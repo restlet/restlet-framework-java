@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -618,6 +619,9 @@ class GrpcServerAdapterTestCase {
                 Metadata.Key.of("cache-control", Metadata.ASCII_STRING_MARSHALLER);
         Metadata.Key<String> etag = Metadata.Key.of("etag", Metadata.ASCII_STRING_MARSHALLER);
         Metadata.Key<String> custom = Metadata.Key.of("x-detail", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<String> allow = Metadata.Key.of("allow", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<String> expose =
+                Metadata.Key.of("access-control-expose-headers", Metadata.ASCII_STRING_MARSHALLER);
         adapter.getInterceptors()
                 .add(
                         new io.grpc.ServerInterceptor() {
@@ -635,6 +639,8 @@ class GrpcServerAdapterTestCase {
                                                 metadata.put(cacheControl, "no-store");
                                                 metadata.put(etag, "\"v1\"");
                                                 metadata.put(custom, "kept");
+                                                metadata.put(allow, "POST");
+                                                metadata.put(expose, "x-detail");
                                                 super.sendHeaders(metadata);
                                             }
                                         },
@@ -662,6 +668,11 @@ class GrpcServerAdapterTestCase {
         assertTrue(directives.contains("no-store"), directives);
         assertEquals("\"v1\"", received.get().get(etag));
         assertEquals("kept", received.get().get(custom));
+        assertEquals("POST", received.get().get(allow));
+        assertEquals("x-detail", received.get().get(expose));
+        var values = new ArrayList<String>();
+        received.get().getAll(cacheControl).forEach(values::add);
+        assertEquals(List.of("no-cache", "no-store"), values);
     }
 
     @Test
