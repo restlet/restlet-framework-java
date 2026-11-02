@@ -19,6 +19,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpResponse;
@@ -461,7 +462,8 @@ class NettyServerCall {
         } catch (IOException | RuntimeException e) {
             handleException(response, e);
         } finally {
-            notifySent(response, complete());
+            // Delivery is reported by the terminal write itself, before the peer can see it.
+            notifySent(response, complete(f -> response.notifyDelivered(deliveryFailure(f))));
         }
     }
 
@@ -476,13 +478,15 @@ class NettyServerCall {
      * @param delivery The terminal write.
      */
     private void notifySent(Response response, ChannelFuture delivery) {
-        delivery.addListener(f -> response.notifyDelivered(deliveryFailure(f)));
         Uniform onSent = response.getOnSent();
         if (onSent == null) {
             return;
         }
         if (delivery.isDone() && !channel.eventLoop().inEventLoop()) {
-            sent(onSent, response, deliveryFailure(delivery));
+            // Done doesn't mean its listeners ran: the delivery is reported first, once.
+            Throwable failure = deliveryFailure(delivery);
+            response.notifyDelivered(failure);
+            sent(onSent, response, failure);
         } else {
             // The thread local variables of the call are captured here, on its worker.
             var failure = new java.util.concurrent.atomic.AtomicReference<Throwable>();
@@ -846,8 +850,18 @@ class NettyServerCall {
      * @return The terminal write of the response, failed if the connection is closed.
      */
     ChannelFuture complete() {
+        return complete(null);
+    }
+
+    /**
+     * Completes the exchange: ends the response and frees the connection for the next request.
+     *
+     * @param delivery A listener of the terminal write, added before it is submitted, or null.
+     * @return The terminal write of the response, failed if the connection is closed.
+     */
+    ChannelFuture complete(ChannelFutureListener delivery) {
         if (completed) {
-            return channel.newSucceededFuture();
+            return listen(channel.newSucceededFuture(), delivery);
         }
         completed = true;
 
@@ -865,10 +879,10 @@ class NettyServerCall {
 
             if (!channel.isActive()) {
                 requestBody.close();
-                return channel.newFailedFuture(new ClosedChannelException());
+                return listen(channel.newFailedFuture(new ClosedChannelException()), delivery);
             }
             if (responseEndedWithHead) {
-                trackDelivery(responseEndFuture);
+                listen(trackDelivery(responseEndFuture), delivery);
                 channel.flush();
                 requestBody.close();
                 return responseEndFuture;
@@ -884,7 +898,9 @@ class NettyServerCall {
                 copyHeaders(responseTrailers, withTrailers.trailingHeaders(), kind.isStream());
                 lastContent = withTrailers;
             }
-            ChannelFuture future = trackDelivery(channel.writeAndFlush(lastContent));
+            ChannelPromise future = channel.newPromise();
+            listen(trackDelivery(future), delivery);
+            channel.writeAndFlush(lastContent, future);
             if (keepAlive) {
                 requestBody.discard();
             } else {
@@ -921,6 +937,10 @@ class NettyServerCall {
                     }
                 });
         return future;
+    }
+
+    private static ChannelFuture listen(ChannelFuture future, ChannelFutureListener listener) {
+        return listener == null ? future : future.addListener(listener);
     }
 
     private synchronized void markResponseDelivered() {
