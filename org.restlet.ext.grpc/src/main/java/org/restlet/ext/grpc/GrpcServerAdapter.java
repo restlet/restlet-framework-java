@@ -273,13 +273,23 @@ public final class GrpcServerAdapter extends Restlet {
             timeout = shutdownTimeout;
             sdk = null;
         }
-        server.shutdownNow();
-        if (stopping != null) {
-            stopping.close();
-        }
         long started = System.nanoTime();
+        // Cancelling calls may run listeners, so the timeout bounds it like the waits after it.
+        Thread cancelling =
+                Thread.ofVirtual()
+                        .name("restlet-grpc-server-stop")
+                        .start(
+                                () -> {
+                                    server.shutdownNow();
+                                    if (stopping != null) {
+                                        stopping.close();
+                                    }
+                                });
         try {
-            if (!server.awaitTermination(timeout.toNanos(), TimeUnit.NANOSECONDS)) {
+            if (!cancelling.join(timeout)
+                    || !server.awaitTermination(
+                            Math.max(0, timeout.toNanos() - (System.nanoTime() - started)),
+                            TimeUnit.NANOSECONDS)) {
                 throw new IllegalStateException("gRPC server shutdown timed out");
             }
             if (owned != null) {

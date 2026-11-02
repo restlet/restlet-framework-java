@@ -448,25 +448,36 @@ class NettyServerCall {
     }
 
     /**
-     * Invokes the "onSent" callback of the response once its terminal write is done, possibly on
-     * the event loop. If the write failed, the response status is first set to {@link
+     * Invokes the "onSent" callback of the response once its terminal write is done, never on the
+     * event loop: in the calling thread if the write is already done, else in a virtual thread. If
+     * the write failed, the response status is first set to {@link
      * Status#CONNECTOR_ERROR_COMMUNICATION} with the cause, since the response wasn't delivered.
      *
      * @param response The response.
      * @param delivery The terminal write.
      */
-    private static void notifySent(Response response, ChannelFuture delivery) {
+    private void notifySent(Response response, ChannelFuture delivery) {
         Uniform onSent = response.getOnSent();
-        if (onSent != null) {
-            delivery.addListener(
-                    f -> {
-                        if (!f.isSuccess()) {
-                            response.setStatus(
-                                    new Status(Status.CONNECTOR_ERROR_COMMUNICATION, f.cause()));
-                        }
-                        onSent.handle(response.getRequest(), response);
-                    });
+        if (onSent == null) {
+            return;
         }
+        if (delivery.isDone() && !channel.eventLoop().inEventLoop()) {
+            sent(onSent, response, delivery);
+        } else {
+            delivery.addListener(
+                    f ->
+                            Thread.ofVirtual()
+                                    .name("restlet-response-sent")
+                                    .start(() -> sent(onSent, response, f)));
+        }
+    }
+
+    private static void sent(
+            Uniform onSent, Response response, io.netty.util.concurrent.Future<?> delivery) {
+        if (!delivery.isSuccess()) {
+            response.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION, delivery.cause()));
+        }
+        onSent.handle(response.getRequest(), response);
     }
 
     /**

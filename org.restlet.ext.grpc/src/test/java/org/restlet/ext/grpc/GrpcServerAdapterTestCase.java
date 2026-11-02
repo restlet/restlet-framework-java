@@ -436,6 +436,156 @@ class GrpcServerAdapterTestCase {
         return response.getTrailers().getFirstValue("grpc-status");
     }
 
+    private static ServerServiceDefinition counting(AtomicInteger calls) {
+        return ServerServiceDefinition.builder("review.Server")
+                .addMethod(
+                        ECHO,
+                        ServerCalls.asyncUnaryCall(
+                                (StringValue request,
+                                        io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                    calls.incrementAndGet();
+                                    out.onNext(request);
+                                    out.onCompleted();
+                                }))
+                .build();
+    }
+
+    @Test
+    void dotSegmentsCannotReachAMethodOutsideTheirRoute() throws Exception {
+        AtomicInteger calls = new AtomicInteger();
+        adapter.getServices().add(counting(calls));
+        adapter.start();
+        Request request = grpcRequest(ECHO, new ByteArrayInputStream(frame("x")), () -> {});
+        request.setResourceRef("http://localhost/public.Service/../review.Server/Echo");
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        assertEquals(org.restlet.data.Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        assertEquals(0, calls.get());
+    }
+
+    @Test
+    void grpcMediaTypeParametersAreAccepted() throws Exception {
+        AtomicInteger calls = new AtomicInteger();
+        adapter.getServices().add(counting(calls));
+        adapter.start();
+        Request request = grpcRequest(ECHO, new ByteArrayInputStream(frame("x")), () -> {});
+        request.getEntity().setMediaType(MediaType.valueOf("application/grpc; version=1"));
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        assertEquals("0", trailersAfterWriting(response));
+        assertEquals(1, calls.get());
+    }
+
+    private void assertBlockedDirectCallbackEndsAtTheDeadline(boolean inInterceptor)
+            throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        CountDownLatch entered = new CountDownLatch(1);
+        Runnable block =
+                () -> {
+                    entered.countDown();
+                    try {
+                        release.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                };
+        adapter.setExecutor(Runnable::run);
+        adapter.setMaxCallDuration(Duration.ofMillis(300));
+        adapter.setMaxConcurrentCalls(1);
+        if (inInterceptor) {
+            adapter.getServices().add(echo());
+            adapter.getInterceptors()
+                    .add(
+                            new io.grpc.ServerInterceptor() {
+                                @Override
+                                public <Q, S> io.grpc.ServerCall.Listener<Q> interceptCall(
+                                        io.grpc.ServerCall<Q, S> call,
+                                        Metadata headers,
+                                        io.grpc.ServerCallHandler<Q, S> next) {
+                                    block.run();
+                                    return next.startCall(call, headers);
+                                }
+                            });
+        } else {
+            adapter.getServices()
+                    .add(
+                            ServerServiceDefinition.builder("review.Server")
+                                    .addMethod(
+                                            ECHO,
+                                            ServerCalls.asyncUnaryCall(
+                                                    (StringValue request,
+                                                            io.grpc.stub.StreamObserver<StringValue>
+                                                                    out) -> block.run()))
+                                    .build());
+        }
+        adapter.start();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Response response =
+                    executor.submit(() -> dispatch(ECHO, "blocked")).get(10, TimeUnit.SECONDS);
+            assertTrue(entered.await(10, TimeUnit.SECONDS));
+            assertEquals(
+                    String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
+                    trailersAfterWriting(response));
+            assertTrue(
+                    org.restlet.data.Status.SUCCESS_OK.equals(
+                            dispatch(ECHO, "admitted").getStatus()));
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    void blockingInterceptorWithADirectExecutorEndsAtTheDeadline() throws Exception {
+        assertBlockedDirectCallbackEndsAtTheDeadline(true);
+    }
+
+    @Test
+    void blockingHandlerWithADirectExecutorEndsAtTheDeadline() throws Exception {
+        assertBlockedDirectCallbackEndsAtTheDeadline(false);
+    }
+
+    @Test
+    void stopReportsTheTimeoutWhenACancellationListenerBlocks() throws Exception {
+        adapter.setShutdownTimeout(Duration.ofMillis(300));
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            io.grpc.Context.current()
+                                                    .addListener(
+                                                            context -> {
+                                                                try {
+                                                                    release.await();
+                                                                } catch (InterruptedException e) {
+                                                                    Thread.currentThread()
+                                                                            .interrupt();
+                                                                }
+                                                            },
+                                                            Runnable::run);
+                                            entered.countDown();
+                                        }))
+                        .build());
+        ClientCalls.futureUnaryCall(
+                channel.newCall(ECHO, CallOptions.DEFAULT), StringValue.of("block"));
+        assertTrue(entered.await(10, TimeUnit.SECONDS));
+        try {
+            long started = System.nanoTime();
+            assertTrue(
+                    assertThrows(IllegalStateException.class, adapter::stop)
+                            .getMessage()
+                            .endsWith("shutdown timed out"));
+            assertTrue(System.nanoTime() - started < TimeUnit.SECONDS.toNanos(5));
+            assertFalse(adapter.isStarted());
+        } finally {
+            release.countDown();
+        }
+    }
+
     @Test
     void http1RequestsAreRejectedBeforeDispatch() throws Exception {
         AtomicInteger calls = new AtomicInteger();
