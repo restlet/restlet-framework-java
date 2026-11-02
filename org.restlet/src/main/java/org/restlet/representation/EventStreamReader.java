@@ -203,7 +203,7 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
                 return pending.build();
             }
             size = line.isEmpty() ? 0 : size + line.length();
-            result = processLine(stripBom(line), pending);
+            result = processLine(line, pending);
         }
         return result;
     }
@@ -211,7 +211,8 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
     /**
      * Reads a line ended by CRLF, LF or CR, like {@link BufferedReader#readLine()}, but no longer
      * than the given number of characters. A line feed following a carriage return is skipped on
-     * the next read, so that a CR doesn't block until the next character arrives.
+     * the next read, so that a CR doesn't block until the next character arrives. The optional byte
+     * order mark at the start of the stream is skipped, and not counted in the limit.
      */
     private String readLine(int limit) throws IOException {
         StringBuilder line = new StringBuilder();
@@ -220,6 +221,12 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
             if (skipLineFeed) {
                 skipLineFeed = false;
                 if (c == '\n') {
+                    continue;
+                }
+            }
+            if (beginning) {
+                beginning = false;
+                if (c == '\uFEFF') {
                     continue;
                 }
             }
@@ -234,22 +241,20 @@ public final class EventStreamReader implements Iterator<ServerSentEvent>, AutoC
                 return line.toString();
             }
             if (line.length() >= limit) {
-                close();
-                throw new IOException(
-                        "The event exceeds the maximum size of " + maxEventSize + " characters");
+                IOException failure =
+                        new IOException(
+                                "The event exceeds the maximum size of "
+                                        + maxEventSize
+                                        + " characters");
+                try {
+                    close();
+                } catch (IOException e) {
+                    failure.addSuppressed(e);
+                }
+                throw failure;
             }
             line.append((char) c);
         }
-    }
-
-    private String stripBom(String line) {
-        if (beginning) {
-            beginning = false;
-            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
-                return line.substring(1);
-            }
-        }
-        return line;
     }
 
     private ServerSentEvent processLine(String line, PendingEvent pending) {

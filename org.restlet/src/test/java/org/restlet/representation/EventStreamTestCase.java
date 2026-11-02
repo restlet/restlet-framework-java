@@ -11,11 +11,13 @@ package org.restlet.representation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -201,6 +203,34 @@ class EventStreamTestCase {
         reader.setMaxEventSize(10);
 
         assertThrows(IOException.class, reader::readEvent);
+    }
+
+    @Test
+    void doesNotCountTheByteOrderMarkInTheEventSize() throws IOException {
+        EventStreamReader reader = new EventStreamReader(new StringReader("\uFEFFdata:12345\n\n"));
+        reader.setMaxEventSize(10);
+
+        assertEquals("12345", reader.readEvent().getData());
+        reader.close();
+    }
+
+    @Test
+    void keepsTheSizeFailureWhenClosingFails() {
+        IOException closeFailure = new IOException("Close failed");
+        EventStreamReader reader =
+                new EventStreamReader(
+                        new FilterReader(new StringReader("data:12345678901\n\n")) {
+                            @Override
+                            public void close() throws IOException {
+                                throw closeFailure;
+                            }
+                        });
+        reader.setMaxEventSize(10);
+
+        IOException failure = assertThrows(IOException.class, reader::readEvent);
+
+        assertTrue(failure.getMessage().contains("10 characters"));
+        assertSame(closeFailure, failure.getSuppressed()[0]);
     }
 
     @Test
