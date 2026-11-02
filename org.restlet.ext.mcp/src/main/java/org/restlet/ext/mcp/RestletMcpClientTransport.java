@@ -13,10 +13,10 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -34,6 +34,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
+import org.restlet.data.ServerSentEvent;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
@@ -197,7 +198,7 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         }
         MediaType mediaType = response.getEntity().getMediaType();
         try (InputStream input =
-                new BudgetInputStream(response.getEntity().getStream(), maxMessageBytes)) {
+                Objects.requireNonNull(response.getEntity().getStream(), "response stream")) {
             if (MediaType.APPLICATION_JSON.isCompatible(mediaType)) {
                 if (!deliver(
                         McpSchema.deserializeJsonRpcMessage(
@@ -206,29 +207,32 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                     throw new IOException("MCP JSON response must contain the correlated response");
                 }
             } else if (MediaType.TEXT_EVENT_STREAM.isCompatible(mediaType)) {
-                try (var events =
-                        new EventStreamReader(
-                                new InputStreamReader(
-                                        input,
-                                        StandardCharsets.UTF_8
-                                                .newDecoder()
-                                                .onMalformedInput(CodingErrorAction.REPORT)))) {
-                    org.restlet.data.ServerSentEvent event;
-                    while ((event = events.readEvent()) != null) {
-                        if (event.getData() != null
-                                && !event.getData().isEmpty()
-                                && deliver(
-                                        McpSchema.deserializeJsonRpcMessage(
-                                                mapper, event.getData()),
-                                        id)) {
-                            return;
-                        }
-                    }
-                    throw new IOException("MCP SSE ended before the correlated response");
-                }
+                readEvents(input, id);
             } else {
                 throw new IOException("Unsupported MCP response media type: " + mediaType);
             }
+        }
+    }
+
+    private void readEvents(InputStream input, Object id) throws IOException {
+        Reader decoded =
+                new InputStreamReader(
+                        input,
+                        StandardCharsets.UTF_8
+                                .newDecoder()
+                                .onMalformedInput(CodingErrorAction.REPORT));
+        try (var events = new EventStreamReader(new LineBudgetReader(decoded, maxMessageBytes))) {
+            events.setMaxEventSize(maxMessageBytes);
+            ServerSentEvent event;
+            while ((event = events.readEvent()) != null) {
+                if (event.getData() != null
+                        && !event.getData().isEmpty()
+                        && deliver(
+                                McpSchema.deserializeJsonRpcMessage(mapper, event.getData()), id)) {
+                    return;
+                }
+            }
+            throw new IOException("MCP SSE ended before the correlated response");
         }
     }
 
@@ -260,33 +264,59 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                 .then();
     }
 
-    private static final class BudgetInputStream extends FilterInputStream {
+    /**
+     * Hands the event parser at most one line per read and charges the UTF-8 bytes of each line it
+     * takes. The parser only asks for a line until the correlated response is complete, so earlier
+     * comments count against the budget, while bytes decoded ahead of a complete response don't.
+     */
+    private static final class LineBudgetReader extends Reader {
+        private final Reader input;
+        private final char[] buffer = new char[8192];
+        private int position;
+        private int limit;
         private long remaining;
 
-        private BudgetInputStream(InputStream input, int bytes) {
-            super(Objects.requireNonNull(input, "response stream"));
+        private LineBudgetReader(Reader input, int bytes) {
+            this.input = input;
             remaining = bytes;
         }
 
         @Override
-        public int read() throws IOException {
-            int value = super.read();
-            if (value != -1 && --remaining < 0) {
-                throw new IOException("MCP response byte budget exceeded");
+        public int read(char[] target, int offset, int length) throws IOException {
+            if (length == 0) {
+                return 0;
             }
-            return value;
+            if (position == limit) {
+                position = 0;
+                limit = Math.max(0, input.read(buffer, 0, buffer.length));
+                if (limit == 0) {
+                    return -1;
+                }
+            }
+            int count = 0;
+            char c = 0;
+            while (count < length && position < limit && c != '\n' && c != '\r') {
+                c = buffer[position++];
+                remaining -= utf8Length(c);
+                if (remaining < 0) {
+                    throw new IOException("MCP response byte budget exceeded");
+                }
+                target[offset + count++] = c;
+            }
+            return count;
+        }
+
+        /** Surrogates count 2 bytes each, the 4 bytes of their supplementary character. */
+        private static int utf8Length(char c) {
+            if (c < 0x80) {
+                return 1;
+            }
+            return c < 0x800 || Character.isSurrogate(c) ? 2 : 3;
         }
 
         @Override
-        public int read(byte[] buffer, int offset, int length) throws IOException {
-            int count = super.read(buffer, offset, (int) Math.min(length, remaining + 1));
-            if (count > remaining) {
-                throw new IOException("MCP response byte budget exceeded");
-            }
-            if (count > 0) {
-                remaining -= count;
-            }
-            return count;
+        public void close() throws IOException {
+            input.close();
         }
     }
 }

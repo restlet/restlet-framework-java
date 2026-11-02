@@ -21,13 +21,13 @@ import io.modelcontextprotocol.server.McpStatelessServerHandler;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStatelessServerTransport;
 import java.io.IOException;
-import java.nio.charset.CharacterCodingException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,7 +66,6 @@ public final class McpServerAdapter extends Restlet {
         return mapper;
     }
 
-    private final McpJsonMapper mapper = MAPPER;
     private final List<McpStatelessServerFeatures.AsyncToolSpecification> tools =
             new CopyOnWriteArrayList<>();
     private final List<McpStatelessServerFeatures.AsyncResourceSpecification> resources =
@@ -137,7 +136,7 @@ public final class McpServerAdapter extends Restlet {
         serverInfo = Objects.requireNonNull(value, "serverInfo");
     }
 
-    public McpSchema.Implementation getServerInfo() {
+    public synchronized McpSchema.Implementation getServerInfo() {
         return serverInfo;
     }
 
@@ -146,11 +145,11 @@ public final class McpServerAdapter extends Restlet {
         instructions = value;
     }
 
-    public String getInstructions() {
+    public synchronized String getInstructions() {
         return instructions;
     }
 
-    public int getMaxMessageBytes() {
+    public synchronized int getMaxMessageBytes() {
         return maxMessageBytes;
     }
 
@@ -163,7 +162,7 @@ public final class McpServerAdapter extends Restlet {
         maxMessageBytes = value;
     }
 
-    public int getMaxConcurrentCalls() {
+    public synchronized int getMaxConcurrentCalls() {
         return maxConcurrentCalls;
     }
 
@@ -175,7 +174,7 @@ public final class McpServerAdapter extends Restlet {
         maxConcurrentCalls = value;
     }
 
-    public Duration getRequestTimeout() {
+    public synchronized Duration getRequestTimeout() {
         return requestTimeout;
     }
 
@@ -228,7 +227,7 @@ public final class McpServerAdapter extends Restlet {
                 };
         sdkServer =
                 McpServer.async(transport)
-                        .jsonMapper(mapper)
+                        .jsonMapper(MAPPER)
                         .serverInfo(serverInfo)
                         .instructions(instructions)
                         .capabilities(caps.build())
@@ -277,39 +276,41 @@ public final class McpServerAdapter extends Restlet {
             throw new IllegalStateException("MCP server is not accepting calls");
         }
         validateVersion(message);
-        var result = new AtomicReference<Optional<McpSchema.JSONRPCResponse>>(Optional.empty());
-        Mono<McpSchema.JSONRPCResponse> exchange =
-                workers.submit(
-                                () ->
-                                        result.set(
-                                                invoke(0, message, context)
-                                                        .blockOptional(requestTimeout)),
-                                () -> {})
+        var completed =
+                admit(
+                        context,
+                        () -> invoke(0, message, context).blockOptional(requestTimeout),
+                        () -> {});
+        return message instanceof McpSchema.JSONRPCNotification ? Optional.empty() : completed;
+    }
+
+    /**
+     * Runs work under one call permit and the request deadline, ending it early when the server
+     * stops or the peer disconnects.
+     */
+    private <T> Optional<T> admit(
+            McpRequestContext context, Callable<Optional<T>> work, Runnable cancel) {
+        var result = new AtomicReference<Optional<T>>(Optional.empty());
+        Mono<T> exchange =
+                workers.submit(() -> result.set(work.call()), cancel)
                         .then(Mono.defer(() -> Mono.justOrEmpty(result.get())));
-        Mono<McpSchema.JSONRPCResponse> stopped =
+        Mono<T> stopped =
                 stopping.asMono()
-                        .flatMap(
-                                ignored ->
-                                        Mono.<McpSchema.JSONRPCResponse>error(
-                                                new IOException("MCP server stopped")));
-        Mono<McpSchema.JSONRPCResponse> disconnected =
+                        .flatMap(ignored -> Mono.<T>error(new IOException("MCP server stopped")));
+        Mono<T> disconnected =
                 context.transportRequest()
                         .map(
                                 request ->
                                         Mono.fromCompletionStage(request.getDisconnectSignal())
                                                 .flatMap(
                                                         cause ->
-                                                                Mono
-                                                                        .<McpSchema.JSONRPCResponse>
-                                                                                error(
-                                                                                        new IOException(
-                                                                                                "MCP peer disconnected",
-                                                                                                cause))))
+                                                                Mono.<T>error(
+                                                                        new IOException(
+                                                                                "MCP peer disconnected",
+                                                                                cause))))
                         .orElseGet(Mono::never);
-        var completed =
-                Mono.firstWithSignal(stopped, Mono.firstWithSignal(disconnected, exchange))
-                        .blockOptional(requestTimeout);
-        return message instanceof McpSchema.JSONRPCNotification ? Optional.empty() : completed;
+        return Mono.firstWithSignal(stopped, Mono.firstWithSignal(disconnected, exchange))
+                .blockOptional(requestTimeout);
     }
 
     private Mono<McpSchema.JSONRPCResponse> invoke(
@@ -406,74 +407,95 @@ public final class McpServerAdapter extends Restlet {
             response.setEntity((org.restlet.representation.Representation) null);
             return;
         }
-        McpSchema.JSONRPCMessage message;
-        try (var input = request.getEntity().getStream()) {
-            byte[] bytes = McpMessages.read(input, maxMessageBytes);
-            message = McpMessages.decode(mapper, McpMessages.utf8(bytes));
-        } catch (McpMessages.MessageLimitException e) {
-            getLogger().log(Level.FINE, "Oversized MCP request", e);
-            response.setStatus(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE);
-            return;
-        } catch (McpMessages.InvalidEnvelopeException e) {
-            getLogger().log(Level.FINE, "Invalid MCP envelope", e);
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            write(response, McpMessages.error(null, -32600, "Invalid MCP request envelope"));
-            return;
-        } catch (CharacterCodingException e) {
-            getLogger().log(Level.FINE, "Invalid UTF-8 in MCP request", e);
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            write(response, McpMessages.error(null, -32700, "Invalid MCP JSON request"));
-            return;
-        } catch (IOException | IllegalArgumentException e) {
-            getLogger().log(Level.FINE, "Invalid MCP request", e);
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            write(response, McpMessages.error(null, -32700, "Invalid MCP JSON request"));
-            return;
-        }
-        if (response.getEntity() != null) {
-            return;
-        }
-        if (request.getEntity() != null && request.getEntity().getSize() == 0) {
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            write(response, McpMessages.error(null, -32600, "Empty MCP request body"));
-            return;
-        }
-        if (version == null
-                && !(message instanceof McpSchema.JSONRPCRequest rpc
-                        && "initialize".equals(rpc.method()))) {
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            if (message instanceof McpSchema.JSONRPCRequest rpc) {
-                write(
-                        response,
-                        McpMessages.error(rpc.id(), -32600, "MCP-Protocol-Version is required"));
-            }
-            return;
-        }
+        var context = new McpRequestContext(request);
+        var parsed = new AtomicReference<McpSchema.JSONRPCMessage>();
+        Reply reply;
         try {
-            var result = dispatch(message, new McpRequestContext(request));
-            if (result.isPresent()) {
-                write(response, result.orElseThrow());
-            } else {
-                response.setStatus(Status.SUCCESS_ACCEPTED);
-            }
-        } catch (IllegalArgumentException e) {
-            getLogger().log(Level.FINE, "Unsupported MCP request", e);
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            if (message instanceof McpSchema.JSONRPCRequest rpc) {
-                write(response, McpMessages.error(rpc.id(), -32600, "Unsupported MCP version"));
-            }
+            reply =
+                    admit(
+                                    context,
+                                    () -> Optional.of(exchange(request, version, context, parsed)),
+                                    () -> request.getEntity().release())
+                            .orElseThrow(() -> new IllegalStateException("MCP exchange ended"));
         } catch (RuntimeException e) {
             getLogger().log(Level.WARNING, "MCP exchange failed", e);
-            response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
-            if (message instanceof McpSchema.JSONRPCRequest rpc) {
-                write(response, McpMessages.error(rpc.id(), -32603, "MCP exchange unavailable"));
-            }
+            reply =
+                    new Reply(
+                            Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
+                            error(parsed.get(), -32603, "MCP exchange unavailable"));
+        }
+        response.setStatus(reply.status());
+        if (reply.body() != null) {
+            write(response, reply.body());
         }
     }
 
+    /** Reads, decodes and dispatches one HTTP message in an admitted worker. */
+    private Reply exchange(
+            Request request,
+            String version,
+            McpRequestContext context,
+            AtomicReference<McpSchema.JSONRPCMessage> parsed) {
+        McpSchema.JSONRPCMessage message;
+        try (var input = request.getEntity().getStream()) {
+            byte[] bytes = McpMessages.read(input, maxMessageBytes);
+            message = McpMessages.decode(MAPPER, McpMessages.utf8(bytes));
+        } catch (McpMessages.MessageLimitException e) {
+            getLogger().log(Level.FINE, "Oversized MCP request", e);
+            return new Reply(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE, null);
+        } catch (McpMessages.InvalidEnvelopeException e) {
+            getLogger().log(Level.FINE, "Invalid MCP envelope", e);
+            return new Reply(
+                    Status.CLIENT_ERROR_BAD_REQUEST,
+                    McpMessages.error(null, -32600, "Invalid MCP request envelope"));
+        } catch (IOException | IllegalArgumentException e) {
+            getLogger().log(Level.FINE, "Invalid MCP request", e);
+            return new Reply(
+                    Status.CLIENT_ERROR_BAD_REQUEST,
+                    McpMessages.error(null, -32700, "Invalid MCP JSON request"));
+        }
+        if (request.getEntity().getSize() == 0) {
+            return new Reply(
+                    Status.CLIENT_ERROR_BAD_REQUEST,
+                    McpMessages.error(null, -32600, "Empty MCP request body"));
+        }
+        parsed.set(message);
+        if (version == null
+                && !(message instanceof McpSchema.JSONRPCRequest rpc
+                        && "initialize".equals(rpc.method()))) {
+            return new Reply(
+                    Status.CLIENT_ERROR_BAD_REQUEST,
+                    error(message, -32600, "MCP-Protocol-Version is required"));
+        }
+        try {
+            validateVersion(message);
+        } catch (IllegalArgumentException e) {
+            getLogger().log(Level.FINE, "Unsupported MCP request", e);
+            return new Reply(
+                    Status.CLIENT_ERROR_BAD_REQUEST,
+                    error(message, -32600, "Unsupported MCP version"));
+        }
+        Optional<McpSchema.JSONRPCResponse> result =
+                invoke(0, message, context).blockOptional(requestTimeout);
+        if (message instanceof McpSchema.JSONRPCNotification || result.isEmpty()) {
+            return new Reply(Status.SUCCESS_ACCEPTED, null);
+        }
+        return new Reply(Status.SUCCESS_OK, result.orElseThrow());
+    }
+
+    /** A JSON-RPC error answering a request, or null when the message expects no response. */
+    private static Map<String, Object> error(
+            McpSchema.JSONRPCMessage message, int code, String text) {
+        return message instanceof McpSchema.JSONRPCRequest rpc
+                ? McpMessages.error(rpc.id(), code, text)
+                : null;
+    }
+
+    private record Reply(Status status, Object body) {}
+
     private void write(Response response, Object message) {
         try {
-            byte[] bytes = McpMessages.encode(mapper, message, maxMessageBytes);
+            byte[] bytes = McpMessages.encode(MAPPER, message, maxMessageBytes);
             response.setEntity(new ByteArrayRepresentation(bytes, MediaType.APPLICATION_JSON));
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Unable to encode MCP response", e);

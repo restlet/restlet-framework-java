@@ -20,6 +20,9 @@ import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.McpStatelessServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
@@ -402,6 +405,47 @@ class McpServerAdapterTestCase {
                 first.get(3, TimeUnit.SECONDS).getStatus());
         assertFalse(server.isStarted());
         assertThrows(IllegalStateException.class, server::start);
+    }
+
+    @Test
+    void trickledBodyHoldsACallSlotAndIsCancelledAtTheDeadline() throws Exception {
+        CountDownLatch reading = new CountDownLatch(1);
+        CountDownLatch closed = new CountDownLatch(1);
+        InputStream trickle =
+                new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        reading.countDown();
+                        try {
+                            new CountDownLatch(1).await();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        throw new InterruptedIOException("cancelled");
+                    }
+
+                    @Override
+                    public void close() {
+                        closed.countDown();
+                    }
+                };
+        server.setMaxConcurrentCalls(1);
+        server.setRequestTimeout(Duration.ofMillis(500));
+        server.start();
+        Request slow = request("");
+        slow.setEntity(new InputRepresentation(trickle, MediaType.APPLICATION_JSON));
+        var first = CompletableFuture.supplyAsync(() -> server.handle(slow));
+        assertTrue(reading.await(3, TimeUnit.SECONDS));
+        assertEquals(
+                Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
+                send("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}").getStatus());
+        assertEquals(
+                Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
+                first.get(3, TimeUnit.SECONDS).getStatus());
+        assertTrue(closed.await(3, TimeUnit.SECONDS));
+        assertEquals(
+                Status.SUCCESS_OK,
+                send("{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"ping\"}").getStatus());
     }
 
     @Test

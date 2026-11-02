@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -272,6 +273,56 @@ class McpHttpTestCase {
         } finally {
             transport.closeGracefully().block();
         }
+    }
+
+    private List<McpSchema.JSONRPCMessage> sendOverSse(String body, int maxMessageBytes)
+            throws Exception {
+        String target =
+                start(
+                        "HTTP1_1",
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, org.restlet.Response response) {
+                                response.setEntity(
+                                        new StringRepresentation(
+                                                body, MediaType.TEXT_EVENT_STREAM));
+                            }
+                        });
+        var transport =
+                new RestletMcpClientTransport(
+                        connector,
+                        target,
+                        maxMessageBytes,
+                        1,
+                        Duration.ofSeconds(10),
+                        request -> {});
+        List<McpSchema.JSONRPCMessage> delivered = new CopyOnWriteArrayList<>();
+        try {
+            transport.connect(message -> message.doOnNext(delivered::add)).block();
+            transport
+                    .sendMessage(new McpSchema.JSONRPCRequest("2.0", "ping", 1, Map.of()))
+                    .block(Duration.ofSeconds(15));
+        } finally {
+            transport.closeGracefully().block();
+        }
+        return delivered;
+    }
+
+    @Test
+    void sseEventLimitFollowsTheMessageByteLimit() throws Exception {
+        String json =
+                "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"pad\":\""
+                        + "x".repeat(1536 * 1024)
+                        + "\"}}";
+        var delivered = sendOverSse("data: " + json + "\n\n", 2 * 1024 * 1024);
+        assertEquals(1, delivered.size());
+    }
+
+    @Test
+    void readAheadAfterTheCorrelatedSseResponseDoesNotCountAgainstTheBudget() throws Exception {
+        String event = "data: {\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{}}\n\n";
+        var delivered = sendOverSse(event + ":" + "x".repeat(4096) + "\n\n", 512);
+        assertEquals(1, delivered.size());
     }
 
     @Test

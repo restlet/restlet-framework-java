@@ -65,7 +65,7 @@ public final class McpClientAdapter implements AutoCloseable {
         requestTimeout = Duration.ofNanos(value.toNanos());
     }
 
-    public Duration getRequestTimeout() {
+    public synchronized Duration getRequestTimeout() {
         return requestTimeout;
     }
 
@@ -77,7 +77,7 @@ public final class McpClientAdapter implements AutoCloseable {
         maxMessageBytes = value;
     }
 
-    public int getMaxMessageBytes() {
+    public synchronized int getMaxMessageBytes() {
         return maxMessageBytes;
     }
 
@@ -89,7 +89,7 @@ public final class McpClientAdapter implements AutoCloseable {
         maxConcurrentCalls = value;
     }
 
-    public int getMaxConcurrentCalls() {
+    public synchronized int getMaxConcurrentCalls() {
         return maxConcurrentCalls;
     }
 
@@ -149,7 +149,8 @@ public final class McpClientAdapter implements AutoCloseable {
                 throw new IllegalStateException(
                         "A started explicitly selected MCP STDIO helper is required");
             }
-            return new BorrowedTransport(helper.getTransport());
+            return new BorrowedTransport(
+                    helper.bind(maxMessageBytes, maxConcurrentCalls, requestTimeout));
         }
         return new RestletMcpClientTransport(
                 client,
