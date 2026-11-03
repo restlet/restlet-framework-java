@@ -70,6 +70,13 @@ class RpcSdkBoundaryTestCase {
                                         !path.getFileName()
                                                 .toString()
                                                 .startsWith("grpc-netty-shaded-"))
+                        // Smithy 1.8.0 splits a package across two automatic modules, so it
+                        // can't share a layer; SmithySdkTransportSpikeTestCase covers it.
+                        .filter(
+                                path ->
+                                        !path.toString()
+                                                .replace(File.separatorChar, '/')
+                                                .contains("/software/amazon/smithy/"))
                         .toList();
         var paths = new java.util.ArrayList<>(dependencies);
         paths.add(
