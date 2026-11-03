@@ -30,9 +30,9 @@ Restlet 3.0 lets the same application and the same connectors serve APIs in seve
 | [GraphQL](https://graphql.org/) | `org.restlet.ext.graphql` | Experimental: server and client on graphql-java, with subscriptions over SSE and WebSocket |
 | [gRPC](https://grpc.io/) | `org.restlet.ext.grpc` | Experimental: unary and server-streaming services, and unary client, over HTTP/2 |
 | [MCP](https://modelcontextprotocol.io/) | `org.restlet.ext.mcp` | Experimental: tools, resources and prompts for AI agents on the official MCP Java SDK, over stateless Streamable HTTP and STDIO |
-| [Smithy](https://smithy.io/) | `org.restlet.ext.smithy` | smithy-java clients on Restlet HTTP/1.1 and HTTP/2 connectors, discovered or set explicitly; server planned |
+| [Smithy](https://smithy.io/) | `org.restlet.ext.smithy` | smithy-java clients on Restlet HTTP/1.1 and HTTP/2 connectors, discovered or set explicitly; experimental server hosting in `org.restlet.ext.smithy.server` |
 
-Upcoming enhancements include client and bidirectional streaming for gRPC, MCP sessions and resumable streams, and an experimental Smithy server. Feedback is welcome in [Discussions](https://github.com/restlet/restlet-framework-java/discussions).
+Upcoming enhancements include client and bidirectional streaming for gRPC, and MCP sessions and resumable streams. Feedback is welcome in [Discussions](https://github.com/restlet/restlet-framework-java/discussions).
 
 ## Learn more
 
