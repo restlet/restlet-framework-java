@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,9 +47,11 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.ByteArrayRepresentation;
-import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 import software.amazon.smithy.java.aws.client.restjson.RestJsonClientProtocol;
 import software.amazon.smithy.java.client.core.ClientTransport;
 import software.amazon.smithy.java.client.core.ClientTransportFactory;
@@ -109,6 +111,12 @@ class SmithySdkTransportSpikeTestCase {
 
                     @httpHeader("x-tag")
                     tag: String
+
+                    @httpHeader("If-Match")
+                    ifMatch: String
+
+                    @httpHeader("Accept")
+                    accept: String
 
                     message: String
                 }
@@ -171,6 +179,10 @@ class SmithySdkTransportSpikeTestCase {
 
     @BeforeEach
     void startPeer() throws Exception {
+        Engine.clearThreadLocalVariables();
+        Engine.register(false);
+        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
+        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
         peer = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         peer.createContext("/", this::serve);
         peer.start();
@@ -262,6 +274,8 @@ class SmithySdkTransportSpikeTestCase {
                         "id", Document.of("a b/c+d"),
                         "q", Document.of("x=y&z é"),
                         "tag", Document.of(tag),
+                        "ifMatch", Document.of("\"v1\""),
+                        "accept", Document.of("application/json;q=0.9, */*;q=0.1"),
                         "message", Document.of("hello ünïcode")));
     }
 
@@ -413,6 +427,59 @@ class SmithySdkTransportSpikeTestCase {
     }
 
     /**
+     * The HTTP/2 client may still be writing the request body when the response ends the SDK call
+     * and the SDK releases its pooled body: the transport sends its own copy.
+     */
+    @Test
+    void responseBeforeTheUploadEndsCompletesTheCall() throws Exception {
+        Context serverContext = new Context();
+        serverContext.getParameters().set("http.transport.protocol", "HTTP2");
+        Server server =
+                new Server(
+                        serverContext,
+                        Protocol.HTTP,
+                        0,
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                // Answers at once with an empty CBOR map, without reading.
+                                response.setEntity(
+                                        new ByteArrayRepresentation(
+                                                new byte[] {(byte) 0xa0},
+                                                MediaType.valueOf("application/cbor")));
+                                response.getHeaders().add("smithy-protocol", "rpc-v2-cbor");
+                            }
+                        });
+        server.start();
+        Context clientContext = new Context();
+        clientContext.getParameters().set("httpClientTransportMode", "HTTP2");
+        Client http2 = new Client(clientContext, Protocol.HTTP);
+        http2.start();
+        try (var client =
+                DynamicClient.builder()
+                        .model(model)
+                        .serviceId(CBOR_SPIKE)
+                        .protocol(new RpcV2CborProtocol(CBOR_SPIKE))
+                        .transport(new RestletTransport(http2))
+                        .endpoint("http://localhost:" + server.getActualPort())
+                        .build()) {
+            for (int i = 0; i < 3; i++) {
+                Document output =
+                        client.call(
+                                "Echo",
+                                Document.of(
+                                        Map.of(
+                                                "id", Document.of("big"),
+                                                "message", Document.of("x".repeat(1024 * 1024)))));
+                assertNull(output.getMember("message"));
+            }
+        } finally {
+            http2.stop();
+            server.stop();
+        }
+    }
+
+    /**
      * Closing an SDK client closes its transport, which leaves a borrowed Restlet client running.
      */
     @Test
@@ -483,10 +550,6 @@ class SmithySdkTransportSpikeTestCase {
 
     /** The spike transport: a Smithy HTTP exchange over a borrowed Restlet client. */
     static final class RestletTransport implements ClientTransport<HttpRequest, HttpResponse> {
-        /** Headers that the Restlet connector derives from the entity and the target. */
-        private static final Set<String> DERIVED =
-                Set.of("content-type", "content-length", "host", "transfer-encoding");
-
         private final Client client;
         private final boolean owned;
         volatile HttpRequest last;
@@ -505,33 +568,23 @@ class SmithySdkTransportSpikeTestCase {
         public HttpResponse send(
                 software.amazon.smithy.java.context.Context context, HttpRequest request) {
             last = request;
-            // The SDK releases a pooled request body when the call ends: copy it now.
-            lastBody = copy(request.body());
             try {
+                // The SDK releases a pooled request body when the call ends, while the HTTP/2
+                // client may still be writing it after an early response: send a local copy.
+                byte[] body = request.body() == null ? new byte[0] : copy(request.body());
+                lastBody = body;
                 Request call =
                         new Request(Method.valueOf(request.method()), request.uri().toString());
-                DataStream body = request.body();
-                if (body != null && body.contentLength() != 0) {
+                if (body.length > 0) {
                     String type = request.headers().contentType();
                     call.setEntity(
-                            new InputRepresentation(
-                                    body.asInputStream(),
-                                    type == null ? null : MediaType.valueOf(type),
-                                    body.contentLength() < 0
-                                            ? Representation.UNKNOWN_SIZE
-                                            : body.contentLength()));
+                            new ByteArrayRepresentation(
+                                    body, type == null ? null : MediaType.valueOf(type)));
                 }
-                request.headers()
-                        .forEachEntry(
-                                (name, value) -> {
-                                    String lower = name.toLowerCase(Locale.ROOT);
-                                    if ("user-agent".equals(lower)) {
-                                        // Restlet writes the agent from its client info.
-                                        call.getClientInfo().setAgent(value);
-                                    } else if (!DERIVED.contains(lower)) {
-                                        call.getHeaders().add(name, value);
-                                    }
-                                });
+                // Written as serialized, and signed, by the SDK: standard headers included.
+                var raw = new Series<Header>(Header.class);
+                request.headers().forEachEntry(raw::add);
+                call.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
                 Response response = client.handle(call);
                 org.restlet.data.Status status = response.getStatus();
                 if (status.isConnectorError()) {
