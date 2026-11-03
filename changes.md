@@ -145,8 +145,9 @@ Changes log
           connectors. These do not introduce production RPC extensions.
         - Added the `HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS` request attribute. The HTTP
           client writes these headers as-is, standard ones included, each name replacing the
-          values produced from the Restlet API or the `userAgentField` parameter; headers defining
-          the connection or the message length are ignored. SDKs that serialize and sign their own
+          values produced from the Restlet API or the `userAgentField` parameter. A Host header is
+          written as-is while the connection still goes to the target; headers defining the
+          connection or the message length are ignored. SDKs that serialize and sign their own
           requests can rely on it.
         - Added the `HeaderConstants.ATTRIBUTE_STREAMED_RESPONSE` request attribute. The HTTP/1.1
           client then returns the response with its head, as over HTTP/2 and HTTP/3, instead of

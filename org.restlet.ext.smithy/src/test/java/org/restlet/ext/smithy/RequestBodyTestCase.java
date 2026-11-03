@@ -126,9 +126,20 @@ class RequestBodyTestCase {
                 write(RequestBody.of(replayable, null)));
     }
 
+    /** An empty body has no representation, and its source is closed unless replayable. */
     @Test
     void emptyBodyHasNoRepresentation() {
         assertNull(RequestBody.of(null, null));
         assertNull(RequestBody.of(DataStream.ofEmpty(), null));
+        AtomicBoolean closed = new AtomicBoolean();
+        var source =
+                new ByteArrayInputStream(new byte[0]) {
+                    @Override
+                    public void close() {
+                        closed.set(true);
+                    }
+                };
+        assertNull(RequestBody.of(DataStream.ofInputStream(source, null, 0), null));
+        assertTrue(closed.get());
     }
 }

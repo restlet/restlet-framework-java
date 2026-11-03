@@ -9,6 +9,7 @@
 package org.restlet.engine.netty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
@@ -21,12 +22,15 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.HttpClientHelper;
+import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -75,7 +79,8 @@ class NettyClientRawRequestHeadersTestCase {
         raw.add("User-Agent", "sdk/1.0");
         raw.add("Content-Type", "application/x-amz-json-1.0");
         raw.add("Content-Length", "999");
-        raw.add("Host", "elsewhere.example");
+        // Signed with its explicit default port, which the Restlet API would drop.
+        raw.add("Host", "elsewhere.example:80");
         request.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
 
         Response response = client.handle(request);
@@ -87,7 +92,45 @@ class NettyClientRawRequestHeadersTestCase {
         assertEquals(List.of("sdk/1.0"), headers.get("User-Agent"));
         assertEquals(List.of("application/x-amz-json-1.0"), headers.get("Content-Type"));
         assertEquals(List.of("2"), headers.get("Content-Length"));
-        assertEquals(List.of("localhost:" + peer.getAddress().getPort()), headers.get("Host"));
+        // Sent to the target, with the raw authority.
+        assertEquals(List.of("elsewhere.example:80"), headers.get("Host"));
+    }
+
+    /** Over HTTP/2, a raw Host header gives the request authority. */
+    @Test
+    void rawHostIsTheHttp2Authority() throws Exception {
+        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
+        AtomicReference<String> authority = new AtomicReference<>();
+        Context serverContext = new Context();
+        serverContext.getParameters().set("http.transport.protocol", "HTTP2");
+        Server server =
+                new Server(
+                        serverContext,
+                        Protocol.HTTP,
+                        0,
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                authority.set(request.getHeaders().getFirstValue("host", true));
+                            }
+                        });
+        server.start();
+        Context context = new Context();
+        context.getParameters().set("httpClientTransportMode", "HTTP2");
+        Client http2 = new Client(context, Protocol.HTTP);
+        http2.start();
+        try {
+            Request request =
+                    new Request(Method.GET, "http://localhost:" + server.getActualPort() + "/");
+            var raw = new Series<Header>(Header.class);
+            raw.add("Host", "elsewhere.example:80");
+            request.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
+            assertTrue(http2.handle(request).getStatus().isSuccess());
+            assertEquals("elsewhere.example:80", authority.get());
+        } finally {
+            http2.stop();
+            server.stop();
+        }
     }
 
     /** A raw User-Agent also replaces the one set by the client's userAgentField parameter. */

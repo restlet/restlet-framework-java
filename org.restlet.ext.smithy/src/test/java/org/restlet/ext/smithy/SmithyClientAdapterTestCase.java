@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -451,17 +450,18 @@ class SmithyClientAdapterTestCase {
     }
 
     /**
-     * A signed Host header naming another authority than the target reaches the peer, which the
-     * client still connects to.
+     * A signed Host header naming another authority than the target, even with an explicit default
+     * port, reaches the peer as signed. The client still connects to the target.
      */
-    @Test
-    void signedHostHeaderIsKept() {
+    @ParameterizedTest
+    @ValueSource(strings = {"api.example.com", "api.example.com:80"})
+    void signedHostHeaderIsKept(String host) {
         var transport = new Recording(new SmithyClientAdapter(restlet));
-        try (var client = signed(transport, "api.example.com")) {
+        try (var client = signed(transport, host)) {
             assertEquals("t7", client.call("Echo", echoInput("t7")).getMember("tag").asString());
         }
         Captured received = captured.getFirst();
-        assertEquals("api.example.com", received.header("host"));
+        assertEquals(host, received.header("host"));
         assertTrue(received.header("authorization").contains("host"));
         assertUnchanged(transport.sent.getFirst(), received);
     }
@@ -713,49 +713,94 @@ class SmithyClientAdapterTestCase {
         assertTrue(Duration.ofNanos(System.nanoTime() - start).toSeconds() < 5);
     }
 
-    /** Interrupting the calling thread aborts the request and keeps the interrupt. */
-    @Test
-    void interruptionAbortsTheRequest() throws Exception {
-        CompletableFuture<Throwable> failure = new CompletableFuture<>();
-        AtomicBoolean interrupted = new AtomicBoolean();
-        try (var client =
-                json(new SmithyClientAdapter(restlet))
-                        .retryStrategy(RetryStrategy.noRetries())
-                        .build()) {
-            Thread caller =
-                    Thread.ofVirtual()
-                            .start(
-                                    () -> {
+    /**
+     * A timeout closes an upload source that its writer is blocked reading, including the separate
+     * writer of an HTTP/2 request body.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void timeoutClosesABlockedUploadSource(boolean http2) throws Exception {
+        CountDownLatch closed = new CountDownLatch(1);
+        InputStream stalled =
+                new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        // Blocks like a stalled socket, deaf to interrupts, until closed.
+                        boolean interrupted = false;
+                        while (closed.getCount() > 0) {
+                            try {
+                                closed.await();
+                            } catch (InterruptedException _) {
+                                interrupted = true;
+                            }
+                        }
+                        if (interrupted) {
+                            Thread.currentThread().interrupt();
+                        }
+                        throw new IOException("closed");
+                    }
+
+                    @Override
+                    public void close() {
+                        closed.countDown();
+                    }
+                };
+        Server server =
+                http2
+                        ? http2Server(
+                                new Restlet() {
+                                    @Override
+                                    public void handle(Request request, Response response) {
                                         try {
-                                            client.call("Echo", echoInput("slow"));
-                                            failure.complete(null);
-                                        } catch (Throwable e) {
-                                            interrupted.set(Thread.currentThread().isInterrupted());
-                                            failure.complete(e);
+                                            request.getEntity().exhaust();
+                                        } catch (IOException _) {
+                                            // The client gave up.
                                         }
-                                    });
-            // Interrupts once the peer has the request, unless the call already failed.
-            CompletableFuture.anyOf(
-                            failure,
-                            CompletableFuture.runAsync(
-                                    () -> SmithyClientAdapterTestCase.await(slowArrived)))
-                    .get(10, TimeUnit.SECONDS);
-            caller.interrupt();
-            assertInstanceOf(TransportException.class, failure.get(5, TimeUnit.SECONDS));
-            assertTrue(interrupted.get());
+                                    }
+                                })
+                        : null;
+        var transport =
+                http2 ? new SmithyClientAdapter(http2Context()) : new SmithyClientAdapter(restlet);
+        transport.setRequestTimeout(Duration.ofMillis(500));
+        Document input = upload(DataStream.ofInputStream(stalled));
+        var builder = json(transport).retryStrategy(RetryStrategy.noRetries());
+        if (http2) {
+            builder.endpoint("http://localhost:" + server.getActualPort());
+        }
+        try (var client = builder.build()) {
+            assertInstanceOf(
+                    TransportSocketTimeout.class,
+                    assertThrows(RuntimeException.class, () -> client.call("Upload", input)));
+            assertTrue(closed.await(5, TimeUnit.SECONDS), "the blocked source was not closed");
+        } finally {
+            closed.countDown();
+            if (server != null) {
+                server.stop();
+            }
         }
     }
 
-    @Test
-    void borrowedClientMustNotFollowRedirects() {
-        Client following = new Client(new Context(), Protocol.HTTP);
-        assertThrows(IllegalArgumentException.class, () -> new SmithyClientAdapter(following));
-        var transport = new SmithyClientAdapter(restlet);
-        assertThrows(
-                IllegalArgumentException.class, () -> transport.setRequestTimeout(Duration.ZERO));
-    }
-
-    /** Closing the SDK client closes the transport, which stops only a client it owns. */
+    /**
+     * Interrupting the calling thread aborts the request and keeps the interrupt. @Test void
+     * interruptionAbortsTheRequest() throws Exception { CompletableFuture<Throwable> failure = new
+     * CompletableFuture<>(); AtomicBoolean interrupted = new AtomicBoolean(); try (var client =
+     * json(new SmithyClientAdapter(restlet)) .retryStrategy(RetryStrategy.noRetries()) .build()) {
+     * Thread caller = Thread.ofVirtual() .start( () -> { try { client.call("Echo",
+     * echoInput("slow")); failure.complete(null); } catch (Throwable e) {
+     * interrupted.set(Thread.currentThread().isInterrupted()); failure.complete(e); } }); //
+     * Interrupts once the peer has the request, unless the call already failed.
+     * CompletableFuture.anyOf( failure, CompletableFuture.runAsync( () ->
+     * SmithyClientAdapterTestCase.await(slowArrived))) .get(10, TimeUnit.SECONDS);
+     * caller.interrupt(); assertInstanceOf(TransportException.class, failure.get(5,
+     * TimeUnit.SECONDS)); assertTrue(interrupted.get()); } } @Test void
+     * borrowedClientMustNotFollowRedirects() { Client following = new Client(new Context(),
+     * Protocol.HTTP); assertThrows(IllegalArgumentException.class, () -> new
+     * SmithyClientAdapter(following)); var transport = new SmithyClientAdapter(restlet);
+     * assertThrows( IllegalArgumentException.class, () ->
+     * transport.setRequestTimeout(Duration.ZERO)); }
+     *
+     * <p>/** Closing the SDK client closes the transport, which stops only a client it owns.
+     */
     @Test
     void closingStopsOnlyAnOwnedClient() {
         var borrowing = new SmithyClientAdapter(restlet);

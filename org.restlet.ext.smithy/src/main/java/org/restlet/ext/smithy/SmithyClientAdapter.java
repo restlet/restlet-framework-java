@@ -24,7 +24,6 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
@@ -200,16 +199,11 @@ public final class SmithyClientAdapter implements ClientTransport<HttpRequest, H
         String type = req.headers().contentType();
         request.setEntity(
                 RequestBody.of(req.body(), type == null ? null : MediaType.valueOf(type)));
-        // Written as serialized, and signed, by the SDK: standard headers included.
+        // Written as serialized, and signed, by the SDK: standard headers included, and a Host
+        // naming another authority than the target.
         var raw = new Series<Header>(Header.class);
         req.headers().forEachEntry(raw::add);
         request.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
-        // The connector derives Host from the base reference, and still connects to the target.
-        String host = req.headers().firstValue("host");
-        if (host != null) {
-            Reference resource = request.getResourceRef();
-            resource.setBaseRef(new Reference(resource.getScheme() + "://" + host));
-        }
         // The request timeout covers the response head, not the wait for a first body byte.
         request.getAttributes().put(HeaderConstants.ATTRIBUTE_STREAMED_RESPONSE, true);
         return request;
@@ -247,6 +241,10 @@ public final class SmithyClientAdapter implements ClientTransport<HttpRequest, H
     /** Aborts an exchange the caller gave up on, and releases its response if one arrives. */
     private static void abandon(Request request, CompletableFuture<Response> exchange) {
         request.abort();
+        // Closes a streamed body, whose writer may be blocked reading it.
+        if (request.getEntity() != null) {
+            request.getEntity().release();
+        }
         exchange.thenAccept(
                 response -> {
                     if (response.getEntity() != null) {
