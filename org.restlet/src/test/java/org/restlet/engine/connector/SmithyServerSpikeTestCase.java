@@ -386,6 +386,9 @@ class SmithyServerSpikeTestCase {
             }
         } finally {
             firstChunkRead.countDown();
+            // The transport borrows the Restlet client, so closing the SDK client leaves it
+            // running.
+            restletClient.stop();
         }
     }
 
