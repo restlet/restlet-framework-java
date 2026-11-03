@@ -47,6 +47,19 @@
             <version>${lib-smithy-java-version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- Generate the client of src/test/smithy, see below. -->
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>codegen-plugin</artifactId>
+            <version>${lib-smithy-java-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy</groupId>
+            <artifactId>smithy-cli</artifactId>
+            <version>${lib-smithy-version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -60,4 +73,77 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <!-- The Smithy version used by smithy-java. -->
+        <lib-smithy-version>1.74.0</lib-smithy-version>
+        <smithy.output>${project.build.directory}/smithy</smithy.output>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <!-- Generated exceptions have no serialVersionUID. -->
+                            <compilerArgs combine.children="append">
+                                <arg>-Xlint:-serial</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Generates SDK code from src/test/smithy with smithy-java, for the tests. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>smithy-codegen</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>software.amazon.smithy.cli.SmithyCli</argument>
+                                <argument>build</argument>
+                                <argument>--config</argument>
+                                <argument>${project.basedir}/src/test/smithy/smithy-build.json</argument>
+                                <argument>--output</argument>
+                                <argument>${smithy.output}</argument>
+                                <argument>--discover</argument>
+                                <argument>${project.basedir}/src/test/smithy</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${smithy.output}/source/java-codegen/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
