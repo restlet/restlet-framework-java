@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,25 @@ import org.restlet.Client;
  * (smithy-java#1437) and only work on the class path.
  */
 class SmithyModuleTestCase {
+    /**
+     * Jars left off the module path: the RPCv2 CBOR client modules, and the code generator of the
+     * tests, used at build time only, whose modules also split packages.
+     */
+    private static final List<String> EXCLUDED =
+            List.of(
+                    "client-rpcv2",
+                    "codegen-",
+                    "commonmark-",
+                    "jsoup-",
+                    "smithy-build-",
+                    "smithy-cli-",
+                    "smithy-codegen-core-",
+                    "smithy-syntax-");
+
+    private static boolean excluded(String jar) {
+        return EXCLUDED.stream().anyMatch(jar::startsWith);
+    }
+
     @Test
     void namedConsumerUsesTheTransport(@TempDir Path temp) throws Exception {
         String classPath =
@@ -39,11 +59,7 @@ class SmithyModuleTestCase {
                                 .map(Path::of)
                                 .filter(Files::isRegularFile)
                                 .filter(path -> path.toString().endsWith(".jar"))
-                                .filter(
-                                        path ->
-                                                !path.getFileName()
-                                                        .toString()
-                                                        .startsWith("client-rpcv2"))
+                                .filter(path -> !excluded(path.getFileName().toString()))
                                 .toList());
         paths.add(
                 Path.of(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI()));

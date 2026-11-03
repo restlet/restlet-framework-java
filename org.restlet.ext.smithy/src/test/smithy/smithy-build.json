@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "plugins": {
+        "java-codegen": {
+            "service": "restlet.test#Greeter",
+            "namespace": "org.restlet.ext.smithy.generated",
+            "modes": ["client"],
+            "protocol": "aws.protocols#restJson1"
+        }
+    }
+}
