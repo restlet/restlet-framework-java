@@ -138,8 +138,8 @@ Changes log
           client writes these headers as-is, standard ones included, each name replacing the
           values produced from the Restlet API; headers defining the connection or the message
           length are ignored. SDKs that serialize and sign their own requests can rely on it.
-        - Added test-only smithy-java 1.8.0 client feasibility probes over the Restlet HTTP
-          connectors.
+        - Added test-only smithy-java 1.8.0 client and server feasibility probes over the
+          Restlet HTTP connectors.
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
