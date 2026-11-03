@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -35,8 +35,8 @@ import org.restlet.representation.OutputRepresentation;
 
 /** Full response buffers reach the client while the producer pauses (issue #1632). */
 class FullBufferFlushTestCase {
-    /** Two full buffers of the default 32 KiB output buffer size. */
-    private static final int PRODUCED = 64 * 1024;
+    /** The default output buffer size. */
+    private static final int BUFFER = 32 * 1024;
 
     private Server server;
     private Client client;
@@ -61,8 +61,10 @@ class FullBufferFlushTestCase {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HTTP1_1", "HTTP2"})
-    void fullBuffersReachTheClientWhileTheProducerPauses(String mode) throws Exception {
+    @CsvSource({"HTTP1_1, 1", "HTTP1_1, 2", "HTTP2, 1", "HTTP2, 2"})
+    void fullBuffersReachTheClientWhileTheProducerPauses(String mode, int buffers)
+            throws Exception {
+        int produced = buffers * BUFFER;
         CountDownLatch read = new CountDownLatch(1);
         AtomicBoolean heldBack = new AtomicBoolean();
         Context serverContext = new Context();
@@ -80,7 +82,7 @@ class FullBufferFlushTestCase {
                                                 MediaType.APPLICATION_OCTET_STREAM) {
                                             @Override
                                             public void write(OutputStream out) throws IOException {
-                                                out.write(new byte[PRODUCED]);
+                                                out.write(new byte[produced]);
                                                 try {
                                                     // Waits, without flushing, until the client
                                                     // has read what was produced.
@@ -103,10 +105,11 @@ class FullBufferFlushTestCase {
                 client.handle(
                         new Request(Method.GET, "http://localhost:" + server.getActualPort()));
         try (InputStream body = response.getEntity().getStream()) {
-            assertEquals(PRODUCED, body.readNBytes(PRODUCED).length);
+            assertEquals(produced, body.readNBytes(produced).length);
             read.countDown();
-            assertFalse(heldBack.get(), "full buffers were held back until the producer resumed");
+            // The rest of the body follows the producer's wait, so its result is recorded.
             assertEquals(16, body.readAllBytes().length);
         }
+        assertFalse(heldBack.get(), "full buffers were held back until the producer resumed");
     }
 }
