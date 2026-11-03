@@ -181,7 +181,10 @@ public final class StreamTransportHelper {
                 // EOF does not imply termination: only report an exit failure seen within grace.
                 if (count == -1
                         && process != null
-                        && process.waitFor(Duration.of(processExitGrace.toNanos(), TimeUnit.NANOSECONDS.toChronoUnit()))
+                        && process.waitFor(
+                                Duration.of(
+                                        processExitGrace.toNanos(),
+                                        TimeUnit.NANOSECONDS.toChronoUnit()))
                         && process.exitValue() != 0
                         && !isStopped()) {
                     throw new IOException("Subprocess exited with code " + process.exitValue());
@@ -376,7 +379,8 @@ public final class StreamTransportHelper {
     /** Waits for the process exit for at most the given duration and before the deadline. */
     private boolean waitForExit(long nanos, long deadline) throws InterruptedException {
         long remaining = Math.min(nanos, deadline - System.nanoTime());
-        return process.waitFor(Duration.of(Math.max(0, remaining), TimeUnit.NANOSECONDS.toChronoUnit()));
+        return process.waitFor(
+                Duration.of(Math.max(0, remaining), TimeUnit.NANOSECONDS.toChronoUnit()));
     }
 
     private IOException cancelBorrowedIo() {
