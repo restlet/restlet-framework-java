@@ -14,6 +14,7 @@ Changes log
         - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=` (such as a `Negotiate` token): the whole header was dropped. Issue #191.
         - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
         - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
+        - `CacheDirective.noCache(String)`, `noCache(List)`, `privateInfo(String)` and `privateInfo(List)` produced a doubly quoted value (`no-cache="\"Set-Cookie\""`), and a list was written as one quoted name per element. The directive value now holds the raw field names (`Set-Cookie`, or `Set-Cookie, Authorization` for a list, no quotes), and `CacheDirectiveWriter` writes them as a single quoted-string (`no-cache="Set-Cookie, Authorization"`), as required by RFC 9111 section 5.2.2.4. Code reading `getValue()` of these directives no longer sees the quotes. Issue #745.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed
