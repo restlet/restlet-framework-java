@@ -134,6 +134,12 @@ Changes log
           initial headers, rather than a subsequent empty DATA frame.
         - Added test-only MCP and gRPC SDK feasibility probes over the Restlet HTTP/2
           connectors. These do not introduce production RPC extensions.
+        - Added the `HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS` request attribute. The HTTP
+          client writes these headers as-is, standard ones included, each name replacing the
+          values produced from the Restlet API; headers defining the connection or the message
+          length are ignored. SDKs that serialize and sign their own requests can rely on it.
+        - Added test-only smithy-java 1.8.0 client feasibility probes over the Restlet HTTP
+          connectors.
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for
           streaming and reading Server-Sent Events over the HTTP connectors, including optional
           comment heartbeats and reconnects honoring `retry:` and `Last-Event-ID`. The
