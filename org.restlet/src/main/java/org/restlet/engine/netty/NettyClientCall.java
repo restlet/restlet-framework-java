@@ -39,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -97,6 +98,19 @@ class NettyClientCall {
 
     /** The request headers. */
     private final Series<Header> requestHeaders = new Series<>(Header.class);
+
+    /** Raw request headers that the connector derives from the target, entity or connection. */
+    private static final Set<String> FRAMING_HEADERS =
+            Set.of(
+                    "host",
+                    "content-length",
+                    "transfer-encoding",
+                    "connection",
+                    "keep-alive",
+                    "proxy-connection",
+                    "upgrade",
+                    "te",
+                    "trailer");
 
     /** The response headers. */
     private final Series<Header> responseHeaders = new Series<>(Header.class);
@@ -259,6 +273,29 @@ class NettyClientCall {
      *
      * @param request The Restlet request.
      */
+    /**
+     * Writes the headers of the {@link HeaderConstants#ATTRIBUTE_RAW_REQUEST_HEADERS} attribute,
+     * each name replacing the values produced from the Restlet API.
+     */
+    private void addRawHeaders(org.restlet.Request request) {
+        if (!(request.getAttributes().get(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS)
+                instanceof Series<?> raw)) {
+            return;
+        }
+        Set<String> replaced = new java.util.HashSet<>();
+        for (Object item : raw) {
+            if (item instanceof Header header) {
+                String name = header.getName().toLowerCase(Locale.ROOT);
+                if (!FRAMING_HEADERS.contains(name)) {
+                    if (replaced.add(name)) {
+                        requestHeaders.removeAll(header.getName(), true);
+                    }
+                    requestHeaders.add(header.getName(), header.getValue());
+                }
+            }
+        }
+    }
+
     private void moveTunnelProxyAuthorization(org.restlet.Request request) {
         String authorization =
                 requestHeaders.getFirstValue(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
@@ -334,6 +371,7 @@ class NettyClientCall {
         // NOTE: This must stay at the end because the AWS challenge scheme requires access to all
         // HTTP headers
         HeaderUtils.addRequestHeaders(request, requestHeaders);
+        addRawHeaders(request);
         if (isTunneled()) {
             moveTunnelProxyAuthorization(request);
         } else if (!isForwardProxied()) {

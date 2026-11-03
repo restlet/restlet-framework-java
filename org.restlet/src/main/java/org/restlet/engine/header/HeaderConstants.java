@@ -210,6 +210,15 @@ public final class HeaderConstants {
     public static final String ATTRIBUTE_RAW_RESPONSE_HEADERS =
             "org.restlet.http.rawResponseHeaders";
 
+    /**
+     * Request attribute holding a {@code Series<Header>} that client connectors supporting it write
+     * as-is, each name replacing the values produced from the Restlet API. Headers defining the
+     * connection or the message length, such as Host, Content-Length or Connection, are ignored.
+     * Unlike {@link org.restlet.Message#getHeaders()}, it may carry standard headers, for SDKs that
+     * serialize and sign their own requests.
+     */
+    public static final String ATTRIBUTE_RAW_REQUEST_HEADERS = "org.restlet.http.rawRequestHeaders";
+
     public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 
     public static final String ATTRIBUTE_HTTPS_SSL_SESSION_ID = "org.restlet.https.sslSessionId";
