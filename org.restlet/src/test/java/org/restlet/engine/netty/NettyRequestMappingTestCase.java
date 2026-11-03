@@ -53,7 +53,7 @@ class NettyRequestMappingTestCase {
                     Restlet service = new Restlet() {};
                     router.attach("/review.Server/", service, Template.MODE_STARTS_WITH);
                     assertSame(
-                            router.getRoutes().get(0),
+                            router.getRoutes().getFirst(),
                             router.getNext(request, new Response(request)));
                     assertEquals("/review.Server/Echo", request.getOriginalRef().getPath());
                 } finally {

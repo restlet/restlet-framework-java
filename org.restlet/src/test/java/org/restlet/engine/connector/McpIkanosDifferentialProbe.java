@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -194,12 +193,12 @@ final class McpIkanosDifferentialProbe {
             try {
                 reference.getOutputStream().close();
             } finally {
-                if (!reference.waitFor(10, TimeUnit.SECONDS)) {
+                if (!reference.waitFor(Duration.ofSeconds(10))) {
                     reference.destroy();
-                    if (!reference.waitFor(5, TimeUnit.SECONDS)) {
+                    if (!reference.waitFor(Duration.ofSeconds(5))) {
                         reference.destroyForcibly();
                         assertTrue(
-                                reference.waitFor(5, TimeUnit.SECONDS),
+                                reference.waitFor(Duration.ofSeconds(5)),
                                 "Ikanos reference process did not terminate");
                     }
                     throw new AssertionError(

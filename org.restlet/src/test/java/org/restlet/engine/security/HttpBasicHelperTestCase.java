@@ -165,7 +165,7 @@ class HttpBasicHelperTestCase {
         ChallengeRequest challenge =
                 AuthenticatorUtils.parseRequest(
                                 response, "Basic REALM=\"r\", Charset=\"utf-8\"", null)
-                        .get(0);
+                        .getFirst();
 
         assertEquals("r", challenge.getRealm());
         assertEquals("utf-8", challenge.getParameters().getFirstValue("charset", true));

@@ -12,7 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.logging.Level;
@@ -107,7 +106,7 @@ public class StringRepresentation extends CharacterRepresentation {
     @Override
     public Reader getReader() throws IOException {
         if (getText() != null) {
-            return new StringReader(getText());
+            return Reader.of(getText());
         }
 
         return null;

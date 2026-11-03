@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.restlet.Client;
@@ -110,7 +111,7 @@ class RpcSdkBoundaryTestCase {
                         .collect(java.util.stream.Collectors.joining(File.pathSeparator));
         assertEquals(
                 0,
-                javax.tools.ToolProvider.getSystemJavaCompiler()
+                ToolProvider.getSystemJavaCompiler()
                         .run(
                                 null,
                                 diagnostics,
@@ -161,7 +162,7 @@ class RpcSdkBoundaryTestCase {
             diagnostics.reset();
             assertEquals(
                     0,
-                    javax.tools.ToolProvider.getSystemJavaCompiler()
+                    ToolProvider.getSystemJavaCompiler()
                             .run(
                                     null,
                                     diagnostics,

@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.Test;
 
 /** Test {@link org.restlet.data.ChallengeScheme}. */
@@ -48,7 +49,7 @@ class ChallengeSchemeTestCase {
         int checked = 0;
         for (java.lang.reflect.Field field : ChallengeScheme.class.getFields()) {
             if (field.getType() != ChallengeScheme.class
-                    || !java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    || !Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
             ChallengeScheme constant = (ChallengeScheme) field.get(null);

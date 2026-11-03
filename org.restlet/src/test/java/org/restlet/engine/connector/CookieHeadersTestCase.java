@@ -129,14 +129,14 @@ class CookieHeadersTestCase {
 
         List<String> setCookies = headerValues(response, "Set-Cookie");
         assertEquals(2, setCookies.size(), response);
-        assertTrue(setCookies.get(0).startsWith("session=abc; Path=/app; Expires="), response);
+        assertTrue(setCookies.getFirst().startsWith("session=abc; Path=/app; Expires="), response);
         assertTrue(
-                setCookies.get(0).endsWith("; Max-Age=60; Secure; HttpOnly; SameSite=Lax"),
+                setCookies.getFirst().endsWith("; Max-Age=60; Secure; HttpOnly; SameSite=Lax"),
                 response);
         assertEquals("plain=1", setCookies.get(1));
         assertFalse(response.contains("Set-Cookie2"), response);
-        assertFalse(setCookies.get(0).contains("\""), response);
-        assertFalse(setCookies.get(0).contains("Version"), response);
+        assertFalse(setCookies.getFirst().contains("\""), response);
+        assertFalse(setCookies.getFirst().contains("Version"), response);
     }
 
     static Stream<Arguments> requestCookieHeaders() {

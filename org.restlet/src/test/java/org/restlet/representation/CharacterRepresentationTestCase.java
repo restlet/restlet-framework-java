@@ -14,7 +14,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
@@ -41,7 +40,7 @@ class CharacterRepresentationTestCase {
 
         @Override
         public Reader getReader() {
-            return new StringReader(content);
+            return Reader.of(content);
         }
 
         @Override

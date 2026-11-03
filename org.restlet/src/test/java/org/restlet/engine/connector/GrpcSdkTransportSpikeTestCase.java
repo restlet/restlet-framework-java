@@ -198,9 +198,8 @@ class GrpcSdkTransportSpikeTestCase {
     @Test
     void rejectsUnsupportedTransportControlsExplicitly() throws Exception {
         client = new Client(Protocol.HTTP);
-        RestletTransportFactory factory =
-                new RestletTransportFactory(client, lastGrpcResponseProtocol);
-        try {
+        try (RestletTransportFactory factory =
+                new RestletTransportFactory(client, lastGrpcResponseProtocol)) {
             var transport =
                     factory.newClientTransport(
                             new RestletSocketAddress("http://localhost:1"),
@@ -253,7 +252,6 @@ class GrpcSdkTransportSpikeTestCase {
                     Runnable::run);
             assertEquals(Status.Code.UNIMPLEMENTED, pingFailure.get().getCode());
         } finally {
-            factory.close();
             assertTrue(factory.scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS));
             assertFalse(client.isStarted(), "Borrowed connectors must not be started or stopped");
         }

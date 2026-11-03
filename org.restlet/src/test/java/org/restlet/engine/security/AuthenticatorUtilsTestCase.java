@@ -207,8 +207,8 @@ class AuthenticatorUtilsTestCase {
                         null);
 
         assertEquals(2, result.size());
-        assertEquals(ChallengeScheme.HTTP_BASIC, result.get(0).getScheme());
-        assertEquals("my realm", result.get(0).getRealm());
+        assertEquals(ChallengeScheme.HTTP_BASIC, result.getFirst().getScheme());
+        assertEquals("my realm", result.getFirst().getRealm());
         assertEquals("Bearer", result.get(1).getScheme().getTechnicalName());
         assertEquals("error=x", result.get(1).getRawValue());
     }

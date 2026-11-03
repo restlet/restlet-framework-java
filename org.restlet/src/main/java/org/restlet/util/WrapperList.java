@@ -91,7 +91,7 @@ public class WrapperList<E> implements List<E> {
 
     @Override
     public void addFirst(final E e) {
-        add(0, e);
+        addFirst(e);
     }
 
     @Override

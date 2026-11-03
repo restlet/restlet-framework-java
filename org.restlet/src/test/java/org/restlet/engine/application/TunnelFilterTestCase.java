@@ -87,12 +87,12 @@ class TunnelFilterTestCase {
     final <A extends Metadata> void assertEqualSet(
             List<? extends Preference<A>> actual, A... expected) {
         if (actual.size() != expected.length) {
-            System.out.println("Is:     " + actual);
+            IO.println("Is:     " + actual);
             List<A> expectedList = new ArrayList<>();
             for (A element : expected) {
                 expectedList.add(element);
             }
-            System.out.println("Should: " + expectedList);
+            IO.println("Should: " + expectedList);
         }
         assertEquals(actual.size(), expected.length);
         boolean contained = false;

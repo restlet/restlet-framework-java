@@ -535,27 +535,30 @@ class McpStreamableSdkTransportSpikeTestCase {
                 }
                 response.getHeaders().add("Mcp-Session-Id", sessionId);
 
-                if (message instanceof McpSchema.JSONRPCRequest rpcRequest) {
-                    AtomicReference<McpSchema.JSONRPCMessage> result = new AtomicReference<>();
-                    McpStreamableServerSession.McpStreamableServerSessionStream stream =
-                            session.responseStream(new JsonResponseTransport(jsonMapper, result));
-                    stream.handle(rpcRequest)
-                            .doFinally(signal -> stream.releaseTransport())
-                            .block(REQUEST_TIMEOUT);
-                    McpSchema.JSONRPCMessage reply = result.get();
-                    if (reply == null) {
-                        response.setStatus(org.restlet.data.Status.SERVER_ERROR_INTERNAL);
-                    } else {
-                        writeEventStreamResponse(response, reply);
+                switch (message) {
+                    case McpSchema.JSONRPCRequest rpcRequest -> {
+                        AtomicReference<McpSchema.JSONRPCMessage> result = new AtomicReference<>();
+                        McpStreamableServerSession.McpStreamableServerSessionStream stream =
+                                session.responseStream(new JsonResponseTransport(jsonMapper, result));
+                        stream.handle(rpcRequest)
+                                .doFinally(signal -> stream.releaseTransport())
+                                .block(REQUEST_TIMEOUT);
+                        McpSchema.JSONRPCMessage reply = result.get();
+                        if (reply == null) {
+                            response.setStatus(org.restlet.data.Status.SERVER_ERROR_INTERNAL);
+                        } else {
+                            writeEventStreamResponse(response, reply);
+                        }
                     }
-                } else if (message instanceof McpSchema.JSONRPCNotification notification) {
-                    session.accept(notification).block(REQUEST_TIMEOUT);
-                    response.setStatus(org.restlet.data.Status.SUCCESS_ACCEPTED);
-                } else if (message instanceof McpSchema.JSONRPCResponse rpcResponse) {
-                    session.accept(rpcResponse).block(REQUEST_TIMEOUT);
-                    response.setStatus(org.restlet.data.Status.SUCCESS_ACCEPTED);
-                } else {
-                    response.setStatus(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST);
+                    case McpSchema.JSONRPCNotification notification -> {
+                        session.accept(notification).block(REQUEST_TIMEOUT);
+                        response.setStatus(org.restlet.data.Status.SUCCESS_ACCEPTED);
+                    }
+                    case McpSchema.JSONRPCResponse rpcResponse -> {
+                        session.accept(rpcResponse).block(REQUEST_TIMEOUT);
+                        response.setStatus(org.restlet.data.Status.SUCCESS_ACCEPTED);
+                    }
+                    case null, default -> response.setStatus(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST);
                 }
             } catch (IOException e) {
                 getLogger().warning("Unable to read MCP streamable request: " + e.getMessage());

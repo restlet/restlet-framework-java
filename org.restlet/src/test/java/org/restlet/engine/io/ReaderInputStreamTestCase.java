@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
 import org.restlet.representation.InputRepresentation;
@@ -34,7 +33,7 @@ class ReaderInputStreamTestCase {
         }
 
         String s = buf.toString();
-        Reader r = new StringReader(s);
+        Reader r = Reader.of(s);
         InputStream is = new ReaderInputStream(r);
 
         InputRepresentation ir = new InputRepresentation(is);
