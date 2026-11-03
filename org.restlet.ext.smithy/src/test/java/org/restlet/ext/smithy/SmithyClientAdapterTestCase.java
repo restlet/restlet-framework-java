@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -780,27 +781,49 @@ class SmithyClientAdapterTestCase {
         }
     }
 
-    /**
-     * Interrupting the calling thread aborts the request and keeps the interrupt. @Test void
-     * interruptionAbortsTheRequest() throws Exception { CompletableFuture<Throwable> failure = new
-     * CompletableFuture<>(); AtomicBoolean interrupted = new AtomicBoolean(); try (var client =
-     * json(new SmithyClientAdapter(restlet)) .retryStrategy(RetryStrategy.noRetries()) .build()) {
-     * Thread caller = Thread.ofVirtual() .start( () -> { try { client.call("Echo",
-     * echoInput("slow")); failure.complete(null); } catch (Throwable e) {
-     * interrupted.set(Thread.currentThread().isInterrupted()); failure.complete(e); } }); //
-     * Interrupts once the peer has the request, unless the call already failed.
-     * CompletableFuture.anyOf( failure, CompletableFuture.runAsync( () ->
-     * SmithyClientAdapterTestCase.await(slowArrived))) .get(10, TimeUnit.SECONDS);
-     * caller.interrupt(); assertInstanceOf(TransportException.class, failure.get(5,
-     * TimeUnit.SECONDS)); assertTrue(interrupted.get()); } } @Test void
-     * borrowedClientMustNotFollowRedirects() { Client following = new Client(new Context(),
-     * Protocol.HTTP); assertThrows(IllegalArgumentException.class, () -> new
-     * SmithyClientAdapter(following)); var transport = new SmithyClientAdapter(restlet);
-     * assertThrows( IllegalArgumentException.class, () ->
-     * transport.setRequestTimeout(Duration.ZERO)); }
-     *
-     * <p>/** Closing the SDK client closes the transport, which stops only a client it owns.
-     */
+    /** Interrupting the calling thread aborts the request and keeps the interrupt. */
+    @Test
+    void interruptionAbortsTheRequest() throws Exception {
+        CompletableFuture<Throwable> failure = new CompletableFuture<>();
+        AtomicBoolean interrupted = new AtomicBoolean();
+        try (var client =
+                json(new SmithyClientAdapter(restlet))
+                        .retryStrategy(RetryStrategy.noRetries())
+                        .build()) {
+            Thread caller =
+                    Thread.ofVirtual()
+                            .start(
+                                    () -> {
+                                        try {
+                                            client.call("Echo", echoInput("slow"));
+                                            failure.complete(null);
+                                        } catch (Throwable e) {
+                                            interrupted.set(Thread.currentThread().isInterrupted());
+                                            failure.complete(e);
+                                        }
+                                    });
+            // Interrupts once the peer has the request, unless the call already failed.
+            CompletableFuture.anyOf(
+                            failure,
+                            CompletableFuture.runAsync(
+                                    () -> SmithyClientAdapterTestCase.await(slowArrived)))
+                    .get(10, TimeUnit.SECONDS);
+            caller.interrupt();
+            assertInstanceOf(TransportException.class, failure.get(5, TimeUnit.SECONDS));
+            assertTrue(interrupted.get());
+        }
+    }
+
+    @Test
+    void borrowedClientMustNotFollowRedirects() {
+        Client following = new Client(new Context(), Protocol.HTTP);
+        assertThrows(IllegalArgumentException.class, () -> new SmithyClientAdapter(following));
+        var transport = new SmithyClientAdapter(restlet);
+        assertThrows(
+                IllegalArgumentException.class, () -> transport.setRequestTimeout(Duration.ZERO));
+    }
+
+    /** Closing the SDK client closes the transport, which stops only a client it owns. */
     @Test
     void closingStopsOnlyAnOwnedClient() {
         var borrowing = new SmithyClientAdapter(restlet);
