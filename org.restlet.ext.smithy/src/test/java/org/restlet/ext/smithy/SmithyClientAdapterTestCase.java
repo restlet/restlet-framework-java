@@ -277,6 +277,12 @@ class SmithyClientAdapterTestCase {
             return;
         }
         if ("retry".equals(tag) && attempt == 1) {
+            // The retry is then signed in a later second, with another date.
+            try {
+                Thread.sleep(1100);
+            } catch (InterruptedException _) {
+                Thread.currentThread().interrupt();
+            }
             exchange.sendResponseHeaders(503, -1);
             exchange.close();
             return;
@@ -403,21 +409,14 @@ class SmithyClientAdapterTestCase {
 
     /** Asserts that a request reached the peer exactly as the SDK handed it to the transport. */
     private static void assertUnchanged(Recording.Sent sent, Captured received) {
-        assertEquals(sent.request().method(), received.method());
-        String target =
-                sent.request().uri().getPath()
-                        + (sent.request().uri().getQuery() == null
-                                ? ""
-                                : "?" + sent.request().uri().getQuery());
-        assertEquals(target, received.target());
-        sent.request()
-                .headers()
-                .forEachEntry(
-                        (name, value) ->
-                                assertEquals(
-                                        List.of(value),
-                                        received.headers().get(name.toLowerCase(Locale.ROOT)),
-                                        "header " + name));
+        assertEquals(sent.method(), received.method());
+        assertEquals(sent.target(), received.target());
+        for (var header : sent.headers()) {
+            assertEquals(
+                    List.of(header.getValue()),
+                    received.headers().get(header.getKey().toLowerCase(Locale.ROOT)),
+                    "header " + header.getKey());
+        }
         assertArrayEquals(sent.body(), received.body());
     }
 
@@ -910,7 +909,27 @@ class SmithyClientAdapterTestCase {
         private final SmithyClientAdapter delegate;
         private final List<Recording.Sent> sent = new ArrayList<>();
 
-        private record Sent(HttpRequest request, byte[] body) {}
+        /**
+         * A request as handed to the transport. The SDK re-signs the same request on a retry, so
+         * its headers are copied rather than referenced.
+         */
+        private record Sent(
+                String method,
+                String target,
+                List<Map.Entry<String, String>> headers,
+                byte[] body) {
+            private static Sent of(HttpRequest request, byte[] body) {
+                List<Map.Entry<String, String>> headers = new ArrayList<>();
+                request.headers()
+                        .forEachEntry((name, value) -> headers.add(Map.entry(name, value)));
+                String query = request.uri().getQuery();
+                return new Sent(
+                        request.method(),
+                        request.uri().getPath() + (query == null ? "" : "?" + query),
+                        headers,
+                        body);
+            }
+        }
 
         private Recording(SmithyClientAdapter delegate) {
             this.delegate = delegate;
@@ -926,7 +945,7 @@ class SmithyClientAdapterTestCase {
                 buffer.get(body);
             }
             synchronized (sent) {
-                sent.add(new Sent(request, body));
+                sent.add(Sent.of(request, body));
             }
             return delegate.send(context, request);
         }
