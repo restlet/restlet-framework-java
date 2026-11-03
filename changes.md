@@ -305,6 +305,13 @@ Changes log
           or 406). The unread body is discarded when it is already received, or when at most
           256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
           Clients reusing the connection failed with a "Communication Error" (1001).
+        - `CacheDirective.noCache(String)`, `noCache(List)`, `privateInfo(String)` and
+          `privateInfo(List)` produced a doubly quoted value (`no-cache="\"Set-Cookie\""`), and a
+          list was written as one quoted name per element. The directive value now holds the raw
+          field names (`Set-Cookie`, or `Set-Cookie, Authorization` for a list, no quotes), and
+          `CacheDirectiveWriter` writes them as a single quoted-string
+          (`no-cache="Set-Cookie, Authorization"`), as required by RFC 9111 section 5.2.2.4. Code
+          reading `getValue()` of these directives no longer sees the quotes. Issue #745.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

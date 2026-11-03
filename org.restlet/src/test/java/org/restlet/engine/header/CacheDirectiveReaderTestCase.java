@@ -50,4 +50,34 @@ class CacheDirectiveReaderTestCase {
         CacheDirectiveReader.addValues(header, directives);
         assertEquals(1, directives.size());
     }
+
+    @Test
+    void readValue_quotedFieldNameList_returnsUnquotedValue() throws IOException {
+        CacheDirective directive =
+                new CacheDirectiveReader("no-cache=\"Set-Cookie, Authorization\"").readValue();
+        assertEquals("no-cache", directive.getName());
+        assertEquals("Set-Cookie, Authorization", directive.getValue());
+    }
+
+    @Test
+    void readValue_unquotedFieldName_isAccepted() throws IOException {
+        CacheDirective directive = new CacheDirectiveReader("private=Authorization").readValue();
+        assertEquals("Authorization", directive.getValue());
+    }
+
+    @Test
+    void writeThenRead_fieldNames_roundTripsTheValue() {
+        for (CacheDirective original :
+                List.of(
+                        CacheDirective.noCache("Set-Cookie"),
+                        CacheDirective.noCache(java.util.Arrays.asList("A", "B")),
+                        CacheDirective.privateInfo("X-Custom"),
+                        CacheDirective.privateInfo(java.util.Arrays.asList("A", "B")))) {
+            List<CacheDirective> read = new ArrayList<>();
+            new CacheDirectiveReader(CacheDirectiveWriter.write(List.of(original))).addValues(read);
+            assertEquals(1, read.size());
+            assertEquals(original.getName(), read.getFirst().getName());
+            assertEquals(original.getValue(), read.getFirst().getValue());
+        }
+    }
 }

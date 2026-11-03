@@ -37,4 +37,53 @@ class CacheDirectiveWriterTestCase {
                         Arrays.asList(CacheDirective.noCache(), CacheDirective.noStore()));
         assertEquals("no-cache, no-store", result);
     }
+
+    @Test
+    void write_noCacheWithFieldName_writesOneQuotedString() {
+        String result = CacheDirectiveWriter.write(List.of(CacheDirective.noCache("Set-Cookie")));
+        assertEquals("no-cache=\"Set-Cookie\"", result);
+    }
+
+    @Test
+    void write_noCacheWithFieldNames_writesOneQuotedList() {
+        String result =
+                CacheDirectiveWriter.write(
+                        List.of(
+                                CacheDirective.noCache(
+                                        Arrays.asList("Set-Cookie", "Authorization"))));
+        assertEquals("no-cache=\"Set-Cookie, Authorization\"", result);
+    }
+
+    @Test
+    void write_privateWithFieldName_writesOneQuotedString() {
+        String result =
+                CacheDirectiveWriter.write(List.of(CacheDirective.privateInfo("Authorization")));
+        assertEquals("private=\"Authorization\"", result);
+    }
+
+    @Test
+    void write_privateWithFieldNames_writesOneQuotedList() {
+        String result =
+                CacheDirectiveWriter.write(
+                        List.of(CacheDirective.privateInfo(Arrays.asList("A", "B"))));
+        assertEquals("private=\"A, B\"", result);
+    }
+
+    @Test
+    void write_noCacheWithEmptyFieldNames_writesNameOnly() {
+        String result =
+                CacheDirectiveWriter.write(List.of(CacheDirective.noCache(List.<String>of())));
+        assertEquals("no-cache", result);
+    }
+
+    @Test
+    void write_noCacheMixedWithOtherDirectives_keepsTheOtherOnesUnquoted() {
+        String result =
+                CacheDirectiveWriter.write(
+                        Arrays.asList(
+                                CacheDirective.noCache("Set-Cookie"),
+                                CacheDirective.maxAge(60),
+                                CacheDirective.publicInfo()));
+        assertEquals("no-cache=\"Set-Cookie\", max-age=60, public", result);
+    }
 }
