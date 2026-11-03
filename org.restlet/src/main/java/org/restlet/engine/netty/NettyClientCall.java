@@ -112,6 +112,9 @@ class NettyClientCall {
                     "te",
                     "trailer");
 
+    /** The lower-case names of the raw request headers written. */
+    private final Set<String> rawHeaderNames = new java.util.HashSet<>();
+
     /** The response headers. */
     private final Series<Header> responseHeaders = new Series<>(Header.class);
 
@@ -282,12 +285,11 @@ class NettyClientCall {
                 instanceof Series<?> raw)) {
             return;
         }
-        Set<String> replaced = new java.util.HashSet<>();
         for (Object item : raw) {
             if (item instanceof Header header) {
                 String name = header.getName().toLowerCase(Locale.ROOT);
                 if (!FRAMING_HEADERS.contains(name)) {
-                    if (replaced.add(name)) {
+                    if (rawHeaderNames.add(name)) {
                         requestHeaders.removeAll(header.getName(), true);
                     }
                     requestHeaders.add(header.getName(), header.getValue());
@@ -753,8 +755,15 @@ class NettyClientCall {
 
         if (hasBody(status)) {
             InputStream stream = getResponseEntityStream();
-            // Multiplexed streams may remain idle after their response headers arrive.
-            if (!kind.isStream()) {
+            // Multiplexed streams may remain idle after their response headers arrive, and so may
+            // HTTP/1.1 responses whose caller asked not to wait for their body.
+            org.restlet.Request request = currentRequest;
+            boolean streamed =
+                    request != null
+                            && Boolean.TRUE.equals(
+                                    request.getAttributes()
+                                            .get(HeaderConstants.ATTRIBUTE_STREAMED_RESPONSE));
+            if (!kind.isStream() && !(streamed && size != 0)) {
                 stream = nonEmpty(stream, size == 0);
             }
             if (stream != null) {
@@ -882,7 +891,7 @@ class NettyClientCall {
         }
 
         String userAgent = helper.getUserAgentField();
-        if (userAgent != null) {
+        if (userAgent != null && !rawHeaderNames.contains("user-agent")) {
             headers.set(HttpHeaderNames.USER_AGENT, userAgent);
         }
 

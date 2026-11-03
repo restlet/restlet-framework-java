@@ -65,6 +65,8 @@ import software.amazon.smithy.java.client.core.ClientTransportFactory;
 import software.amazon.smithy.java.client.core.MessageExchange;
 import software.amazon.smithy.java.client.core.error.TransportException;
 import software.amazon.smithy.java.client.core.error.TransportSocketTimeout;
+import software.amazon.smithy.java.client.core.interceptors.ClientInterceptor;
+import software.amazon.smithy.java.client.core.interceptors.RequestHook;
 import software.amazon.smithy.java.client.http.HttpContext;
 import software.amazon.smithy.java.client.rpcv2.RpcV2CborProtocol;
 import software.amazon.smithy.java.core.schema.Schema;
@@ -188,7 +190,9 @@ class SmithyClientAdapterTestCase {
     private final List<Captured> captured = new ArrayList<>();
     private final CountDownLatch firstChunkRead = new CountDownLatch(1);
     private final CountDownLatch released = new CountDownLatch(1);
+    private final CountDownLatch slowArrived = new CountDownLatch(1);
     private final AtomicBoolean restWritten = new AtomicBoolean();
+    private volatile boolean withholdFirstChunk;
     private HttpServer peer;
     private Client restlet;
 
@@ -259,6 +263,11 @@ class SmithyClientAdapterTestCase {
             exchange.getResponseHeaders().add("content-type", "application/octet-stream");
             exchange.sendResponseHeaders(200, 0);
             try (OutputStream out = exchange.getResponseBody()) {
+                if (withholdFirstChunk) {
+                    // Only the head is sent until the client has its response.
+                    out.flush();
+                    await(firstChunkRead);
+                }
                 out.write(new byte[64 * 1024]);
                 out.flush();
                 await(firstChunkRead);
@@ -279,6 +288,7 @@ class SmithyClientAdapterTestCase {
             return;
         }
         if ("slow".equals(tag)) {
+            slowArrived.countDown();
             await(released);
         } else if ("redirect".equals(tag)) {
             exchange.getResponseHeaders().add("location", "/echo/elsewhere");
@@ -308,7 +318,7 @@ class SmithyClientAdapterTestCase {
     private static void await(CountDownLatch latch) {
         try {
             latch.await(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
@@ -340,17 +350,37 @@ class SmithyClientAdapterTestCase {
     }
 
     private DynamicClient signed(ClientTransport<?, ?> transport) {
-        return DynamicClient.builder()
-                .model(model)
-                .serviceId(SIGNED_SERVICE)
-                .protocol(new RestJsonClientProtocol(SIGNED_SERVICE))
-                .transport(transport)
-                .endpoint(endpoint())
-                .putSupportedAuthSchemes(new SigV4AuthScheme("test"))
-                .addIdentityResolver(
-                        IdentityResolver.of(AwsCredentialsIdentity.create("AKID", "SECRET")))
-                .putConfig(RegionSetting.REGION, "us-east-1")
-                .build();
+        return signed(transport, null);
+    }
+
+    /** A SigV4 client, signing the given Host header if not null. */
+    private DynamicClient signed(ClientTransport<?, ?> transport, String host) {
+        var builder =
+                DynamicClient.builder()
+                        .model(model)
+                        .serviceId(SIGNED_SERVICE)
+                        .protocol(new RestJsonClientProtocol(SIGNED_SERVICE))
+                        .transport(transport)
+                        .endpoint(endpoint())
+                        .putSupportedAuthSchemes(new SigV4AuthScheme("test"))
+                        .addIdentityResolver(
+                                IdentityResolver.of(
+                                        AwsCredentialsIdentity.create("AKID", "SECRET")))
+                        .putConfig(RegionSetting.REGION, "us-east-1");
+        if (host != null) {
+            builder.addInterceptor(
+                    new ClientInterceptor() {
+                        @Override
+                        public <R> R modifyBeforeSigning(RequestHook<?, ?, R> hook) {
+                            if (hook.request() instanceof HttpRequest request) {
+                                return hook.asRequestType(
+                                        request.toModifiable().setHeader("Host", host));
+                            }
+                            return hook.request();
+                        }
+                    });
+        }
+        return builder.build();
     }
 
     private static Document echoInput(String tag) {
@@ -418,6 +448,22 @@ class SmithyClientAdapterTestCase {
         assertUnchanged(transport.sent.getFirst(), received);
         assertTrue(received.header("authorization").startsWith("AWS4-HMAC-SHA256 "));
         assertNotNull(received.header("x-amz-date"));
+    }
+
+    /**
+     * A signed Host header naming another authority than the target reaches the peer, which the
+     * client still connects to.
+     */
+    @Test
+    void signedHostHeaderIsKept() {
+        var transport = new Recording(new SmithyClientAdapter(restlet));
+        try (var client = signed(transport, "api.example.com")) {
+            assertEquals("t7", client.call("Echo", echoInput("t7")).getMember("tag").asString());
+        }
+        Captured received = captured.getFirst();
+        assertEquals("api.example.com", received.header("host"));
+        assertTrue(received.header("authorization").contains("host"));
+        assertUnchanged(transport.sent.getFirst(), received);
     }
 
     /** A body of unknown length is streamed, chunked over HTTP/1.1, and arrives intact. */
@@ -587,13 +633,29 @@ class SmithyClientAdapterTestCase {
         }
     }
 
+    /**
+     * Over HTTP/1.1 too, the call returns with the response head: the request timeout does not wait
+     * for the first body byte.
+     */
+    @Test
+    void responseHeadEndsTheRequestTimeout() throws Exception {
+        withholdFirstChunk = true;
+        var transport = new SmithyClientAdapter(restlet);
+        transport.setRequestTimeout(Duration.ofSeconds(2));
+        try (var client = json(transport).retryStrategy(RetryStrategy.noRetries()).build()) {
+            Document output = client.call("Download");
+            try (InputStream body = output.getMember("body").asDataStream().asInputStream()) {
+                firstChunkRead.countDown();
+                assertEquals(64 * 1024 + 4 * 1024 * 1024, body.readAllBytes().length);
+            }
+        }
+    }
+
     @Test
     void modeledErrorKeepsItsShapeAndMembers() {
+        Document input = echoInput("reject");
         try (var client = json(new SmithyClientAdapter(restlet)).build()) {
-            var error =
-                    assertThrows(
-                            DocumentException.class,
-                            () -> client.call("Echo", echoInput("reject")));
+            var error = assertThrows(DocumentException.class, () -> client.call("Echo", input));
             assertEquals("no", error.getContents().getMember("reason").asString());
         }
     }
@@ -601,11 +663,12 @@ class SmithyClientAdapterTestCase {
     /** Redirects reach the SDK, which neither the transport nor the client follows. */
     @Test
     void redirectsAreNotFollowed() {
+        Document input = echoInput("redirect");
         try (var client =
                 json(new SmithyClientAdapter(restlet))
                         .retryStrategy(RetryStrategy.noRetries())
                         .build()) {
-            assertThrows(RuntimeException.class, () -> client.call("Echo", echoInput("redirect")));
+            assertThrows(RuntimeException.class, () -> client.call("Echo", input));
         }
         assertEquals(1, captured.size());
     }
@@ -616,6 +679,7 @@ class SmithyClientAdapterTestCase {
         try (var socket = new java.net.ServerSocket(0)) {
             port = socket.getLocalPort();
         }
+        Document input = echoInput("x");
         try (var client =
                 json(new SmithyClientAdapter(restlet))
                         .endpoint("http://localhost:" + port)
@@ -623,8 +687,7 @@ class SmithyClientAdapterTestCase {
                         .build()) {
             assertInstanceOf(
                     TransportException.class,
-                    assertThrows(
-                            RuntimeException.class, () -> client.call("Echo", echoInput("x"))));
+                    assertThrows(RuntimeException.class, () -> client.call("Echo", input)));
         }
     }
 
@@ -640,12 +703,12 @@ class SmithyClientAdapterTestCase {
         } else {
             transport.setRequestTimeout(Duration.ofMillis(300));
         }
+        Document input = echoInput("slow");
         long start = System.nanoTime();
         try (var client = builder.build()) {
             assertInstanceOf(
                     TransportSocketTimeout.class,
-                    assertThrows(
-                            RuntimeException.class, () -> client.call("Echo", echoInput("slow"))));
+                    assertThrows(RuntimeException.class, () -> client.call("Echo", input)));
         }
         assertTrue(Duration.ofNanos(System.nanoTime() - start).toSeconds() < 5);
     }
@@ -671,9 +734,12 @@ class SmithyClientAdapterTestCase {
                                             failure.complete(e);
                                         }
                                     });
-            while (captured.isEmpty()) {
-                Thread.onSpinWait();
-            }
+            // Interrupts once the peer has the request, unless the call already failed.
+            CompletableFuture.anyOf(
+                            failure,
+                            CompletableFuture.runAsync(
+                                    () -> SmithyClientAdapterTestCase.await(slowArrived)))
+                    .get(10, TimeUnit.SECONDS);
             caller.interrupt();
             assertInstanceOf(TransportException.class, failure.get(5, TimeUnit.SECONDS));
             assertTrue(interrupted.get());
@@ -682,12 +748,11 @@ class SmithyClientAdapterTestCase {
 
     @Test
     void borrowedClientMustNotFollowRedirects() {
+        Client following = new Client(new Context(), Protocol.HTTP);
+        assertThrows(IllegalArgumentException.class, () -> new SmithyClientAdapter(following));
+        var transport = new SmithyClientAdapter(restlet);
         assertThrows(
-                IllegalArgumentException.class,
-                () -> new SmithyClientAdapter(new Client(new Context(), Protocol.HTTP)));
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new SmithyClientAdapter(restlet).setRequestTimeout(Duration.ZERO));
+                IllegalArgumentException.class, () -> transport.setRequestTimeout(Duration.ZERO));
     }
 
     /** Closing the SDK client closes the transport, which stops only a client it owns. */
@@ -729,7 +794,7 @@ class SmithyClientAdapterTestCase {
 
     /** The factory reads the same {@code httpConfig} settings as the SDK's JDK transport. */
     @Test
-    void factoryReadsTheHttpConfigSettings() throws Exception {
+    void factoryReadsTheHttpConfigSettings() {
         try (var transport =
                 (SmithyClientAdapter)
                         new RestletTransportFactory()

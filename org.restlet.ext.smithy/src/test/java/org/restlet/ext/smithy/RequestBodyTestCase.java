@@ -19,9 +19,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import software.amazon.smithy.java.io.datastream.DataStream;
@@ -93,6 +97,33 @@ class RequestBodyTestCase {
                                 new ByteArrayInputStream(payload), null, payload.length),
                         null);
         assertEquals(payload.length, sized.getSize());
+    }
+
+    /** Releasing a written stream closes it, while a replayable file body stays usable. */
+    @Test
+    void releasingClosesOnlyNonReplayableStreams(@TempDir Path temp) throws IOException {
+        AtomicBoolean closed = new AtomicBoolean();
+        var source =
+                new ByteArrayInputStream("once".getBytes(StandardCharsets.US_ASCII)) {
+                    @Override
+                    public void close() {
+                        closed.set(true);
+                    }
+                };
+        Representation body = RequestBody.of(DataStream.ofInputStream(source), null);
+        write(body);
+        assertFalse(closed.get());
+        body.release();
+        assertTrue(closed.get());
+
+        Path file = Files.writeString(temp.resolve("body.txt"), "file");
+        var replayable = DataStream.ofFile(file);
+        Representation fileBody = RequestBody.of(replayable, null);
+        assertArrayEquals("file".getBytes(StandardCharsets.US_ASCII), write(fileBody));
+        fileBody.release();
+        assertArrayEquals(
+                "file".getBytes(StandardCharsets.US_ASCII),
+                write(RequestBody.of(replayable, null)));
     }
 
     @Test

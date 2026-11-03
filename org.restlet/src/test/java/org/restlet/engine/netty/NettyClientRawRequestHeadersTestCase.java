@@ -89,4 +89,26 @@ class NettyClientRawRequestHeadersTestCase {
         assertEquals(List.of("2"), headers.get("Content-Length"));
         assertEquals(List.of("localhost:" + peer.getAddress().getPort()), headers.get("Host"));
     }
+
+    /** A raw User-Agent also replaces the one set by the client's userAgentField parameter. */
+    @Test
+    void rawUserAgentReplacesTheConfiguredOne() throws Exception {
+        Context context = new Context();
+        context.getParameters().set("userAgentField", "configured/1.0");
+        Client configured = new Client(context, Protocol.HTTP);
+        configured.start();
+        try {
+            String uri = "http://localhost:" + peer.getAddress().getPort() + "/";
+            configured.handle(new Request(Method.GET, uri));
+            assertEquals(List.of("configured/1.0"), received.get().get("User-Agent"));
+            Request request = new Request(Method.GET, uri);
+            var raw = new Series<Header>(Header.class);
+            raw.add("User-Agent", "sdk/1.0");
+            request.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
+            configured.handle(request);
+            assertEquals(List.of("sdk/1.0"), received.get().get("User-Agent"));
+        } finally {
+            configured.stop();
+        }
+    }
 }
