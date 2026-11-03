@@ -133,6 +133,24 @@
             <version>${smithy-java.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>server-core</artifactId>
+            <version>${smithy-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>aws-server-restjson</artifactId>
+            <version>${smithy-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>server-rpcv2-cbor</artifactId>
+            <version>${smithy-java.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <testResources>

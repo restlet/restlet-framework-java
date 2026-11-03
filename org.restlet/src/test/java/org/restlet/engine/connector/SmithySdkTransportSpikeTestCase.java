@@ -77,7 +77,7 @@ import software.amazon.smithy.model.shapes.ShapeId;
  * transport below is a test fixture, not the production adapter.
  */
 class SmithySdkTransportSpikeTestCase {
-    private static final String MODEL =
+    static final String MODEL =
             """
             $version: "2"
             namespace spike
