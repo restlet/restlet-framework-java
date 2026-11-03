@@ -198,8 +198,10 @@ class GrpcSdkTransportSpikeTestCase {
     @Test
     void rejectsUnsupportedTransportControlsExplicitly() throws Exception {
         client = new Client(Protocol.HTTP);
-        try (RestletTransportFactory factory =
-                new RestletTransportFactory(client, lastGrpcResponseProtocol)) {
+        RestletTransportFactory factory =
+                new RestletTransportFactory(client, lastGrpcResponseProtocol);
+        // Closed before the finally block, which checks its shutdown.
+        try (factory) {
             var transport =
                     factory.newClientTransport(
                             new RestletSocketAddress("http://localhost:1"),
