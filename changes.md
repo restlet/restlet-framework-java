@@ -112,6 +112,13 @@ Changes log
           Shutdown arriving before SDK listener installation is replayed once; interrupted
           shutdown still closes owned transport resources and preserves the interrupt.
           TLS, streaming methods and physical gRPC connection controls remain unsupported.
+        - Added the Smithy extension, with a smithy-java 1.8.0 client transport on Restlet HTTP
+          client connectors. Generated and dynamic SDK clients find it through service loading,
+          before the JDK transport, or are given one borrowing an existing client. Requests are
+          sent exactly as serialized and signed, redirects are not followed, and response bodies
+          are streamed. Request bodies of unknown length are streamed too; in-memory ones are
+          kept without copy until written, including after an early response. Request timeouts
+          and thread interruption abort the request. Event streams are not supported.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol

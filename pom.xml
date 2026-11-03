@@ -64,6 +64,7 @@
         <lib-mcp-version>2.1.0</lib-mcp-version>
         <lib-hamcrest-version>3.0</lib-hamcrest-version>
         <lib-slf4j-version>2.0.18</lib-slf4j-version>
+        <lib-smithy-java-version>1.8.0</lib-smithy-java-version>
         <lib-spring-version>7.0.8</lib-spring-version>
         <lib-swagger-core-version>2.2.55</lib-swagger-core-version>
         <lib-swagger-parser-version>2.1.48</lib-swagger-parser-version>
@@ -88,6 +89,7 @@
         <module>org.restlet.ext.mcp</module>
         <module>org.restlet.ext.openapi</module>
         <module>org.restlet.ext.slf4j</module>
+        <module>org.restlet.ext.smithy</module>
         <module>org.restlet.ext.spring</module>
         <module>org.restlet.ext.thymeleaf</module>
         <module>org.restlet.ext.velocity</module>
