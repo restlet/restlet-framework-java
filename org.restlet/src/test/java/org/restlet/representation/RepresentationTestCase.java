@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -50,7 +49,7 @@ class RepresentationTestCase {
 
         @Override
         public Reader getReader() {
-            return new StringReader(content);
+            return Reader.of(content);
         }
 
         @Override
@@ -214,7 +213,7 @@ class RepresentationTestCase {
 
         @Override
         public Reader getReader() {
-            return new StringReader("");
+            return Reader.of("");
         }
 
         @Override

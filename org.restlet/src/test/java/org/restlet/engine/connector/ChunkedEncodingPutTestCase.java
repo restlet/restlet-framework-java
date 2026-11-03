@@ -78,7 +78,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
         try {
             if (response.getStatus().isError()) {
-                System.out.println(response.getStatus());
+                IO.println(response.getStatus());
             }
 
             assertNotNull(

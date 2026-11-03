@@ -313,7 +313,10 @@ class SmithyServerSpikeTestCase {
         }
     }
 
-    /** A streaming payload starts reaching the client before the operation's stream ends. */
+    /**
+     * A streaming payload starts reaching the client before the operation's stream ends: the host
+     * copies it without flushing, and the connector sends each full buffer (issue #1632).
+     */
     @Test
     void streamingOutputIsNotBufferedWhole() throws Exception {
         CountDownLatch firstChunkRead = new CountDownLatch(1);
@@ -510,28 +513,12 @@ class SmithyServerSpikeTestCase {
                                         : body.contentLength()) {
                             @Override
                             public void write(java.io.OutputStream out) throws IOException {
-                                copy(body.asInputStream(), out);
+                                try (InputStream in = body.asInputStream()) {
+                                    in.transferTo(out);
+                                }
                             }
                         };
                 response.setEntity(entity);
-            }
-        }
-
-        /**
-         * Copies a payload, flushing whenever the source has nothing more available: the connector
-         * only flushes full buffers once it holds more than its high water mark, so a producer
-         * pausing mid-stream would otherwise hold back what it already produced.
-         */
-        private static void copy(InputStream in, java.io.OutputStream out) throws IOException {
-            try (in) {
-                byte[] buffer = new byte[16 * 1024];
-                int count;
-                while ((count = in.read(buffer)) > 0) {
-                    out.write(buffer, 0, count);
-                    if (in.available() == 0) {
-                        out.flush();
-                    }
-                }
             }
         }
     }

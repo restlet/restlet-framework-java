@@ -46,8 +46,8 @@ class ChallengeRequestReaderTestCase {
                 new ChallengeRequestReader("Basic realm=\"a\", Digest realm=\"b\", nonce=\"x\"")
                         .readValues();
         assertEquals(2, result.size());
-        assertEquals("Basic", result.get(0).getScheme().getTechnicalName());
-        assertEquals("realm=a", result.get(0).getRawValue());
+        assertEquals("Basic", result.getFirst().getScheme().getTechnicalName());
+        assertEquals("realm=a", result.getFirst().getRawValue());
         assertEquals("Digest", result.get(1).getScheme().getTechnicalName());
         assertEquals("realm=b, nonce=x", result.get(1).getRawValue());
     }
@@ -57,7 +57,7 @@ class ChallengeRequestReaderTestCase {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Negotiate, Basic realm=\"a\"").readValues();
         assertEquals(2, result.size());
-        assertEquals("Negotiate", result.get(0).getScheme().getTechnicalName());
+        assertEquals("Negotiate", result.getFirst().getScheme().getTechnicalName());
         assertEquals("Basic", result.get(1).getScheme().getTechnicalName());
     }
 
@@ -66,7 +66,7 @@ class ChallengeRequestReaderTestCase {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Basic realm=\"a, Digest b\"").readValues();
         assertEquals(1, result.size());
-        assertEquals("Basic", result.get(0).getScheme().getTechnicalName());
+        assertEquals("Basic", result.getFirst().getScheme().getTechnicalName());
     }
 
     /** RFC 9110 section 11.2: token68 may end with "=" padding, as Negotiate tokens do. */
@@ -75,8 +75,8 @@ class ChallengeRequestReaderTestCase {
         List<ChallengeRequest> result =
                 new ChallengeRequestReader("Negotiate YIIabc==, Basic realm=\"a\"").readValues();
         assertEquals(2, result.size());
-        assertEquals("Negotiate", result.get(0).getScheme().getTechnicalName());
-        assertTrue(result.get(0).getRawValue().contains("YIIabc"));
+        assertEquals("Negotiate", result.getFirst().getScheme().getTechnicalName());
+        assertTrue(result.getFirst().getRawValue().contains("YIIabc"));
         assertEquals("Basic", result.get(1).getScheme().getTechnicalName());
     }
 }

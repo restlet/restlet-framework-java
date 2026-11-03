@@ -272,7 +272,7 @@ class DirectoryTestCase {
                 .getMetadataService()
                 .setDefaultLanguage(Language.ENGLISH); // default language is not es or fr.
         this.testDir = Files.createTempDirectory("testUserPreferences").toFile();
-        System.out.println(this.testDir.getAbsolutePath());
+        IO.println(this.testDir.getAbsolutePath());
         application.setTestDirectory(testDir);
         application.getDirectory().setModifiable(true);
 

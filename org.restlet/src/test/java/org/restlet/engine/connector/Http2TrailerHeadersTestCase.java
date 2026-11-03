@@ -102,6 +102,6 @@ class Http2TrailerHeadersTestCase {
                                                         header.getName()
                                                                 .toLowerCase(Locale.ROOT))));
         assertEquals("response", response.getTrailers().getFirstValue("x-response-trailer", true));
-        assertEquals("x-response-trailer", response.getTrailers().get(0).getName());
+        assertEquals("x-response-trailer", response.getTrailers().getFirst().getName());
     }
 }

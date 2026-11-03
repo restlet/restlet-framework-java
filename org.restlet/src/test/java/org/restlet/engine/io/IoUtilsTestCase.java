@@ -57,7 +57,7 @@ class IoUtilsTestCase {
         while (result != -1) {
             result = is.read();
             assertEquals(bais.read(), result);
-            System.out.println(result);
+            IO.println(result);
         }
     }
 }
