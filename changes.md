@@ -116,9 +116,11 @@ Changes log
           client connectors. Generated and dynamic SDK clients find it through service loading,
           before the JDK transport, or are given one borrowing an existing client. Requests are
           sent exactly as serialized and signed, redirects are not followed, and response bodies
-          are streamed. Request bodies of unknown length are streamed too; in-memory ones are
-          kept without copy until written, including after an early response. Request timeouts
-          and thread interruption abort the request. Event streams are not supported.
+          are streamed. Request bodies of unknown length are streamed too, and closed once
+          written; in-memory ones are kept without copy until written, including after an early
+          response. A Host header set by the SDK is kept. Request timeouts, which cover the
+          response head, and thread interruption abort the request. Event streams are not
+          supported.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol
@@ -143,8 +145,12 @@ Changes log
           connectors. These do not introduce production RPC extensions.
         - Added the `HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS` request attribute. The HTTP
           client writes these headers as-is, standard ones included, each name replacing the
-          values produced from the Restlet API; headers defining the connection or the message
-          length are ignored. SDKs that serialize and sign their own requests can rely on it.
+          values produced from the Restlet API or the `userAgentField` parameter; headers defining
+          the connection or the message length are ignored. SDKs that serialize and sign their own
+          requests can rely on it.
+        - Added the `HeaderConstants.ATTRIBUTE_STREAMED_RESPONSE` request attribute. The HTTP/1.1
+          client then returns the response with its head, as over HTTP/2 and HTTP/3, instead of
+          waiting for a first body byte to tell whether the body is empty.
         - Added test-only smithy-java 1.8.0 client and server feasibility probes over the
           Restlet HTTP connectors.
         - Added the `EventStreamRepresentation`, `ServerSentEvent` and `EventStreamReader` APIs for

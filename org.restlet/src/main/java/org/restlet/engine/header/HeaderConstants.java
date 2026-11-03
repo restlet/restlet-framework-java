@@ -212,12 +212,22 @@ public final class HeaderConstants {
 
     /**
      * Request attribute holding a {@code Series<Header>} that client connectors supporting it write
-     * as-is, each name replacing the values produced from the Restlet API. Headers defining the
-     * connection or the message length, such as Host, Content-Length or Connection, are ignored.
-     * Unlike {@link org.restlet.Message#getHeaders()}, it may carry standard headers, for SDKs that
-     * serialize and sign their own requests.
+     * as-is, each name replacing the values produced from the Restlet API or the connector
+     * configuration, such as its {@code userAgentField} parameter. Headers defining the connection
+     * or the message length, such as Host, Content-Length or Connection, are ignored. Unlike {@link
+     * org.restlet.Message#getHeaders()}, it may carry standard headers, for SDKs that serialize and
+     * sign their own requests.
      */
     public static final String ATTRIBUTE_RAW_REQUEST_HEADERS = "org.restlet.http.rawRequestHeaders";
+
+    /**
+     * Boolean request attribute. When true, client connectors supporting it return the response as
+     * soon as its head is received, without first reading ahead to tell whether its body is empty:
+     * the response entity may then be an empty stream rather than null. HTTP/2 and HTTP/3 responses
+     * always behave this way; over HTTP/1.1, it lets callers time out on the response head alone
+     * when a streaming peer delays its first body byte.
+     */
+    public static final String ATTRIBUTE_STREAMED_RESPONSE = "org.restlet.http.streamedResponse";
 
     public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 

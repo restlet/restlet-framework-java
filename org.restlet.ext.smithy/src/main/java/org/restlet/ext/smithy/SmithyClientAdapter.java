@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.restlet.Client;
@@ -23,6 +24,7 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
@@ -57,6 +59,9 @@ import software.amazon.smithy.java.io.datastream.DataStream;
  * <p>Event streams are not supported.
  */
 public final class SmithyClientAdapter implements ClientTransport<HttpRequest, HttpResponse> {
+    private static final Executor CALLS =
+            task -> Thread.ofVirtual().name("smithy-restlet-call").start(task);
+
     private final Client client;
     private final boolean owned;
     private volatile Duration requestTimeout;
@@ -168,17 +173,8 @@ public final class SmithyClientAdapter implements ClientTransport<HttpRequest, H
             timeout = requestTimeout;
         }
         // The exchange runs on its own thread, so that the caller can give up on it.
-        CompletableFuture<Response> exchange = new CompletableFuture<>();
-        Thread.ofVirtual()
-                .name("smithy-restlet-call")
-                .start(
-                        () -> {
-                            try {
-                                exchange.complete(client.handle(request));
-                            } catch (Throwable e) {
-                                exchange.completeExceptionally(e);
-                            }
-                        });
+        CompletableFuture<Response> exchange =
+                CompletableFuture.supplyAsync(() -> client.handle(request), CALLS);
         Response response;
         try {
             response =
@@ -208,6 +204,14 @@ public final class SmithyClientAdapter implements ClientTransport<HttpRequest, H
         var raw = new Series<Header>(Header.class);
         req.headers().forEachEntry(raw::add);
         request.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
+        // The connector derives Host from the base reference, and still connects to the target.
+        String host = req.headers().firstValue("host");
+        if (host != null) {
+            Reference resource = request.getResourceRef();
+            resource.setBaseRef(new Reference(resource.getScheme() + "://" + host));
+        }
+        // The request timeout covers the response head, not the wait for a first body byte.
+        request.getAttributes().put(HeaderConstants.ATTRIBUTE_STREAMED_RESPONSE, true);
         return request;
     }
 
