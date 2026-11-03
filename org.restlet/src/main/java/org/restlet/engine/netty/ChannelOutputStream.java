@@ -21,8 +21,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
- * Blocking output stream writing to a Netty channel. Bytes are buffered locally and written as
- * content messages when the buffer is full or on {@link #flush()}.
+ * Blocking output stream writing to a Netty channel. Bytes are buffered locally and sent as content
+ * messages when the buffer is full or on {@link #flush()}. A full buffer is flushed to the peer at
+ * once, so a producer that pauses after filling it doesn't hold back what it produced.
  *
  * <p>Back-pressure: before each write, the calling thread waits until the channel is writable, so a
  * slow peer slows down the producer instead of filling the memory.
@@ -84,7 +85,7 @@ final class ChannelOutputStream extends OutputStream {
         ensureBuffer();
         buffer.writeByte(b);
         if (buffer.writableBytes() == 0) {
-            send(false);
+            send();
         }
     }
 
@@ -98,7 +99,7 @@ final class ChannelOutputStream extends OutputStream {
             off += n;
             len -= n;
             if (buffer.writableBytes() == 0) {
-                send(false);
+                send();
             }
         }
     }
@@ -107,7 +108,7 @@ final class ChannelOutputStream extends OutputStream {
     public void flush() throws IOException {
         ensureOpen();
         if (buffer != null && buffer.isReadable()) {
-            send(true);
+            send();
         } else {
             channel.flush();
         }
@@ -124,7 +125,7 @@ final class ChannelOutputStream extends OutputStream {
         if (!closed) {
             try {
                 if (buffer != null && buffer.isReadable()) {
-                    send(true);
+                    send();
                 }
             } finally {
                 closed = true;
@@ -159,7 +160,7 @@ final class ChannelOutputStream extends OutputStream {
         }
     }
 
-    private void send(boolean flush) throws IOException {
+    private void send() throws IOException {
         Writability.await(channel, writeTimeoutMs);
         awaitInFlightBytes();
         ByteBuf chunk = buffer;
@@ -167,7 +168,7 @@ final class ChannelOutputStream extends OutputStream {
         int size = chunk.readableBytes();
         inFlightBytes.addAndGet(size);
         Object msg = contentFactory.apply(chunk);
-        ChannelFuture future = flush ? channel.writeAndFlush(msg) : channel.write(msg);
+        ChannelFuture future = channel.writeAndFlush(msg);
         future.addListener(f -> onWriteDone(size, f.cause()));
         if (future.isDone() && !future.isSuccess()) {
             throw new IOException("Unable to write to the connection", future.cause());
