@@ -90,6 +90,7 @@
         <module>org.restlet.ext.openapi</module>
         <module>org.restlet.ext.slf4j</module>
         <module>org.restlet.ext.smithy</module>
+        <module>org.restlet.ext.smithy.server</module>
         <module>org.restlet.ext.spring</module>
         <module>org.restlet.ext.thymeleaf</module>
         <module>org.restlet.ext.velocity</module>
