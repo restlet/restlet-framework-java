@@ -213,10 +213,11 @@ public final class HeaderConstants {
     /**
      * Request attribute holding a {@code Series<Header>} that client connectors supporting it write
      * as-is, each name replacing the values produced from the Restlet API or the connector
-     * configuration, such as its {@code userAgentField} parameter. Headers defining the connection
-     * or the message length, such as Host, Content-Length or Connection, are ignored. Unlike {@link
-     * org.restlet.Message#getHeaders()}, it may carry standard headers, for SDKs that serialize and
-     * sign their own requests.
+     * configuration, such as its {@code userAgentField} parameter. A Host header is written as-is,
+     * explicit default port included, while the connection still goes to the resource reference.
+     * Headers defining the connection or the message length, such as Content-Length or Connection,
+     * are ignored. Unlike {@link org.restlet.Message#getHeaders()}, it may carry standard headers,
+     * for SDKs that serialize and sign their own requests.
      */
     public static final String ATTRIBUTE_RAW_REQUEST_HEADERS = "org.restlet.http.rawRequestHeaders";
 

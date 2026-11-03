@@ -99,10 +99,9 @@ class NettyClientCall {
     /** The request headers. */
     private final Series<Header> requestHeaders = new Series<>(Header.class);
 
-    /** Raw request headers that the connector derives from the target, entity or connection. */
+    /** Raw request headers that the connector derives from the entity or connection. */
     private static final Set<String> FRAMING_HEADERS =
             Set.of(
-                    "host",
                     "content-length",
                     "transfer-encoding",
                     "connection",

@@ -40,7 +40,11 @@ final class RequestBody {
      * @return The representation, or null.
      */
     static Representation of(DataStream body, MediaType mediaType) {
-        if (body == null || body.contentLength() == 0) {
+        if (body == null) {
+            return null;
+        }
+        if (body.contentLength() == 0) {
+            closeUnlessReplayable(body);
             return null;
         }
         boolean pooled = body instanceof PooledDataStream;
@@ -74,15 +78,21 @@ final class RequestBody {
                     @Override
                     public void release() {
                         super.release();
-                        // Writing a stream does not close it. A replayable body, such as a file,
-                        // stays open for a retry of the SDK.
-                        if (!body.isReplayable()) {
-                            body.close();
-                        }
+                        closeUnlessReplayable(body);
                     }
                 };
         result.setTransient(true);
         return result;
+    }
+
+    /**
+     * Closes a body that can't be read again. Writing a stream does not close it, and closing it
+     * unblocks a writer reading it. A replayable body, such as a file, stays open for a retry.
+     */
+    private static void closeUnlessReplayable(DataStream body) {
+        if (!body.isReplayable()) {
+            body.close();
+        }
     }
 
     private static void write(List<ByteBuffer> buffers, OutputStream out) throws IOException {
