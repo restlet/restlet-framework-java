@@ -231,6 +231,9 @@ Changes log
           "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
           routers or applications under path prefixes on one connector.
     - Bugs fixed
+        - The Netty connectors now flush each full output buffer of a request or response body,
+          so a producer that pauses after filling one no longer holds back what it produced
+          until it resumes or ends. Issue #1632.
         - `Client.setContext()` now stores the connector helper in the "org.restlet.engine.helper"
           context attribute, as the constructors do, so clients added with
           `Component.getClients().add(Protocol)` expose it too.
