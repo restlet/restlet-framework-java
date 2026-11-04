@@ -262,6 +262,34 @@ class SmithyServerAdapterTestCase {
         assertEquals(404, call(Method.GET, "/nothing/here", null).getStatus().getCode());
     }
 
+    /**
+     * Attached at two routing bases, the adapter resolves the operation below each: the parent's
+     * best-match scoring of "/api/notes/a" misses, and doesn't hide "/notes/a" from the child.
+     */
+    @Test
+    void operationsResolveBelowEachRoutingBase() throws Exception {
+        adapter = new SmithyServerAdapter();
+        adapter.getServices().add(service());
+        adapter.start();
+        Router child = new Router();
+        adapter.attachTo(child);
+        Router parent = new Router();
+        parent.setDefaultMatchingMode(Router.MODE_BEST_MATCH);
+        adapter.attachTo(parent);
+        parent.attach("/api", child);
+        server = new Server(Protocol.HTTP, 0, parent);
+        server.start();
+        restlet = new Client(Protocol.HTTP);
+        restlet.start();
+        Response response =
+                call(
+                        Method.PUT,
+                        "/api/notes/a",
+                        new StringRepresentation("{\"text\":\"t\"}", MediaType.APPLICATION_JSON));
+        assertEquals(200, response.getStatus().getCode());
+        assertEquals("t", notes.get("a"));
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void uploadOfUnknownLengthIsStreamedToTheOperation(boolean http2) throws Exception {
