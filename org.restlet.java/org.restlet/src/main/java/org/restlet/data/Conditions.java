@@ -19,7 +19,18 @@ import java.util.List;
 
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP
- * conditional headers.
+ * conditional headers.<br>
+ * <br>
+ * The entity tags are compared as RFC 9110 section 13.1 requires: "If-Range"
+ * uses the strong comparison ({@link Tag#strongMatch(Tag)}, a weak tag never
+ * matches), "If-None-Match" uses the weak comparison
+ * ({@link Tag#weakMatch(Tag)}). "If-Match" ignores the weakness, which the
+ * strong comparison of the RFC would not; it does not in Restlet 3.0. Note that
+ * {@code new Tag(String)} creates a <b>weak</b> tag: use
+ * {@code new Tag(String, false)} for a resource that clients must be able to
+ * resume with "If-Range". The dates have a precision of one second, and an
+ * "If-Modified-Since" date later than the current time is ignored (RFC 2616
+ * section 14.25, kept although RFC 9110 does not require it).
  * 
  * @see <a href=
  *      "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24"
@@ -159,15 +170,17 @@ public final class Conditions {
 		if (getRangeTag() != null) {
 			boolean all = getRangeTag().equals(Tag.ALL);
 
-			// If a tag exists
+			// If a tag exists. RFC 9110 section 13.1.5: strong comparison, a weak
+			// tag never matches.
 			if (tag != null) {
-				if (all || getRangeTag().equals(tag)) {
+				if (all || getRangeTag().strongMatch(tag)) {
 					result = Status.SUCCESS_OK;
 				}
 			}
 		} else if (getRangeDate() != null) {
-			// If a modification date exists
-			if (getRangeDate().equals(modificationDate)) {
+			// If a modification date exists. The dates of the headers have a
+			// precision of one second.
+			if (modificationDate != null && DateUtils.equals(getRangeDate(), modificationDate)) {
 				result = Status.SUCCESS_OK;
 			}
 		}
@@ -189,6 +202,22 @@ public final class Conditions {
 	}
 
 	/**
+	 * Indicates if a list of tags contains "*".
+	 * 
+	 * @param tags The tags to look into.
+	 * @return True if one of the tags is "*".
+	 */
+	private static boolean isAll(List<Tag> tags) {
+		for (Tag tag : tags) {
+			if (Tag.ALL.getName().equals(tag.getName())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns the conditional status of a variant using a given method.
 	 * 
 	 * @param method           The request method.
@@ -205,7 +234,7 @@ public final class Conditions {
 		if ((this.match != null) && !this.match.isEmpty()) {
 			boolean matched = false;
 			boolean failed = false;
-			boolean all = (getMatch().size() > 0) && getMatch().get(0).equals(Tag.ALL);
+			boolean all = isAll(getMatch());
 			String statusMessage = null;
 
 			if (entityExists) {
@@ -247,15 +276,19 @@ public final class Conditions {
 			boolean matched = false;
 
 			if (entityExists) {
-				// If a tag exists
-				if (tag != null) {
+				if (isAll(getNoneMatch())) {
+					// RFC 9110 section 13.1.2: "*" is false if any current
+					// representation exists
+					matched = true;
+				} else if (tag != null) {
 					// Check if it matches one of the representations
-					// already cached by the client
+					// already cached by the client. RFC 9110 section 13.1.2:
+					// weak comparison, whatever the method.
 					Tag noneMatchTag;
 
 					for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched && iter.hasNext();) {
 						noneMatchTag = iter.next();
-						matched = noneMatchTag.equals(tag, (Method.GET.equals(method) || Method.HEAD.equals(method)));
+						matched = noneMatchTag.weakMatch(tag);
 					}
 
 					// The current representation matches one of those already
@@ -269,8 +302,6 @@ public final class Conditions {
 								|| (modificationDate == null) || DateUtils.after(modifiedSince, modificationDate));
 						matched = !isModifiedSince;
 					}
-				} else {
-					matched = (getNoneMatch().size() > 0) && Tag.ALL.equals(getNoneMatch().get(0));
 				}
 			}
 

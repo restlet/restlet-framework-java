@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RangeTestCase {
 
-    private static final Tag ENTITY_TAG = new Tag("TestRangeGetRestlet");
+    private static final Tag ENTITY_TAG = new Tag("TestRangeGetRestlet", false);
 
     /**
      * Internal class used for test purpose.
@@ -213,7 +213,7 @@ public class RangeTestCase {
 
         @Test
         public void rangeShouldNotApply() throws Exception {
-            Tag entityTag = new Tag(UUID.randomUUID().toString());
+            Tag entityTag = new Tag(UUID.randomUUID().toString(), false);
             request.getConditions().setRangeTag(entityTag);
             Response response = testRangeApplication.handle(request);
             assertEquals(Status.SUCCESS_OK, response.getStatus());

@@ -6,6 +6,7 @@ Changes log
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin; it has no effect while the allowed origins contain `*`. Issue #1611.
         - CorsService and CorsFilter now log a warning when `*` is allowed as origin together with credentials (any web site could then send credentialed requests), and their Javadoc references the Fetch standard instead of the W3C CORS draft. Issue #1611.
         - Added an opt-in UTF-8 handling of the HTTP Basic credentials (RFC 7617), enabled with the `org.restlet.engine.security.basic.utf8` system property (`HttpBasicHelper.UTF8_PROPERTY`): a Basic challenge then advertises `charset="UTF-8"`, a server decodes the credentials as UTF-8 (falling back to ISO-8859-1 if they are not valid UTF-8), and a client answering such a challenge encodes its credentials in UTF-8. Disabled by default (ISO-8859-1). Issue #1455.
+        - Added `Tag.strongMatch(Tag)` and `Tag.weakMatch(Tag)`, the strong and weak comparison functions of RFC 9110 section 8.8.3.2.
     - Bugs fixed
         - Missing throw in JsonConverter.java. Issue #729.
         - Type mismatch on container access in MethodAnnotationInfo. Issue #1278.
@@ -14,6 +15,10 @@ Changes log
         - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=` (such as a `Negotiate` token): the whole header was dropped. Issue #191.
         - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
         - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
+        - `If-None-Match: *` was ignored for a resource having an entity tag: a "create only" PUT overwrote the existing resource instead of getting a 412 (a GET did not get a 304). It is now false for any existing resource, as required by RFC 9110 section 13.1.2. `*` is also recognized when it is not the first tag of an `If-Match` or `If-None-Match` list.
+        - `If-None-Match` compares the entity tags with the weak comparison whatever the method: on a GET, a weak tag and a strong tag with the same name did not match.
+        - `If-Range` accepted two weak entity tags with the same name, which RFC 9110 forbids (the partial content of a weak representation can be spliced with another one): it now uses the strong comparison, so a resource returning a weak tag (the default of `new Tag(String)`) answers a `Range` request with an `If-Range` with a complete 200 response. Use `new Tag(value, false)` for a strong tag.
+        - `If-Range` with a date never matched when the modification date of the entity had milliseconds, as `FileRepresentation` has, so clients could not resume a download. The dates are now compared with a precision of one second.
 
 - 2.6.1 (30-09-2026)
     - Bugs fixed
