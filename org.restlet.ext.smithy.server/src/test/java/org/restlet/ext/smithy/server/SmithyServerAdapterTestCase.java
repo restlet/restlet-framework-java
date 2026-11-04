@@ -52,6 +52,7 @@ import org.restlet.ext.smithy.server.generated.service.PutNoteOperation;
 import org.restlet.ext.smithy.server.generated.service.RequiredUploadOperation;
 import org.restlet.ext.smithy.server.generated.service.UploadOperation;
 import org.restlet.ext.smithy.server.generated.service.WaitOperation;
+import org.restlet.ext.smithy.server.generated.service.WaitOperationAsync;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Router;
@@ -66,6 +67,8 @@ class SmithyServerAdapterTestCase {
     private final CountDownLatch waitStarted = new CountDownLatch(1);
     private final CountDownLatch waitReleased = new CountDownLatch(1);
     private final CountDownLatch waitInterrupted = new CountDownLatch(1);
+    private volatile boolean skipUploads;
+    private volatile boolean waitAsync;
     private SmithyServerAdapter adapter;
     private Server server;
     private Client restlet;
@@ -85,36 +88,56 @@ class SmithyServerAdapterTestCase {
     }
 
     private Notes service() {
-        return Notes.builder()
-                .addGetNoteOperation(
-                        (GetNoteOperation)
-                                (input, context) -> {
-                                    String text = notes.get(input.getId());
-                                    if (text == null) {
-                                        throw NoteNotFound.builder().id(input.getId()).build();
-                                    }
-                                    return GetNoteOutput.builder().text(text).build();
-                                })
-                .addPutNoteOperation(
-                        (PutNoteOperation)
-                                (input, context) -> {
-                                    notes.put(input.getId(), input.getText());
-                                    return PutNoteOutput.builder().build();
-                                })
-                .addRequiredUploadOperation(
-                        (RequiredUploadOperation)
-                                (input, context) -> RequiredUploadOutput.builder().build())
-                .addUploadOperation(
-                        (UploadOperation)
-                                (input, context) -> {
-                                    try (InputStream body = input.getBody().asInputStream()) {
-                                        return UploadOutput.builder()
-                                                .received(body.transferTo(OutputStreams.NULL))
-                                                .build();
-                                    } catch (IOException e) {
-                                        throw new java.io.UncheckedIOException(e);
-                                    }
-                                })
+        Notes.WaitStage beforeWait =
+                Notes.builder()
+                        .addGetNoteOperation(
+                                (GetNoteOperation)
+                                        (input, context) -> {
+                                            String text = notes.get(input.getId());
+                                            if (text == null) {
+                                                throw NoteNotFound.builder()
+                                                        .id(input.getId())
+                                                        .build();
+                                            }
+                                            return GetNoteOutput.builder().text(text).build();
+                                        })
+                        .addPutNoteOperation(
+                                (PutNoteOperation)
+                                        (input, context) -> {
+                                            notes.put(input.getId(), input.getText());
+                                            return PutNoteOutput.builder().build();
+                                        })
+                        .addRequiredUploadOperation(
+                                (RequiredUploadOperation)
+                                        (input, context) -> RequiredUploadOutput.builder().build())
+                        .addUploadOperation(
+                                (UploadOperation)
+                                        (input, context) -> {
+                                            try (InputStream body =
+                                                    input.getBody().asInputStream()) {
+                                                return UploadOutput.builder()
+                                                        .received(
+                                                                skipUploads
+                                                                        ? skipAll(body)
+                                                                        : body.transferTo(
+                                                                                OutputStreams.NULL))
+                                                        .build();
+                                            } catch (IOException e) {
+                                                throw new java.io.UncheckedIOException(e);
+                                            }
+                                        });
+        if (waitAsync) {
+            return beforeWait
+                    .addWaitOperation(
+                            (WaitOperationAsync)
+                                    (input, context) -> {
+                                        waitStarted.countDown();
+                                        // Never completes.
+                                        return new CompletableFuture<>();
+                                    })
+                    .build();
+        }
+        return beforeWait
                 .addWaitOperation(
                         (WaitOperation)
                                 (input, context) -> {
@@ -302,6 +325,34 @@ class SmithyServerAdapterTestCase {
         assertEquals(200, call(Method.POST, "/wait", null).getStatus().getCode());
     }
 
+    /** Skipped bytes count toward the limit, too. */
+    @Test
+    void skippedRequestBytesAreBounded() throws Exception {
+        adapter = new SmithyServerAdapter();
+        adapter.setMaxRequestBytes(1024 * 1024);
+        skipUploads = true;
+        start(true);
+        var body =
+                new InputRepresentation(
+                        new ByteArrayInputStream(new byte[2 * 1024 * 1024]),
+                        MediaType.APPLICATION_OCTET_STREAM);
+        assertEquals(413, call(Method.POST, "/upload", body).getStatus().getCode());
+    }
+
+    /** An asynchronous operation that never completes still ends at its deadline. */
+    @Test
+    void pendingAsyncOperationsEndAtTheirDeadline() throws Exception {
+        adapter = new SmithyServerAdapter();
+        adapter.setMaxCallDuration(Duration.ofMillis(300));
+        adapter.setMaxConcurrentCalls(1);
+        waitAsync = true;
+        start(false);
+        assertEquals(503, call(Method.POST, "/wait", null).getStatus().getCode());
+        // Its slot is free again.
+        assertEquals(503, call(Method.POST, "/wait", null).getStatus().getCode());
+        assertEquals(200, call(Method.GET, "/other", null).getStatus().getCode());
+    }
+
     @Test
     void operationsRunningTooLongAreInterrupted() throws Exception {
         adapter = new SmithyServerAdapter();
@@ -340,6 +391,21 @@ class SmithyServerAdapterTestCase {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new SmithyServerAdapter().setMaxCallDuration(Duration.ZERO));
+    }
+
+    /** Skips a stream to its end, returning the bytes skipped. */
+    private static long skipAll(InputStream in) throws IOException {
+        long total = 0;
+        while (true) {
+            long skipped = in.skip(64 * 1024);
+            if (skipped > 0) {
+                total += skipped;
+            } else if (in.read() < 0) {
+                return total;
+            } else {
+                total++;
+            }
+        }
     }
 
     /** Output stream discarding its bytes. */
