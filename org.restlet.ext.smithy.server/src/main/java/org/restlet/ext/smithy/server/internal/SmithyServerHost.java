@@ -17,9 +17,11 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
@@ -179,8 +181,18 @@ public final class SmithyServerHost implements AutoCloseable {
             call.interrupt();
         }
         request.getDisconnectSignal().thenAccept(cause -> call.interrupt());
-        ScheduledFuture<?> deadline =
-                timer.schedule(call::expire, maxCallDuration.toNanos(), TimeUnit.NANOSECONDS);
+        ScheduledFuture<?> deadline;
+        try {
+            deadline =
+                    timer.schedule(call::expire, maxCallDuration.toNanos(), TimeUnit.NANOSECONDS);
+        } catch (RejectedExecutionException e) {
+            // The host stopped while this call started.
+            call.finish();
+            running.remove(call);
+            response.setStatus(
+                    Status.SERVER_ERROR_SERVICE_UNAVAILABLE, "The Smithy server stopped");
+            return;
+        }
         var job =
                 new HttpJob(
                         prepared.resolution().operation(),
@@ -212,8 +224,10 @@ public final class SmithyServerHost implements AutoCloseable {
             running.remove(call);
         }
         if (body != null && body.exceeded) {
+            close(job.response().getSerializedValue());
             response.setStatus(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE);
         } else if (expired) {
+            close(job.response().getSerializedValue());
             response.setStatus(
                     Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
                     "The operation exceeded its maximum duration");
@@ -241,13 +255,28 @@ public final class SmithyServerHost implements AutoCloseable {
         }
     }
 
-    /** Runs a step, which may also fail synchronously, recording its failure in the job. */
+    /**
+     * Runs a step, which may also fail synchronously, recording its failure in the job. An
+     * interrupted wait cancels the pending step and keeps the thread interrupted, so the waits of
+     * the remaining steps end at once too.
+     */
     private static void join(HttpJob job, Supplier<CompletableFuture<Void>> step) {
+        CompletableFuture<Void> future;
         try {
-            step.get().join();
-        } catch (CompletionException e) {
-            job.setFailure(e.getCause());
+            future = step.get();
         } catch (RuntimeException e) {
+            job.setFailure(e);
+            return;
+        }
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            job.setFailure(e.getCause());
+        } catch (InterruptedException e) {
+            future.cancel(true);
+            job.setFailure(e);
+            Thread.currentThread().interrupt();
+        } catch (CancellationException e) {
             job.setFailure(e);
         }
     }
@@ -259,7 +288,9 @@ public final class SmithyServerHost implements AutoCloseable {
         smithyResponse.headers().forEachEntry(raw::add);
         response.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_RESPONSE_HEADERS, raw);
         DataStream body = smithyResponse.getSerializedValue();
-        if (body != null && body.contentLength() != 0) {
+        if (body == null || body.contentLength() == 0) {
+            close(body);
+        } else {
             response.setEntity(
                     new OutputRepresentation(
                             body.contentType() == null
@@ -279,10 +310,21 @@ public final class SmithyServerHost implements AutoCloseable {
 
                         @Override
                         public void release() {
-                            super.release();
-                            release.run();
+                            try {
+                                super.release();
+                                close(body);
+                            } finally {
+                                release.run();
+                            }
                         }
                     });
+        }
+    }
+
+    /** Closes an SDK body that is not written, or no longer needed. */
+    private static void close(DataStream body) {
+        if (body != null) {
+            body.close();
         }
     }
 
@@ -348,6 +390,15 @@ public final class SmithyServerHost implements AutoCloseable {
         @Override
         public int read(byte[] buffer, int offset, int length) throws IOException {
             int result = super.read(buffer, offset, length);
+            if (result > 0) {
+                count(result);
+            }
+            return result;
+        }
+
+        @Override
+        public long skip(long n) throws IOException {
+            long result = super.skip(n);
             if (result > 0) {
                 count(result);
             }
