@@ -121,12 +121,14 @@ Changes log
           response. A Host header set by the SDK is kept. Request timeouts, which cover the
           response head, and thread interruption abort the request. Event streams are not
           supported.
-        - Added the experimental Smithy server extension (`org.restlet.ext.smithy.server`), hosting
+        - Added the experimental Smithy server artifact (`org.restlet.ext.smithy.server`), whose
+          `SmithyServerAdapter` joins the `org.restlet.ext.smithy` package, hosting
           smithy-java 1.8.0 services, generated or built from a model, behind a Restlet router
           beside other routes. The SDK protocols resolve, validate and serialize each call, and its
           handlers run on the request thread. Request bodies, concurrent calls and call durations
           are bounded; deadlines, client disconnects and stopping interrupt the operation. It runs
-          on the class path only, as smithy-java's server modules split a package.
+          on the class path only, as smithy-java's server modules split a package, with
+          `org.restlet.ext.smithy` on the class path too.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol

@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.smithy.server.internal;
+package org.restlet.ext.smithy.internal;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
