@@ -19,6 +19,7 @@ Changes log
     - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=` (such as a `Negotiate` token): the whole header was dropped. Issue #191.
     - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
     - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
+    - The `Range` request header is now handled as RFC 9110 section 14 requires. A header with a range unit other than `bytes`, or an invalid one (`bytes=a-b`, `bytes=5-3`, `bytes=`, a number too large for a `long`), is ignored and the whole entity is returned, instead of a 500 error (`NumberFormatException`), a 501 or a meaningless 206: `RangeReader.read` returns an empty list and never throws. The `bytes` unit is matched ignoring case. A range selecting nothing of the entity (first position at or after its end, or `bytes=-0`) is answered with a 416 (Range Not Satisfiable) and a `Content-Range: bytes */length` header, instead of a 206 or a response the client could not read. A range ending after the end of the entity (`bytes=8-12` on 10 bytes), or a suffix longer than it (`bytes=-500`), is cut at the end of the entity, instead of an invalid `Content-Range` or a broken response. An empty entity still ignores the header, and several ranges still get a 501.
 
 - 2.7.0 (30-09-2026)
   - Misc
