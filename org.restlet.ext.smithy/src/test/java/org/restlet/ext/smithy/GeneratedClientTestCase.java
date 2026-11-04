@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
@@ -60,7 +63,7 @@ class GeneratedClientTestCase {
         restlet.stop();
     }
 
-    /** Greets the name of the path, or refuses "nobody"; counts uploaded bytes. */
+    /** Greets the name of the path, or refuses "nobody"; digests uploaded bytes. */
     private void serve(HttpExchange exchange) throws IOException {
         byte[] body = exchange.getRequestBody().readAllBytes();
         String path = exchange.getRequestURI().getRawPath();
@@ -69,7 +72,7 @@ class GeneratedClientTestCase {
         byte[] response;
         int status = 200;
         if (path.startsWith("/upload")) {
-            exchange.getResponseHeaders().add("x-received", Integer.toString(body.length));
+            exchange.getResponseHeaders().add("x-received", received(body));
             exchange.sendResponseHeaders(200, -1);
             exchange.close();
             return;
@@ -95,6 +98,17 @@ class GeneratedClientTestCase {
         exchange.sendResponseHeaders(status, response.length);
         exchange.getResponseBody().write(response);
         exchange.close();
+    }
+
+    /** The length and SHA-256 of a body, so that a corrupted body of the right size shows. */
+    private static String received(byte[] body) {
+        try {
+            return body.length
+                    + ":"
+                    + HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(body));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private String endpoint() {
@@ -141,7 +155,7 @@ class GeneratedClientTestCase {
                                                 DataStream.ofInputStream(
                                                         new ByteArrayInputStream(payload)))
                                         .build());
-        assertEquals(Integer.toString(payload.length), output.getReceived());
+        assertEquals(received(payload), output.getReceived());
     }
 
     /**
