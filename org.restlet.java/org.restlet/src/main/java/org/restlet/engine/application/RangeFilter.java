@@ -18,6 +18,7 @@ import org.restlet.routing.Filter;
 import org.restlet.service.RangeService;
 
 import static org.restlet.data.Range.isBytesRange;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH;
 
 /**
  * Filter that is in charge to check the responses to requests for partial
@@ -62,8 +63,13 @@ public class RangeFilter extends Filter {
                             (!request.getConditions().hasSomeRange()
                                     || request.getConditions().getRangeStatus(response.getEntity()).isSuccess())) {
                         Range requestedRange = request.getRanges().get(0);
+                        boolean knownSize = response.getEntity().hasKnownSize();
 
-                        if ((!response.getEntity().hasKnownSize())
+                        if (!rangedEntity
+                                && knownSize
+                                && isNotSatisfiable(requestedRange, response.getEntity().getSize())) {
+                            rangeNotSatisfiable(response, response.getEntity().getSize());
+                        } else if ((!knownSize)
                                 && ((requestedRange.getIndex() == Range.INDEX_LAST
                                 || requestedRange.getSize() == Range.SIZE_MAX)
                                 && !(requestedRange.getIndex() == Range.INDEX_LAST
@@ -79,12 +85,21 @@ public class RangeFilter extends Filter {
                                         "The range of the response entity is not equal to the requested one.");
                             }
 
-                            if (response.getEntity().hasKnownSize()
-                                    && requestedRange.getSize() > response.getEntity().getAvailableSize()) {
-                                requestedRange.setSize(Range.SIZE_MAX);
+                            Range servedRange = requestedRange;
+
+                            if (knownSize
+                                    && endsPastTheEnd(requestedRange, response.getEntity().getAvailableSize())) {
+                                // A range ending past the end of the entity is cut at its end, and a suffix
+                                // longer than the entity selects all of it (RFC 9110 section 14.1.2). The
+                                // requested range is left unchanged.
+                                servedRange = new Range(
+                                        (requestedRange.getIndex() == Range.INDEX_LAST) ? Range.INDEX_FIRST
+                                                : requestedRange.getIndex(),
+                                        Range.SIZE_MAX, requestedRange.getInstanceSize(),
+                                        requestedRange.getUnitName());
                             }
 
-                            response.setEntity(new RangeRepresentation(response.getEntity(), requestedRange));
+                            response.setEntity(new RangeRepresentation(response.getEntity(), servedRange));
                             response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
                         }
                     }
@@ -93,6 +108,44 @@ public class RangeFilter extends Filter {
                 }
             }
         }
+    }
+
+    /**
+     * Indicates if a byte range selects nothing of an entity of the given length (RFC 9110 section
+     * 14.1.1): its first position is at or past the end, or it is a suffix of zero bytes.
+     */
+    private static boolean isNotSatisfiable(Range range, long entitySize) {
+        if (!isBytesRange(range)) {
+            return false;
+        }
+
+        return (range.getIndex() >= Range.INDEX_FIRST)
+                ? range.getIndex() >= entitySize
+                : range.getSize() == 0;
+    }
+
+    /**
+     * Indicates if a range of known size ends after the last byte of an entity of the given length.
+     */
+    private static boolean endsPastTheEnd(Range range, long entitySize) {
+        if (range.getSize() == Range.SIZE_MAX) {
+            return false;
+        }
+
+        return (range.getIndex() == Range.INDEX_LAST)
+                ? range.getSize() > entitySize
+                : range.getSize() > entitySize - range.getIndex();
+    }
+
+    /**
+     * Answers a 416 (Range Not Satisfiable) response, whose Content-Range header gives the complete
+     * length of the entity (RFC 9110 sections 14.2 and 14.4).
+     */
+    private void rangeNotSatisfiable(Response response, long completeLength) {
+        response.getEntity().release();
+        response.setEntity(null);
+        response.setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+        response.getAttributes().put(ATTRIBUTE_RANGE_COMPLETE_LENGTH, completeLength);
     }
 
     /**

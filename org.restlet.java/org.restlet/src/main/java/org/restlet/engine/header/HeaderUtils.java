@@ -35,6 +35,7 @@ import static org.restlet.data.Method.OPTIONS;
 import static org.restlet.data.Range.RANGE_BYTES_UNIT;
 import static org.restlet.data.Range.isBytesRange;
 import static org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED;
+import static org.restlet.data.Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
 import static org.restlet.engine.header.HeaderConstants.*;
 import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
 import static org.restlet.representation.Representation.UNKNOWN_SIZE;
@@ -365,6 +366,21 @@ public class HeaderUtils {
 	}
 
 	/**
+	 * Adds the "Content-Range: bytes *&#47;length" header of a 416 (Range Not Satisfiable) response
+	 * (RFC 9110 section 14.4), when the complete length was set by the range filter.
+	 */
+	private static void addUnsatisfiedRangeHeader(Response response, Series<Header> headers) {
+		if (CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE.equals(response.getStatus())
+				&& response.getAttributes().get(ATTRIBUTE_RANGE_COMPLETE_LENGTH)
+						instanceof Long completeLength) {
+			addHeader(
+					HEADER_CONTENT_RANGE,
+					RangeWriter.writeUnsatisfied(RANGE_BYTES_UNIT, completeLength),
+					headers);
+		}
+	}
+
+	/**
 	 * Adds the headers based on the {@link Response} to the given {@link Series}.
 	 * 
 	 * @param response The {@link Response} to copy the headers from.
@@ -374,6 +390,8 @@ public class HeaderUtils {
 		if (response.getServerInfo().isAcceptingRanges()) {
 			addHeader(HEADER_ACCEPT_RANGES, RANGE_BYTES_UNIT, headers);
 		}
+
+		addUnsatisfiedRangeHeader(response, headers);
 
 		if (response.getAge() > 0) {
 			addHeader(HEADER_AGE, Integer.toString(response.getAge()), headers);

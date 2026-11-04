@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -97,5 +98,37 @@ public class HeaderUtilsTestCase {
 		assertEquals(rep.getDigest().getAlgorithm(),
 				org.restlet.data.Digest.ALGORITHM_MD5);
 		assertEquals(new String(rep.getDigest().getValue()), md5hash);
+	}
+
+	private static String contentRangeOfResponse(Response response) {
+		Series<Header> headers = new Series<>(Header.class);
+		HeaderUtils.addResponseHeaders(response, headers);
+		return headers.getFirstValue("Content-Range", true);
+	}
+
+	@Test
+	void addResponseHeaders_unsatisfiableRange_writesTheCompleteLengthInContentRange() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+		response.getAttributes().put(HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH, 1234L);
+
+		assertEquals("bytes */1234", contentRangeOfResponse(response));
+	}
+
+	@Test
+	void addResponseHeaders_unsatisfiableRangeWithoutLength_writesNoContentRange() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+
+		assertNull(contentRangeOfResponse(response));
+	}
+
+	@Test
+	void addResponseHeaders_completeLengthOnAnotherStatus_isIgnored() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.SUCCESS_OK);
+		response.getAttributes().put(HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH, 1234L);
+
+		assertNull(contentRangeOfResponse(response));
 	}
 }
