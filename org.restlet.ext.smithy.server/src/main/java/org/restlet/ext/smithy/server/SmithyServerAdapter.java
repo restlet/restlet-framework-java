@@ -33,10 +33,10 @@ import software.amazon.smithy.java.server.Service;
  * <p>Register services before {@link #start()}, then {@link #attachTo(Router) attach} the adapter
  * to a router, beside other routes. Calls are bounded: a request body larger than {@link
  * #setMaxRequestBytes} gets a 413 response, calls beyond {@link #setMaxConcurrentCalls} get a 503
- * response, and an operation still running after {@link #setMaxCallDuration} is interrupted, its
- * call getting a 503 response. A client disconnecting also interrupts its operation, and stopping
- * the adapter interrupts every running one: the SDK has no cancellation of its own. This adapter is
- * single-use.
+ * response (a call counts while its operation runs and its response body is written), and an
+ * operation still running after {@link #setMaxCallDuration} is interrupted, its call getting a 503
+ * response. A client disconnecting also interrupts its operation, and stopping the adapter
+ * interrupts every running one: the SDK has no cancellation of its own. This adapter is single-use.
  *
  * <p>The smithy-java server API is unstable ({@code @SmithyUnstableApi}) in 1.8.0, and its modules
  * split a package, so that it only runs on the class path. Event streams are not supported.

@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -90,8 +91,9 @@ public final class SmithyServerHost implements AutoCloseable {
         timer.setRemoveOnCancelPolicy(true);
     }
 
-    /** A request mapped to the SDK, with its operation, or none. */
-    private record Prepared(HttpRequest request, ServiceProtocolResolutionResult resolution) {}
+    /** A request mapped to the SDK below a routing base, with its operation, or none. */
+    private record Prepared(
+            String remaining, HttpRequest request, ServiceProtocolResolutionResult resolution) {}
 
     /**
      * Indicates whether a request calls a hosted operation.
@@ -103,9 +105,14 @@ public final class SmithyServerHost implements AutoCloseable {
         return prepare(request).resolution() != null;
     }
 
-    /** Maps a request to the SDK and resolves its operation, once per request. */
+    /**
+     * Maps a request to the SDK and resolves its operation, once per request and routing base: the
+     * SDK resolves operations on the path below the route that matched, which nested routers move.
+     */
     private Prepared prepare(Request request) {
-        if (request.getAttributes().get(preparedKey) instanceof Prepared prepared) {
+        String remaining = request.getResourceRef().getRemainingPart(false, true);
+        if (request.getAttributes().get(preparedKey) instanceof Prepared prepared
+                && prepared.remaining().equals(remaining)) {
             return prepared;
         }
         var headers = HttpHeaders.ofModifiable();
@@ -118,17 +125,15 @@ public final class SmithyServerHost implements AutoCloseable {
         }
         Prepared prepared;
         try {
-            // The SDK resolves operations on the path below the route that matched.
-            String remaining = request.getResourceRef().getRemainingPart(false, true);
             URI uri = URI.create(remaining.startsWith("/") ? remaining : "/" + remaining);
             var smithyRequest = new HttpRequest(headers, uri, request.getMethod().getName());
             ServiceProtocolResolutionResult resolution =
                     resolver.resolve(
                             new ServiceProtocolResolutionRequest(
                                     uri, headers, smithyRequest.context(), smithyRequest.method()));
-            prepared = new Prepared(smithyRequest, resolution);
+            prepared = new Prepared(remaining, smithyRequest, resolution);
         } catch (UnknownOperationException | IllegalArgumentException e) {
-            prepared = new Prepared(null, null);
+            prepared = new Prepared(remaining, null, null);
         }
         request.getAttributes().put(preparedKey, prepared);
         return prepared;
@@ -156,25 +161,52 @@ public final class SmithyServerHost implements AutoCloseable {
                     Status.SERVER_ERROR_SERVICE_UNAVAILABLE, "Too many concurrent Smithy calls");
             return;
         }
-        // Held until the response is sent: released by the first of these.
-        AtomicBoolean held = new AtomicBoolean(true);
-        Runnable release =
-                () -> {
-                    if (held.getAndSet(false)) {
-                        slots.release();
-                    }
-                };
-        response.getDeliverySignal().whenComplete((failure, error) -> release.run());
+        Exchange exchange = new Exchange();
+        // Runs on a connector I/O thread: a body neither written nor released, as when the peer
+        // left before the response was committed, is closed elsewhere.
+        response.getDeliverySignal()
+                .whenComplete(
+                        (failure, error) -> {
+                            exchange.release();
+                            DataStream unsent = exchange.take();
+                            if (unsent != null) {
+                                Thread.ofVirtual()
+                                        .name("restlet-smithy-body-close")
+                                        .start(unsent::close);
+                            }
+                        });
         try {
-            serve(prepared, request, response, release);
+            serve(prepared, request, response, exchange);
         } finally {
+            // A bodyless response holds no resource of the call once it returns.
             if (response.getEntity() == null) {
-                release.run();
+                exchange.release();
             }
         }
     }
 
-    private void serve(Prepared prepared, Request request, Response response, Runnable release) {
+    /**
+     * The resources a call holds after its operation returned: its slot, and the SDK body of its
+     * response until written or closed. Each is given up once, by the first of the response's
+     * write, its release and its delivery.
+     */
+    private final class Exchange {
+        private final AtomicBoolean held = new AtomicBoolean(true);
+        private final AtomicReference<DataStream> body = new AtomicReference<>();
+
+        void release() {
+            if (held.getAndSet(false)) {
+                slots.release();
+            }
+        }
+
+        /** Takes the body, which the caller then writes or closes; null if already taken. */
+        DataStream take() {
+            return body.getAndSet(null);
+        }
+    }
+
+    private void serve(Prepared prepared, Request request, Response response, Exchange exchange) {
         Call call = new Call(Thread.currentThread());
         running.add(call);
         if (closed) {
@@ -232,7 +264,7 @@ public final class SmithyServerHost implements AutoCloseable {
                     Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
                     "The operation exceeded its maximum duration");
         } else {
-            write(job, response, release);
+            write(job, response, exchange);
         }
     }
 
@@ -281,7 +313,7 @@ public final class SmithyServerHost implements AutoCloseable {
         }
     }
 
-    private static void write(HttpJob job, Response response, Runnable release) {
+    private static void write(HttpJob job, Response response, Exchange exchange) {
         var smithyResponse = job.response();
         response.setStatus(Status.valueOf(smithyResponse.getStatusCode()));
         var raw = new Series<Header>(Header.class);
@@ -291,6 +323,7 @@ public final class SmithyServerHost implements AutoCloseable {
         if (body == null || body.contentLength() == 0) {
             close(body);
         } else {
+            exchange.body.set(body);
             response.setEntity(
                     new OutputRepresentation(
                             body.contentType() == null
@@ -301,10 +334,15 @@ public final class SmithyServerHost implements AutoCloseable {
                                     : body.contentLength()) {
                         @Override
                         public void write(OutputStream out) throws IOException {
-                            try (InputStream in = body.asInputStream()) {
+                            DataStream owned = exchange.take();
+                            try (InputStream in =
+                                    owned == null
+                                            ? InputStream.nullInputStream()
+                                            : owned.asInputStream()) {
                                 in.transferTo(out);
                             } finally {
-                                release.run();
+                                close(owned);
+                                exchange.release();
                             }
                         }
 
@@ -312,9 +350,9 @@ public final class SmithyServerHost implements AutoCloseable {
                         public void release() {
                             try {
                                 super.release();
-                                close(body);
+                                close(exchange.take());
                             } finally {
-                                release.run();
+                                exchange.release();
                             }
                         }
                     });
@@ -398,7 +436,8 @@ public final class SmithyServerHost implements AutoCloseable {
 
         @Override
         public long skip(long n) throws IOException {
-            long result = super.skip(n);
+            // At most one byte beyond the limit, so that an oversized body fails as it is consumed.
+            long result = super.skip(Math.min(n, limit - count + 1));
             if (result > 0) {
                 count(result);
             }
