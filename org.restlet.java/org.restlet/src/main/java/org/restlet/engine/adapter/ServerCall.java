@@ -456,7 +456,11 @@ public abstract class ServerCall extends Call {
 		// Send the entity to the client
 		if (responseEntityStream != null) {
 			entity.write(responseEntityStream);
-			responseEntityStream.flush();
+			try {
+				responseEntityStream.flush();
+			} catch (IOException ioe) {
+				getLogger().log(Level.FINE, "Unable to flush the entity stream.", ioe);
+			}
 		}
 	}
 
