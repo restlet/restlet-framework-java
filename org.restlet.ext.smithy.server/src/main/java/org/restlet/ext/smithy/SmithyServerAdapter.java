@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.smithy.server;
+package org.restlet.ext.smithy;
 
 import java.time.Duration;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Status;
-import org.restlet.ext.smithy.server.internal.SmithyServerHost;
+import org.restlet.ext.smithy.internal.SmithyServerHost;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import software.amazon.smithy.java.server.Service;
@@ -39,7 +39,9 @@ import software.amazon.smithy.java.server.Service;
  * interrupts every running one: the SDK has no cancellation of its own. This adapter is single-use.
  *
  * <p>The smithy-java server API is unstable ({@code @SmithyUnstableApi}) in 1.8.0, and its modules
- * split a package, so that it only runs on the class path. Event streams are not supported.
+ * split a package, so that it only runs on the class path. This artifact shares the packages of
+ * {@code org.restlet.ext.smithy}, which must then be on the class path too. Event streams are not
+ * supported.
  */
 public final class SmithyServerAdapter extends Restlet {
     private final List<Service> services = new CopyOnWriteArrayList<>();

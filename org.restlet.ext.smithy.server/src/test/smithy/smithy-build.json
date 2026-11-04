@@ -3,7 +3,7 @@
     "plugins": {
         "java-codegen": {
             "service": "restlet.test.server#Notes",
-            "namespace": "org.restlet.ext.smithy.server.generated",
+            "namespace": "org.restlet.ext.smithy.generated",
             "modes": ["client", "server"],
             "protocol": "aws.protocols#restJson1"
         }

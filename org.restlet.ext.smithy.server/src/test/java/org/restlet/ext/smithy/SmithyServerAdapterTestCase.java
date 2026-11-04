@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.smithy.server;
+package org.restlet.ext.smithy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,24 +35,23 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.ext.smithy.SmithyClientAdapter;
-import org.restlet.ext.smithy.server.generated.client.NotesClient;
-import org.restlet.ext.smithy.server.generated.model.GetNoteInput;
-import org.restlet.ext.smithy.server.generated.model.GetNoteOutput;
-import org.restlet.ext.smithy.server.generated.model.NoteNotFound;
-import org.restlet.ext.smithy.server.generated.model.PutNoteInput;
-import org.restlet.ext.smithy.server.generated.model.PutNoteOutput;
-import org.restlet.ext.smithy.server.generated.model.RequiredUploadOutput;
-import org.restlet.ext.smithy.server.generated.model.UploadInput;
-import org.restlet.ext.smithy.server.generated.model.UploadOutput;
-import org.restlet.ext.smithy.server.generated.model.WaitOutput;
-import org.restlet.ext.smithy.server.generated.service.GetNoteOperation;
-import org.restlet.ext.smithy.server.generated.service.Notes;
-import org.restlet.ext.smithy.server.generated.service.PutNoteOperation;
-import org.restlet.ext.smithy.server.generated.service.RequiredUploadOperation;
-import org.restlet.ext.smithy.server.generated.service.UploadOperation;
-import org.restlet.ext.smithy.server.generated.service.WaitOperation;
-import org.restlet.ext.smithy.server.generated.service.WaitOperationAsync;
+import org.restlet.ext.smithy.generated.client.NotesClient;
+import org.restlet.ext.smithy.generated.model.GetNoteInput;
+import org.restlet.ext.smithy.generated.model.GetNoteOutput;
+import org.restlet.ext.smithy.generated.model.NoteNotFound;
+import org.restlet.ext.smithy.generated.model.PutNoteInput;
+import org.restlet.ext.smithy.generated.model.PutNoteOutput;
+import org.restlet.ext.smithy.generated.model.RequiredUploadOutput;
+import org.restlet.ext.smithy.generated.model.UploadInput;
+import org.restlet.ext.smithy.generated.model.UploadOutput;
+import org.restlet.ext.smithy.generated.model.WaitOutput;
+import org.restlet.ext.smithy.generated.service.GetNoteOperation;
+import org.restlet.ext.smithy.generated.service.Notes;
+import org.restlet.ext.smithy.generated.service.PutNoteOperation;
+import org.restlet.ext.smithy.generated.service.RequiredUploadOperation;
+import org.restlet.ext.smithy.generated.service.UploadOperation;
+import org.restlet.ext.smithy.generated.service.WaitOperation;
+import org.restlet.ext.smithy.generated.service.WaitOperationAsync;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Router;
