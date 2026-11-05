@@ -82,6 +82,12 @@ public abstract class ServerResource extends Resource {
 	/** Indicates if the identified resource exists. */
 	private volatile boolean existing;
 
+	/**
+	 * Indicates if the preconditions are ignored when the status set while
+	 * retrieving the validators is neither a success nor 412.
+	 */
+	private volatile boolean ignoringPreconditionsOnNonSuccess;
+
 	/** The display name. */
 	private volatile String name;
 
@@ -99,6 +105,7 @@ public abstract class ServerResource extends Resource {
 		this.annotated = true;
 		this.conditional = true;
 		this.existing = true;
+		this.ignoringPreconditionsOnNonSuccess = false;
 		this.negotiated = true;
 		this.variants = null;
 	}
@@ -245,7 +252,21 @@ public abstract class ServerResource extends Resource {
 	 * Handles a call by first verifying the optional request conditions and
 	 * continue the processing if possible. Note that in order to evaluate those
 	 * conditions, {@link #getInfo()} or {@link #getInfo(Variant)} methods might be
-	 * invoked.
+	 * invoked, whatever the method of the call is: a conditional PUT, POST or
+	 * DELETE first retrieves the validators (tag and modification date) of the
+	 * current representation. As {@link #getInfo()} calls {@link #get()} by
+	 * default, override it to return a lighter {@link RepresentationInfo} when
+	 * building the representation is costly.<br>
+	 * <br>
+	 * RFC 9110 section 13.2.1 requires the conditions to be ignored if the status
+	 * set while retrieving the validators is neither a success (2xx) nor 412
+	 * (Precondition Failed), as errors and redirections take precedence over the
+	 * preconditions. This is only done if
+	 * {@link #isIgnoringPreconditionsOnNonSuccess()} is true, which is not the
+	 * default.<br>
+	 * <br>
+	 * To add a precondition, override {@link #hasPreconditions()} and
+	 * {@link #getPreconditionStatus(RepresentationInfo)} rather than this method.
 	 * 
 	 * @return The response entity.
 	 * @throws ResourceException
@@ -253,7 +274,7 @@ public abstract class ServerResource extends Resource {
 	protected Representation doConditionalHandle() throws ResourceException {
 		Representation result = null;
 
-		if (getConditions().hasSome()) {
+		if (hasPreconditions()) {
 			RepresentationInfo resultInfo = null;
 
 			if (existing) {
@@ -278,26 +299,10 @@ public abstract class ServerResource extends Resource {
 						// prefer a special status like 'method not authorized'.
 					}
 				} else {
-					Status status = getConditions().getStatus(getMethod(), resultInfo);
-
-					if (status != null) {
-						if (status.isError()) {
-							doError(status);
-						} else {
-							setStatus(status);
-						}
-					}
+					doConditionalHandle(resultInfo);
 				}
 			} else {
-				Status status = getConditions().getStatus(getMethod(), resultInfo);
-
-				if (status != null) {
-					if (status.isError()) {
-						doError(status);
-					} else {
-						setStatus(status);
-					}
-				}
+				doConditionalHandle(resultInfo);
 			}
 
 			if ((Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod()))
@@ -323,6 +328,71 @@ public abstract class ServerResource extends Resource {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Handles a call by first verifying the optional request conditions.
+	 * 
+	 * @param resultInfo The resource's representation, or null if the resource
+	 *                   does not exist.
+	 */
+	private void doConditionalHandle(final RepresentationInfo resultInfo) {
+		Status current = getStatus();
+
+		if (isIgnoringPreconditionsOnNonSuccess() && current != null && !current.isSuccess()
+				&& !Status.CLIENT_ERROR_PRECONDITION_FAILED.equals(current)) {
+			// RFC 9110 section 13.2.1: the preconditions are ignored when the
+			// response without them is not a success (or 412), such as an error or
+			// a redirection that the resource has already set.
+			return;
+		}
+
+		Status status = getPreconditionStatus(resultInfo);
+
+		if (status != null) {
+			if (status.isError()) {
+				doError(status);
+			} else {
+				setStatus(status);
+			}
+		}
+	}
+
+	/**
+	 * Indicates if the request carries preconditions to evaluate before handling
+	 * the call. If so, the validators of the current representation are retrieved
+	 * (see {@link #getInfo()}) and passed to
+	 * {@link #getPreconditionStatus(RepresentationInfo)}.<br>
+	 * <br>
+	 * By default, it tests the standard conditional headers of the request (see
+	 * {@link #getConditions()}). Override it, together with
+	 * {@link #getPreconditionStatus(RepresentationInfo)}, to evaluate other
+	 * preconditions.
+	 * 
+	 * @return True if there are preconditions to evaluate.
+	 */
+	protected boolean hasPreconditions() {
+		return getConditions().hasSome();
+	}
+
+	/**
+	 * Evaluates the preconditions of the request against the current
+	 * representation of the resource (RFC 9110 section 13.2). Only invoked if
+	 * {@link #hasPreconditions()} is true.<br>
+	 * <br>
+	 * By default, it evaluates the standard conditional headers of the request (see
+	 * {@link org.restlet.data.Conditions#getStatus(Method, RepresentationInfo)}).
+	 * To add a precondition, call this method from the override and evaluate the
+	 * extra one if the standard ones hold.
+	 * 
+	 * @param resultInfo The current representation of the resource, or null if the
+	 *                   resource does not exist.
+	 * @return Null if the preconditions hold, otherwise the status to answer, for
+	 *         example {@link Status#CLIENT_ERROR_PRECONDITION_FAILED} or
+	 *         {@link Status#REDIRECTION_NOT_MODIFIED}.
+	 */
+	protected Status getPreconditionStatus(RepresentationInfo resultInfo) {
+		return getConditions().getStatus(getMethod(), resultInfo);
 	}
 
 	/**
@@ -1087,6 +1157,21 @@ public abstract class ServerResource extends Resource {
 	}
 
 	/**
+	 * Indicates if the preconditions of the request are ignored when the status set
+	 * while retrieving the validators of the current representation, by
+	 * {@link #get()} or {@link #getInfo()}, is neither a success (2xx) nor 412
+	 * (Precondition Failed). Errors and redirections set by the resource then take
+	 * precedence over a 304 or a 412 (RFC 9110 section 13.2.1). The default value
+	 * is false.
+	 * 
+	 * @return True if the preconditions are ignored after a non-success status.
+	 * @see #doConditionalHandle()
+	 */
+	public boolean isIgnoringPreconditionsOnNonSuccess() {
+		return ignoringPreconditionsOnNonSuccess;
+	}
+
+	/**
 	 * Indicates if the authenticated client user associated to the current request
 	 * is in the given role name.
 	 * 
@@ -1538,6 +1623,19 @@ public abstract class ServerResource extends Resource {
 	 */
 	public void setExisting(boolean exists) {
 		this.existing = exists;
+	}
+
+	/**
+	 * Indicates if the preconditions of the request are ignored when the status set
+	 * while retrieving the validators of the current representation is neither a
+	 * success (2xx) nor 412 (Precondition Failed). The default value is false.
+	 * 
+	 * @param ignoring True if the preconditions are ignored after a non-success
+	 *                 status.
+	 * @see #isIgnoringPreconditionsOnNonSuccess()
+	 */
+	public void setIgnoringPreconditionsOnNonSuccess(boolean ignoring) {
+		this.ignoringPreconditionsOnNonSuccess = ignoring;
 	}
 
 	/**
