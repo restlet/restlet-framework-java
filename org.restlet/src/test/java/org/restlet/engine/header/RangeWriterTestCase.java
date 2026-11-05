@@ -110,4 +110,10 @@ class RangeWriterTestCase {
                 "bytes 0-499/*",
                 RangeWriter.write(range, org.restlet.representation.Representation.UNKNOWN_SIZE));
     }
+
+    @Test
+    void writeUnsatisfied_formatsUnitAndCompleteLength() {
+        assertEquals("bytes */1234", RangeWriter.writeUnsatisfied("bytes", 1234));
+        assertEquals("bytes */0", RangeWriter.writeUnsatisfied("bytes", 0));
+    }
 }
