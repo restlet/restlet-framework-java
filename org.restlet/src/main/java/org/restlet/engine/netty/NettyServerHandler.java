@@ -21,6 +21,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.TooLongHttpHeaderException;
+import io.netty.handler.codec.http.TooLongHttpLineException;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
@@ -168,7 +170,7 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private void onRequest(ChannelHandlerContext ctx, HttpRequest request) {
         DecoderResult result = request.decoderResult();
         if (result.isFailure()) {
-            sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+            sendError(ctx, getFailureStatus(result.cause()));
             return;
         }
         // Upgrade/tunnel bytes belong to the replacement protocol, not the HTTP decoder.
@@ -351,6 +353,23 @@ class NettyServerHandler extends ChannelInboundHandlerAdapter {
             body.fail(cause);
             currentBody = null;
         }
+    }
+
+    /**
+     * Returns the status of the response to a request that could not be decoded: 431 (RFC 6585) if
+     * a header field is larger than "http.requestHeaderSize", 414 (RFC 9110) if the request line
+     * is, and 400 otherwise.
+     */
+    private static HttpResponseStatus getFailureStatus(Throwable cause) {
+        if (cause instanceof TooLongHttpHeaderException) {
+            return HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE;
+        }
+
+        if (cause instanceof TooLongHttpLineException) {
+            return HttpResponseStatus.REQUEST_URI_TOO_LONG;
+        }
+
+        return HttpResponseStatus.BAD_REQUEST;
     }
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {

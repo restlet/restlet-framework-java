@@ -327,6 +327,10 @@ Changes log
           Clients reusing the connection failed with a "Communication Error" (1001).
         - The description of `Status.CLIENT_ERROR_TOO_MANY_REQUESTS` (429) contained backslashes
           before the quotes of "rate limiting".
+        - The HTTP/1.1 server connector answered 400 to a request having a header field or a request
+          line larger than the "http.requestHeaderSize" parameter (8192 bytes by default). It now
+          answers 431 (Request Header Fields Too Large, RFC 6585) and 414 (URI Too Long, RFC 9110),
+          still closing the connection. The other requests that cannot be decoded still get a 400.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
