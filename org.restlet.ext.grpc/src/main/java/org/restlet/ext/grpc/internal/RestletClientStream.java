@@ -268,14 +268,18 @@ final class RestletClientStream extends AbstractClientStream {
      */
     private Status enqueue(Buffer buffer) {
         int size = buffer.size;
-        for (int i = 0; i < size; ) {
+        int offset = 0;
+        while (offset < size) {
             if (remaining > 0) {
-                int skipped = (int) Math.min(remaining, size - i);
+                long skipped = Math.min(remaining, (long) size - offset);
                 remaining -= skipped;
-                i += skipped;
-            } else if ((prefix == 0 && queued + i > queueBytes) || !prefixed(buffer.data[i++])) {
+                offset += (int) skipped;
+            } else if ((prefix == 0 && queued + offset > queueBytes)
+                    || !prefixed(buffer.data[offset])) {
                 return Status.RESOURCE_EXHAUSTED.withDescription(
                         "Request queue byte budget exceeded");
+            } else {
+                offset++;
             }
         }
         if (size > 0) {
