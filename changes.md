@@ -309,6 +309,18 @@ Changes log
           or 406). The unread body is discarded when it is already received, or when at most
           256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
           Clients reusing the connection failed with a "Communication Error" (1001).
+        - The `Range` request header is now handled as RFC 9110 section 14 requires. A header with
+          a range unit other than `bytes`, or an invalid one (`bytes=a-b`, `bytes=5-3`, `bytes=`,
+          a number too large for a `long`), is ignored and the whole entity is returned, instead of
+          a 500 error (`NumberFormatException`), a 501 or a meaningless 206: `RangeReader.read`
+          returns an empty list and never throws. The `bytes` unit is matched ignoring case. A
+          range selecting nothing of the entity (first position at or after its end, or
+          `bytes=-0`) is answered with a 416 (Range Not Satisfiable) and a
+          `Content-Range: bytes */length` header, instead of a 206 or a response the client could
+          not read. A range ending after the end of the entity (`bytes=8-12` on 10 bytes), or a
+          suffix longer than it (`bytes=-500`), is cut at the end of the entity, instead of an
+          invalid `Content-Range` or a broken response. An empty entity still ignores the header,
+          and several ranges still get a 501.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
