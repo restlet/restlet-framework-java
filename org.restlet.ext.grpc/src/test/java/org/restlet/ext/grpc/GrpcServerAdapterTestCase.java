@@ -461,7 +461,9 @@ class GrpcServerAdapterTestCase {
                                                     }
 
                                                     @Override
-                                                    public void onError(Throwable cause) {}
+                                                    public void onError(Throwable cause) {
+                                                        /* Not used by this test. */
+                                                    }
 
                                                     @Override
                                                     public void onCompleted() {
@@ -522,7 +524,8 @@ class GrpcServerAdapterTestCase {
                                                     () -> {
                                                         try {
                                                             release.await();
-                                                        } catch (InterruptedException e) {
+                                                        } catch (InterruptedException _) {
+                                                            Thread.currentThread().interrupt();
                                                             return;
                                                         }
                                                         observer.request(Integer.MAX_VALUE);
@@ -534,7 +537,9 @@ class GrpcServerAdapterTestCase {
                                                 }
 
                                                 @Override
-                                                public void onError(Throwable cause) {}
+                                                public void onError(Throwable cause) {
+                                                    /* Not used by this test. */
+                                                }
 
                                                 @Override
                                                 public void onCompleted() {
@@ -616,7 +621,9 @@ class GrpcServerAdapterTestCase {
                                                 }
 
                                                 @Override
-                                                public void onError(Throwable cause) {}
+                                                public void onError(Throwable cause) {
+                                                    /* Not used by this test. */
+                                                }
 
                                                 @Override
                                                 public void onCompleted() {
@@ -657,7 +664,9 @@ class GrpcServerAdapterTestCase {
             }
 
             @Override
-            public void onCompleted() {}
+            public void onCompleted() {
+                /* Not used by this test. */
+            }
         };
     }
 
@@ -1202,10 +1211,14 @@ class GrpcServerAdapterTestCase {
                                                             }
 
                                                             @Override
-                                                            public void onError(Throwable cause) {}
+                                                            public void onError(Throwable cause) {
+                                                                /* Not used by this test. */
+                                                            }
 
                                                             @Override
-                                                            public void onCompleted() {}
+                                                            public void onCompleted() {
+                                                                /* Not used by this test. */
+                                                            }
                                                         }))
                                 .build());
         adapter.start();
@@ -1231,7 +1244,7 @@ class GrpcServerAdapterTestCase {
                         // The request ends only once the response write is blocked.
                         try {
                             writing.await();
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException _) {
                             Thread.currentThread().interrupt();
                         }
                         return -1;
@@ -1256,7 +1269,7 @@ class GrpcServerAdapterTestCase {
                                                             // fails
                                                             // the test instead of hanging it.
                                                             reset.await(30, TimeUnit.SECONDS);
-                                                        } catch (InterruptedException e) {
+                                                        } catch (InterruptedException _) {
                                                             Thread.currentThread().interrupt();
                                                         }
                                                         throw new IOException("stream reset");
@@ -1322,10 +1335,14 @@ class GrpcServerAdapterTestCase {
                                                     }
 
                                                     @Override
-                                                    public void onError(Throwable cause) {}
+                                                    public void onError(Throwable cause) {
+                                                        /* Not used by this test. */
+                                                    }
 
                                                     @Override
-                                                    public void onCompleted() {}
+                                                    public void onCompleted() {
+                                                        /* Not used by this test. */
+                                                    }
                                                 }))
                         .build());
         var status = new java.util.concurrent.CompletableFuture<Status>();
