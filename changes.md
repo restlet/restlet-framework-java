@@ -275,6 +275,9 @@ Changes log
         - Added the `CacheDirective` factories `mustUnderstand()` (RFC 9111), `immutable()`
           (RFC 8246), `staleWhileRevalidate(int)` and `staleIfError(int)` (RFC 5861), with their
           `HeaderConstants.CACHE_*` names. The two numeric ones reject a negative number of seconds.
+        - The Javadoc of `ServerResource.getPreconditionStatus()` shows how to require conditional
+          writes by answering 428 (`Status.CLIENT_ERROR_PRECONDITION_REQUIRED`) to a write without
+          precondition.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
