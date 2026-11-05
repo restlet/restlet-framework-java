@@ -24,10 +24,13 @@ import io.grpc.internal.StatsTraceContext;
 import io.grpc.internal.TransportFrameUtil;
 import io.grpc.internal.TransportTracer;
 import io.grpc.internal.WritableBuffer;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -40,28 +43,61 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-/** SDK-framed, bounded unary exchange. No gRPC frame/status codec is implemented here. */
+/**
+ * One gRPC call over one HTTP/2 exchange of a borrowed Restlet client, streaming in both
+ * directions. The SDK frames and deframes messages; this stream only moves their bytes.
+ *
+ * <p>The exchange starts with the request headers. The request body is fed frame by frame from a
+ * bounded queue, written by the client's background writer, and ends at the half-close; written
+ * bytes are reported to the SDK, which derives its readiness from them. The response body is read
+ * as it arrives, while the request is still written: bytes handed to the SDK but not yet consumed
+ * by its deframer, which only reads the messages the application requested, stay within the queue
+ * budget too, so a slow consumer stops the reads, and HTTP/2 flow control stops the server.
+ */
 @SuppressWarnings("null")
 final class RestletClientStream extends AbstractClientStream {
+    private static final MediaType GRPC = MediaType.valueOf("application/grpc");
+
     private final SerializingExecutor serial = new SerializingExecutor(Runnable::run);
     private final State state;
     private final Client client;
     private final String target;
     private final String authority;
     private final int wireLimit;
+    private final int queueBytes;
     private final ExecutorService io;
     private final Consumer<RestletClientStream> finished;
-    private final ByteArrayOutputStream outbound = new ByteArrayOutputStream();
     private final StatsTraceContext stats;
+
+    /** Request frames waiting for the network; also guards the outbound fields below. */
+    private final ArrayDeque<byte[]> outbound = new ArrayDeque<>();
+
+    /** Guards {@link #unread}, and wakes the response reader. */
+    private final Object inbound = new Object();
+
     private Metadata headers;
     private volatile Request request;
     private volatile Thread worker;
     private volatile Deadline deadline;
     private volatile boolean done;
-    private boolean sent;
+    private volatile boolean failed;
+    private boolean started;
+
+    /** Request bytes queued; guarded by {@link #outbound}. */
+    private int queued;
+
+    /** Bytes framed for the latest request message, from the frame that started it. */
+    private int open;
+
+    /** Whether the SDK half-closed the request; guarded by {@link #outbound}. */
+    private boolean halfClosed;
+
+    /** Response bytes handed to the SDK but not consumed yet; guarded by {@link #inbound}. */
+    private long unread;
 
     RestletClientStream(
             Client client,
@@ -72,6 +108,7 @@ final class RestletClientStream extends AbstractClientStream {
             CallOptions options,
             ClientStreamTracer[] tracers,
             int limit,
+            int queueBytes,
             ExecutorService io,
             Consumer<RestletClientStream> finished) {
         this(
@@ -82,6 +119,7 @@ final class RestletClientStream extends AbstractClientStream {
                 headers,
                 options,
                 limit,
+                queueBytes,
                 io,
                 finished,
                 StatsTraceContext.newClientContext(tracers, Attributes.EMPTY, headers),
@@ -96,6 +134,7 @@ final class RestletClientStream extends AbstractClientStream {
             Metadata headers,
             CallOptions options,
             int limit,
+            int queueBytes,
             ExecutorService io,
             Consumer<RestletClientStream> finished,
             StatsTraceContext stats,
@@ -115,10 +154,12 @@ final class RestletClientStream extends AbstractClientStream {
         }
         target = "http://" + ip + ":" + address.getPort() + "/" + method.getFullMethodName();
         wireLimit = limit + 5;
+        this.queueBytes = queueBytes;
         this.io = io;
         this.finished = finished;
         this.stats = stats;
         state = new State(limit, stats, tracer, options);
+        setOnReadyThreshold(Math.max(1, queueBytes / 2));
     }
 
     @Override
@@ -152,32 +193,51 @@ final class RestletClientStream extends AbstractClientStream {
                 headers = metadata;
                 stats.clientOutboundHeaders();
                 serial.execute(state::allocated);
-            }
-
-            @Override
-            public void writeFrame(WritableBuffer frame, boolean end, boolean flush, int messages) {
                 Status failure = null;
                 synchronized (outbound) {
-                    if (!done && frame instanceof Buffer buffer) {
-                        if (buffer.readableBytes() > wireLimit - outbound.size()) {
-                            failure =
-                                    Status.RESOURCE_EXHAUSTED.withDescription(
-                                            "Encoded unary request exceeds byte budget");
-                        } else {
-                            outbound.write(buffer.data, 0, buffer.size);
-                        }
-                    }
-                    if (frame != null) {
-                        frame.release();
-                    }
-                    if (failure == null && end && !done && !sent) {
-                        sent = true;
+                    if (!done && !started) {
+                        started = true;
                         try {
                             io.execute(RestletClientStream.this::exchange);
                         } catch (RejectedExecutionException e) {
                             failure = Status.UNAVAILABLE.withCause(e);
                         }
                     }
+                }
+                if (failure != null) {
+                    fail(failure);
+                }
+            }
+
+            @Override
+            public void writeFrame(WritableBuffer frame, boolean end, boolean flush, int messages) {
+                Status failure = null;
+                synchronized (outbound) {
+                    if (frame instanceof Buffer buffer && !done && !halfClosed) {
+                        int size = buffer.size;
+                        // One message is framed whole, possibly before the writer starts: while
+                        // the queue holds only that message, it may grow up to one framed
+                        // message. A frame counting messages starts a new one.
+                        int message = messages > 0 ? size : open + size;
+                        boolean others = queued + size > message;
+                        if (size > queueBytes - queued && (others || message > wireLimit)) {
+                            failure =
+                                    Status.RESOURCE_EXHAUSTED.withDescription(
+                                            "Request queue byte budget exceeded");
+                        } else if (size > 0) {
+                            open = message;
+                            outbound.addLast(Arrays.copyOf(buffer.data, size));
+                            queued += size;
+                            onSendingBytes(size);
+                        }
+                    }
+                    if (frame != null) {
+                        frame.release();
+                    }
+                    if (end) {
+                        halfClosed = true;
+                    }
+                    outbound.notifyAll();
                 }
                 if (failure != null) {
                     fail(failure);
@@ -192,6 +252,7 @@ final class RestletClientStream extends AbstractClientStream {
     }
 
     private void fail(Status status) {
+        failed = true;
         Deadline current = deadline;
         Status reported =
                 (status.getCode() == Status.Code.UNAVAILABLE
@@ -210,6 +271,7 @@ final class RestletClientStream extends AbstractClientStream {
                         state.fail(reported);
                     }
                 });
+        wake();
         Request active = request;
         if (active != null) {
             active.abort();
@@ -220,6 +282,16 @@ final class RestletClientStream extends AbstractClientStream {
         }
     }
 
+    /** Wakes the request writer and the response reader, once the call failed or ended. */
+    private void wake() {
+        synchronized (outbound) {
+            outbound.notifyAll();
+        }
+        synchronized (inbound) {
+            inbound.notifyAll();
+        }
+    }
+
     private void exchange() {
         worker = Thread.currentThread();
         Response response = null;
@@ -227,17 +299,7 @@ final class RestletClientStream extends AbstractClientStream {
             if (done) {
                 return;
             }
-            byte[] body;
-            synchronized (outbound) {
-                body = outbound.toByteArray();
-                outbound.reset();
-            }
-            Request call =
-                    new Request(
-                            Method.POST,
-                            target,
-                            new ByteArrayRepresentation(
-                                    body, MediaType.valueOf("application/grpc")));
+            Request call = new Request(Method.POST, target, requestEntity());
             // Resource origin selects the resolved peer; base reference selects HTTP authority.
             call.getResourceRef().setBaseRef(new Reference("http://" + authority));
             call.getHeaders().set("te", "trailers");
@@ -254,7 +316,7 @@ final class RestletClientStream extends AbstractClientStream {
             }
             call.getClientInfo().setAgent("restlet-grpc/1.85.1");
             request = call;
-            if (done || Thread.currentThread().isInterrupted()) {
+            if (done || failed || Thread.currentThread().isInterrupted()) {
                 call.abort();
                 return;
             }
@@ -265,6 +327,7 @@ final class RestletClientStream extends AbstractClientStream {
                                             Status.UNAVAILABLE
                                                     .withDescription("gRPC peer disconnected")
                                                     .withCause(cause)));
+            // Returns at the response head; the request body is still written meanwhile.
             response = client.handle(call);
             if (done) {
                 return;
@@ -293,15 +356,8 @@ final class RestletClientStream extends AbstractClientStream {
             serial.execute(() -> state.headers(initial));
             if (response.getEntity() != null) {
                 try (var input = response.getEntity().getStream()) {
-                    if (input != null) {
-                        byte[] bytes = input.readNBytes(wireLimit + 1);
-                        if (bytes.length > wireLimit) {
-                            fail(
-                                    Status.RESOURCE_EXHAUSTED.withDescription(
-                                            "Encoded unary response exceeds byte budget"));
-                            return;
-                        }
-                        serial.execute(() -> state.data(bytes));
+                    if (input != null && !readAll(input)) {
+                        return;
                     }
                 }
             }
@@ -315,6 +371,79 @@ final class RestletClientStream extends AbstractClientStream {
             }
             worker = null;
         }
+    }
+
+    /**
+     * Hands the response body to the SDK as it arrives, within the queue budget.
+     *
+     * @return False if the call ended before the end of the body.
+     */
+    private boolean readAll(InputStream input) throws IOException {
+        byte[] chunk = new byte[16384];
+        for (; ; ) {
+            int room;
+            synchronized (inbound) {
+                try {
+                    while (unread >= queueBytes && !done && !failed) {
+                        inbound.wait();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new InterruptedIOException("Interrupted reading the gRPC response");
+                }
+                if (done || failed) {
+                    return false;
+                }
+                room = (int) Math.min(chunk.length, queueBytes - unread);
+            }
+            int count = input.read(chunk, 0, room);
+            if (count < 0) {
+                return true;
+            }
+            if (count > 0) {
+                synchronized (inbound) {
+                    unread += count;
+                }
+                byte[] bytes = Arrays.copyOf(chunk, count);
+                serial.execute(() -> state.data(bytes));
+            }
+        }
+    }
+
+    /** Returns the request entity, written by the client's background writer from the queue. */
+    private Representation requestEntity() {
+        return new OutputRepresentation(GRPC, Representation.UNKNOWN_SIZE) {
+            @Override
+            public void write(OutputStream output) throws IOException {
+                for (; ; ) {
+                    byte[] data;
+                    synchronized (outbound) {
+                        try {
+                            while (outbound.isEmpty() && !halfClosed && !done && !failed) {
+                                outbound.wait();
+                            }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new InterruptedIOException(
+                                    "Interrupted writing the gRPC request");
+                        }
+                        if (failed) {
+                            throw new IOException("gRPC call cancelled");
+                        }
+                        data = outbound.pollFirst();
+                        if (data == null) {
+                            // Half-closed, or the call ended first: the request body ends.
+                            return;
+                        }
+                        queued -= data.length;
+                    }
+                    output.write(data);
+                    output.flush();
+                    int sent = data.length;
+                    serial.execute(() -> state.sent(sent));
+                }
+            }
+        };
     }
 
     private static Metadata metadata(Series<Header> headers) {
@@ -331,7 +460,7 @@ final class RestletClientStream extends AbstractClientStream {
     }
 
     private final class State extends Http2ClientStreamTransportState {
-        private boolean started;
+        private boolean allocatedOnce;
         private Status pendingFailure;
 
         private State(
@@ -340,7 +469,7 @@ final class RestletClientStream extends AbstractClientStream {
         }
 
         private void allocated() {
-            started = true;
+            allocatedOnce = true;
             if (!done) {
                 if (pendingFailure != null) {
                     transportReportStatus(pendingFailure, true, new Metadata());
@@ -351,7 +480,7 @@ final class RestletClientStream extends AbstractClientStream {
         }
 
         private void fail(Status status) {
-            if (started) {
+            if (allocatedOnce) {
                 transportReportStatus(status, true, new Metadata());
             } else if (pendingFailure == null) {
                 // Shutdown may arrive after stream creation but before SDK listener installation.
@@ -377,6 +506,12 @@ final class RestletClientStream extends AbstractClientStream {
             }
         }
 
+        private void sent(int count) {
+            if (!done) {
+                onSentBytes(count);
+            }
+        }
+
         @Override
         public void runOnTransportThread(Runnable runnable) {
             serial.execute(runnable);
@@ -384,7 +519,11 @@ final class RestletClientStream extends AbstractClientStream {
 
         @Override
         public void bytesRead(int count) {
-            // Unary wire input is bounded and materialized before SDK deframing.
+            // The deframer consumed response bytes: free that much of the inbound budget.
+            synchronized (inbound) {
+                unread -= count;
+                inbound.notifyAll();
+            }
         }
 
         @Override
@@ -405,6 +544,7 @@ final class RestletClientStream extends AbstractClientStream {
             // and a caller that starts its next call right away must not find the slot still taken.
             if (!done) {
                 done = true;
+                wake();
                 finished.accept(RestletClientStream.this);
             }
             super.deframerClosed(partial);

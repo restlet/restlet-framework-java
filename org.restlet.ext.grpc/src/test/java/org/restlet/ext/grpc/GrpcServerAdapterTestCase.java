@@ -509,6 +509,8 @@ class GrpcServerAdapterTestCase {
     @Test
     void unrequestedMessagesPushBackOnTheClient() throws Exception {
         adapter.setMaxQueuedBytes(32768);
+        // Above the 5 s default: the test stalls on purpose before moving 4 MiB.
+        adapter.setMaxCallDuration(Duration.ofSeconds(30));
         CountDownLatch release = new CountDownLatch(1);
         AtomicInteger received = new AtomicInteger();
         start(

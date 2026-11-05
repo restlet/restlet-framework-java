@@ -28,10 +28,14 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
 /**
  * Single-use native gRPC channel on a borrowed Restlet HTTP/2 client.
  *
- * <p>This initial profile is unary and plaintext only; applications must explicitly opt in with
- * {@link #setPlaintext(boolean)}. TLS/address separation, proxy CONNECT, streaming, retry,
- * keepalive and physical-connection controls are not implemented. No SDK network transport is
- * selected. The host starts and stops the borrowed connector.
+ * <p>Supports unary, server-streaming, client-streaming and bidirectional calls: each call is one
+ * HTTP/2 exchange whose request body is written while its response is read, so messages flow both
+ * ways at once. Request messages are queued within {@link #setMaxQueuedBytes}, and the SDK's
+ * readiness follows their writing; response messages are read as the application requests them,
+ * within the same budget. This profile is plaintext only; applications must explicitly opt in with
+ * {@link #setPlaintext(boolean)}. TLS/address separation, proxy CONNECT, retry, keepalive and
+ * physical-connection controls are not implemented. No SDK network transport is selected. The host
+ * starts and stops the borrowed connector.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
     private final Context context;
@@ -40,6 +44,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
     private String target;
     private boolean plaintext;
     private int maxMessageBytes = 1024 * 1024;
+    private int maxQueuedBytes = 256 * 1024;
     private int maxConcurrentCalls = 128;
     private Duration maxCallDuration = Duration.ofSeconds(30);
     private Duration shutdownTimeout = Duration.ofSeconds(5);
@@ -98,6 +103,25 @@ public final class GrpcClientAdapter implements AutoCloseable {
 
     public synchronized int getMaxMessageBytes() {
         return maxMessageBytes;
+    }
+
+    /**
+     * Sets the per-call queue budget, for each direction: request bytes waiting for the network,
+     * and response bytes read but not yet consumed by the messages the application requested. A
+     * single message may exceed it.
+     *
+     * @param value At least 16384 bytes.
+     */
+    public synchronized void setMaxQueuedBytes(int value) {
+        requireConfigurable();
+        if (value < 16384) {
+            throw new IllegalArgumentException("Queue budget must be at least 16384 bytes");
+        }
+        maxQueuedBytes = value;
+    }
+
+    public synchronized int getMaxQueuedBytes() {
+        return maxQueuedBytes;
     }
 
     public synchronized void setMaxConcurrentCalls(int value) {
@@ -191,7 +215,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
         configured = true;
         var factory =
                 new RestletTransportFactory(
-                        client, maxMessageBytes, maxConcurrentCalls, shutdownTimeout);
+                        client,
+                        maxMessageBytes,
+                        maxQueuedBytes,
+                        maxConcurrentCalls,
+                        shutdownTimeout);
         try {
             var builder =
                     new ManagedChannelImplBuilder(target, () -> factory, () -> 80)

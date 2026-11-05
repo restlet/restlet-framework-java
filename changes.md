@@ -107,14 +107,18 @@ Changes log
           leaves the borrowed listener and supplied callback executor running and reports timeout
           explicitly. TLS configuration and physical gRPC connection controls are not supported
           by the server adapter.
-        - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
-          connector, with explicit plaintext opt-in, bounded messages and call admission.
+        - Added an experimental SDK-native gRPC client on a borrowed Restlet HTTP/2 connector,
+          for unary, server-streaming, client-streaming and bidirectional calls, with explicit
+          plaintext opt-in, bounded messages and call admission. Each call is one HTTP/2 exchange
+          whose request body is written while its response is read; request messages are queued
+          within a per-call budget that the SDK's readiness follows, and response messages are read
+          as the application requests them, within the same budget.
           Regression tests cover authority mapping, cancellation before and after headers,
           disconnect recovery, malformed responses and shared connector ownership. Empty
           responses retain SDK missing-status diagnostics instead of failing on a null stream.
           Shutdown arriving before SDK listener installation is replayed once; interrupted
           shutdown still closes owned transport resources and preserves the interrupt.
-          TLS, streaming methods and physical gRPC connection controls remain unsupported.
+          TLS and physical gRPC connection controls remain unsupported.
         - Added the Smithy extension, with a smithy-java 1.8.0 client transport on Restlet HTTP
           client connectors. Generated and dynamic SDK clients find it through service loading,
           before the JDK transport, or are given one borrowing an existing client. Requests are
