@@ -492,7 +492,8 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                         deliver(java.util.Arrays.copyOf(chunk, count), false);
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
+                Thread.currentThread().interrupt();
                 cancel(Status.CANCELLED.withDescription("gRPC request read interrupted"));
             } catch (IOException | RuntimeException e) {
                 synchronized (queue) {
