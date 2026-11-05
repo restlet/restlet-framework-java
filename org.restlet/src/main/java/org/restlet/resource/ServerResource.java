@@ -348,7 +348,28 @@ public abstract class ServerResource extends Resource {
      * <br>
      * By default, it evaluates the standard conditional headers of the request (see {@link
      * org.restlet.data.Conditions#getStatus(Method, RepresentationInfo)}). To add a precondition,
-     * call this method from the override and evaluate the extra one if the standard ones hold.
+     * call this method from the override and evaluate the extra one if the standard ones hold.<br>
+     * <br>
+     * <b>Example:</b> a resource requiring conditional writes, to avoid the "lost update" problem,
+     * answers 428 (Precondition Required, RFC 6585) to a write that has no precondition:
+     *
+     * <pre>
+     * &#64;Override
+     * protected boolean hasPreconditions() {
+     *     return super.hasPreconditions() || isWrite();
+     * }
+     *
+     * &#64;Override
+     * protected Status getPreconditionStatus(RepresentationInfo info) {
+     *     if (isWrite() &amp;&amp; !getConditions().hasSome()) {
+     *         return Status.CLIENT_ERROR_PRECONDITION_REQUIRED;
+     *     }
+     *     return super.getPreconditionStatus(info);
+     * }
+     * </pre>
+     *
+     * Note that the validators of the resource are retrieved before this method is invoked (see
+     * {@link #getInfo()}), so the 428 costs one call to it.
      *
      * @param resultInfo The current representation of the resource, or null if the resource does
      *     not exist.
