@@ -458,7 +458,9 @@ final class RestletClientStream extends AbstractClientStream {
                 if (done || failed) {
                     return false;
                 }
-                room = (int) Math.max(1, Math.min(chunk.length, queueBytes - unread));
+                // A live peer is read within the budget; once it is gone, what the connector
+                // buffered is drained in whole chunks.
+                room = peerGone ? chunk.length : (int) Math.min(chunk.length, queueBytes - unread);
             }
             int count = input.read(chunk, 0, room);
             if (count < 0) {
