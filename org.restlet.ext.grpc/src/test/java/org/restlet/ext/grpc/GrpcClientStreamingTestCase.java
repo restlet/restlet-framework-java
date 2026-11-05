@@ -25,11 +25,14 @@ import io.grpc.stub.ClientCalls;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
+import java.io.FilterInputStream;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
@@ -68,6 +71,25 @@ class GrpcClientStreamingTestCase {
                     .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
                     .setFullMethodName("review.Streams/Chat")
                     .build();
+
+    /** Upload, with request messages of unknown length, which grpc-java frames before counting. */
+    private static final MethodDescriptor<StringValue, StringValue> UNKNOWN_LENGTH_UPLOAD =
+            UPLOAD.toBuilder(
+                            new MethodDescriptor.Marshaller<StringValue>() {
+                                @Override
+                                public InputStream stream(StringValue value) {
+                                    return new FilterInputStream(
+                                            ECHO.getRequestMarshaller().stream(value)) {};
+                                }
+
+                                @Override
+                                public StringValue parse(InputStream stream) {
+                                    return ECHO.getRequestMarshaller().parse(stream);
+                                }
+                            },
+                            ECHO.getResponseMarshaller())
+                    .build();
+
     private static final String BLOCK = "x".repeat(4096);
 
     private final GrpcClientAdapter adapter = new GrpcClientAdapter();
@@ -360,8 +382,7 @@ class GrpcClientStreamingTestCase {
                 new Metadata());
         call.request(1);
         // Let the sender fill every buffer on the way.
-        Thread.sleep(1000);
-        int stalled = sent.get();
+        int stalled = settled(sent);
         assertTrue(stalled < total / 2, "sent " + stalled + " of " + total + " messages");
         assertEquals(0, received.get());
         release.countDown();
@@ -417,8 +438,7 @@ class GrpcClientStreamingTestCase {
         call.sendMessage(StringValue.of("go"));
         call.halfClose();
         // Requests nothing yet: the server fills every buffer on the way, then stops.
-        Thread.sleep(1000);
-        int stalled = produced.get();
+        int stalled = settled(produced);
         assertTrue(stalled < total / 2, "produced " + stalled + " of " + total + " messages");
         assertEquals(0, received.get());
         call.request(Integer.MAX_VALUE);
@@ -630,6 +650,21 @@ class GrpcClientStreamingTestCase {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void largeMessagesSentOnReadinessAreAccepted(boolean restlet) throws Exception {
+        assertLargeMessagesSentOnReadinessAreAccepted(restlet, UPLOAD);
+    }
+
+    /**
+     * A message of unknown length is framed before grpc-java counts it: it still starts within the
+     * queue budget, and grows to its size.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void largeMessagesOfUnknownLengthAreAccepted(boolean restlet) throws Exception {
+        assertLargeMessagesSentOnReadinessAreAccepted(restlet, UNKNOWN_LENGTH_UPLOAD);
+    }
+
+    private void assertLargeMessagesSentOnReadinessAreAccepted(
+            boolean restlet, MethodDescriptor<StringValue, StringValue> upload) throws Exception {
         adapter.setMaxQueuedBytes(16384);
         adapter.setExecutor(Runnable::run);
         start(restlet, streams());
@@ -637,7 +672,7 @@ class GrpcClientStreamingTestCase {
         var result = new CompletableFuture<String>();
         AtomicInteger sent = new AtomicInteger();
         ClientCall<StringValue, StringValue> call =
-                adapter.getChannel().newCall(UPLOAD, deadline());
+                adapter.getChannel().newCall(upload, deadline());
         call.start(
                 new ClientCall.Listener<>() {
                     @Override
@@ -736,6 +771,24 @@ class GrpcClientStreamingTestCase {
                                 adapter.getChannel(), ECHO, deadline(), StringValue.of("next"))
                         .getValue());
         assertEquals(1, closes.get());
+    }
+
+    /**
+     * Waits until a counter stops moving for 300 ms, as the buffers on the way are full, or 10 s.
+     *
+     * @return The settled value.
+     */
+    private static int settled(AtomicInteger counter) throws InterruptedException {
+        var never = new Semaphore(0);
+        long end = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        int last;
+        int value = counter.get();
+        do {
+            last = value;
+            never.tryAcquire(300, TimeUnit.MILLISECONDS);
+            value = counter.get();
+        } while (value != last && System.nanoTime() < end);
+        return value;
     }
 
     private static StreamObserver<StringValue> single(CompletableFuture<String> result) {
