@@ -30,9 +30,11 @@ import org.restlet.routing.Template;
 /**
  * Socketless grpc-java server on a borrowed Restlet HTTP/2 listener.
  *
- * <p>Supports unary requests and server-streamed responses, with finite message, queue, concurrency
- * and duration budgets. Does not implement TLS or physical connection controls. The host
- * application owns the HTTP listener and any supplied callback executor.
+ * <p>Supports unary, server-streaming, client-streaming and bidirectional methods, with finite
+ * message, queue, concurrency and duration budgets. Request messages are read as the application
+ * requests them, and responses are sent as they are produced, so a bidirectional call can exchange
+ * messages both ways over one HTTP/2 stream. Does not implement TLS or physical connection
+ * controls. The host application owns the HTTP listener and any supplied callback executor.
  *
  * <p>Register services before {@link #start()}, attach them to a router with {@link #attachTo}, and
  * configure the host listener for plaintext HTTP/2. This adapter is single-use. Stopping it cancels
@@ -93,6 +95,12 @@ public final class GrpcServerAdapter extends Restlet {
         }
     }
 
+    /**
+     * Sets the per-call queue budget, for each direction: response bytes waiting for the network,
+     * and request bytes read but not yet consumed by the messages the application requested.
+     *
+     * @param value At least 16384 bytes.
+     */
     public void setMaxQueuedBytes(int value) {
         synchronized (lock) {
             configurable();
@@ -201,11 +209,11 @@ public final class GrpcServerAdapter extends Restlet {
             configurable();
             for (var service : List.copyOf(services)) {
                 for (var method : service.getMethods()) {
-                    var type = method.getMethodDescriptor().getType();
-                    if (type != io.grpc.MethodDescriptor.MethodType.UNARY
-                            && type != io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING) {
+                    if (method.getMethodDescriptor().getType()
+                            == io.grpc.MethodDescriptor.MethodType.UNKNOWN) {
                         throw new UnsupportedOperationException(
-                                "Only unary and server-streaming methods are supported");
+                                "Methods of unknown type are not supported: "
+                                        + method.getMethodDescriptor().getFullMethodName());
                     }
                 }
             }

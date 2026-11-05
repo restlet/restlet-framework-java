@@ -323,6 +323,10 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
 
         private final InternalLogId id = InternalLogId.allocate(Call.class, "Restlet logical call");
         private final ArrayDeque<byte[]> queue = new ArrayDeque<>();
+
+        /** Guards {@link #unread}, and wakes the request reader. */
+        private final Object inbound = new Object();
+
         private final CountDownLatch head = new CountDownLatch(1);
         private final AtomicBoolean finished = new AtomicBoolean();
         private final AtomicLong operations = new AtomicLong();
@@ -338,6 +342,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         private volatile ScheduledFuture<?> deadline;
         private Metadata trailers;
         private int queued;
+
+        /** Request bytes handed to the SDK but not consumed yet; guarded by {@link #inbound}. */
+        private long unread;
 
         /** Bytes framed for the latest message, from the frame that started it. */
         private int open;
@@ -410,19 +417,12 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                         transportListener.streamCreated(stream, method, headers);
                         stream.state.onStreamAllocated();
                     });
-            byte[] bytes;
-            try (var input = request.getEntity().getStream()) {
-                bytes = input == null ? new byte[0] : read(input);
-            }
-            if (bytes.length > maxBytes + 5) {
-                cancel(Status.RESOURCE_EXHAUSTED.withDescription("Request byte budget exceeded"));
+            InputStream input = request.getEntity().getStream();
+            if (input == null) {
+                deliver(new byte[0], true);
             } else {
-                serial.execute(
-                        () -> {
-                            if (!reported) {
-                                stream.state.inboundDataReceived(ReadableBuffers.wrap(bytes), true);
-                            }
-                        });
+                // Read apart, so that the response can start while the client still sends.
+                Thread.ofVirtual().name("restlet-grpc-server-read").start(() -> readAll(input));
             }
             if (!head.await(duration.toNanos(), TimeUnit.NANOSECONDS)) {
                 cancel(Status.DEADLINE_EXCEEDED.withDescription("Response headers timed out"));
@@ -449,12 +449,65 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             return result.build();
         }
 
-        private byte[] read(InputStream input) throws IOException {
-            enterIo();
-            try {
-                return input.readNBytes(maxBytes + 6);
-            } finally {
-                blocked.set(0);
+        /**
+         * Hands the request body to the SDK as it arrives. Bytes handed over but not yet consumed
+         * by the SDK's deframer, which only reads the messages the application requested, stay
+         * within the queue budget: a slow consumer stops the reads, and so the client.
+         */
+        private void readAll(InputStream input) {
+            try (input) {
+                byte[] chunk = new byte[16384];
+                for (; ; ) {
+                    int room;
+                    synchronized (inbound) {
+                        while (unread >= queueBytes && !finished.get()) {
+                            inbound.wait();
+                        }
+                        if (finished.get()) {
+                            return;
+                        }
+                        room = (int) Math.min(chunk.length, queueBytes - unread);
+                    }
+                    int count;
+                    enterIo();
+                    try {
+                        count = input.read(chunk, 0, room);
+                    } finally {
+                        blocked.set(0);
+                    }
+                    if (count < 0) {
+                        deliver(new byte[0], true);
+                        return;
+                    }
+                    if (count > 0) {
+                        synchronized (inbound) {
+                            unread += count;
+                        }
+                        deliver(java.util.Arrays.copyOf(chunk, count), false);
+                    }
+                }
+            } catch (InterruptedException e) {
+                cancel(Status.CANCELLED.withDescription("gRPC request read interrupted"));
+            } catch (IOException | RuntimeException e) {
+                cancel(Status.CANCELLED.withDescription("gRPC request read failed").withCause(e));
+            }
+        }
+
+        /** Hands request bytes to the SDK, in {@link #serial} after the stream's creation. */
+        private void deliver(byte[] bytes, boolean end) {
+            serial.execute(
+                    () -> {
+                        if (!reported) {
+                            stream.state.inboundDataReceived(ReadableBuffers.wrap(bytes), end);
+                        }
+                    });
+        }
+
+        /** Frees inbound budget once the SDK's deframer consumed request bytes. */
+        private void consumed(int count) {
+            synchronized (inbound) {
+                unread -= count;
+                inbound.notifyAll();
             }
         }
 
@@ -583,6 +636,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             ScheduledFuture<?> timeout = deadline;
             if (timeout != null) {
                 timeout.cancel(false);
+            }
+            synchronized (inbound) {
+                inbound.notifyAll();
             }
             return true;
         }
@@ -750,7 +806,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             }
 
             @Override
-            public void bytesRead(int count) {}
+            public void bytesRead(int count) {
+                call.consumed(count);
+            }
 
             @Override
             public void deframeFailed(Throwable cause) {

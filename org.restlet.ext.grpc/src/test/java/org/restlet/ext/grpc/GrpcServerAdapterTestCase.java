@@ -78,6 +78,16 @@ class GrpcServerAdapterTestCase {
                     .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
                     .setFullMethodName("review.Server/Watch")
                     .build();
+    private static final MethodDescriptor<StringValue, StringValue> UPLOAD =
+            ECHO.toBuilder()
+                    .setType(MethodDescriptor.MethodType.CLIENT_STREAMING)
+                    .setFullMethodName("review.Server/Upload")
+                    .build();
+    private static final MethodDescriptor<StringValue, StringValue> CHAT =
+            ECHO.toBuilder()
+                    .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
+                    .setFullMethodName("review.Server/Chat")
+                    .build();
     private final GrpcServerAdapter adapter = new GrpcServerAdapter();
     private Server http;
     private ManagedChannel channel;
@@ -369,31 +379,286 @@ class GrpcServerAdapterTestCase {
     }
 
     @Test
-    void unsupportedStreamingRegistrationFailsExplicitly() {
+    void unknownMethodTypesFailExplicitly() {
         adapter.getServices()
                 .add(
                         ServerServiceDefinition.builder("review.Server")
                                 .addMethod(
                                         ECHO.toBuilder()
-                                                .setType(
-                                                        MethodDescriptor.MethodType
-                                                                .CLIENT_STREAMING)
+                                                .setType(MethodDescriptor.MethodType.UNKNOWN)
                                                 .build(),
-                                        ServerCalls.asyncClientStreamingCall(
-                                                out ->
-                                                        new io.grpc.stub.StreamObserver<
-                                                                StringValue>() {
-                                                            @Override
-                                                            public void onNext(StringValue value) {}
-
-                                                            @Override
-                                                            public void onError(Throwable cause) {}
-
-                                                            @Override
-                                                            public void onCompleted() {}
-                                                        }))
+                                        ServerCalls.asyncUnaryCall(
+                                                (StringValue request,
+                                                        io.grpc.stub.StreamObserver<StringValue>
+                                                                out) -> out.onCompleted()))
                                 .build());
         assertThrows(UnsupportedOperationException.class, adapter::start);
+    }
+
+    /** Counts the messages and characters of an uploaded stream. */
+    private static ServerServiceDefinition upload() {
+        return ServerServiceDefinition.builder("review.Server")
+                .addMethod(
+                        UPLOAD,
+                        ServerCalls.asyncClientStreamingCall(
+                                out ->
+                                        new io.grpc.stub.StreamObserver<StringValue>() {
+                                            private int messages;
+                                            private long characters;
+
+                                            @Override
+                                            public void onNext(StringValue value) {
+                                                messages++;
+                                                characters += value.getValue().length();
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable cause) {}
+
+                                            @Override
+                                            public void onCompleted() {
+                                                out.onNext(
+                                                        StringValue.of(
+                                                                messages + ":" + characters));
+                                                out.onCompleted();
+                                            }
+                                        }))
+                .build();
+    }
+
+    @Test
+    void clientStreamingReceivesEveryMessage() throws Exception {
+        start(upload());
+        var result = new java.util.concurrent.CompletableFuture<String>();
+        var requests =
+                ClientCalls.asyncClientStreamingCall(
+                        channel.newCall(
+                                UPLOAD,
+                                CallOptions.DEFAULT.withDeadlineAfter(15, TimeUnit.SECONDS)),
+                        observer(result));
+        for (int i = 0; i < 200; i++) {
+            requests.onNext(StringValue.of("x".repeat(4096)));
+        }
+        requests.onCompleted();
+        assertEquals("200:" + (200 * 4096), result.get(15, TimeUnit.SECONDS));
+    }
+
+    /** Each reply is received before the next request is sent, over one HTTP/2 stream. */
+    @Test
+    void bidirectionalCallsExchangeMessagesBothWays() throws Exception {
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                CHAT,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        out ->
+                                                new io.grpc.stub.StreamObserver<StringValue>() {
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        out.onNext(
+                                                                StringValue.of(
+                                                                        "re:" + value.getValue()));
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable cause) {}
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        out.onCompleted();
+                                                    }
+                                                }))
+                        .build());
+        var replies = new java.util.concurrent.LinkedBlockingQueue<String>();
+        var done = new java.util.concurrent.CompletableFuture<Void>();
+        var requests =
+                ClientCalls.asyncBidiStreamingCall(
+                        channel.newCall(
+                                CHAT, CallOptions.DEFAULT.withDeadlineAfter(15, TimeUnit.SECONDS)),
+                        new io.grpc.stub.StreamObserver<StringValue>() {
+                            @Override
+                            public void onNext(StringValue value) {
+                                replies.add(value.getValue());
+                            }
+
+                            @Override
+                            public void onError(Throwable cause) {
+                                done.completeExceptionally(cause);
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                done.complete(null);
+                            }
+                        });
+        for (int i = 0; i < 5; i++) {
+            requests.onNext(StringValue.of("ping" + i));
+            assertEquals("re:ping" + i, replies.poll(10, TimeUnit.SECONDS));
+        }
+        requests.onCompleted();
+        done.get(10, TimeUnit.SECONDS);
+        assertTrue(replies.isEmpty());
+    }
+
+    /**
+     * Request bytes the application didn't ask for stay within the queue budget plus HTTP/2 flow
+     * control windows, so a client that respects readiness stops sending.
+     */
+    @Test
+    void unrequestedMessagesPushBackOnTheClient() throws Exception {
+        adapter.setMaxQueuedBytes(32768);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicInteger received = new AtomicInteger();
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                UPLOAD,
+                                ServerCalls.asyncClientStreamingCall(
+                                        out -> {
+                                            var observer =
+                                                    (ServerCallStreamObserver<StringValue>) out;
+                                            observer.disableAutoRequest();
+                                            Thread.startVirtualThread(
+                                                    () -> {
+                                                        try {
+                                                            release.await();
+                                                        } catch (InterruptedException e) {
+                                                            return;
+                                                        }
+                                                        observer.request(Integer.MAX_VALUE);
+                                                    });
+                                            return new io.grpc.stub.StreamObserver<StringValue>() {
+                                                @Override
+                                                public void onNext(StringValue value) {
+                                                    received.incrementAndGet();
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable cause) {}
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    out.onNext(
+                                                            StringValue.of(
+                                                                    Integer.toString(
+                                                                            received.get())));
+                                                    out.onCompleted();
+                                                }
+                                            };
+                                        }))
+                        .build());
+        int total = 1024; // 4 MiB of 4 KiB messages
+        AtomicInteger sent = new AtomicInteger();
+        var result = new java.util.concurrent.CompletableFuture<String>();
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(
+                        UPLOAD, CallOptions.DEFAULT.withDeadlineAfter(30, TimeUnit.SECONDS));
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        result.complete(message.getValue());
+                    }
+
+                    @Override
+                    public void onReady() {
+                        while (call.isReady() && sent.get() < total) {
+                            call.sendMessage(StringValue.of("x".repeat(4096)));
+                            if (sent.incrementAndGet() == total) {
+                                call.halfClose();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        if (!status.isOk()) {
+                            result.completeExceptionally(status.asRuntimeException());
+                        }
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        Thread.sleep(1000);
+        int stalled = sent.get();
+        assertTrue(stalled < total / 2, "sent " + stalled + " of " + total + " messages");
+        assertEquals(0, received.get());
+        release.countDown();
+        assertEquals(Integer.toString(total), result.get(30, TimeUnit.SECONDS));
+    }
+
+    /** A requested message larger than the queue budget is consumed as it arrives. */
+    @Test
+    void messagesLargerThanTheQueueBudgetStreamThrough() throws Exception {
+        adapter.setMaxQueuedBytes(16384);
+        start(echo());
+        String large = "x".repeat(512 * 1024);
+        assertEquals(large, call(large));
+    }
+
+    @Test
+    void cancellingAStreamingCallReleasesItsSlot() throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        CountDownLatch cancelled = new CountDownLatch(1);
+        CountDownLatch receiving = new CountDownLatch(1);
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                CHAT,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        out -> {
+                                            ((ServerCallStreamObserver<StringValue>) out)
+                                                    .setOnCancelHandler(cancelled::countDown);
+                                            return new io.grpc.stub.StreamObserver<StringValue>() {
+                                                @Override
+                                                public void onNext(StringValue value) {
+                                                    receiving.countDown();
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable cause) {}
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    out.onCompleted();
+                                                }
+                                            };
+                                        }))
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request,
+                                                io.grpc.stub.StreamObserver<StringValue> out) -> {
+                                            out.onNext(request);
+                                            out.onCompleted();
+                                        }))
+                        .build());
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(CHAT, CallOptions.DEFAULT.withDeadlineAfter(15, TimeUnit.SECONDS));
+        call.start(new ClientCall.Listener<>() {}, new Metadata());
+        call.sendMessage(StringValue.of("open"));
+        assertTrue(receiving.await(10, TimeUnit.SECONDS));
+        call.cancel("client gave up", null);
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS));
+        assertEquals("next", call("next"));
+    }
+
+    private static io.grpc.stub.StreamObserver<StringValue> observer(
+            java.util.concurrent.CompletableFuture<String> result) {
+        return new io.grpc.stub.StreamObserver<>() {
+            @Override
+            public void onNext(StringValue value) {
+                result.complete(value.getValue());
+            }
+
+            @Override
+            public void onError(Throwable cause) {
+                result.completeExceptionally(cause);
+            }
+
+            @Override
+            public void onCompleted() {}
+        };
     }
 
     private static byte[] frame(String value) throws IOException {
@@ -834,9 +1099,8 @@ class GrpcServerAdapterTestCase {
                         () -> {});
         Response response = new Response(request);
         adapter.handle(request, response);
-        assertEquals(
-                String.valueOf(Status.Code.INVALID_ARGUMENT.value()),
-                trailersAfterWriting(response));
+        // A request stream that breaks while read is a peer reset, as grpc-netty reports it.
+        assertEquals(String.valueOf(Status.Code.CANCELLED.value()), trailersAfterWriting(response));
     }
 
     @Test
@@ -862,7 +1126,9 @@ class GrpcServerAdapterTestCase {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             executor.submit(() -> adapter.handle(request, response)).get(10, TimeUnit.SECONDS);
         }
-        assertEquals(0, reset.getCount());
+        // The request is read apart from the handler, which returns once the call ends; the read
+        // still stuck after that is reset shortly after.
+        assertTrue(reset.await(10, TimeUnit.SECONDS));
         assertEquals(
                 String.valueOf(Status.Code.DEADLINE_EXCEEDED.value()),
                 trailersAfterWriting(response));
