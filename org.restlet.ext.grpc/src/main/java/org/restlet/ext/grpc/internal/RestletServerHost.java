@@ -334,8 +334,14 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         /** 0 before the application callbacks, 1 while they may run, 2 once released. */
         private final AtomicInteger callbackState = new AtomicInteger();
 
-        /** The network read or write in progress, 0 if none. */
-        private final AtomicLong blocked = new AtomicLong();
+        /**
+         * The network read in progress, 0 if none. Reads and writes run concurrently, so each has
+         * its own marker: the end of one must not hide the other from {@link #abortIfStuck}.
+         */
+        private final AtomicLong reading = new AtomicLong();
+
+        /** The network write in progress, 0 if none. */
+        private final AtomicLong writing = new AtomicLong();
 
         private ServerTransportListener transportListener;
         private SdkStream stream;
@@ -469,11 +475,11 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                         room = (int) Math.min(chunk.length, queueBytes - unread);
                     }
                     int count;
-                    enterIo();
+                    enterIo(reading);
                     try {
                         count = input.read(chunk, 0, room);
                     } finally {
-                        blocked.set(0);
+                        reading.set(0);
                     }
                     if (count < 0) {
                         deliver(new byte[0], true);
@@ -489,6 +495,13 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             } catch (InterruptedException e) {
                 cancel(Status.CANCELLED.withDescription("gRPC request read interrupted"));
             } catch (IOException | RuntimeException e) {
+                synchronized (queue) {
+                    if (terminal) {
+                        // The response ended, so the server closed the unread request body; the
+                        // delivery or disconnect signal settles the call, not this read.
+                        return;
+                    }
+                }
                 cancel(Status.CANCELLED.withDescription("gRPC request read failed").withCause(e));
             }
         }
@@ -529,12 +542,12 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                                 }
                                 queued -= data.length;
                             }
-                            enterIo();
+                            enterIo(writing);
                             try {
                                 output.write(data);
                                 output.flush();
                             } finally {
-                                blocked.set(0);
+                                writing.set(0);
                             }
                             int sent = data.length;
                             serial.execute(() -> stream.state.onSentBytes(sent));
@@ -552,8 +565,8 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
         }
 
         /** Marks the start of a network read or write, which only the peer may otherwise end. */
-        private void enterIo() {
-            blocked.set(operations.incrementAndGet());
+        private void enterIo(AtomicLong marker) {
+            marker.set(operations.incrementAndGet());
             if (finished.get()) {
                 abortIfStuck();
             }
@@ -565,8 +578,9 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
          * elsewhere was already woken by the end of the call.
          */
         private void abortIfStuck() {
-            long operation = blocked.get();
-            if (operation == 0) {
+            long read = reading.get();
+            long write = writing.get();
+            if (read == 0 && write == 0) {
                 return;
             }
             Thread.startVirtualThread(
@@ -577,7 +591,8 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
                             Thread.currentThread().interrupt();
                             return;
                         }
-                        if (blocked.get() == operation) {
+                        if ((read != 0 && reading.get() == read)
+                                || (write != 0 && writing.get() == write)) {
                             request.abort();
                         }
                     });

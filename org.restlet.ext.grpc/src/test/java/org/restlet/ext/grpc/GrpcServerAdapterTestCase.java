@@ -1184,6 +1184,170 @@ class GrpcServerAdapterTestCase {
         }
     }
 
+    /** The end of the request, read while a response write is blocked, doesn't hide that write. */
+    @Test
+    void requestEndDoesNotHideABlockedResponseWrite() throws Exception {
+        adapter.getServices()
+                .add(
+                        ServerServiceDefinition.builder("review.Server")
+                                .addMethod(
+                                        CHAT,
+                                        ServerCalls.asyncBidiStreamingCall(
+                                                out ->
+                                                        new io.grpc.stub.StreamObserver<
+                                                                StringValue>() {
+                                                            @Override
+                                                            public void onNext(StringValue value) {
+                                                                out.onNext(StringValue.of("first"));
+                                                            }
+
+                                                            @Override
+                                                            public void onError(Throwable cause) {}
+
+                                                            @Override
+                                                            public void onCompleted() {}
+                                                        }))
+                                .build());
+        adapter.start();
+        CountDownLatch reset = new CountDownLatch(1);
+        CountDownLatch writing = new CountDownLatch(1);
+        byte[] frame = frame("watch");
+        InputStream body =
+                new InputStream() {
+                    private boolean sent;
+
+                    @Override
+                    public int read() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public int read(byte[] buffer, int offset, int length) throws IOException {
+                        if (!sent) {
+                            sent = true;
+                            System.arraycopy(frame, 0, buffer, offset, frame.length);
+                            return frame.length;
+                        }
+                        // The request ends only once the response write is blocked.
+                        try {
+                            writing.await();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                        return -1;
+                    }
+                };
+        Request request = grpcRequest(CHAT, body, reset::countDown);
+        Response response = new Response(request);
+        adapter.handle(request, response);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var writer =
+                    executor.submit(
+                            () -> {
+                                response.getEntity()
+                                        .write(
+                                                new OutputStream() {
+                                                    @Override
+                                                    public void write(int value)
+                                                            throws IOException {
+                                                        writing.countDown();
+                                                        try {
+                                                            // Bounded, so that a missing reset
+                                                            // fails
+                                                            // the test instead of hanging it.
+                                                            reset.await(30, TimeUnit.SECONDS);
+                                                        } catch (InterruptedException e) {
+                                                            Thread.currentThread().interrupt();
+                                                        }
+                                                        throw new IOException("stream reset");
+                                                    }
+                                                });
+                                return null;
+                            });
+            assertTrue(writing.await(10, TimeUnit.SECONDS));
+            // Let the reader see the end of the request, then end the call.
+            Thread.sleep(100);
+            adapter.stop();
+            assertTrue(reset.await(10, TimeUnit.SECONDS));
+            assertThrows(
+                    java.util.concurrent.ExecutionException.class,
+                    () -> writer.get(10, TimeUnit.SECONDS));
+        }
+    }
+
+    /**
+     * A bidirectional service may finish before the client half-closes; the server then closes the
+     * request body, which must not turn the completed call into a cancelled one.
+     */
+    @Test
+    void earlyServerCompletionIsNotACancellation() throws Exception {
+        CountDownLatch completed = new CountDownLatch(1);
+        CountDownLatch cancelled = new CountDownLatch(1);
+        adapter.getInterceptors()
+                .add(
+                        new io.grpc.ServerInterceptor() {
+                            @Override
+                            public <Q, S> io.grpc.ServerCall.Listener<Q> interceptCall(
+                                    io.grpc.ServerCall<Q, S> call,
+                                    Metadata headers,
+                                    io.grpc.ServerCallHandler<Q, S> next) {
+                                return new io.grpc.ForwardingServerCallListener
+                                        .SimpleForwardingServerCallListener<>(
+                                        next.startCall(call, headers)) {
+                                    @Override
+                                    public void onComplete() {
+                                        completed.countDown();
+                                        super.onComplete();
+                                    }
+
+                                    @Override
+                                    public void onCancel() {
+                                        cancelled.countDown();
+                                        super.onCancel();
+                                    }
+                                };
+                            }
+                        });
+        start(
+                ServerServiceDefinition.builder("review.Server")
+                        .addMethod(
+                                CHAT,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        out ->
+                                                new io.grpc.stub.StreamObserver<StringValue>() {
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        out.onNext(value);
+                                                        out.onCompleted();
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable cause) {}
+
+                                                    @Override
+                                                    public void onCompleted() {}
+                                                }))
+                        .build());
+        var status = new java.util.concurrent.CompletableFuture<Status>();
+        // The first call on a fresh channel also waits for the HTTP/2 connection setup.
+        ClientCall<StringValue, StringValue> call =
+                channel.newCall(CHAT, CallOptions.DEFAULT.withDeadlineAfter(30, TimeUnit.SECONDS));
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onClose(Status value, Metadata trailers) {
+                        status.complete(value);
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        // The client never half-closes.
+        call.sendMessage(StringValue.of("only"));
+        assertEquals(Status.Code.OK, status.get(30, TimeUnit.SECONDS).getCode());
+        assertTrue(completed.await(10, TimeUnit.SECONDS));
+        assertFalse(cancelled.await(200, TimeUnit.MILLISECONDS));
+    }
+
     @Test
     void callbacksMayUseTheAdapterWhileItStops() throws Exception {
         CountDownLatch entered = new CountDownLatch(1);
