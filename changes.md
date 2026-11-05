@@ -14,6 +14,7 @@ Changes log
     - Added `ServerResource.setIgnoringPreconditionsOnNonSuccess(boolean)` and `isIgnoringPreconditionsOnNonSuccess()`. When enabled, the preconditions of a request (`If-Match`, `If-None-Match`, ...) are ignored if the status set by `get()` or `getInfo()` while retrieving the validators is neither a success (2xx) nor 412, so that an error or a redirection set by the resource is no longer replaced by a 304 or a 412, as required by RFC 9110 section 13.2.1. Disabled by default (unchanged behavior), enabled in Restlet 3.0. Issue #129.
     - Added the constants of the HTTP statuses 308 (`Status.REDIRECTION_PERMANENT_STRICT`), 421, 422 (`CLIENT_ERROR_UNPROCESSABLE_CONTENT`), 426, 428, 431, 451 and 511 of RFC 6585, RFC 9110 and RFC 7725, with their reason phrase, description and URI. `Status.valueOf()` returned a status without any of them. Issue #850.
     - Added the `CacheDirective` factories `mustUnderstand()` (RFC 9111), `immutable()` (RFC 8246), `staleWhileRevalidate(int)` and `staleIfError(int)` (RFC 5861), with their `HeaderConstants.CACHE_*` names. The two numeric ones reject a negative number of seconds.
+    - The Javadoc of `ServerResource.getPreconditionStatus()` shows how to require conditional writes by answering 428 (`Status.CLIENT_ERROR_PRECONDITION_REQUIRED`) to a write without precondition.
   - Bugs fixed
     - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
     - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
