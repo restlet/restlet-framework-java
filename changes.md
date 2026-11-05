@@ -12,6 +12,7 @@ Changes log
     - Added an opt-in UTF-8 handling of the HTTP Basic credentials (RFC 7617), enabled with the `org.restlet.engine.security.basic.utf8` system property (`HttpBasicHelper.UTF8_PROPERTY`): a Basic challenge then advertises `charset="UTF-8"`, a server decodes the credentials as UTF-8 (falling back to ISO-8859-1 if they are not valid UTF-8), and a client answering such a challenge encodes its credentials in UTF-8. Disabled by default (ISO-8859-1). Issue #1455.
     - Added the `ServerResource.hasPreconditions()` and `getPreconditionStatus(RepresentationInfo)` methods to add preconditions to the standard ones: override both, calling `super` to keep evaluating the conditional headers of the request. A request that only carries a custom precondition no longer skips the evaluation when `hasPreconditions()` says so. The Javadoc of `doConditionalHandle()` now explains that the validators of a conditional PUT, POST or DELETE come from `getInfo()`, which calls `get()` by default. Issues #65 and #262.
     - Added `ServerResource.setIgnoringPreconditionsOnNonSuccess(boolean)` and `isIgnoringPreconditionsOnNonSuccess()`. When enabled, the preconditions of a request (`If-Match`, `If-None-Match`, ...) are ignored if the status set by `get()` or `getInfo()` while retrieving the validators is neither a success (2xx) nor 412, so that an error or a redirection set by the resource is no longer replaced by a 304 or a 412, as required by RFC 9110 section 13.2.1. Disabled by default (unchanged behavior), enabled in Restlet 3.0. Issue #129.
+    - Added the constants of the HTTP statuses 308 (`Status.REDIRECTION_PERMANENT_STRICT`), 421, 422 (`CLIENT_ERROR_UNPROCESSABLE_CONTENT`), 426, 428, 431, 451 and 511 of RFC 6585, RFC 9110 and RFC 7725, with their reason phrase, description and URI. `Status.valueOf()` returned a status without any of them. Issue #850.
   - Bugs fixed
     - Slf4j bridge reports wrong line number and caller class in log4j. Issue #233.
     - When GET is an allowed method of a server resource, HEAD is now also listed (e.g. in the Allow header of a 405 response). Issue #266.
@@ -21,6 +22,7 @@ Changes log
     - Fixed the parsing of a `WWW-Authenticate` challenge made of a token68 ending with `=` (such as a `Negotiate` token): the whole header was dropped. Issue #191.
     - The `realm` and `charset` parameters of an HTTP Basic challenge are now recognized whatever their case (`Realm=`, `Charset=`), as required by RFC 9110. Issue #1455.
     - `ChallengeScheme.valueOf()` returned `HTTP_OAUTH` for the names of the Bearer and MAC schemes (`HTTP_Bearer`, `HTTP_MAC`) instead of `HTTP_OAUTH_BEARER` and `HTTP_OAUTH_MAC`. Issue #1618.
+    - The description of `Status.CLIENT_ERROR_TOO_MANY_REQUESTS` (429) contained backslashes before the quotes of "rate limiting".
 
 - 2.7.0 (30-09-2026)
   - Misc
