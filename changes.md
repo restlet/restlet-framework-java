@@ -268,6 +268,16 @@ Changes log
           when `hasPreconditions()` says so. The Javadoc of `doConditionalHandle()` now explains that
           the validators of a conditional PUT, POST or DELETE come from `getInfo()`, which calls
           `get()` by default. Issues #65 and #262.
+        - Added the constants of the HTTP statuses 308 (`Status.REDIRECTION_PERMANENT_STRICT`), 421,
+          422 (`CLIENT_ERROR_UNPROCESSABLE_CONTENT`), 426, 428, 431, 451 and 511 of RFC 6585,
+          RFC 9110 and RFC 7725, with their reason phrase, description and URI. `Status.valueOf()`
+          returned a status without any of them. Issue #850.
+        - Added the `CacheDirective` factories `mustUnderstand()` (RFC 9111), `immutable()`
+          (RFC 8246), `staleWhileRevalidate(int)` and `staleIfError(int)` (RFC 5861), with their
+          `HeaderConstants.CACHE_*` names. The two numeric ones reject a negative number of seconds.
+        - The Javadoc of `ServerResource.getPreconditionStatus()` shows how to require conditional
+          writes by answering 428 (`Status.CLIENT_ERROR_PRECONDITION_REQUIRED`) to a write without
+          precondition.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
@@ -318,6 +328,12 @@ Changes log
           or 406). The unread body is discarded when it is already received, or when at most
           256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
           Clients reusing the connection failed with a "Communication Error" (1001).
+        - The description of `Status.CLIENT_ERROR_TOO_MANY_REQUESTS` (429) contained backslashes
+          before the quotes of "rate limiting".
+        - The HTTP/1.1 server connector answered 400 to a request having a header field or a request
+          line larger than the "http.requestHeaderSize" parameter (8192 bytes by default). It now
+          answers 431 (Request Header Fields Too Large, RFC 6585) and 414 (URI Too Long, RFC 9110),
+          still closing the connection. The other requests that cannot be decoded still get a 400.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
