@@ -667,6 +667,77 @@ class GrpcClientStreamingTestCase {
         assertEquals("2:" + (2 * large.length()), result.get(30, TimeUnit.SECONDS));
     }
 
+    /**
+     * A sender ignoring readiness towards a peer that requests nothing fills the request queue: the
+     * call ends once with RESOURCE_EXHAUSTED, the stream is reset and the only call slot is free.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void aSenderIgnoringReadinessFailsAtTheQueueBudget(boolean restlet) throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        adapter.setMaxQueuedBytes(16384);
+        start(
+                restlet,
+                ServerServiceDefinition.builder("review.Streams")
+                        .addMethod(
+                                CHAT,
+                                ServerCalls.asyncBidiStreamingCall(
+                                        out -> {
+                                            // A stalled peer: it never asks for a message.
+                                            ((ServerCallStreamObserver<StringValue>) out)
+                                                    .disableAutoRequest();
+                                            return new StreamObserver<StringValue>() {
+                                                @Override
+                                                public void onNext(StringValue value) {
+                                                    // Never requested.
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable cause) {
+                                                    // The call ended; nothing to answer.
+                                                }
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    out.onCompleted();
+                                                }
+                                            };
+                                        }))
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request, StreamObserver<StringValue> out) -> {
+                                            out.onNext(request);
+                                            out.onCompleted();
+                                        }))
+                        .build());
+        var closed = new CompletableFuture<Status>();
+        AtomicInteger closes = new AtomicInteger();
+        ClientCall<StringValue, StringValue> call = adapter.getChannel().newCall(CHAT, deadline());
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        closes.incrementAndGet();
+                        closed.complete(status);
+                    }
+                },
+                new Metadata());
+        // Up to 4 MiB, far beyond what the peer, the connectors and the queue may hold.
+        for (int i = 0; i < 1024 && !closed.isDone(); i++) {
+            call.sendMessage(StringValue.of(BLOCK));
+        }
+        Status status = closed.get(30, TimeUnit.SECONDS);
+        assertEquals(Status.Code.RESOURCE_EXHAUSTED, status.getCode());
+        assertEquals("Request queue byte budget exceeded", status.getDescription());
+        assertEquals(
+                "next",
+                ClientCalls.blockingUnaryCall(
+                                adapter.getChannel(), ECHO, deadline(), StringValue.of("next"))
+                        .getValue());
+        assertEquals(1, closes.get());
+    }
+
     private static StreamObserver<StringValue> single(CompletableFuture<String> result) {
         return new StreamObserver<>() {
             @Override
