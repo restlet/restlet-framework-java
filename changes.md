@@ -272,6 +272,9 @@ Changes log
           422 (`CLIENT_ERROR_UNPROCESSABLE_CONTENT`), 426, 428, 431, 451 and 511 of RFC 6585,
           RFC 9110 and RFC 7725, with their reason phrase, description and URI. `Status.valueOf()`
           returned a status without any of them. Issue #850.
+        - Added the `CacheDirective` factories `mustUnderstand()` (RFC 9111), `immutable()`
+          (RFC 8246), `staleWhileRevalidate(int)` and `staleIfError(int)` (RFC 5861), with their
+          `HeaderConstants.CACHE_*` names. The two numeric ones reject a negative number of seconds.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
