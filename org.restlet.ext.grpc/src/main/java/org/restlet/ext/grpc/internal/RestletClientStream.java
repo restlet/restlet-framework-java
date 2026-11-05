@@ -190,58 +190,12 @@ final class RestletClientStream extends AbstractClientStream {
         return new Sink() {
             @Override
             public void writeHeaders(Metadata metadata, byte[] payload) {
-                headers = metadata;
-                stats.clientOutboundHeaders();
-                serial.execute(state::allocated);
-                Status failure = null;
-                synchronized (outbound) {
-                    if (!done && !started) {
-                        started = true;
-                        try {
-                            io.execute(RestletClientStream.this::exchange);
-                        } catch (RejectedExecutionException e) {
-                            failure = Status.UNAVAILABLE.withCause(e);
-                        }
-                    }
-                }
-                if (failure != null) {
-                    fail(failure);
-                }
+                begin(metadata);
             }
 
             @Override
             public void writeFrame(WritableBuffer frame, boolean end, boolean flush, int messages) {
-                Status failure = null;
-                synchronized (outbound) {
-                    if (frame instanceof Buffer buffer && !done && !halfClosed) {
-                        int size = buffer.size;
-                        // One message is framed whole, possibly before the writer starts: while
-                        // the queue holds only that message, it may grow up to one framed
-                        // message. A frame counting messages starts a new one.
-                        int message = messages > 0 ? size : open + size;
-                        boolean others = queued + size > message;
-                        if (size > queueBytes - queued && (others || message > wireLimit)) {
-                            failure =
-                                    Status.RESOURCE_EXHAUSTED.withDescription(
-                                            "Request queue byte budget exceeded");
-                        } else if (size > 0) {
-                            open = message;
-                            outbound.addLast(Arrays.copyOf(buffer.data, size));
-                            queued += size;
-                            onSendingBytes(size);
-                        }
-                    }
-                    if (frame != null) {
-                        frame.release();
-                    }
-                    if (end) {
-                        halfClosed = true;
-                    }
-                    outbound.notifyAll();
-                }
-                if (failure != null) {
-                    fail(failure);
-                }
+                send(frame, end, messages);
             }
 
             @Override
@@ -249,6 +203,71 @@ final class RestletClientStream extends AbstractClientStream {
                 fail(status);
             }
         };
+    }
+
+    /** Starts the HTTP/2 exchange with the request headers. */
+    private void begin(Metadata metadata) {
+        headers = metadata;
+        stats.clientOutboundHeaders();
+        serial.execute(state::allocated);
+        Status failure = null;
+        synchronized (outbound) {
+            if (!done && !started) {
+                started = true;
+                try {
+                    io.execute(this::exchange);
+                } catch (RejectedExecutionException e) {
+                    failure = Status.UNAVAILABLE.withCause(e);
+                }
+            }
+        }
+        if (failure != null) {
+            fail(failure);
+        }
+    }
+
+    /** Queues a request frame for the writer, and records the half-close. */
+    private void send(WritableBuffer frame, boolean end, int messages) {
+        Status failure = null;
+        synchronized (outbound) {
+            if (frame instanceof Buffer buffer && !done && !halfClosed) {
+                failure = enqueue(buffer, messages);
+            }
+            if (frame != null) {
+                frame.release();
+            }
+            if (end) {
+                halfClosed = true;
+            }
+            outbound.notifyAll();
+        }
+        if (failure != null) {
+            fail(failure);
+        }
+    }
+
+    /**
+     * Copies a frame into the queue, within its budget; must be called holding {@link #outbound}.
+     * One message is framed whole, possibly before the writer starts: while the queue holds only
+     * that message, it may grow up to one framed message. A frame counting messages starts a new
+     * one.
+     *
+     * @return The failure if the budget is exceeded, null otherwise.
+     */
+    private Status enqueue(Buffer buffer, int messages) {
+        int size = buffer.size;
+        int message = messages > 0 ? size : open + size;
+        boolean others = queued + size > message;
+        if (size > queueBytes - queued && (others || message > wireLimit)) {
+            return Status.RESOURCE_EXHAUSTED.withDescription("Request queue byte budget exceeded");
+        }
+        if (size > 0) {
+            open = message;
+            outbound.addLast(Arrays.copyOf(buffer.data, size));
+            queued += size;
+            onSendingBytes(size);
+        }
+        return null;
     }
 
     private void fail(Status status) {
@@ -299,22 +318,7 @@ final class RestletClientStream extends AbstractClientStream {
             if (done) {
                 return;
             }
-            Request call = new Request(Method.POST, target, requestEntity());
-            // Resource origin selects the resolved peer; base reference selects HTTP authority.
-            call.getResourceRef().setBaseRef(new Reference("http://" + authority));
-            call.getHeaders().set("te", "trailers");
-            byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
-            for (int i = 0; i < metadata.length; i += 2) {
-                String key = new String(metadata[i], StandardCharsets.US_ASCII);
-                if (!key.startsWith(":")
-                        && !"content-type".equals(key)
-                        && !"user-agent".equals(key)
-                        && !"te".equals(key)) {
-                    call.getHeaders()
-                            .add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
-                }
-            }
-            call.getClientInfo().setAgent("restlet-grpc/1.85.1");
+            Request call = newRequest();
             request = call;
             if (done || failed || Thread.currentThread().isInterrupted()) {
                 call.abort();
@@ -329,40 +333,9 @@ final class RestletClientStream extends AbstractClientStream {
                                                     .withCause(cause)));
             // Returns at the response head; the request body is still written meanwhile.
             response = client.handle(call);
-            if (done) {
-                return;
+            if (!done) {
+                receive(response);
             }
-            if (response.getProtocol() == null
-                    || !"2.0".equals(response.getProtocol().getVersion())) {
-                fail(
-                        Status.UNAVAILABLE
-                                .withDescription("gRPC requires an HTTP/2 response")
-                                .withCause(response.getStatus().getThrowable()));
-                return;
-            }
-            Metadata initial = metadata(response.getHeaders());
-            initial.put(
-                    InternalMetadata.keyOf(":status", Metadata.ASCII_STRING_MARSHALLER),
-                    Integer.toString(response.getStatus().getCode()));
-            if (response.getEntity() != null && response.getEntity().getMediaType() != null) {
-                initial.put(
-                        Metadata.Key.of("content-type", Metadata.ASCII_STRING_MARSHALLER),
-                        response.getEntity().getMediaType().toString());
-            }
-            if (response.getHeaders().getFirstValue("grpc-status", true) != null) {
-                serial.execute(() -> state.trailers(initial));
-                return;
-            }
-            serial.execute(() -> state.headers(initial));
-            if (response.getEntity() != null) {
-                try (var input = response.getEntity().getStream()) {
-                    if (input != null && !readAll(input)) {
-                        return;
-                    }
-                }
-            }
-            Metadata trailers = metadata(response.getTrailers());
-            serial.execute(() -> state.trailers(trailers));
         } catch (IOException | RuntimeException e) {
             fail(Status.UNAVAILABLE.withDescription("Restlet gRPC exchange failed").withCause(e));
         } finally {
@@ -371,6 +344,60 @@ final class RestletClientStream extends AbstractClientStream {
             }
             worker = null;
         }
+    }
+
+    /** Returns the HTTP/2 request of the call, with the gRPC metadata as headers. */
+    private Request newRequest() {
+        Request call = new Request(Method.POST, target, requestEntity());
+        // Resource origin selects the resolved peer; base reference selects HTTP authority.
+        call.getResourceRef().setBaseRef(new Reference("http://" + authority));
+        call.getHeaders().set("te", "trailers");
+        byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
+        for (int i = 0; i < metadata.length; i += 2) {
+            String key = new String(metadata[i], StandardCharsets.US_ASCII);
+            if (!key.startsWith(":")
+                    && !"content-type".equals(key)
+                    && !"user-agent".equals(key)
+                    && !"te".equals(key)) {
+                call.getHeaders().add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
+            }
+        }
+        call.getClientInfo().setAgent("restlet-grpc/1.85.1");
+        return call;
+    }
+
+    /** Hands the response head, body and trailers to the SDK. */
+    private void receive(Response response) throws IOException {
+        if (response.getProtocol() == null || !"2.0".equals(response.getProtocol().getVersion())) {
+            fail(
+                    Status.UNAVAILABLE
+                            .withDescription("gRPC requires an HTTP/2 response")
+                            .withCause(response.getStatus().getThrowable()));
+            return;
+        }
+        Metadata initial = metadata(response.getHeaders());
+        initial.put(
+                InternalMetadata.keyOf(":status", Metadata.ASCII_STRING_MARSHALLER),
+                Integer.toString(response.getStatus().getCode()));
+        if (response.getEntity() != null && response.getEntity().getMediaType() != null) {
+            initial.put(
+                    Metadata.Key.of("content-type", Metadata.ASCII_STRING_MARSHALLER),
+                    response.getEntity().getMediaType().toString());
+        }
+        if (response.getHeaders().getFirstValue("grpc-status", true) != null) {
+            serial.execute(() -> state.trailers(initial));
+            return;
+        }
+        serial.execute(() -> state.headers(initial));
+        if (response.getEntity() != null) {
+            try (var input = response.getEntity().getStream()) {
+                if (input != null && !readAll(input)) {
+                    return;
+                }
+            }
+        }
+        Metadata trailers = metadata(response.getTrailers());
+        serial.execute(() -> state.trailers(trailers));
     }
 
     /**
@@ -387,7 +414,7 @@ final class RestletClientStream extends AbstractClientStream {
                     while (unread >= queueBytes && !done && !failed) {
                         inbound.wait();
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     throw new InterruptedIOException("Interrupted reading the gRPC response");
                 }
@@ -422,7 +449,7 @@ final class RestletClientStream extends AbstractClientStream {
                             while (outbound.isEmpty() && !halfClosed && !done && !failed) {
                                 outbound.wait();
                             }
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException _) {
                             Thread.currentThread().interrupt();
                             throw new InterruptedIOException(
                                     "Interrupted writing the gRPC request");

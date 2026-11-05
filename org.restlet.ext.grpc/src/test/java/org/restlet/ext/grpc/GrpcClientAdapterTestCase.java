@@ -373,7 +373,9 @@ class GrpcClientAdapterTestCase {
         assertEquals(Status.Code.CANCELLED, status.get().getCode());
         assertEquals("recovered", call("recovered").getValue());
         assertEquals(1, terminals.get());
-        assertEquals(0, messages.get());
+        // Responses stream as they arrive, so the one message sent before the server waited may
+        // be delivered before the cancellation, as with grpc-netty; never more.
+        assertTrue(messages.get() <= 1, "messages: " + messages.get());
     }
 
     private record Pending(CountDownLatch entered, CountDownLatch cancelled) {}
