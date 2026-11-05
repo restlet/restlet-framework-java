@@ -28,6 +28,23 @@ import java.util.Objects;
 public final class CacheDirective implements NamedValue<String> {
 
 	/**
+	 * Creates an "immutable" directive. Indicates that the origin server will not update the
+	 * representation of the resource during the freshness lifetime of the response, so clients
+	 * should not send a conditional request to revalidate it during that time (for example on a
+	 * reload).<br>
+	 * <br>
+	 * Note that this directive can be used on responses only, usually together with a "max-age"
+	 * directive.
+	 *
+	 * @return A new "immutable" directive.
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc8246#section-2">RFC 8246 - HTTP Immutable
+	 *     Responses</a>
+	 */
+	public static CacheDirective immutable() {
+		return new CacheDirective(HeaderConstants.CACHE_IMMUTABLE);
+	}
+
+	/**
 	 * Creates a "max-age" directive. Indicates that the client is willing to accept
 	 * a response whose age is no greater than the specified time in seconds. Unless
 	 * "max-stale" directive is also included, the client is not willing to accept a
@@ -112,6 +129,22 @@ public final class CacheDirective implements NamedValue<String> {
 	 */
 	public static CacheDirective mustRevalidate() {
 		return new CacheDirective(HeaderConstants.CACHE_MUST_REVALIDATE);
+	}
+
+	/**
+	 * Creates a "must-understand" directive. Indicates that a cache must only store the response if
+	 * it understands the requirements of the status code of the response, and must otherwise not
+	 * store it. It should be sent together with a "no-store" directive, for the caches that do not
+	 * implement it.<br>
+	 * <br>
+	 * Note that this directive can be used on responses only.
+	 *
+	 * @return A new "must-understand" directive.
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc9111#section-5.2.2.3">RFC 9111 - HTTP
+	 *     Caching, must-understand</a>
+	 */
+	public static CacheDirective mustUnderstand() {
+		return new CacheDirective(HeaderConstants.CACHE_MUST_UNDERSTAND);
 	}
 
 	/**
@@ -334,6 +367,55 @@ public final class CacheDirective implements NamedValue<String> {
 	 */
 	public static CacheDirective sharedMaxAge(int sharedMaxAge) {
 		return new CacheDirective(HeaderConstants.CACHE_SHARED_MAX_AGE, Integer.toString(sharedMaxAge), true);
+	}
+
+	/**
+	 * Creates a "stale-if-error" directive. Indicates that a cache may use a stale response, for
+	 * the given time after it became stale, when an error (such as a 500, 502, 503 or 504 status,
+	 * or a connection failure) is encountered while revalidating it or getting a new one.<br>
+	 * <br>
+	 * Note that this directive can be used on requests or responses.
+	 *
+	 * @param seconds The time in seconds, not negative.
+	 * @return A new "stale-if-error" directive.
+	 * @throws IllegalArgumentException If the time is negative.
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc5861#section-4">RFC 5861 - HTTP Cache-Control
+	 *     Extensions for Stale Content, stale-if-error</a>
+	 */
+	public static CacheDirective staleIfError(int seconds) {
+		return new CacheDirective(
+				HeaderConstants.CACHE_STALE_IF_ERROR,
+				Integer.toString(checkSeconds(seconds)),
+				true);
+	}
+
+	/**
+	 * Creates a "stale-while-revalidate" directive. Indicates that a cache may serve the response
+	 * after it became stale, for the given time, while it revalidates it in the background.<br>
+	 * <br>
+	 * Note that this directive can be used on responses only.
+	 *
+	 * @param seconds The time in seconds, not negative.
+	 * @return A new "stale-while-revalidate" directive.
+	 * @throws IllegalArgumentException If the time is negative.
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc5861#section-3">RFC 5861 - HTTP Cache-Control
+	 *     Extensions for Stale Content, stale-while-revalidate</a>
+	 */
+	public static CacheDirective staleWhileRevalidate(int seconds) {
+		return new CacheDirective(
+				HeaderConstants.CACHE_STALE_WHILE_REVALIDATE,
+				Integer.toString(checkSeconds(seconds)),
+				true);
+	}
+
+	private static int checkSeconds(int seconds) {
+		if (seconds < 0) {
+			throw new IllegalArgumentException(
+					"The time of a directive is a number of seconds that can't be negative: "
+							+ seconds);
+		}
+
+		return seconds;
 	}
 
 	/** Indicates if the directive is a digit value. */
