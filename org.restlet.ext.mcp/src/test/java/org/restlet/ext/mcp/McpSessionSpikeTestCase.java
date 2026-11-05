@@ -80,14 +80,21 @@ class McpSessionSpikeTestCase {
 
     @AfterEach
     void cleanup() throws Exception {
-        if (sdkClient != null) {
-            sdkClient.closeGracefully().onErrorComplete().block(TIMEOUT);
-        }
-        if (sdkServer != null) {
-            sdkServer.closeGracefully().onErrorComplete().block(TIMEOUT);
-        }
-        if (server != null) {
-            server.stop();
+        // Each resource is released even when an earlier shutdown fails or times out.
+        try {
+            if (sdkClient != null) {
+                sdkClient.closeGracefully().onErrorComplete().block(TIMEOUT);
+            }
+        } finally {
+            try {
+                if (sdkServer != null) {
+                    sdkServer.closeGracefully().onErrorComplete().block(TIMEOUT);
+                }
+            } finally {
+                if (server != null) {
+                    server.stop();
+                }
+            }
         }
     }
 
@@ -167,6 +174,7 @@ class McpSessionSpikeTestCase {
             HttpResponse<String> response =
                     http.send(
                             HttpRequest.newBuilder(URI.create(target))
+                                    .timeout(TIMEOUT)
                                     .header("Content-Type", "application/json")
                                     .header("Accept", "application/json, text/event-stream")
                                     .header("Mcp-Session-Id", session)
@@ -190,6 +198,7 @@ class McpSessionSpikeTestCase {
 
         // A second listening stream replaces the client's, then its peer goes away.
         try (Socket socket = new Socket("localhost", port)) {
+            socket.setSoTimeout((int) TIMEOUT.toMillis());
             OutputStream out = socket.getOutputStream();
             out.write(
                     ("GET /mcp HTTP/1.1\r\nHost: localhost:"
@@ -368,7 +377,7 @@ class McpSessionSpikeTestCase {
             try {
                 message =
                         McpSchema.deserializeJsonRpcMessage(MAPPER, request.getEntity().getText());
-            } catch (IOException | IllegalArgumentException e) {
+            } catch (IOException | IllegalArgumentException _) {
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                 return;
             }
@@ -464,7 +473,7 @@ class McpSessionSpikeTestCase {
                 response.setEntity(
                         new StringRepresentation(
                                 MAPPER.writeValueAsString(message), MediaType.APPLICATION_JSON));
-            } catch (IOException e) {
+            } catch (IOException _) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
         }
@@ -493,6 +502,10 @@ class McpSessionSpikeTestCase {
                         if (closed.getCount() == 0) {
                             return;
                         }
+                        // Recorded first: once the client has the event, its trace entry exists.
+                        if (kinds != null) {
+                            kinds.add(kind(message));
+                        }
                         try {
                             sink.send(
                                     ServerSentEvent.builder()
@@ -503,9 +516,6 @@ class McpSessionSpikeTestCase {
                         } catch (IOException e) {
                             close();
                             throw new McpTransportException("SSE write failed", e);
-                        }
-                        if (kinds != null) {
-                            kinds.add(kind(message));
                         }
                     });
         }
