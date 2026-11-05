@@ -85,6 +85,13 @@ final class RestletClientStream extends AbstractClientStream {
     private volatile Deadline deadline;
     private volatile boolean done;
     private volatile boolean failed;
+
+    /** Whether the peer reset the stream or the connection failed. */
+    private volatile boolean peerGone;
+
+    /** Whether the request body ended, normally or not; guarded by {@link #outbound}. */
+    private boolean requestEnded;
+
     private boolean started;
 
     /** Request bytes queued; guarded by {@link #outbound}. */
@@ -92,6 +99,9 @@ final class RestletClientStream extends AbstractClientStream {
 
     /** Bytes framed for the latest request message, from the frame that started it. */
     private int open;
+
+    /** Request bytes queued when the latest message started; guarded by {@link #outbound}. */
+    private int messageStart;
 
     /** Whether the SDK half-closed the request; guarded by {@link #outbound}. */
     private boolean halfClosed;
@@ -247,18 +257,22 @@ final class RestletClientStream extends AbstractClientStream {
     }
 
     /**
-     * Copies a frame into the queue, within its budget; must be called holding {@link #outbound}.
-     * One message is framed whole, possibly before the writer starts: while the queue holds only
-     * that message, it may grow up to one framed message. A frame counting messages starts a new
-     * one.
+     * Copies a frame into the queue, within its budget; must be called holding {@link #outbound}. A
+     * message may only start while the queue is within its budget, as it is for a sender that
+     * respects readiness; once started, it may grow up to the message-size limit, whatever the tail
+     * of the previous message still queued. The queue so stays within its budget plus one message.
+     * A frame counting messages starts a new one.
      *
      * @return The failure if the budget is exceeded, null otherwise.
      */
     private Status enqueue(Buffer buffer, int messages) {
         int size = buffer.size;
-        int message = messages > 0 ? size : open + size;
-        boolean others = queued + size > message;
-        if (size > queueBytes - queued && (others || message > wireLimit)) {
+        if (messages > 0) {
+            messageStart = queued;
+            open = 0;
+        }
+        int message = open + size;
+        if (messageStart > queueBytes || message > wireLimit) {
             return Status.RESOURCE_EXHAUSTED.withDescription("Request queue byte budget exceeded");
         }
         if (size > 0) {
@@ -301,6 +315,26 @@ final class RestletClientStream extends AbstractClientStream {
         }
     }
 
+    /**
+     * Ends a request still being written when the call ended, as when a server answers before the
+     * half-close: its queued frames are dropped and the HTTP/2 stream is reset, which also releases
+     * a writer blocked by flow control. The call's own status is already reported.
+     */
+    private void endRequest() {
+        boolean unfinished;
+        synchronized (outbound) {
+            unfinished = started && !requestEnded;
+            outbound.clear();
+            queued = 0;
+            requestEnded = true;
+            outbound.notifyAll();
+        }
+        Request active = request;
+        if (unfinished && active != null) {
+            active.abort();
+        }
+    }
+
     /** Wakes the request writer and the response reader, once the call failed or ended. */
     private void wake() {
         synchronized (outbound) {
@@ -324,13 +358,15 @@ final class RestletClientStream extends AbstractClientStream {
                 call.abort();
                 return;
             }
+            // A disconnect only wakes the reader and the writer: a peer that reset the stream
+            // after its whole response, as a server finishing before the half-close may, leaves
+            // that response to be read; one that did not fails the head or the body read.
             call.getDisconnectSignal()
                     .thenAccept(
-                            cause ->
-                                    fail(
-                                            Status.UNAVAILABLE
-                                                    .withDescription("gRPC peer disconnected")
-                                                    .withCause(cause)));
+                            cause -> {
+                                peerGone = true;
+                                wake();
+                            });
             // Returns at the response head; the request body is still written meanwhile.
             response = client.handle(call);
             if (!done) {
@@ -411,7 +447,8 @@ final class RestletClientStream extends AbstractClientStream {
             int room;
             synchronized (inbound) {
                 try {
-                    while (unread >= queueBytes && !done && !failed) {
+                    // Once the peer is gone, what the connector received is read regardless.
+                    while (unread >= queueBytes && !done && !failed && !peerGone) {
                         inbound.wait();
                     }
                 } catch (InterruptedException _) {
@@ -421,7 +458,7 @@ final class RestletClientStream extends AbstractClientStream {
                 if (done || failed) {
                     return false;
                 }
-                room = (int) Math.min(chunk.length, queueBytes - unread);
+                room = (int) Math.max(1, Math.min(chunk.length, queueBytes - unread));
             }
             int count = input.read(chunk, 0, room);
             if (count < 0) {
@@ -446,20 +483,27 @@ final class RestletClientStream extends AbstractClientStream {
                     byte[] data;
                     synchronized (outbound) {
                         try {
-                            while (outbound.isEmpty() && !halfClosed && !done && !failed) {
+                            while (outbound.isEmpty()
+                                    && !halfClosed
+                                    && !done
+                                    && !failed
+                                    && !peerGone) {
                                 outbound.wait();
                             }
                         } catch (InterruptedException _) {
+                            requestEnded = true;
                             Thread.currentThread().interrupt();
                             throw new InterruptedIOException(
                                     "Interrupted writing the gRPC request");
                         }
-                        if (failed) {
-                            throw new IOException("gRPC call cancelled");
+                        if (failed || peerGone) {
+                            requestEnded = true;
+                            throw new IOException("gRPC request not completed");
                         }
                         data = outbound.pollFirst();
                         if (data == null) {
                             // Half-closed, or the call ended first: the request body ends.
+                            requestEnded = true;
                             return;
                         }
                         queued -= data.length;
@@ -572,6 +616,7 @@ final class RestletClientStream extends AbstractClientStream {
             if (!done) {
                 done = true;
                 wake();
+                endRequest();
                 finished.accept(RestletClientStream.this);
             }
             super.deframerClosed(partial);

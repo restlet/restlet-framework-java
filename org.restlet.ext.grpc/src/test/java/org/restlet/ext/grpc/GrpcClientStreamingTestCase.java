@@ -540,6 +540,133 @@ class GrpcClientStreamingTestCase {
                 ((StatusRuntimeException) cause).getStatus().getCode());
     }
 
+    /**
+     * A server may answer before the client half-closes, while the request is still written and
+     * held by flow control: the client gets the answer and its status, and the unfinished request
+     * is reset, so the only call slot is free at once.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void anEarlyAnswerEndsTheCallWhileTheRequestIsStillSent(boolean restlet) throws Exception {
+        adapter.setMaxConcurrentCalls(1);
+        start(
+                restlet,
+                ServerServiceDefinition.builder("review.Streams")
+                        .addMethod(
+                                UPLOAD,
+                                ServerCalls.asyncClientStreamingCall(
+                                        out ->
+                                                new StreamObserver<StringValue>() {
+                                                    private boolean answered;
+
+                                                    @Override
+                                                    public void onNext(StringValue value) {
+                                                        if (!answered) {
+                                                            answered = true;
+                                                            out.onNext(StringValue.of("enough"));
+                                                            out.onCompleted();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable cause) {
+                                                        // The call ended; nothing to answer.
+                                                    }
+
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        // Already answered.
+                                                    }
+                                                }))
+                        .addMethod(
+                                ECHO,
+                                ServerCalls.asyncUnaryCall(
+                                        (StringValue request, StreamObserver<StringValue> out) -> {
+                                            out.onNext(request);
+                                            out.onCompleted();
+                                        }))
+                        .build());
+        var reply = new CompletableFuture<String>();
+        var closed = new CompletableFuture<Status>();
+        AtomicInteger sent = new AtomicInteger();
+        ClientCall<StringValue, StringValue> call =
+                adapter.getChannel().newCall(UPLOAD, deadline());
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        reply.complete(message.getValue());
+                    }
+
+                    @Override
+                    public void onReady() {
+                        // Never half-closes: keeps sending while ready, up to 4 MiB.
+                        while (call.isReady() && sent.get() < 1024 && !closed.isDone()) {
+                            call.sendMessage(StringValue.of(BLOCK));
+                            sent.incrementAndGet();
+                        }
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        closed.complete(status);
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        assertEquals(Status.Code.OK, closed.get(30, TimeUnit.SECONDS).getCode());
+        assertEquals("enough", reply.get(30, TimeUnit.SECONDS));
+        assertEquals(
+                "next",
+                ClientCalls.blockingUnaryCall(
+                                adapter.getChannel(), ECHO, deadline(), StringValue.of("next"))
+                        .getValue());
+    }
+
+    /**
+     * With a direct callback executor, readiness may return while the tail of a large message is
+     * still queued: a sender respecting it may start the next large message.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void largeMessagesSentOnReadinessAreAccepted(boolean restlet) throws Exception {
+        adapter.setMaxQueuedBytes(16384);
+        adapter.setExecutor(Runnable::run);
+        start(restlet, streams());
+        String large = "y".repeat(100 * 1024);
+        var result = new CompletableFuture<String>();
+        AtomicInteger sent = new AtomicInteger();
+        ClientCall<StringValue, StringValue> call =
+                adapter.getChannel().newCall(UPLOAD, deadline());
+        call.start(
+                new ClientCall.Listener<>() {
+                    @Override
+                    public void onMessage(StringValue message) {
+                        result.complete(message.getValue());
+                    }
+
+                    @Override
+                    public void onReady() {
+                        while (call.isReady() && sent.get() < 2) {
+                            call.sendMessage(StringValue.of(large));
+                            if (sent.incrementAndGet() == 2) {
+                                call.halfClose();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onClose(Status status, Metadata trailers) {
+                        if (!status.isOk()) {
+                            result.completeExceptionally(status.asRuntimeException());
+                        }
+                    }
+                },
+                new Metadata());
+        call.request(1);
+        assertEquals("2:" + (2 * large.length()), result.get(30, TimeUnit.SECONDS));
+    }
+
     private static StreamObserver<StringValue> single(CompletableFuture<String> result) {
         return new StreamObserver<>() {
             @Override
