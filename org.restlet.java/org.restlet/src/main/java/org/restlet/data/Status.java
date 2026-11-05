@@ -21,6 +21,10 @@ public final class Status {
 
 	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
+	private static final String BASE_HTTP_9110 = "https://www.rfc-editor.org/rfc/rfc9110.html";
+
+	private static final String BASE_HTTP_LEGAL = "https://datatracker.ietf.org/doc/html/rfc7725";
+
 	private static final String BASE_RESTLET = "https://javadoc.io/static/org.restlet/org.restlet/" + Engine.VERSION + "/";
 
 	/**
@@ -92,6 +96,15 @@ public final class Status {
 	public static final Status CLIENT_ERROR_METHOD_NOT_ALLOWED = new Status(405);
 
 	/**
+	 * The request was directed at a server that is not able to produce a response for the
+	 * combination of scheme and authority of the target URI.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-421-misdirected-request">HTTP
+	 *     RFC - 421 Misdirected Request</a>
+	 */
+	public static final Status CLIENT_ERROR_MISDIRECTED_REQUEST = new Status(421);
+
+	/**
 	 * The resource identified by the request is only capable of generating response
 	 * entities whose content characteristics do not match the user's requirements
 	 * (in Accept* headers).
@@ -133,6 +146,17 @@ public final class Status {
 	public static final Status CLIENT_ERROR_PRECONDITION_FAILED = new Status(412);
 
 	/**
+	 * The origin server requires the request to be conditional, typically to avoid the "lost update"
+	 * problem. The response should explain how to resubmit the request, for example with an
+	 * "If-Match" header.
+	 *
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-3">HTTP RFC - 428 Precondition
+	 *     Required</a>
+	 * @see org.restlet.resource.ServerResource#hasPreconditions()
+	 */
+	public static final Status CLIENT_ERROR_PRECONDITION_REQUIRED = new Status(428);
+
+	/**
 	 * This code is similar to 401 (Unauthorized), but indicates that the client
 	 * must first authenticate itself with the proxy.
 	 * 
@@ -151,6 +175,15 @@ public final class Status {
 	 *      RFC - 10.4.14 413 Request Entity Too Large</a>
 	 */
 	public static final Status CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE = new Status(413);
+
+	/**
+	 * The server is unwilling to process the request because its header fields, in total or one of
+	 * them, are too large. The response should specify which header field was too large.
+	 *
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-5">HTTP RFC - 431 Request Header
+	 *     Fields Too Large</a>
+	 */
+	public static final Status CLIENT_ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE = new Status(431);
 
 	/**
 	 * Sent by the server when an HTTP client opens a connection, but has never sent
@@ -201,6 +234,24 @@ public final class Status {
 	public static final Status CLIENT_ERROR_UNAUTHORIZED = new Status(401);
 
 	/**
+	 * The server cannot provide the resource for legal reasons, such as a court order or a
+	 * government-mandated blocking.
+	 *
+	 * @see <a href="https://datatracker.ietf.org/doc/html/rfc7725#section-3">HTTP RFC - 451
+	 *     Unavailable For Legal Reasons</a>
+	 */
+	public static final Status CLIENT_ERROR_UNAVAILABLE_FOR_LEGAL_REASONS = new Status(451);
+
+	/**
+	 * The server understands the content type of the request and its syntax is correct, but it was
+	 * unable to process the contained instructions.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content">HTTP
+	 *     RFC - 422 Unprocessable Content</a>
+	 */
+	public static final Status CLIENT_ERROR_UNPROCESSABLE_CONTENT = new Status(422);
+
+	/**
 	 * The server is refusing to service the request because the entity of the
 	 * request is in a format not supported by the requested resource for the
 	 * requested method.
@@ -210,6 +261,15 @@ public final class Status {
 	 *      RFC - 10.4.16 415 Unsupported Media Type</a>
 	 */
 	public static final Status CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE = new Status(415);
+
+	/**
+	 * The server refuses to perform the request using the current protocol, but might be willing to
+	 * do so after the client upgrades to a different protocol, given in the Upgrade header.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-426-upgrade-required">HTTP RFC -
+	 *     426 Upgrade Required</a>
+	 */
+	public static final Status CLIENT_ERROR_UPGRADE_REQUIRED = new Status(426);
 
 	/**
 	 * The client connector faced an error during the communication with the remote
@@ -347,6 +407,16 @@ public final class Status {
 	public static final Status REDIRECTION_PERMANENT = new Status(301);
 
 	/**
+	 * The resource has been permanently moved to the URI given in the Location header, and the client
+	 * must repeat the request to that URI with the same method and content, unlike with {@link
+	 * #REDIRECTION_PERMANENT}.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-308-permanent-redirect">HTTP
+	 *     RFC - 308 Permanent Redirect</a>
+	 */
+	public static final Status REDIRECTION_PERMANENT_STRICT = new Status(308);
+
+	/**
 	 * The response to the request can be found under a different URI and SHOULD be
 	 * retrieved using a GET method on that resource.
 	 * 
@@ -405,6 +475,15 @@ public final class Status {
 	 *      RFC - 10.5.1 500 Internal Server Error</a>
 	 */
 	public static final Status SERVER_ERROR_INTERNAL = new Status(500);
+
+	/**
+	 * The client needs to authenticate to gain network access. It is intended for use by
+	 * intercepting proxies, and should not be generated by origin servers.
+	 *
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-6">HTTP RFC - 511 Network
+	 *     Authentication Required</a>
+	 */
+	public static final Status SERVER_ERROR_NETWORK_AUTHENTICATION_REQUIRED = new Status(511);
 
 	/**
 	 * The server does not support the functionality required to fulfill the
@@ -692,6 +771,8 @@ public final class Status {
 		case 307:
 			return REDIRECTION_TEMPORARY;
 
+		case 308:
+			return REDIRECTION_PERMANENT_STRICT;
 		case 400:
 			return CLIENT_ERROR_BAD_REQUEST;
 		case 401:
@@ -728,9 +809,21 @@ public final class Status {
 			return CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
 		case 417:
 			return CLIENT_ERROR_EXPECTATION_FAILED;
+		case 421:
+			return CLIENT_ERROR_MISDIRECTED_REQUEST;
+		case 422:
+			return CLIENT_ERROR_UNPROCESSABLE_CONTENT;
+		case 426:
+			return CLIENT_ERROR_UPGRADE_REQUIRED;
+		case 428:
+			return CLIENT_ERROR_PRECONDITION_REQUIRED;
 		case 429:
 			return CLIENT_ERROR_TOO_MANY_REQUESTS;
 
+		case 431:
+			return CLIENT_ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE;
+		case 451:
+			return CLIENT_ERROR_UNAVAILABLE_FOR_LEGAL_REASONS;
 		case 500:
 			return SERVER_ERROR_INTERNAL;
 		case 501:
@@ -744,6 +837,8 @@ public final class Status {
 		case 505:
 			return SERVER_ERROR_VERSION_NOT_SUPPORTED;
 
+		case 511:
+			return SERVER_ERROR_NETWORK_AUTHENTICATION_REQUIRED;
 		case 1000:
 			return CONNECTOR_ERROR_CONNECTION;
 		case 1001:
@@ -1012,6 +1107,8 @@ public final class Status {
 		case 307:
 			return "The requested resource resides temporarily under a different URI";
 
+		case 308:
+			return "The requested resource has permanently moved to the URI given in the Location header, and the request must be repeated there with the same method and content";
 		case 400:
 			return "The request could not be understood by the server due to malformed syntax";
 		case 401:
@@ -1048,9 +1145,21 @@ public final class Status {
 			return "For byte ranges, this means that the first byte position were greater than the current length of the selected resource";
 		case 417:
 			return "The expectation given in the request header could not be met by this server";
+		case 421:
+			return "The request was directed at a server that is not able to produce a response for the combination of scheme and authority of the target URI";
+		case 422:
+			return "The server understands the content type of the request and its syntax is correct, but it was unable to process the contained instructions";
+		case 426:
+			return "The server refuses to perform the request using the current protocol but might be willing to do so after the client upgrades to a different protocol";
+		case 428:
+			return "The origin server requires the request to be conditional, to avoid the lost update problem: resubmit the request with a conditional header such as If-Match";
 		case 429:
 			return "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
 
+		case 431:
+			return "The server is unwilling to process the request because its header fields, in total or one of them, are too large";
+		case 451:
+			return "The server cannot provide the resource for legal reasons, such as a court order or a government-mandated blocking";
 		case 500:
 			return "The server encountered an unexpected condition which prevented it from fulfilling the request";
 		case 501:
@@ -1064,6 +1173,8 @@ public final class Status {
 		case 505:
 			return "The server does not support, or refuses to support, the protocol version that was used in the request message";
 
+		case 511:
+			return "The client needs to authenticate to gain network access";
 		case 1000:
 			return "The connector failed to connect to the server";
 		case 1001:
@@ -1137,6 +1248,8 @@ public final class Status {
 		case 307:
 			return "Temporary Redirect";
 
+		case 308:
+			return "Permanent Redirect";
 		case 400:
 			return "Bad Request";
 		case 401:
@@ -1173,9 +1286,21 @@ public final class Status {
 			return "Requested Range Not Satisfiable";
 		case 417:
 			return "Expectation Failed";
+		case 421:
+			return "Misdirected Request";
+		case 422:
+			return "Unprocessable Content";
+		case 426:
+			return "Upgrade Required";
+		case 428:
+			return "Precondition Required";
 		case 429:
 			return "Too Many Requests";
 
+		case 431:
+			return "Request Header Fields Too Large";
+		case 451:
+			return "Unavailable For Legal Reasons";
 		case 500:
 			return "Internal Server Error";
 		case 501:
@@ -1189,6 +1314,8 @@ public final class Status {
 		case 505:
 			return "Version Not Supported";
 
+		case 511:
+			return "Network Authentication Required";
 		case 1000:
 			return "Connection Error";
 		case 1001:
@@ -1263,6 +1390,8 @@ public final class Status {
 		case 307:
 			return BASE_HTTP + "#sec10.3.8";
 
+		case 308:
+			return BASE_HTTP_9110 + "#name-308-permanent-redirect";
 		case 400:
 			return BASE_HTTP + "#sec10.4.1";
 		case 401:
@@ -1299,9 +1428,21 @@ public final class Status {
 			return BASE_HTTP + "#sec10.4.17";
 		case 417:
 			return BASE_HTTP + "#sec10.4.18";
+		case 421:
+			return BASE_HTTP_9110 + "#name-421-misdirected-request";
+		case 422:
+			return BASE_HTTP_9110 + "#name-422-unprocessable-content";
+		case 426:
+			return BASE_HTTP_9110 + "#name-426-upgrade-required";
+		case 428:
+			return BASE_ADDED_HTTP + "#section-3";
 		case 429:
 			return BASE_ADDED_HTTP + "#section-4";
 
+		case 431:
+			return BASE_ADDED_HTTP + "#section-5";
+		case 451:
+			return BASE_HTTP_LEGAL + "#section-3";
 		case 500:
 			return BASE_HTTP + "#sec10.5.1";
 		case 501:
@@ -1315,6 +1456,8 @@ public final class Status {
 		case 505:
 			return BASE_HTTP + "#sec10.5.6";
 
+		case 511:
+			return BASE_ADDED_HTTP + "#section-6";
 		case 1000:
 			return BASE_RESTLET + "org/restlet/data/Status.html#CONNECTOR_ERROR_CONNECTION";
 		case 1001:
