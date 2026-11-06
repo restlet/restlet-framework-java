@@ -708,6 +708,32 @@ class GrpcServerAdapterTestCase {
         return response;
     }
 
+    /**
+     * Dispatches a call, retrying while it is refused with 503: a cancelled call leaves admission
+     * at once, but keeps its callback slot until its application callbacks exit, which the SDK runs
+     * later on the executor. A refused call has no side effect.
+     */
+    private Response dispatchAdmitted(
+            MethodDescriptor<StringValue, StringValue> method, String value) throws Exception {
+        long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Response response = dispatch(method, value);
+        while (org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE.equals(response.getStatus())
+                && System.nanoTime() < limit) {
+            pause(5);
+            response = dispatch(method, value);
+        }
+        return response;
+    }
+
+    /** Waits for a few milliseconds. */
+    private static void pause(long millis) {
+        try {
+            new CountDownLatch(1).await(millis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private static String trailersAfterWriting(Response response) throws IOException {
         response.getEntity().write(new ByteArrayOutputStream());
         return response.getTrailers().getFirstValue("grpc-status");
@@ -1769,12 +1795,18 @@ class GrpcServerAdapterTestCase {
                                         ServerCalls.asyncServerStreamingCall(
                                                 (StringValue request,
                                                         io.grpc.stub.StreamObserver<StringValue>
-                                                                out) -> out.onNext(request)))
+                                                                out) -> {
+                                                    // A slow cancellation callback, as a busy
+                                                    // application's, keeps its callback slot.
+                                                    ((ServerCallStreamObserver<StringValue>) out)
+                                                            .setOnCancelHandler(() -> pause(20));
+                                                    out.onNext(request);
+                                                }))
                                 .build());
         adapter.start();
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             for (int i = 0; i < 32; i++) {
-                Response response = dispatch(WATCH, "watch");
+                Response response = dispatchAdmitted(WATCH, "watch");
                 assertEquals(org.restlet.data.Status.SUCCESS_OK, response.getStatus());
                 var writer =
                         executor.submit(
