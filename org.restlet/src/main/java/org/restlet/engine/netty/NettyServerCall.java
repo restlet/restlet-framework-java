@@ -35,6 +35,8 @@ import io.netty.handler.codec.http.HttpServerUpgradeHandler;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http2.DefaultHttp2ResetFrame;
+import io.netty.handler.codec.http2.Http2Error;
 import io.netty.handler.ssl.SslHandler;
 import java.io.IOException;
 import java.io.InputStream;
@@ -884,6 +886,7 @@ class NettyServerCall {
             if (responseEndedWithHead) {
                 listen(trackDelivery(responseEndFuture), delivery);
                 channel.flush();
+                resetIfRequestUnfinished(responseEndFuture);
                 requestBody.close();
                 return responseEndFuture;
             }
@@ -901,6 +904,7 @@ class NettyServerCall {
             ChannelPromise future = channel.newPromise();
             listen(trackDelivery(future), delivery);
             channel.writeAndFlush(lastContent, future);
+            resetIfRequestUnfinished(future);
             if (keepAlive) {
                 requestBody.discard();
             } else {
@@ -918,6 +922,28 @@ class NettyServerCall {
                 eventStreamPermit = false;
             }
         }
+    }
+
+    /**
+     * Resets an HTTP/2 stream with NO_ERROR once its complete response is written, if the request
+     * body is still arriving (RFC 9113, section 8.1). The client then stops sending it, and the
+     * stream is closed, which returns the unread request data to the connection's flow-control
+     * window: left half-closed, the stream would hold that window, and the connection's next
+     * requests could not send their bodies. The reset waits for the terminal write, so that it
+     * can't cut off response data still held by flow control.
+     *
+     * @param end The terminal write of the response.
+     */
+    private void resetIfRequestUnfinished(ChannelFuture end) {
+        if (kind != StreamKind.HTTP2 || requestBody.isFullyReceived()) {
+            return;
+        }
+        end.addListener(
+                f -> {
+                    if (f.isSuccess() && !requestBody.isFullyReceived() && channel.isActive()) {
+                        channel.writeAndFlush(new DefaultHttp2ResetFrame(Http2Error.NO_ERROR));
+                    }
+                });
     }
 
     /**
