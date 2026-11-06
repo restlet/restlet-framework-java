@@ -8,7 +8,9 @@
  */
 package org.restlet.engine.connector;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -35,6 +37,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,6 +57,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
+import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.OutputRepresentation;
 
 /**
@@ -65,11 +70,23 @@ class Http2EarlyResponseTestCase {
     /** Far more than the HTTP/2 flow-control windows, so that an unread request stalls. */
     private static final long LARGE = 8L * 1024 * 1024;
 
+    /** An early response far larger than the flow-control windows. */
+    private static final byte[] LARGE_RESPONSE = new byte[1024 * 1024];
+
+    static {
+        for (int i = 0; i < LARGE_RESPONSE.length; i++) {
+            LARGE_RESPONSE[i] = (byte) i;
+        }
+    }
+
     private Server server;
 
     private Client client;
 
     private EventLoopGroup rawGroup;
+
+    /** Client ports seen by the Restlet server, one per request. */
+    private final List<Integer> clientPorts = new CopyOnWriteArrayList<>();
 
     private final java.util.concurrent.atomic.AtomicInteger rawConnections =
             new java.util.concurrent.atomic.AtomicInteger();
@@ -111,22 +128,7 @@ class Http2EarlyResponseTestCase {
      */
     @Test
     void theServerResetsAnUnfinishedRequestAfterAnsweringIt() throws Exception {
-        Restlet restlet =
-                new Restlet() {
-                    @Override
-                    public void handle(Request request, Response response) {
-                        if (request.getResourceRef().getPath().equals("/early")) {
-                            response.setEntity("early", MediaType.TEXT_PLAIN);
-                        } else {
-                            response.setEntity(request.getEntityAsText(), MediaType.TEXT_PLAIN);
-                        }
-                    }
-                };
-        Context serverContext = new Context();
-        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
-        server = new Server(serverContext, Protocol.HTTP, 0, restlet);
-        server.start();
-        String base = "http://localhost:" + server.getActualPort();
+        String base = startRestletServer();
         startClient();
 
         var writer = new LargeBody();
@@ -137,6 +139,30 @@ class Http2EarlyResponseTestCase {
         assertTrue(writer.ended.await(10, TimeUnit.SECONDS), "the request body kept waiting");
         assertTrue(writer.written.get() < LARGE, "the whole request body was sent");
         assertEquals("next", post(base + "/echo", "next"));
+        assertSameConnection();
+    }
+
+    /**
+     * An early response larger than the flow-control windows, read late, is delivered whole: the
+     * reset waits for its last frame, then the client stops sending and the connection goes on.
+     */
+    @Test
+    void aLargeEarlyResponseIsDeliveredWholeBeforeTheReset() throws Exception {
+        String base = startRestletServer();
+        startClient();
+
+        var writer = new LargeBody();
+        Request early = new Request(Method.POST, base + "/large", writer);
+        Response response = executor.submit(() -> client.handle(early)).get(10, TimeUnit.SECONDS);
+        // Not read yet: the response data is held back by the client's flow-control window.
+        assertFalse(writer.ended.await(500, TimeUnit.MILLISECONDS), "the upload ended early");
+        byte[] body = response.getEntity().getStream().readAllBytes();
+        assertEquals(LARGE_RESPONSE.length, body.length);
+        assertArrayEquals(LARGE_RESPONSE, body);
+
+        assertTrue(writer.ended.await(10, TimeUnit.SECONDS), "the request body kept waiting");
+        assertEquals("next", post(base + "/echo", "next"));
+        assertSameConnection();
     }
 
     /**
@@ -158,6 +184,42 @@ class Http2EarlyResponseTestCase {
         assertTrue(writer.ended.await(10, TimeUnit.SECONDS), "the request body kept waiting");
         assertEquals("4", post(base + "/count", "next"));
         assertEquals(1, rawConnections.get(), "the next request used another connection");
+    }
+
+    /**
+     * Starts a Restlet HTTP/2 server answering "/early" and "/large" without reading the request,
+     * and echoing the request body otherwise; it records the client port of each request.
+     *
+     * @return The base URI.
+     */
+    private String startRestletServer() throws Exception {
+        Restlet restlet =
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        clientPorts.add(request.getClientInfo().getPort());
+                        String path = request.getResourceRef().getPath();
+                        if (path.equals("/early")) {
+                            response.setEntity("early", MediaType.TEXT_PLAIN);
+                        } else if (path.equals("/large")) {
+                            response.setEntity(
+                                    new ByteArrayRepresentation(
+                                            LARGE_RESPONSE, MediaType.APPLICATION_OCTET_STREAM));
+                        } else {
+                            response.setEntity(request.getEntityAsText(), MediaType.TEXT_PLAIN);
+                        }
+                    }
+                };
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        server = new Server(serverContext, Protocol.HTTP, 0, restlet);
+        server.start();
+        return "http://localhost:" + server.getActualPort();
+    }
+
+    /** Checks that every request came on one connection, which an early response kept open. */
+    private void assertSameConnection() {
+        assertEquals(1, clientPorts.stream().distinct().count(), "ports: " + clientPorts);
     }
 
     private void startClient() throws Exception {
@@ -220,6 +282,9 @@ class Http2EarlyResponseTestCase {
     private static final class RawStream extends ChannelInboundHandlerAdapter {
         private long received;
 
+        /** Whether this stream was answered early, after which it is never read again. */
+        private boolean answeredEarly;
+
         @Override
         public void channelActive(ChannelHandlerContext ctx) {
             ctx.read();
@@ -230,12 +295,16 @@ class Http2EarlyResponseTestCase {
             if (msg instanceof Http2HeadersFrame headers) {
                 if ("/early".contentEquals(headers.headers().path())) {
                     // Answers at once, then neither reads nor resets the stream.
+                    answeredEarly = true;
                     respond(ctx, "early");
                 } else if (headers.isEndStream()) {
                     respond(ctx, "0");
                 } else {
                     ctx.read();
                 }
+            } else if (msg instanceof Http2DataFrame data && answeredEarly) {
+                // Delivered with the headers in the same read: dropped, with no further read.
+                data.release();
             } else if (msg instanceof Http2DataFrame data) {
                 received += data.content().readableBytes();
                 boolean end = data.isEndStream();
