@@ -708,6 +708,23 @@ class GrpcServerAdapterTestCase {
         return response;
     }
 
+    /**
+     * Dispatches a call, retrying for up to 10 seconds while it is refused. An ended call frees its
+     * admission slot at once, but keeps its callback slot until the SDK has delivered its last
+     * callback, in another thread.
+     */
+    private Response dispatchWhenAdmitted(
+            MethodDescriptor<StringValue, StringValue> method, String value) throws Exception {
+        long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Response response = dispatch(method, value);
+        while (org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE.equals(response.getStatus())
+                && System.nanoTime() < limit) {
+            Thread.onSpinWait();
+            response = dispatch(method, value);
+        }
+        return response;
+    }
+
     private static String trailersAfterWriting(Response response) throws IOException {
         response.getEntity().write(new ByteArrayOutputStream());
         return response.getTrailers().getFirstValue("grpc-status");
@@ -814,15 +831,7 @@ class GrpcServerAdapterTestCase {
                     org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
                     dispatch(ECHO, "bounded").getStatus());
             release.countDown();
-            long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
-            Response admitted = dispatch(ECHO, "admitted");
-            while (org.restlet.data.Status.SERVER_ERROR_SERVICE_UNAVAILABLE.equals(
-                            admitted.getStatus())
-                    && System.nanoTime() < limit) {
-                Thread.onSpinWait();
-                admitted = dispatch(ECHO, "admitted");
-            }
-            assertEquals("0", trailersAfterWriting(admitted));
+            assertEquals("0", trailersAfterWriting(dispatchWhenAdmitted(ECHO, "admitted")));
         } finally {
             release.countDown();
         }
@@ -1774,7 +1783,8 @@ class GrpcServerAdapterTestCase {
         adapter.start();
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             for (int i = 0; i < 32; i++) {
-                Response response = dispatch(WATCH, "watch");
+                // The previous call's callbacks may still hold a callback slot.
+                Response response = dispatchWhenAdmitted(WATCH, "watch");
                 assertEquals(org.restlet.data.Status.SUCCESS_OK, response.getStatus());
                 var writer =
                         executor.submit(
