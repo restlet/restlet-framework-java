@@ -143,6 +143,25 @@ class Http2EarlyResponseTestCase {
     }
 
     /**
+     * An early response made of headers only, ending the stream with its HEADERS frame, also resets
+     * the unfinished request.
+     */
+    @Test
+    void anEmptyEarlyResponseAlsoResetsTheUnfinishedRequest() throws Exception {
+        String base = startRestletServer();
+        startClient();
+
+        var writer = new LargeBody();
+        Request early = new Request(Method.POST, base + "/empty", writer);
+        Response response = executor.submit(() -> client.handle(early)).get(10, TimeUnit.SECONDS);
+        assertEquals(204, response.getStatus().getCode());
+
+        assertTrue(writer.ended.await(10, TimeUnit.SECONDS), "the request body kept waiting");
+        assertEquals("next", post(base + "/echo", "next"));
+        assertSameConnection();
+    }
+
+    /**
      * An early response larger than the flow-control windows, read late, is delivered whole: the
      * reset waits for its last frame, then the client stops sending and the connection goes on.
      */
@@ -187,8 +206,8 @@ class Http2EarlyResponseTestCase {
     }
 
     /**
-     * Starts a Restlet HTTP/2 server answering "/early" and "/large" without reading the request,
-     * and echoing the request body otherwise; it records the client port of each request.
+     * Starts a Restlet HTTP/2 server answering "/early", "/empty" and "/large" without reading the
+     * request, and echoing the request body otherwise; it records the client port of each request.
      *
      * @return The base URI.
      */
@@ -201,6 +220,9 @@ class Http2EarlyResponseTestCase {
                         String path = request.getResourceRef().getPath();
                         if (path.equals("/early")) {
                             response.setEntity("early", MediaType.TEXT_PLAIN);
+                        } else if (path.equals("/empty")) {
+                            // Headers only: no entity nor trailers.
+                            response.setStatus(org.restlet.data.Status.SUCCESS_NO_CONTENT);
                         } else if (path.equals("/large")) {
                             response.setEntity(
                                     new ByteArrayRepresentation(
