@@ -87,6 +87,11 @@ class McpModernSpikeTestCase {
                     .description("Echoes text")
                     .build();
 
+    private static final Tool PROGRESS =
+            Tool.builder("progress", Map.of("type", "object"))
+                    .description("Reports progress, then answers")
+                    .build();
+
     private McpServer sdkServer;
     private Server server;
     private HttpClient http;
@@ -98,27 +103,33 @@ class McpModernSpikeTestCase {
                 new McpSyncToolRepository() {
                     @Override
                     public ToolsPage list(McpRequestContext ctx, String cursor) {
-                        return ToolsPage.of(List.of(ECHO));
+                        return ToolsPage.of(List.of(ECHO, PROGRESS));
                     }
 
                     @Override
                     public McpSyncTool find(McpRequestContext ctx, String name) {
-                        return ECHO.name().equals(name)
-                                ? McpSyncTool.of(
-                                        ECHO,
-                                        (context, request) ->
-                                                McpSyncResponse.<CallToolOutcome>result(
-                                                        CallToolResult.builder()
-                                                                .addContent(
-                                                                        TextContent.builder(
-                                                                                        String
-                                                                                                .valueOf(
-                                                                                                        request.arguments()
-                                                                                                                .get(
-                                                                                                                        "text")))
-                                                                                .build())
-                                                                .build()))
-                                : null;
+                        if (ECHO.name().equals(name)) {
+                            return McpSyncTool.of(
+                                    ECHO,
+                                    (context, request) ->
+                                            McpSyncResponse.<CallToolOutcome>result(
+                                                    text(
+                                                            String.valueOf(
+                                                                    request.arguments()
+                                                                            .get("text")))));
+                        }
+                        if (PROGRESS.name().equals(name)) {
+                            // A streaming reply: a progress notification, then the result.
+                            return McpSyncTool.of(
+                                    PROGRESS,
+                                    (context, request) ->
+                                            McpSyncResponse.<CallToolOutcome>streaming(
+                                                    notifier -> {
+                                                        notifier.progress(1, 2.0, "half");
+                                                        return text("done");
+                                                    }));
+                        }
+                        return null;
                     }
                 };
         sdkServer =
@@ -190,6 +201,57 @@ class McpModernSpikeTestCase {
         Reply base64 = call("tools/call", params, encoded);
         assertEquals(200, base64.status, base64.body);
         assertEquals("hello", firstText(base64.result()));
+    }
+
+    /**
+     * A streaming reply comes as an SSE stream over core SSE: the progress notification, then the
+     * result answering the request, then the end of the stream.
+     */
+    @Test
+    void aStreamingReplyCarriesProgressThenTheResult() throws Exception {
+        String request =
+                body(
+                        "tools/call",
+                        Map.of("name", "progress", "arguments", Map.of()),
+                        Map.of(
+                                MetaKeys.PROTOCOL_VERSION,
+                                VERSION,
+                                MetaKeys.CLIENT_CAPABILITIES,
+                                Map.of(),
+                                MetaKeys.PROGRESS_TOKEN,
+                                "p1"));
+        HttpRequest.Builder post =
+                HttpRequest.newBuilder(URI.create(target))
+                        .timeout(TIMEOUT)
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(request));
+        headers("tools/call", VERSION, "progress").forEach(post::header);
+        // Returns once the stream has ended.
+        HttpResponse<String> response =
+                http.send(post.build(), HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode(), response.body());
+        assertTrue(
+                response.headers()
+                        .firstValue("Content-Type")
+                        .orElse("")
+                        .startsWith("text/event-stream"),
+                response.headers().toString());
+        List<Map<String, Object>> events = events(response.body());
+        assertEquals(2, events.size(), response.body());
+
+        Map<String, Object> progress = events.get(0);
+        assertEquals("notifications/progress", progress.get("method"));
+        Map<?, ?> params = (Map<?, ?>) progress.get("params");
+        assertEquals("p1", params.get("progressToken"));
+        assertEquals("half", params.get("message"));
+
+        Map<String, Object> answer = events.get(1);
+        assertEquals(1, ((Number) answer.get("id")).intValue());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = (Map<String, Object>) answer.get("result");
+        assertEquals("done", firstText(result));
+        assertEquals("complete", result.get("resultType"));
     }
 
     /** Header and version errors use the 2026-07-28 codes and the HTTP statuses Ikanos uses. */
@@ -313,6 +375,23 @@ class McpModernSpikeTestCase {
         HttpResponse<String> response =
                 http.send(request.build(), HttpResponse.BodyHandlers.ofString());
         return new Reply(response.statusCode(), response.body());
+    }
+
+    private static CallToolResult text(String text) {
+        return CallToolResult.builder().addContent(TextContent.builder(text).build()).build();
+    }
+
+    /** Parses the data lines of an SSE body, one JSON-RPC message per event. */
+    private static List<Map<String, Object>> events(String body) throws IOException {
+        List<Map<String, Object>> events = new java.util.ArrayList<>();
+        for (String line : body.split("\n")) {
+            if (line.startsWith("data:")) {
+                events.add(
+                        MAPPER.readValue(
+                                line.substring(5).trim(), new TypeRef<Map<String, Object>>() {}));
+            }
+        }
+        return events;
     }
 
     private static String firstText(Map<String, Object> result) {
