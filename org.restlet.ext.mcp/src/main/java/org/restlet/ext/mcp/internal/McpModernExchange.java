@@ -87,6 +87,13 @@ public final class McpModernExchange {
                 McpInterceptor.Chain terminal);
     }
 
+    /**
+     * Request attribute marking an exchange that came over stdio, which has no headers: the header
+     * checks are skipped and the {@code Mcp-Param} headers count as not mirrored, as on the SDK's
+     * own stdio transport.
+     */
+    public static final String STDIO_ATTRIBUTE = "org.restlet.ext.mcp.stdio";
+
     /** Streamed messages a slow client may leave pending before the SDK is held back. */
     private static final int QUEUE_CAPACITY = 64;
 
@@ -106,6 +113,7 @@ public final class McpModernExchange {
     private final McpServer sdk;
     private final McpJsonMapper mapper;
     private final McpWorkers workers;
+    private final McpWorkers listeners;
     private final Duration timeout;
     private final int maxMessageBytes;
     private final Interceptors interceptors;
@@ -117,6 +125,7 @@ public final class McpModernExchange {
      * @param sdk The SDK's modern server.
      * @param mapper The JSON mapper.
      * @param workers The adapter's admission workers.
+     * @param listeners The workers of {@code subscriptions/listen} streams, without time limit.
      * @param timeout The request timeout.
      * @param maxMessageBytes The largest request or response message.
      * @param interceptors The adapter's interceptor chain.
@@ -126,6 +135,7 @@ public final class McpModernExchange {
             McpServer sdk,
             McpJsonMapper mapper,
             McpWorkers workers,
+            McpWorkers listeners,
             Duration timeout,
             int maxMessageBytes,
             Interceptors interceptors,
@@ -133,6 +143,7 @@ public final class McpModernExchange {
         this.sdk = sdk;
         this.mapper = mapper;
         this.workers = workers;
+        this.listeners = listeners;
         this.timeout = timeout;
         this.maxMessageBytes = maxMessageBytes;
         this.interceptors = interceptors;
@@ -147,8 +158,13 @@ public final class McpModernExchange {
      * @param response The response.
      */
     public void handle(Request request, Response response) {
+        // Recognised before the body is read, which must then name the same method.
+        boolean listen = isListen(request.getHeaders().getFirstValue("Mcp-Method", true));
         var exchange =
-                new Exchange(request, new McpRequestContext(request, McpProtocol.MODERN_VERSION));
+                new Exchange(
+                        request,
+                        new McpRequestContext(request, McpProtocol.MODERN_VERSION),
+                        listen);
         Mono<Void> stopped =
                 stopping.get()
                         .flatMap(ignored -> Mono.error(new IOException("MCP server stopped")));
@@ -162,7 +178,8 @@ public final class McpModernExchange {
                 Mono.firstWithSignal(
                                 stopped,
                                 disconnected,
-                                workers.submit(exchange::run, () -> request.getEntity().release()))
+                                (listen ? listeners : workers)
+                                        .submit(exchange::run, () -> request.getEntity().release()))
                         .subscribe(null, exchange::fail, exchange::end);
         Reply reply;
         try {
@@ -178,6 +195,16 @@ public final class McpModernExchange {
             reply = unavailable(exchange.requestId);
         }
         reply.apply(response, exchange, running, heartbeat());
+    }
+
+    /**
+     * Whether a method opens a {@code subscriptions/listen} stream, which has no time limit.
+     *
+     * @param method The method, or null.
+     * @return True for {@code subscriptions/listen}.
+     */
+    public static boolean isListen(String method) {
+        return io.modelcontextprotocol.modern.McpSchema.METHOD_SUBSCRIPTIONS_LISTEN.equals(method);
     }
 
     /** Comment heartbeats on a stream, as the SDK's servlet transport sends: at most 30 s apart. */
@@ -209,9 +236,22 @@ public final class McpModernExchange {
         /** The id of the request, once read; answers a stream cut short. */
         private volatile Object requestId;
 
-        private Exchange(Request request, McpRequestContext context) {
+        /** Whether this is a {@code subscriptions/listen} stream, which has no time limit. */
+        private final boolean listen;
+
+        /** Whether this exchange came over stdio, without headers. */
+        private final boolean stdio;
+
+        private Exchange(Request request, McpRequestContext context, boolean listen) {
             this.request = request;
             this.context = context;
+            this.listen = listen;
+            this.stdio = Boolean.TRUE.equals(request.getAttributes().get(STDIO_ATTRIBUTE));
+        }
+
+        /** Waits for a chain's response, within the request timeout unless listening. */
+        private Optional<McpSchema.JSONRPCResponse> await(Mono<McpSchema.JSONRPCResponse> chain) {
+            return listen ? chain.blockOptional() : chain.blockOptional(timeout);
         }
 
         /** The SDK transport context for the request context an interceptor forwarded. */
@@ -266,19 +306,18 @@ public final class McpModernExchange {
 
         private void call(JsonRpc.JSONRPCRequest rpc) throws InterruptedException {
             requestId = rpc.id();
-            String mismatch = mismatch(rpc);
+            String mismatch = stdio ? null : mismatch(rpc);
             if (mismatch != null) {
                 head.complete(error(rpc.id(), ErrorCodes.HEADER_MISMATCH, mismatch));
                 return;
             }
             Optional<McpSchema.JSONRPCResponse> last =
-                    interceptors
-                            .run(
+                    await(
+                            interceptors.run(
                                     mapper.convertValue(rpc, McpSchema.JSONRPCRequest.class),
                                     context,
                                     (next, nextContext) ->
-                                            Mono.fromCallable(() -> terminal(next, nextContext)))
-                            .blockOptional(timeout);
+                                            Mono.fromCallable(() -> terminal(next, nextContext))));
             if (last.isEmpty()) {
                 // An interceptor answered nothing: accepted, as on the 2025-11-25 path, unless the
                 // stream already started, which must still answer the request.
@@ -314,9 +353,14 @@ public final class McpModernExchange {
                         sdkContext.putAll(
                                 Map.of(
                                         McpParamHeaders.TRANSPORT_CONTEXT_KEY,
-                                        McpHeaderDecoder.paramHeaders(headers())));
+                                        stdio
+                                                ? McpParamHeaders.NOT_MIRRORED
+                                                : McpHeaderDecoder.paramHeaders(headers())));
             }
-            McpTransportResponse reply = sdk.handleBlocking(sdkContext, rpc).block(timeout);
+            McpTransportResponse reply =
+                    listen
+                            ? sdk.handle(sdkContext, rpc).block(timeout)
+                            : sdk.handleBlocking(sdkContext, rpc).block(timeout);
             if (reply instanceof McpTransportResponse.Result result) {
                 return classic(result.response());
             }

@@ -103,8 +103,16 @@ Changes log
           2026-07-28 clients only, for `input_required` results and streamed progress. The
           interceptors wrap each 2026-07-28 request and its final result, the tool filters and
           the call limit apply to both revisions, and `setRequestStateKey()` shares the key
-          sealing `input_required` state between instances. Not yet supported for 2026-07-28:
-          stdio, `subscriptions/listen`, and the MCP client. The SDK's modern API is a preview.
+          sealing `input_required` state between instances. `getModernResources()`,
+          `getModernResourceTemplates()` and `getModernPrompts()` add resources, templates and
+          prompts served to 2026-07-28 clients only; a URI, URI template or prompt name may only
+          be used once across both revisions' lists. `subscriptions/listen` streams carry the
+          changes published through `getChanges()`; they have their own limit,
+          `setMaxListenStreams()`, no time limit, and end when the adapter stops or the client
+          goes away. Over stdio, a message whose `_meta` names 2026-07-28 goes to the modern
+          server: streamed messages are written as separate lines as they come, and
+          `notifications/cancelled` ends the request it names without a response. Not yet
+          supported for 2026-07-28: the MCP client. The SDK's modern API is a preview.
         - Added experimental SDK-native gRPC hosting of unary, server-streaming,
           client-streaming and bidirectional methods on a borrowed Restlet/Netty HTTP/2 listener.
           Request messages are read as the application requests them, within the queue budget,

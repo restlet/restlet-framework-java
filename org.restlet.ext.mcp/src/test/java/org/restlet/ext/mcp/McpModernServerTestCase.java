@@ -24,7 +24,10 @@ import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
 import io.modelcontextprotocol.modern.McpSchema.TextContent;
 import io.modelcontextprotocol.modern.McpSchema.Tool;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
+import io.modelcontextprotocol.modern.server.feature.ServerChange;
 import io.modelcontextprotocol.server.McpStatelessServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +46,8 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.ServerSentEvent;
+import org.restlet.representation.EventStreamReader;
 import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
 
@@ -828,6 +833,128 @@ class McpModernServerTestCase {
                                         "echo"))));
     }
 
+    /** Modern resources, templates and prompts are served next to the bridged ones. */
+    @Test
+    void modernResourcesAndPromptsAreServed() throws Exception {
+        McpServerAdapter adapter = adapter();
+        addResourcesAndPrompts(adapter);
+        addModernResourcesAndPrompts(adapter);
+        adapter.start();
+
+        List<?> resources =
+                (List<?>) result(call(adapter, "resources/list", Map.of(), null)).get("resources");
+        assertEquals(
+                List.of("test://fixed", "test://modern"),
+                resources.stream().map(each -> ((Map<?, ?>) each).get("uri")).toList());
+        List<?> templates =
+                (List<?>)
+                        result(call(adapter, "resources/templates/list", Map.of(), null))
+                                .get("resourceTemplates");
+        assertEquals(
+                List.of("test://items/{id}", "test://things/{id}"),
+                templates.stream().map(each -> ((Map<?, ?>) each).get("uriTemplate")).toList());
+        for (String uri : List.of("test://modern", "test://things/3")) {
+            Map<String, Object> read =
+                    result(call(adapter, "resources/read", Map.of("uri", uri), uri));
+            Map<?, ?> content = (Map<?, ?>) ((List<?>) read.get("contents")).get(0);
+            assertEquals(uri, content.get("uri"));
+            assertEquals("modern", content.get("text"));
+        }
+        List<?> prompts =
+                (List<?>) result(call(adapter, "prompts/list", Map.of(), null)).get("prompts");
+        assertEquals(
+                List.of("greet", "welcome"),
+                prompts.stream().map(each -> ((Map<?, ?>) each).get("name")).toList());
+        Map<String, Object> prompt =
+                result(call(adapter, "prompts/get", Map.of("name", "welcome"), "welcome"));
+        assertEquals("modern welcome", prompt.get("description"));
+    }
+
+    /** A URI, URI template or prompt name used twice across both lists fails the start. */
+    @Test
+    void aDuplicateResourceOrPromptFailsTheStart() {
+        McpServerAdapter uri = adapter();
+        addResourcesAndPrompts(uri);
+        uri.getModernResources()
+                .add(
+                        new McpModernResource(
+                                io.modelcontextprotocol.modern.McpSchema.Resource.builder(
+                                                "test://fixed", "again")
+                                        .build(),
+                                modernRead()));
+        McpServerAdapter template = adapter();
+        addResourcesAndPrompts(template);
+        template.getModernResourceTemplates()
+                .add(
+                        new McpModernResourceTemplate(
+                                io.modelcontextprotocol.modern.McpSchema.ResourceTemplate.builder(
+                                                "test://items/{id}", "again")
+                                        .build(),
+                                modernRead()));
+        McpServerAdapter prompt = adapter();
+        addResourcesAndPrompts(prompt);
+        prompt.getModernPrompts().add(modernPrompt("greet"));
+
+        for (var each :
+                Map.of(uri, "test://fixed", template, "items/{id}", prompt, "greet").entrySet()) {
+            IllegalArgumentException error =
+                    org.junit.jupiter.api.Assertions.assertThrows(
+                            IllegalArgumentException.class, each.getKey()::start);
+            assertTrue(error.getMessage().contains(each.getValue()), error.getMessage());
+        }
+    }
+
+    /**
+     * A listen stream is acknowledged, then carries the changes the application publishes; it does
+     * not take a call slot, and ends with its result when the adapter stops.
+     */
+    @Test
+    void aListenStreamCarriesChangesUntilTheAdapterStops() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.setMaxConcurrentCalls(1);
+        adapter.start();
+
+        Response response = adapter.handle(listen());
+        assertEquals(200, response.getStatus().getCode());
+        assertEquals(MediaType.TEXT_EVENT_STREAM, response.getEntity().getMediaType());
+        EventStreamReader reader = open(response);
+        assertEquals(
+                io.modelcontextprotocol.modern.McpSchema
+                        .METHOD_NOTIFICATION_SUBSCRIPTIONS_ACKNOWLEDGED,
+                next(reader).get("method"));
+
+        assertNotNull(result(call(adapter, "tools/list", Map.of(), null)).get("tools"));
+        adapter.getChanges().broadcast(new ServerChange.ToolsListChanged());
+        assertEquals(
+                io.modelcontextprotocol.modern.McpSchema.METHOD_NOTIFICATION_TOOLS_LIST_CHANGED,
+                next(reader).get("method"));
+
+        adapters.remove(adapter);
+        adapter.stop();
+        Map<String, Object> last = next(reader);
+        assertEquals(1, ((Number) last.get("id")).intValue(), last.toString());
+        assertTrue(last.containsKey("result"), last.toString());
+    }
+
+    /** Listen streams beyond the limit are refused, without affecting calls. */
+    @Test
+    void theListenLimitRefusesAnExtraStream() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.setMaxListenStreams(1);
+        adapter.start();
+
+        Response first = adapter.handle(listen());
+        EventStreamReader reader = open(first);
+        assertEquals(
+                io.modelcontextprotocol.modern.McpSchema
+                        .METHOD_NOTIFICATION_SUBSCRIPTIONS_ACKNOWLEDGED,
+                next(reader).get("method"));
+        Response second = adapter.handle(listen());
+
+        assertEquals(503, second.getStatus().getCode(), body(second));
+        assertNotNull(result(call(adapter, "tools/list", Map.of(), null)).get("tools"));
+    }
+
     private McpServerAdapter adapter() {
         McpServerAdapter adapter = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(adapter);
@@ -904,6 +1031,107 @@ class McpModernServerTestCase {
                                                                                 .builder("hello")
                                                                                 .build())),
                                                         null))));
+    }
+
+    private static void addModernResourcesAndPrompts(McpServerAdapter adapter) {
+        adapter.getModernResources()
+                .add(
+                        new McpModernResource(
+                                io.modelcontextprotocol.modern.McpSchema.Resource.builder(
+                                                "test://modern", "modern")
+                                        .build(),
+                                modernRead()));
+        adapter.getModernResourceTemplates()
+                .add(
+                        new McpModernResourceTemplate(
+                                io.modelcontextprotocol.modern.McpSchema.ResourceTemplate.builder(
+                                                "test://things/{id}", "things")
+                                        .build(),
+                                modernRead()));
+        adapter.getModernPrompts().add(modernPrompt("welcome"));
+    }
+
+    private static McpAsyncResource modernRead() {
+        return McpAsyncResource.of(
+                (ctx, request) -> {
+                    io.modelcontextprotocol.modern.McpSchema.ReadResourceOutcome outcome =
+                            io.modelcontextprotocol.modern.McpSchema.ReadResourceResult.builder(
+                                            List.of(
+                                                    new io.modelcontextprotocol.modern.McpSchema
+                                                            .TextResourceContents(
+                                                            request.uri(),
+                                                            "text/plain",
+                                                            "modern",
+                                                            null)))
+                                    .build();
+                    return Mono.just(McpAsyncResponse.result(outcome));
+                });
+    }
+
+    private static McpAsyncPrompt modernPrompt(String name) {
+        return McpAsyncPrompt.of(
+                io.modelcontextprotocol.modern.McpSchema.Prompt.builder(name).build(),
+                (ctx, request) -> {
+                    io.modelcontextprotocol.modern.McpSchema.GetPromptOutcome outcome =
+                            new io.modelcontextprotocol.modern.McpSchema.GetPromptResult(
+                                    "modern " + name,
+                                    List.of(
+                                            new io.modelcontextprotocol.modern.McpSchema
+                                                    .PromptMessage(
+                                                    io.modelcontextprotocol.modern.McpSchema.Role
+                                                            .USER,
+                                                    TextContent.builder("hi").build())),
+                                    null,
+                                    null);
+                    return Mono.just(McpAsyncResponse.result(outcome));
+                });
+    }
+
+    /** A {@code subscriptions/listen} request for tools list changes. */
+    private static Request listen() {
+        return modern(
+                io.modelcontextprotocol.modern.McpSchema.METHOD_SUBSCRIPTIONS_LISTEN,
+                Map.of("notifications", Map.of("toolsListChanged", true)),
+                null,
+                meta());
+    }
+
+    /** Writes a streamed response in the background, to be read event by event. */
+    private static EventStreamReader open(Response response) throws Exception {
+        var input = new java.io.PipedInputStream(1 << 16);
+        var output = new java.io.PipedOutputStream(input);
+        Thread.ofVirtual()
+                .start(
+                        () -> {
+                            try (output) {
+                                response.getEntity().write(output);
+                            } catch (java.io.IOException _) {
+                                // The reader went away.
+                            }
+                        });
+        return new EventStreamReader(input);
+    }
+
+    /** The next message of a stream, skipping heartbeats. */
+    private static Map<String, Object> next(EventStreamReader reader) throws Exception {
+        return CompletableFuture.supplyAsync(
+                        () -> {
+                            try {
+                                for (ServerSentEvent event = reader.readEvent();
+                                        event != null;
+                                        event = reader.readEvent()) {
+                                    if (event.getData() != null && !event.getData().isEmpty()) {
+                                        return MAPPER.readValue(
+                                                event.getData(),
+                                                new TypeRef<Map<String, Object>>() {});
+                                    }
+                                }
+                                throw new IllegalStateException("The stream ended");
+                            } catch (java.io.IOException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        })
+                .get(10, TimeUnit.SECONDS);
     }
 
     private static McpSchema.ReadResourceResult contents(String uri) {
