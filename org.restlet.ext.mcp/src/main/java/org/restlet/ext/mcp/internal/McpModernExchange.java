@@ -21,6 +21,7 @@ import io.modelcontextprotocol.server.transport.HeaderAccessor;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.ServerSentEvent;
 import org.restlet.data.Status;
@@ -47,6 +49,7 @@ import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpRequestContext;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.EventStreamRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
@@ -169,10 +172,10 @@ public final class McpModernExchange {
         } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             running.dispose();
-            reply = unavailable();
+            reply = unavailable(exchange.requestId);
         } catch (ExecutionException | TimeoutException _) {
             running.dispose();
-            reply = unavailable();
+            reply = unavailable(exchange.requestId);
         }
         reply.apply(response, exchange, running, heartbeat());
     }
@@ -184,17 +187,21 @@ public final class McpModernExchange {
         return half.compareTo(max) < 0 ? half : max;
     }
 
-    private Reply unavailable() {
+    /**
+     * The reply to an exchange cut short before it answered.
+     *
+     * @param id The id of the request, or null when it wasn't read yet.
+     */
+    private Reply unavailable(Object id) {
         return json(
                 Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
-                McpMessages.error(null, ErrorCodes.INTERNAL_ERROR, "MCP exchange unavailable"));
+                McpMessages.error(id, ErrorCodes.INTERNAL_ERROR, "MCP exchange unavailable"));
     }
 
     /** The state of one exchange, shared by its worker and the thread writing the response. */
     private final class Exchange {
         private final Request request;
         private final McpRequestContext context;
-        private final McpTransportContext transport;
         private final CompletableFuture<Reply> head = new CompletableFuture<>();
         private final BlockingQueue<byte[]> events = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
         private volatile boolean finished;
@@ -205,7 +212,11 @@ public final class McpModernExchange {
         private Exchange(Request request, McpRequestContext context) {
             this.request = request;
             this.context = context;
-            this.transport = McpTransportContext.create(Map.of(McpProtocol.CONTEXT_KEY, context));
+        }
+
+        /** The SDK transport context for the request context an interceptor forwarded. */
+        private static McpTransportContext transport(McpRequestContext forwarded) {
+            return McpTransportContext.create(Map.of(McpProtocol.CONTEXT_KEY, forwarded));
         }
 
         /** Runs in the admitted worker: reads, checks and dispatches the message. */
@@ -244,7 +255,7 @@ public final class McpModernExchange {
                             context,
                             (next, nextContext) ->
                                     sdk.handleNotification(
-                                                    transport,
+                                                    transport(nextContext),
                                                     mapper.convertValue(
                                                             next,
                                                             JsonRpc.JSONRPCNotification.class))
@@ -265,11 +276,15 @@ public final class McpModernExchange {
                             .run(
                                     mapper.convertValue(rpc, McpSchema.JSONRPCRequest.class),
                                     context,
-                                    (next, nextContext) -> Mono.fromCallable(() -> terminal(next)))
+                                    (next, nextContext) ->
+                                            Mono.fromCallable(() -> terminal(next, nextContext)))
                             .blockOptional(timeout);
             if (last.isEmpty()) {
-                // An interceptor answered nothing: accepted, as on the 2025-11-25 path.
-                head.complete(new Reply(Status.SUCCESS_ACCEPTED, null, false));
+                // An interceptor answered nothing: accepted, as on the 2025-11-25 path, unless the
+                // stream already started, which must still answer the request.
+                if (!head.complete(new Reply(Status.SUCCESS_ACCEPTED, null, false))) {
+                    events.put(failure("MCP result suppressed"));
+                }
                 return;
             }
             byte[] encoded;
@@ -288,14 +303,15 @@ public final class McpModernExchange {
         }
 
         /** Dispatches to the SDK after the interceptors, streaming what comes before the result. */
-        private McpSchema.JSONRPCResponse terminal(McpSchema.JSONRPCMessage next)
+        private McpSchema.JSONRPCResponse terminal(
+                McpSchema.JSONRPCMessage next, McpRequestContext forwarded)
                 throws IOException, InterruptedException {
             JsonRpc.JSONRPCRequest rpc = mapper.convertValue(next, JsonRpc.JSONRPCRequest.class);
-            McpTransportContext sdkContext = transport;
+            McpTransportContext sdkContext = transport(forwarded);
             if (McpSchema.METHOD_TOOLS_CALL.equals(rpc.method())) {
                 // The tools feature validates x-mcp-header arguments against these.
                 sdkContext =
-                        transport.putAll(
+                        sdkContext.putAll(
                                 Map.of(
                                         McpParamHeaders.TRANSPORT_CONTEXT_KEY,
                                         McpHeaderDecoder.paramHeaders(headers())));
@@ -407,15 +423,15 @@ public final class McpModernExchange {
          */
         private void fail(Throwable cause) {
             try {
-                if (head.isDone()) {
+                // Completing the head first, atomically: losing means the worker started a
+                // stream, which must then end with an error answering the request.
+                if (!head.complete(unavailable(requestId))) {
                     byte[] error = failure("MCP exchange failed");
                     if (!events.offer(error)) {
                         // A stalled client: what it hasn't read yet gives way to the answer.
                         events.clear();
                         events.add(error);
                     }
-                } else {
-                    head.complete(unavailable());
                 }
             } catch (RuntimeException _) {
                 // The stream ends below anyway.
@@ -427,9 +443,7 @@ public final class McpModernExchange {
         /** Ends the exchange once the worker is done; it answered, unless it was cut short. */
         private void end() {
             try {
-                if (!head.isDone()) {
-                    head.complete(unavailable());
-                }
+                head.complete(unavailable(requestId));
             } finally {
                 finish();
             }
@@ -513,27 +527,55 @@ public final class McpModernExchange {
 
         private static Representation stream(
                 Exchange exchange, Disposable running, Duration heartbeat) {
-            return new EventStreamRepresentation(
-                    sink -> {
-                        try {
-                            for (byte[] event = exchange.next();
-                                    event != END;
-                                    event = exchange.next()) {
-                                sink.send(
-                                        ServerSentEvent.builder()
-                                                .event("message")
-                                                .data(new String(event, StandardCharsets.UTF_8))
-                                                .build());
-                            }
-                        } catch (InterruptedException _) {
-                            Thread.currentThread().interrupt();
-                            running.dispose();
-                        } catch (IOException e) {
-                            running.dispose();
-                            throw e;
-                        }
-                    },
-                    heartbeat);
+            return new Releasing(
+                    new EventStreamRepresentation(
+                            sink -> {
+                                try {
+                                    for (byte[] event = exchange.next();
+                                            event != END;
+                                            event = exchange.next()) {
+                                        sink.send(
+                                                ServerSentEvent.builder()
+                                                        .event("message")
+                                                        .data(
+                                                                new String(
+                                                                        event,
+                                                                        StandardCharsets.UTF_8))
+                                                        .build());
+                                    }
+                                } catch (InterruptedException _) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            },
+                            heartbeat),
+                    running);
+        }
+    }
+
+    /**
+     * An event stream that releases its exchange however its write ends, including when the flush
+     * of the response head fails, before any event: the SDK's stream is cancelled and the call slot
+     * freed. Releasing a finished exchange does nothing.
+     */
+    private static final class Releasing extends OutputRepresentation {
+        private final Representation stream;
+        private final Disposable running;
+
+        private Releasing(Representation stream, Disposable running) {
+            super(MediaType.TEXT_EVENT_STREAM);
+            setCharacterSet(CharacterSet.UTF_8);
+            setTransient(true);
+            this.stream = stream;
+            this.running = running;
+        }
+
+        @Override
+        public void write(OutputStream output) throws IOException {
+            try {
+                stream.write(output);
+            } finally {
+                running.dispose();
+            }
         }
     }
 }

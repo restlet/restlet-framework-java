@@ -609,6 +609,173 @@ class McpModernServerTestCase {
         assertEquals("intercepted", firstText(result));
     }
 
+    /** A call timing out before its answer is unavailable, with an error naming the request. */
+    @Test
+    void aTimedOutCallNamesTheRequest() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getModernTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("silent", Map.of("type", "object")).build(),
+                                (ctx, request) -> Mono.never()));
+        adapter.setRequestTimeout(java.time.Duration.ofMillis(500));
+        adapter.start();
+
+        Response response =
+                adapter.handle(
+                        modern(
+                                "tools/call",
+                                Map.of("name", "silent", "arguments", Map.of()),
+                                "silent",
+                                meta()));
+        String body = body(response);
+
+        assertEquals(503, response.getStatus().getCode(), body);
+        Map<String, Object> envelope =
+                MAPPER.readValue(body, new TypeRef<Map<String, Object>>() {});
+        assertEquals(1, ((Number) envelope.get("id")).intValue(), body);
+    }
+
+    /** The context an interceptor forwards is the one the handlers get. */
+    @Test
+    void handlersGetTheContextAnInterceptorForwards() throws Exception {
+        McpServerAdapter adapter = new McpServerAdapter();
+        adapters.add(adapter);
+        adapter.getTools()
+                .add(
+                        new McpStatelessServerFeatures.AsyncToolSpecification(
+                                McpServerAdapterTestCase.echoTool(),
+                                (transport, call) ->
+                                        Mono.just(
+                                                McpSchema.CallToolResult.builder()
+                                                        .addTextContent(
+                                                                String.valueOf(
+                                                                        ((McpRequestContext)
+                                                                                        transport
+                                                                                                .get(
+                                                                                                        McpProtocol
+                                                                                                                .CONTEXT_KEY))
+                                                                                .attributes()
+                                                                                .get("tenant")))
+                                                        .build())));
+        adapter.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            McpRequestContext forwarded =
+                                    new McpRequestContext(
+                                            context.transportRequest().orElse(null),
+                                            context.protocolVersion());
+                            forwarded.attributes().put("tenant", "acme");
+                            return chain.proceed(message, forwarded);
+                        });
+        adapter.start();
+
+        assertEquals(
+                "acme",
+                firstText(
+                        result(
+                                call(
+                                        adapter,
+                                        "tools/call",
+                                        Map.of("name", "echo", "arguments", Map.of("text", "x")),
+                                        "echo"))));
+    }
+
+    /** A streamed result an interceptor suppresses still ends with an error answering the call. */
+    @Test
+    void aSuppressedStreamedResultStillAnswersTheCall() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getInterceptors()
+                .add(
+                        (message, context, chain) ->
+                                chain.proceed(message, context).then(Mono.empty()));
+        adapter.start();
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p1");
+
+        List<Map<String, Object>> events =
+                events(
+                        body(
+                                adapter.handle(
+                                        modern(
+                                                "tools/call",
+                                                Map.of("name", "progress", "arguments", Map.of()),
+                                                "progress",
+                                                meta))));
+
+        assertEquals(2, events.size(), events.toString());
+        assertEquals(1, ((Number) events.get(1).get("id")).intValue(), events.toString());
+        assertNotNull(events.get(1).get("error"), events.toString());
+    }
+
+    /** A client gone before the first event, at the head's flush, also frees the call slot. */
+    @Test
+    void aClientGoneAtTheFirstFlushCancelsTheTool() throws Exception {
+        McpServerAdapter adapter = adapter();
+        CountDownLatch cancelled = new CountDownLatch(1);
+        adapter.getModernTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("endless", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<CallToolOutcome>streaming(
+                                                        notifier ->
+                                                                notifier.progress(
+                                                                                1, null, "started")
+                                                                        .then(
+                                                                                Mono
+                                                                                        .<CallToolOutcome>
+                                                                                                never()
+                                                                                        .doOnCancel(
+                                                                                                cancelled
+                                                                                                        ::countDown))))));
+        adapter.setMaxConcurrentCalls(1);
+        adapter.start();
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p1");
+
+        Response response =
+                adapter.handle(
+                        modern(
+                                "tools/call",
+                                Map.of("name", "endless", "arguments", Map.of()),
+                                "endless",
+                                meta));
+        java.io.OutputStream unflushable =
+                new java.io.OutputStream() {
+                    @Override
+                    public void write(int b) {
+                        // Never reached: the flush fails first.
+                    }
+
+                    @Override
+                    public void flush() throws java.io.IOException {
+                        throw new java.io.IOException("client gone");
+                    }
+                };
+        try {
+            response.getEntity().write(unflushable);
+        } catch (java.io.IOException _) {
+            // The write reports the broken client.
+        }
+
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the tool's stream was not cancelled");
+        assertEquals(
+                "echo:freed",
+                firstText(
+                        result(
+                                call(
+                                        adapter,
+                                        "tools/call",
+                                        Map.of(
+                                                "name",
+                                                "echo",
+                                                "arguments",
+                                                Map.of("text", "freed")),
+                                        "echo"))));
+    }
+
     private McpServerAdapter adapter() {
         McpServerAdapter adapter = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(adapter);
