@@ -447,7 +447,7 @@ class McpModernServerTestCase {
                 "echo:freed",
                 firstText(
                         result(
-                                call(
+                                callWhenFree(
                                         adapter,
                                         "tools/call",
                                         Map.of(
@@ -770,7 +770,7 @@ class McpModernServerTestCase {
                 "echo:freed",
                 firstText(
                         result(
-                                call(
+                                callWhenFree(
                                         adapter,
                                         "tools/call",
                                         Map.of(
@@ -822,7 +822,7 @@ class McpModernServerTestCase {
                 "echo:freed",
                 firstText(
                         result(
-                                call(
+                                callWhenFree(
                                         adapter,
                                         "tools/call",
                                         Map.of(
@@ -1153,6 +1153,23 @@ class McpModernServerTestCase {
     private static Response call(
             McpServerAdapter adapter, String method, Map<String, Object> params, String name) {
         return adapter.handle(modern(method, params, name, meta()));
+    }
+
+    /**
+     * Calls once the call slot an ended exchange held is free again: its worker frees it just after
+     * the handler sees the cancellation.
+     */
+    private static Response callWhenFree(
+            McpServerAdapter adapter, String method, Map<String, Object> params, String name)
+            throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Response response = call(adapter, method, params, name);
+        while (response.getStatus().getCode() == 503 && System.nanoTime() < deadline) {
+            response.getEntity().release();
+            Thread.sleep(10);
+            response = call(adapter, method, params, name);
+        }
+        return response;
     }
 
     /** A 2026-07-28 request with its _meta and headers. */

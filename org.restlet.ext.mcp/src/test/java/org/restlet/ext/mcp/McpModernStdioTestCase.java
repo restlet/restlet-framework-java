@@ -52,6 +52,9 @@ import reactor.core.publisher.Mono;
 class McpModernStdioTestCase {
     private static final McpJsonMapper MAPPER = McpJsonDefaults.getMapper();
 
+    /** The adapter's listen limit, above the default, which stdio must not lower. */
+    private static final int LISTENS = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS + 2;
+
     private final CountDownLatch cancelled = new CountDownLatch(1);
     private final StdioServerHelper prototype = new StdioServerHelper(null);
     private McpServerAdapter adapter;
@@ -127,6 +130,7 @@ class McpModernStdioTestCase {
                                                                                         .doOnCancel(
                                                                                                 cancelled
                                                                                                         ::countDown))))));
+        adapter.setMaxListenStreams(LISTENS);
         adapter.start();
         Engine.getInstance().getRegisteredServers().add(prototype);
         Context context = new Context();
@@ -232,6 +236,52 @@ class McpModernStdioTestCase {
         assertEquals("echo:beside", firstText(result(read())));
         adapter.getChanges().broadcast(new ServerChange.ToolsListChanged());
         assertEquals(McpSchema.METHOD_NOTIFICATION_TOOLS_LIST_CHANGED, read().get("method"));
+    }
+
+    /** A request naming the cancellation method is answered, and cancels nothing. */
+    @Test
+    void aRequestNamedCancelledIsAnsweredAndCancelsNothing() throws Exception {
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p3");
+        send(request(8, "tools/call", Map.of("name", "endless", "arguments", Map.of()), meta));
+        assertEquals("notifications/progress", read().get("method"));
+
+        send(request(9, "notifications/cancelled", Map.of("requestId", 8), meta()));
+        Map<String, Object> reply = read();
+
+        assertEquals(9, ((Number) reply.get("id")).intValue(), reply.toString());
+        assertTrue(reply.containsKey("error"), reply.toString());
+        assertEquals(1, cancelled.getCount(), "the call was cancelled");
+    }
+
+    /** The adapter's listen limit applies over stdio, above the default too. */
+    @Test
+    void theAdapterListenLimitAppliesOverStdio() throws Exception {
+        for (int id = 100; id < 100 + LISTENS; id++) {
+            send(
+                    request(
+                            id,
+                            McpSchema.METHOD_SUBSCRIPTIONS_LISTEN,
+                            Map.of("notifications", Map.of("toolsListChanged", true)),
+                            meta()));
+        }
+        for (int i = 0; i < LISTENS; i++) {
+            Map<String, Object> ack = read();
+            assertEquals(
+                    McpSchema.METHOD_NOTIFICATION_SUBSCRIPTIONS_ACKNOWLEDGED,
+                    ack.get("method"),
+                    ack.toString());
+        }
+
+        send(
+                request(
+                        200,
+                        McpSchema.METHOD_SUBSCRIPTIONS_LISTEN,
+                        Map.of("notifications", Map.of("toolsListChanged", true)),
+                        meta()));
+        Map<String, Object> refused = read();
+        assertEquals(200, ((Number) refused.get("id")).intValue(), refused.toString());
+        assertTrue(refused.containsKey("error"), refused.toString());
     }
 
     private static Map<String, Object> request(

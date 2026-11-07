@@ -57,17 +57,21 @@ public final class StdioServerHelper extends ServerHelper {
     /** The in-flight 2026-07-28 requests, by id, which a client may cancel. */
     private final Map<Object, Request> inFlight = new ConcurrentHashMap<>();
 
+    /**
+     * Held while a frame is written, and while a request is marked cancelled: once a cancellation
+     * is marked, no frame of that request follows.
+     */
+    private final Object output = new Object();
+
     private org.restlet.util.StreamTransport stream;
     private McpWorkers workers;
 
     /**
-     * The workers of 2026-07-28 requests, without time limit of their own: the adapter's request
-     * timeout applies, and a request it cuts short is answered rather than failing the connector.
+     * The workers of 2026-07-28 requests, without limits of their own: the adapter's call and
+     * listen limits and request timeout apply, and what it refuses or cuts short is answered rather
+     * than failing the connector.
      */
     private McpWorkers modernWorkers;
-
-    /** The workers of {@code subscriptions/listen} streams, without time limit. */
-    private McpWorkers listeners;
 
     private Thread reader;
     private volatile boolean closed;
@@ -96,12 +100,7 @@ public final class StdioServerHelper extends ServerHelper {
         stream.setMaxOperationBytes(McpProtocol.DEFAULT_MAX_MESSAGE_BYTES + 1);
         stream.start();
         workers = new McpWorkers(McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS, Duration.ofSeconds(30));
-        modernWorkers =
-                new McpWorkers(
-                        McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS, null, Duration.ofSeconds(30));
-        listeners =
-                new McpWorkers(
-                        McpProtocol.DEFAULT_MAX_LISTEN_STREAMS, null, Duration.ofSeconds(30));
+        modernWorkers = new McpWorkers(Integer.MAX_VALUE, null, Duration.ofSeconds(30));
         reader = Thread.ofVirtual().name("restlet-mcp-stdio-server").start(this::read);
     }
 
@@ -130,8 +129,12 @@ public final class StdioServerHelper extends ServerHelper {
         Map<?, ?> envelope = envelope(bytes);
         boolean modern = envelope != null && modern(envelope);
         String method = envelope != null && envelope.get("method") instanceof String m ? m : null;
-        // A cancellation of an in-flight 2026-07-28 request, with or without _meta.
-        if (CANCELLED.equals(method) && (cancel(envelope) || modern)) {
+        // A cancellation of an in-flight 2026-07-28 request, with or without _meta. A request
+        // naming this method, or a malformed envelope, goes on to be answered.
+        if (CANCELLED.equals(method)
+                && "2.0".equals(envelope.get("jsonrpc"))
+                && !envelope.containsKey("id")
+                && (cancel(envelope) || modern)) {
             return;
         }
         Request request =
@@ -145,7 +148,8 @@ public final class StdioServerHelper extends ServerHelper {
                         modern ? McpProtocol.MODERN_VERSION : McpProtocol.VERSION);
         request.getHeaders().set("Accept", "application/json, text/event-stream");
         if (!modern) {
-            workers.submit(() -> dispatch(request), () -> {}).subscribe(ignored -> {}, this::fail);
+            workers.submit(() -> dispatch(request, null), () -> {})
+                    .subscribe(ignored -> {}, this::fail);
             return;
         }
         if (method != null) {
@@ -158,12 +162,11 @@ public final class StdioServerHelper extends ServerHelper {
             key = null; // A duplicate id: only the first may be cancelled.
         }
         Object registered = key;
-        boolean listen = McpModernExchange.isListen(method);
-        (listen ? listeners : modernWorkers)
+        modernWorkers
                 .submit(
                         () -> {
                             try {
-                                dispatch(request);
+                                dispatch(request, id);
                             } finally {
                                 if (registered != null) {
                                     inFlight.remove(registered, request);
@@ -179,7 +182,7 @@ public final class StdioServerHelper extends ServerHelper {
                             }
                             if (!closed && !isCancelled(request)) {
                                 // Refused, too large or broken: answered, the connector stays up.
-                                refuse(id, error);
+                                refuse(request, id, error);
                             }
                         });
     }
@@ -225,7 +228,9 @@ public final class StdioServerHelper extends ServerHelper {
         if (request == null) {
             return false;
         }
-        request.getAttributes().put(CANCELLED_ATTRIBUTE, Boolean.TRUE);
+        synchronized (output) {
+            request.getAttributes().put(CANCELLED_ATTRIBUTE, Boolean.TRUE);
+        }
         request.abort();
         return true;
     }
@@ -234,15 +239,29 @@ public final class StdioServerHelper extends ServerHelper {
         return Boolean.TRUE.equals(request.getAttributes().get(CANCELLED_ATTRIBUTE));
     }
 
+    /**
+     * Writes a frame of a request, unless the client cancelled it.
+     *
+     * @param request The request answered, or null for none.
+     * @param frame The frame, without its newline.
+     */
+    private void emit(Request request, byte[] frame) throws IOException {
+        synchronized (output) {
+            if (request == null || !isCancelled(request)) {
+                McpMessages.writeFrame(stream, frame);
+            }
+        }
+    }
+
     /** Answers a 2026-07-28 request refused, cut short or failed, unless it was cancelled. */
-    private void refuse(Object id, Throwable cause) {
+    private void refuse(Request request, Object id, Throwable cause) {
         getLogger().log(Level.FINE, "MCP STDIO request refused or failed", cause);
         if (id == null) {
             return;
         }
         try {
-            McpMessages.writeFrame(
-                    stream,
+            emit(
+                    request,
                     McpMessages.encode(
                             mapper,
                             McpMessages.error(id, -32603, "MCP exchange unavailable"),
@@ -268,7 +287,14 @@ public final class StdioServerHelper extends ServerHelper {
         }
     }
 
-    private void dispatch(Request request) throws IOException {
+    /**
+     * Handles a request and writes its response.
+     *
+     * @param request The request.
+     * @param id The id of a 2026-07-28 request, given to an error the adapter answered without it,
+     *     having refused the request unread; or null.
+     */
+    private void dispatch(Request request, Object id) throws IOException {
         if (closed) {
             throw new IOException("MCP STDIO server is closed", failure);
         }
@@ -291,9 +317,12 @@ public final class StdioServerHelper extends ServerHelper {
                     }
                 } else if (MediaType.APPLICATION_JSON.isCompatible(entity.getMediaType())) {
                     try (var input = entity.getStream()) {
-                        McpMessages.writeFrame(
-                                stream,
-                                McpMessages.read(input, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES));
+                        emit(
+                                request,
+                                withId(
+                                        McpMessages.read(
+                                                input, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES),
+                                        id));
                     }
                 } else {
                     throw new IOException("MCP STDIO handler returned a non-JSON entity");
@@ -308,6 +337,25 @@ public final class StdioServerHelper extends ServerHelper {
                 response.getEntity().release();
             }
         }
+    }
+
+    /** A reply, given the request id when it is an error without one. */
+    private byte[] withId(byte[] reply, Object id) throws IOException {
+        if (id == null) {
+            return reply;
+        }
+        Map<?, ?> envelope = envelope(reply);
+        if (envelope == null
+                || envelope.get("id") != null
+                || !(envelope.get("error") instanceof Map<?, ?> error)) {
+            return reply;
+        }
+        Map<String, Object> answered =
+                McpMessages.error(
+                        id,
+                        error.get("code") instanceof Number code ? code.intValue() : -32603,
+                        String.valueOf(error.get("message")));
+        return McpMessages.encode(mapper, answered, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES);
     }
 
     /**
@@ -354,8 +402,8 @@ public final class StdioServerHelper extends ServerHelper {
             }
             if (length == 0) {
                 // A cancelled request's stream ends without the error that ends it.
-                if (hasData && !isCancelled(request)) {
-                    McpMessages.writeFrame(stream, data.toByteArray());
+                if (hasData) {
+                    emit(request, data.toByteArray());
                 }
                 data.reset();
                 hasData = false;
@@ -365,7 +413,9 @@ public final class StdioServerHelper extends ServerHelper {
             if (text.startsWith("data:")) {
                 String value = text.substring(text.startsWith("data: ") ? 6 : 5);
                 byte[] value8 = value.getBytes(StandardCharsets.UTF_8);
-                if (data.size() + value8.length + 1 > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES) {
+                int separator = hasData ? 1 : 0;
+                if (data.size() + separator + value8.length
+                        > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES) {
                     throw new IOException("MCP streamed message exceeds the message size");
                 }
                 if (hasData) {
@@ -397,7 +447,7 @@ public final class StdioServerHelper extends ServerHelper {
         } catch (IOException e) {
             error = e;
         }
-        for (McpWorkers pool : new McpWorkers[] {workers, modernWorkers, listeners}) {
+        for (McpWorkers pool : new McpWorkers[] {workers, modernWorkers}) {
             try {
                 if (pool != null) {
                     pool.close();
