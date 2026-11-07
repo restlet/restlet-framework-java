@@ -87,7 +87,7 @@ public final class McpModernExchange {
     /** Streamed messages a slow client may leave pending before the SDK is held back. */
     private static final int QUEUE_CAPACITY = 64;
 
-    /** Marks the end of a stream in the queue. */
+    /** Returned by the writer's next message once the stream ended; never a real message. */
     private static final byte[] END = new byte[0];
 
     private static final Map<Integer, Status> ERROR_STATUSES =
@@ -225,13 +225,15 @@ public final class McpModernExchange {
                 head.complete(error(null, ErrorCodes.PARSE_ERROR, "Parse error"));
                 return;
             }
-            if (message instanceof JsonRpc.JSONRPCNotification notification) {
-                notification(notification);
-            } else if (message instanceof JsonRpc.JSONRPCRequest rpc) {
-                call(rpc);
-            } else {
-                head.complete(
-                        error(null, ErrorCodes.INVALID_REQUEST, "Requests or notifications only"));
+            switch (message) {
+                case JsonRpc.JSONRPCNotification notification -> notification(notification);
+                case JsonRpc.JSONRPCRequest rpc -> call(rpc);
+                default ->
+                        head.complete(
+                                error(
+                                        null,
+                                        ErrorCodes.INVALID_REQUEST,
+                                        "Requests or notifications only"));
             }
         }
 
@@ -410,7 +412,7 @@ public final class McpModernExchange {
                     if (!events.offer(error)) {
                         // A stalled client: what it hasn't read yet gives way to the answer.
                         events.clear();
-                        events.offer(error);
+                        events.add(error);
                     }
                 } else {
                     head.complete(unavailable());
@@ -433,34 +435,38 @@ public final class McpModernExchange {
             }
         }
 
-        /** Marks the end of the stream, for the writer to stop once it has written the rest. */
+        /**
+         * Marks the end of the stream, after the last message was queued: the writer stops once it
+         * has written the rest.
+         */
         private void finish() {
             finished = true;
-            events.offer(END);
         }
 
         /**
-         * Takes the next streamed message, or null at the end of the stream: after its end marker,
-         * or once the worker finished and nothing is left, should the marker not fit the queue.
+         * Takes the next streamed message, or {@link #END} once the worker finished and nothing is
+         * left.
          */
         private byte[] next() throws InterruptedException {
             for (; ; ) {
+                // Read before polling, so that a message queued just before the end is not lost.
+                boolean ended = finished;
                 byte[] event = events.poll(100, TimeUnit.MILLISECONDS);
-                if (event == END || (event == null && finished && events.isEmpty())) {
-                    return null;
-                }
                 if (event != null) {
                     return event;
                 }
+                if (ended) {
+                    return END;
+                }
             }
         }
-    }
 
-    /** A JSON-RPC error reply, built as a map since the id may be null. */
-    private Reply error(Object id, int code, String message) {
-        return json(
-                ERROR_STATUSES.getOrDefault(code, Status.SUCCESS_OK),
-                McpMessages.error(id, code, message));
+        /** A JSON-RPC error reply, built as a map since the id may be null. */
+        private Reply error(Object id, int code, String message) {
+            return json(
+                    ERROR_STATUSES.getOrDefault(code, Status.SUCCESS_OK),
+                    McpMessages.error(id, code, message));
+        }
     }
 
     private Reply json(Status status, Object message) {
@@ -482,7 +488,16 @@ public final class McpModernExchange {
     }
 
     /** The reply to write: a status and an optional JSON body, or an SSE stream. */
-    private record Reply(Status status, byte[] body, boolean streaming) {
+    private static final class Reply {
+        private final Status status;
+        private final byte[] body;
+        private final boolean streaming;
+
+        private Reply(Status status, byte[] body, boolean streaming) {
+            this.status = status;
+            this.body = body;
+            this.streaming = streaming;
+        }
 
         private void apply(
                 Response response, Exchange exchange, Disposable running, Duration heartbeat) {
@@ -502,7 +517,7 @@ public final class McpModernExchange {
                     sink -> {
                         try {
                             for (byte[] event = exchange.next();
-                                    event != null;
+                                    event != END;
                                     event = exchange.next()) {
                                 sink.send(
                                         ServerSentEvent.builder()

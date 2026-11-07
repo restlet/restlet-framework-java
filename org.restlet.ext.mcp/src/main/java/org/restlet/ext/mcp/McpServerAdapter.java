@@ -477,59 +477,21 @@ public final class McpServerAdapter extends Restlet {
             response.getAllowedMethods().add(Method.POST);
             return;
         }
-        String origin = request.getHeaders().getFirstValue("Origin", true);
-        if (request.getHeaders().getValuesArray("Origin", true).length > 1
-                || request.getHeaders().getValuesArray(McpProtocol.VERSION_HEADER, true).length
-                        > 1) {
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
-        }
-        if (origin != null && !runningOrigins.contains(origin)) {
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
-        }
         String version = request.getHeaders().getFirstValue(McpProtocol.VERSION_HEADER, true);
         // A 2026-07-28 request goes to the modern server; it ignores a stale Mcp-Session-Id.
         boolean modern = McpProtocol.MODERN_VERSION.equals(version);
-        if (!modern
-                && (version != null && !McpProtocol.VERSION.equals(version)
-                        || request.getHeaders().getFirstValue("Mcp-Session-Id", true) != null)) {
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+        Status rejected = headerRejection(request, version, modern);
+        if (rejected == null && !acceptsJsonAndEventStream(request)) {
+            rejected = Status.CLIENT_ERROR_NOT_ACCEPTABLE;
         }
-        ClientInfo accepted = request.getClientInfo();
-        String accept = request.getHeaders().getValues("Accept");
-        if (accept != null) {
-            accepted = new ClientInfo();
-            PreferenceReader.addMediaTypes(accept, accepted);
+        if (rejected == null) {
+            rejected = entityRejection(request);
         }
-        boolean jsonAccepted =
-                accepted.getAcceptedMediaTypes().stream()
-                        .anyMatch(
-                                p ->
-                                        p.getQuality() > 0
-                                                && MediaType.APPLICATION_JSON.isCompatible(
-                                                        p.getMetadata()));
-        boolean sseAccepted =
-                accepted.getAcceptedMediaTypes().stream()
-                        .anyMatch(
-                                p ->
-                                        p.getQuality() > 0
-                                                && MediaType.TEXT_EVENT_STREAM.isCompatible(
-                                                        p.getMetadata()));
-        if (!jsonAccepted || !sseAccepted) {
-            response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            return;
-        }
-        if (request.getEntity() == null
-                || request.getEntity().getMediaType() == null
-                || !MediaType.APPLICATION_JSON.isCompatible(request.getEntity().getMediaType())) {
-            response.setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
-            return;
-        }
-        if (request.getEntity().getSize() > maxMessageBytes) {
-            response.setStatus(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE);
-            response.setEntity((org.restlet.representation.Representation) null);
+        if (rejected != null) {
+            response.setStatus(rejected);
+            if (Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE.equals(rejected)) {
+                response.setEntity((org.restlet.representation.Representation) null);
+            }
             return;
         }
         if (modern) {
@@ -557,6 +519,64 @@ public final class McpServerAdapter extends Restlet {
         if (reply.body() != null) {
             write(response, reply.body());
         }
+    }
+
+    /**
+     * Checks the headers: one Origin and one version at most, an allowed Origin, and for a
+     * 2025-11-25 request a supported version and no session.
+     *
+     * @return The status refusing the request, or null.
+     */
+    private Status headerRejection(Request request, String version, boolean modern) {
+        if (request.getHeaders().getValuesArray("Origin", true).length > 1
+                || request.getHeaders().getValuesArray(McpProtocol.VERSION_HEADER, true).length
+                        > 1) {
+            return Status.CLIENT_ERROR_BAD_REQUEST;
+        }
+        String origin = request.getHeaders().getFirstValue("Origin", true);
+        if (origin != null && !runningOrigins.contains(origin)) {
+            return Status.CLIENT_ERROR_FORBIDDEN;
+        }
+        if (!modern
+                && (version != null && !McpProtocol.VERSION.equals(version)
+                        || request.getHeaders().getFirstValue("Mcp-Session-Id", true) != null)) {
+            return Status.CLIENT_ERROR_BAD_REQUEST;
+        }
+        return null;
+    }
+
+    /** Whether the request accepts both JSON and an event stream, as MCP requires. */
+    private static boolean acceptsJsonAndEventStream(Request request) {
+        ClientInfo accepted = request.getClientInfo();
+        String accept = request.getHeaders().getValues("Accept");
+        if (accept != null) {
+            accepted = new ClientInfo();
+            PreferenceReader.addMediaTypes(accept, accepted);
+        }
+        return accepts(accepted, MediaType.APPLICATION_JSON)
+                && accepts(accepted, MediaType.TEXT_EVENT_STREAM);
+    }
+
+    private static boolean accepts(ClientInfo accepted, MediaType type) {
+        return accepted.getAcceptedMediaTypes().stream()
+                .anyMatch(p -> p.getQuality() > 0 && type.isCompatible(p.getMetadata()));
+    }
+
+    /**
+     * Checks the request entity: JSON, within the message size.
+     *
+     * @return The status refusing the request, or null.
+     */
+    private Status entityRejection(Request request) {
+        if (request.getEntity() == null
+                || request.getEntity().getMediaType() == null
+                || !MediaType.APPLICATION_JSON.isCompatible(request.getEntity().getMediaType())) {
+            return Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
+        }
+        if (request.getEntity().getSize() > maxMessageBytes) {
+            return Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
+        }
+        return null;
     }
 
     /** Reads, decodes and dispatches one HTTP message in an admitted worker. */

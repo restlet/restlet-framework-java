@@ -433,7 +433,7 @@ class McpModernServerTestCase {
                 };
         try {
             response.getEntity().write(gone);
-        } catch (java.io.IOException expected) {
+        } catch (java.io.IOException _) {
             // The writer reports the broken client.
         }
 
