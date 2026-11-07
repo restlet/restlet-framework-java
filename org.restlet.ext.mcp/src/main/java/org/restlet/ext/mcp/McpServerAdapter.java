@@ -13,6 +13,8 @@ import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.server.McpAsyncListFilter;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpStatelessAsyncServer;
@@ -42,6 +44,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.ext.mcp.internal.McpMessages;
+import org.restlet.ext.mcp.internal.McpModernExchange;
+import org.restlet.ext.mcp.internal.McpModernFeatures;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
 import reactor.core.publisher.Mono;
@@ -77,6 +81,8 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpAsyncListFilter<McpSchema.Tool>> toolFilters =
             new CopyOnWriteArrayList<>();
     private final List<McpInterceptor> interceptors = new CopyOnWriteArrayList<>();
+    private final List<McpAsyncTool> modernTools = new CopyOnWriteArrayList<>();
+    private byte[] requestStateKey;
     private final Set<String> allowedOrigins = ConcurrentHashMap.newKeySet();
     private McpSchema.Implementation serverInfo =
             McpSchema.Implementation.builder("restlet", "3.0").build();
@@ -86,6 +92,8 @@ public final class McpServerAdapter extends Restlet {
     private Duration requestTimeout = Duration.ofSeconds(30);
     private volatile McpStatelessServerHandler handler;
     private volatile McpStatelessAsyncServer sdkServer;
+    private volatile io.modelcontextprotocol.modern.server.McpServer modernServer;
+    private volatile McpModernExchange modernExchange;
     private volatile McpWorkers workers;
     private volatile boolean accepting;
     private volatile Sinks.One<Boolean> stopping;
@@ -124,6 +132,35 @@ public final class McpServerAdapter extends Restlet {
 
     public List<McpInterceptor> getInterceptors() {
         return interceptors;
+    }
+
+    /**
+     * Tools served to MCP {@link McpProtocol#MODERN_VERSION} clients only, on the SDK's modern
+     * types, for what that revision adds: {@code input_required} results and streamed progress. The
+     * tools of {@link #getTools()} are served to both revisions. A name may only be used once
+     * across both lists. The tool filters apply to them too, on their {@code 2025-11-25}
+     * projection. Experimental: the SDK's modern API is a preview.
+     *
+     * @return The modern tools, modifiable until the adapter starts.
+     */
+    public List<McpAsyncTool> getModernTools() {
+        return modernTools;
+    }
+
+    /**
+     * Sets the key sealing the {@code requestState} of {@code input_required} results, at least 32
+     * bytes. Without it, each adapter generates its own random key, so a retry must reach the
+     * instance that answered; instances behind a load balancer need the same key. The state is also
+     * bound to the authenticated user of the request, so another user can't replay it.
+     *
+     * @param value The key, copied.
+     */
+    public synchronized void setRequestStateKey(byte[] value) {
+        requireConfigurable();
+        if (value == null || value.length < 32) {
+            throw new IllegalArgumentException("requestStateKey must have at least 32 bytes");
+        }
+        requestStateKey = value.clone();
     }
 
     /** Allowed exact Origin header values. Requests with any other Origin are forbidden. */
@@ -198,6 +235,8 @@ public final class McpServerAdapter extends Restlet {
             return;
         }
         requireConfigurable();
+        // Built first: it rejects duplicate tool names before anything needs releasing.
+        var modern = modernServer();
         var caps = McpSchema.ServerCapabilities.builder();
         if (!tools.isEmpty()) {
             caps.tools(false);
@@ -240,11 +279,75 @@ public final class McpServerAdapter extends Restlet {
                         .build();
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         stopping = Sinks.one();
+        modernServer = modern;
+        modernExchange =
+                new McpModernExchange(
+                        modernServer,
+                        MAPPER,
+                        workers,
+                        requestTimeout,
+                        maxMessageBytes,
+                        (message, context, terminal) -> invoke(0, message, context, terminal),
+                        () -> stopping.asMono());
         runningInterceptors = List.copyOf(interceptors);
         runningOrigins = Set.copyOf(allowedOrigins);
         configured = true;
         super.start();
         accepting = true;
+    }
+
+    /** Builds the SDK's modern server from the registrations, bridged and modern. */
+    private io.modelcontextprotocol.modern.server.McpServer modernServer() {
+        var builder =
+                io.modelcontextprotocol.modern.server.McpServer.builder()
+                        .serverInfo(
+                                MAPPER.convertValue(
+                                        serverInfo,
+                                        io.modelcontextprotocol.modern.McpSchema.Implementation
+                                                .class))
+                        .instructions(instructions)
+                        .jsonMapper(MAPPER)
+                        .features(
+                                McpModernFeatures.of(
+                                        MAPPER,
+                                        new McpModernFeatures.Registrations(
+                                                List.copyOf(tools),
+                                                List.copyOf(resources),
+                                                List.copyOf(resourceTemplates),
+                                                List.copyOf(prompts),
+                                                List.copyOf(toolFilters),
+                                                List.copyOf(modernTools))));
+        var codec =
+                HmacRequestStateCodec.builder()
+                        .principalExtractor(McpServerAdapter::principal)
+                        .jsonMapper(MAPPER);
+        if (requestStateKey != null) {
+            codec.key(requestStateKey);
+        }
+        return builder.requestStateCodec(codec.build()).build();
+    }
+
+    /**
+     * The authenticated user of a request, binding its {@code input_required} state, or null.
+     *
+     * @param transport The SDK transport context.
+     * @return The user identifier, else the first principal name, or null.
+     */
+    private static String principal(McpTransportContext transport) {
+        if (!(transport.get(McpProtocol.CONTEXT_KEY) instanceof McpRequestContext context)) {
+            return null;
+        }
+        return context.transportRequest()
+                .map(Request::getClientInfo)
+                .map(
+                        info ->
+                                info.getUser() != null
+                                        ? info.getUser().getIdentifier()
+                                        : info.getPrincipals().stream()
+                                                .map(java.security.Principal::getName)
+                                                .findFirst()
+                                                .orElse(null))
+                .orElse(null);
     }
 
     @Override
@@ -260,7 +363,11 @@ public final class McpServerAdapter extends Restlet {
             try {
                 sdkServer.closeGracefully().block(requestTimeout);
             } finally {
-                super.stop();
+                try {
+                    modernServer.closeGracefully();
+                } finally {
+                    super.stop();
+                }
             }
         }
     }
@@ -315,14 +422,29 @@ public final class McpServerAdapter extends Restlet {
 
     private Mono<McpSchema.JSONRPCResponse> invoke(
             int index, McpSchema.JSONRPCMessage message, McpRequestContext context) {
+        return invoke(index, message, context, this::dispatchStateless);
+    }
+
+    /** Runs the interceptors from {@code index}, then {@code terminal}. */
+    private Mono<McpSchema.JSONRPCResponse> invoke(
+            int index,
+            McpSchema.JSONRPCMessage message,
+            McpRequestContext context,
+            McpInterceptor.Chain terminal) {
         if (index < runningInterceptors.size()) {
             return runningInterceptors
                     .get(index)
                     .intercept(
                             message,
                             context,
-                            (next, nextContext) -> invoke(index + 1, next, nextContext));
+                            (next, nextContext) -> invoke(index + 1, next, nextContext, terminal));
         }
+        return terminal.proceed(message, context);
+    }
+
+    /** Dispatches a 2025-11-25 message to the SDK's stateless server. */
+    private Mono<McpSchema.JSONRPCResponse> dispatchStateless(
+            McpSchema.JSONRPCMessage message, McpRequestContext context) {
         McpTransportContext sdkContext =
                 McpTransportContext.create(Map.of(McpProtocol.CONTEXT_KEY, context));
         if (message instanceof McpSchema.JSONRPCRequest request) {
@@ -367,8 +489,11 @@ public final class McpServerAdapter extends Restlet {
             return;
         }
         String version = request.getHeaders().getFirstValue(McpProtocol.VERSION_HEADER, true);
-        if (version != null && !McpProtocol.VERSION.equals(version)
-                || request.getHeaders().getFirstValue("Mcp-Session-Id", true) != null) {
+        // A 2026-07-28 request goes to the modern server; it ignores a stale Mcp-Session-Id.
+        boolean modern = McpProtocol.MODERN_VERSION.equals(version);
+        if (!modern
+                && (version != null && !McpProtocol.VERSION.equals(version)
+                        || request.getHeaders().getFirstValue("Mcp-Session-Id", true) != null)) {
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
@@ -405,6 +530,10 @@ public final class McpServerAdapter extends Restlet {
         if (request.getEntity().getSize() > maxMessageBytes) {
             response.setStatus(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE);
             response.setEntity((org.restlet.representation.Representation) null);
+            return;
+        }
+        if (modern) {
+            modernExchange.handle(request, response);
             return;
         }
         var context = new McpRequestContext(request);
