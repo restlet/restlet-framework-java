@@ -38,6 +38,7 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
@@ -387,6 +388,72 @@ class HttpAwsSigV4HelperTestCase {
                 HttpAwsSigV4Helper.getCanonicalUri("/documents%20and%20settings/", true));
         assertEquals("/caf%C3%A9", HttpAwsSigV4Helper.getCanonicalUri("/café", false));
         assertEquals("/a%2Bb%25zz", HttpAwsSigV4Helper.getCanonicalUri("/a+b%zz", false));
+    }
+
+    /**
+     * The services other than S3 sign the path normalized, as in the "normalize-path" cases of the
+     * AWS SigV4 test suite. S3 signs it as sent.
+     */
+    @Test
+    void canonicalUriNormalizesThePathOfOtherServicesOnly() {
+        assertEquals("/a/b/d", HttpAwsSigV4Helper.getCanonicalUri("/a//b/./c/../d", true));
+        assertEquals("/example/", HttpAwsSigV4Helper.getCanonicalUri("//example//", true));
+        assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("//", true));
+        assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("/example/..", true));
+        assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("/example1/example2/../..", true));
+        assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("/./", true));
+        assertEquals("/example", HttpAwsSigV4Helper.getCanonicalUri("/./example", true));
+        assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("/..", true));
+        assertEquals("/a%2520b/c", HttpAwsSigV4Helper.getCanonicalUri("/a%20b/./x/../c", true));
+        assertEquals("/a//b/./c/../d", HttpAwsSigV4Helper.getCanonicalUri("/a//b/./c/../d", false));
+    }
+
+    /** A relative reference is signed as the client connector resolves it against its base. */
+    @Test
+    void signsARelativeReferenceAsTheConnectorResolvesIt() {
+        Request relative =
+                new Request(
+                        Method.GET,
+                        new Reference(new Reference("http://" + S3_HOST + "/bucket/"), "key?x=1"));
+        Request absolute = new Request(Method.GET, "http://" + S3_HOST + "/bucket/key?x=1");
+        ChallengeResponse challenge = challenge(S3_KEY_ID, S3_SECRET, "us-east-1", null);
+
+        assertEquals(
+                sign(S3_CLOCK, challenge, absolute, headers(S3_HOST)),
+                sign(S3_CLOCK, challenge, relative, headers(S3_HOST)));
+    }
+
+    /** A blank signing header is replaced, not followed by a second value. */
+    @Test
+    void replacesBlankSigningHeaders() {
+        Request request = new Request(Method.GET, "http://" + S3_HOST + "/test.txt");
+        Series<Header> headers = headers(S3_HOST);
+        headers.add(HeaderConstants.HEADER_RANGE, "bytes=0-9");
+        headers.add("X-Amz-Date", "");
+        headers.add("X-Amz-Content-Sha256", " ");
+
+        String result =
+                sign(
+                        S3_CLOCK,
+                        challenge(S3_KEY_ID, S3_SECRET, "us-east-1", null),
+                        request,
+                        headers);
+
+        assertEquals(
+                "Credential=AKIAIOSFODNN7EXAMPLE/20130524/us-east-1/s3/aws4_request,"
+                        + " SignedHeaders=host;range;x-amz-content-sha256;x-amz-date,"
+                        + " Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41",
+                result);
+        assertEquals(1, headers.subList("x-amz-date", true).size());
+        assertEquals(1, headers.subList("x-amz-content-sha256", true).size());
+
+        Series<Header> tokenHeaders = headers(S3_HOST);
+        tokenHeaders.add("X-Amz-Security-Token", "");
+        ChallengeResponse challenge = challenge(S3_KEY_ID, S3_SECRET, "us-east-1", null);
+        challenge.getParameters().add(HttpAwsSigV4Helper.PARAM_SESSION_TOKEN, "token");
+        sign(S3_CLOCK, challenge, request, tokenHeaders);
+        assertEquals(1, tokenHeaders.subList("x-amz-security-token", true).size());
+        assertEquals("token", tokenHeaders.getFirstValue("x-amz-security-token", true));
     }
 
     @Test

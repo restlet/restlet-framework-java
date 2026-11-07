@@ -19,8 +19,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
@@ -67,9 +69,11 @@ import org.restlet.util.Series;
  * or a proxy may change. A header replaced afterwards, for example through the {@link
  * HeaderConstants#ATTRIBUTE_RAW_REQUEST_HEADERS} attribute, invalidates the signature.
  *
- * <p>The path is signed as S3 expects, each segment URI-encoded once, and twice for the other
- * services. Query parameters are signed sorted and URI-encoded: a {@code +} in the query is a
- * literal plus sign, so encode spaces as {@code %20}.
+ * <p>The signed path and query are those the client connector sends: a relative reference is
+ * resolved against its base. S3 signs the path as is, each segment URI-encoded once. The other
+ * services sign it normalized (empty and dot segments removed) and each segment encoded twice.
+ * Query parameters are signed sorted and URI-encoded: a {@code +} in the query is a literal plus
+ * sign, so encode spaces as {@code %20}.
  *
  * @see <a
  *     href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-create-signed-request.html">Create
@@ -188,17 +192,18 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
         String amzDate = httpHeaders.getFirstValue(HEADER_AMZ_DATE, true);
         if (amzDate == null || amzDate.isBlank()) {
             amzDate = AMZ_DATE_FORMAT.format(clock.instant());
-            httpHeaders.add(HEADER_AMZ_DATE, amzDate);
+            httpHeaders.set(HEADER_AMZ_DATE, amzDate, true);
         } else if (amzDate.length() < 8) {
             throw new IllegalArgumentException("Invalid " + HEADER_AMZ_DATE + " header");
         }
 
         // Temporary credentials
         String sessionToken = params.getFirstValue(PARAM_SESSION_TOKEN);
+        String tokenHeader = httpHeaders.getFirstValue(HEADER_AMZ_SECURITY_TOKEN, true);
         if (sessionToken != null
                 && !sessionToken.isBlank()
-                && httpHeaders.getFirstValue(HEADER_AMZ_SECURITY_TOKEN, true) == null) {
-            httpHeaders.add(HEADER_AMZ_SECURITY_TOKEN, sessionToken);
+                && (tokenHeader == null || tokenHeader.isBlank())) {
+            httpHeaders.set(HEADER_AMZ_SECURITY_TOKEN, sessionToken, true);
         }
 
         // Payload hash
@@ -219,7 +224,7 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
                 }
             }
             if (s3) {
-                httpHeaders.add(HEADER_AMZ_CONTENT_SHA256, payloadHash);
+                httpHeaders.set(HEADER_AMZ_CONTENT_SHA256, payloadHash, true);
             }
         }
 
@@ -231,12 +236,19 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
             }
         }
 
+        // Sign the reference the client connector sends: a relative one is resolved against its
+        // base, as ReferenceUtils.update does, and an absolute one is kept as is.
+        Reference resourceRef = request.getResourceRef();
+        if (!resourceRef.isAbsolute()) {
+            resourceRef = resourceRef.getTargetRef();
+        }
+
         Map<String, String> canonicalHeaders = getCanonicalHeaders(httpHeaders);
         String signedHeaders = String.join(";", canonicalHeaders.keySet());
         String canonicalRequest =
                 getCanonicalRequest(
                         request.getMethod().getName(),
-                        request.getResourceRef(),
+                        resourceRef,
                         !s3,
                         canonicalHeaders,
                         signedHeaders,
@@ -343,18 +355,21 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
     }
 
     /**
-     * Returns the canonical URI: each path segment decoded then URI-encoded, once for S3 and twice
-     * for the other services.
+     * Returns the canonical URI: each path segment decoded then URI-encoded. S3 signs the path as
+     * is, encoded once. The other services sign it normalized (see {@link #normalizePath(String)})
+     * and encoded twice.
      *
      * @param rawPath The raw (encoded) path, or null.
-     * @param doubleEncode True to URI-encode the segments twice.
+     * @param doubleEncode True for the services other than S3: normalize the path and URI-encode
+     *     its segments twice.
      * @return The canonical URI.
      */
     static String getCanonicalUri(String rawPath, boolean doubleEncode) {
         if (rawPath == null || rawPath.isEmpty()) {
             return "/";
         }
-        String[] segments = rawPath.split("/", -1);
+        String path = doubleEncode ? normalizePath(rawPath) : rawPath;
+        String[] segments = path.split("/", -1);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < segments.length; i++) {
             if (i > 0) {
@@ -364,6 +379,28 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
             sb.append(doubleEncode ? uriEncode(encoded) : encoded);
         }
         return sb.charAt(0) == '/' ? sb.toString() : "/" + sb;
+    }
+
+    /**
+     * Normalizes a path as AWS SigV4 requires for the services other than S3: empty and {@code .}
+     * segments are removed, a {@code ..} segment removes the previous one, and a trailing slash is
+     * kept. For example {@code /a//b/./c/../d} becomes {@code /a/b/d} and {@code //example//}
+     * becomes {@code /example/}.
+     *
+     * @param rawPath The raw path.
+     * @return The normalized path, starting with a slash.
+     */
+    static String normalizePath(String rawPath) {
+        Deque<String> segments = new ArrayDeque<>();
+        for (String segment : rawPath.split("/")) {
+            if (segment.equals("..")) {
+                segments.pollLast();
+            } else if (!segment.isEmpty() && !segment.equals(".")) {
+                segments.addLast(segment);
+            }
+        }
+        String result = "/" + String.join("/", segments);
+        return rawPath.endsWith("/") && !result.endsWith("/") ? result + "/" : result;
     }
 
     /**
