@@ -13,6 +13,13 @@ package org.restlet.ext.mcp;
  */
 public final class McpProtocol {
     public static final String VERSION = "2025-11-25";
+
+    /**
+     * The stateless revision also served, experimentally, by {@link McpServerAdapter}: requests
+     * whose {@link #VERSION_HEADER} names it go to the MCP SDK's modern server.
+     */
+    public static final String MODERN_VERSION = "2026-07-28";
+
     public static final String VERSION_HEADER = "MCP-Protocol-Version";
     public static final String CONTEXT_KEY = "org.restlet.ext.mcp.requestContext";
     public static final String STREAM_TRANSPORT_ATTRIBUTE = "org.restlet.ext.mcp.streamTransport";
