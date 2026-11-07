@@ -548,25 +548,29 @@ public final class McpModernExchange {
                                 }
                             },
                             heartbeat),
-                    running);
+                    () -> {
+                        running.dispose();
+                        exchange.finish();
+                    });
         }
     }
 
     /**
      * An event stream that releases its exchange however its write ends, including when the flush
-     * of the response head fails, before any event: the SDK's stream is cancelled and the call slot
-     * freed. Releasing a finished exchange does nothing.
+     * of the response head fails, before any event, and when the response is released without being
+     * written: the SDK's stream is cancelled, the call slot freed, and the stream marked finished
+     * for any reader. Releasing a finished exchange does nothing.
      */
     private static final class Releasing extends OutputRepresentation {
         private final Representation stream;
-        private final Disposable running;
+        private final Runnable close;
 
-        private Releasing(Representation stream, Disposable running) {
+        private Releasing(Representation stream, Runnable close) {
             super(MediaType.TEXT_EVENT_STREAM);
             setCharacterSet(CharacterSet.UTF_8);
             setTransient(true);
             this.stream = stream;
-            this.running = running;
+            this.close = close;
         }
 
         @Override
@@ -574,8 +578,29 @@ public final class McpModernExchange {
             try {
                 stream.write(output);
             } finally {
-                running.dispose();
+                close.run();
             }
+        }
+
+        @Override
+        public void release() {
+            try {
+                close.run();
+                stream.release();
+            } finally {
+                super.release();
+            }
+        }
+
+        /** Identity: two streams are never the same response. */
+        @Override
+        public boolean equals(Object other) {
+            return this == other;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode(this);
         }
     }
 }

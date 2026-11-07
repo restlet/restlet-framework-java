@@ -776,6 +776,58 @@ class McpModernServerTestCase {
                                         "echo"))));
     }
 
+    /** A streamed response released without being written cancels the tool and frees its slot. */
+    @Test
+    void aReleasedUnwrittenStreamCancelsTheTool() throws Exception {
+        McpServerAdapter adapter = adapter();
+        CountDownLatch cancelled = new CountDownLatch(1);
+        adapter.getModernTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("endless", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<CallToolOutcome>streaming(
+                                                        notifier ->
+                                                                notifier.progress(
+                                                                                1, null, "started")
+                                                                        .then(
+                                                                                Mono
+                                                                                        .<CallToolOutcome>
+                                                                                                never()
+                                                                                        .doOnCancel(
+                                                                                                cancelled
+                                                                                                        ::countDown))))));
+        adapter.setMaxConcurrentCalls(1);
+        adapter.start();
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p1");
+
+        Response response =
+                adapter.handle(
+                        modern(
+                                "tools/call",
+                                Map.of("name", "endless", "arguments", Map.of()),
+                                "endless",
+                                meta));
+        response.getEntity().release();
+
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the tool's stream was not cancelled");
+        assertEquals(
+                "echo:freed",
+                firstText(
+                        result(
+                                call(
+                                        adapter,
+                                        "tools/call",
+                                        Map.of(
+                                                "name",
+                                                "echo",
+                                                "arguments",
+                                                Map.of("text", "freed")),
+                                        "echo"))));
+    }
+
     private McpServerAdapter adapter() {
         McpServerAdapter adapter = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(adapter);
