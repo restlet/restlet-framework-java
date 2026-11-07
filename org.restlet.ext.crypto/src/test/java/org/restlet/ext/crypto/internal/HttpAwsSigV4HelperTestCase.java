@@ -406,6 +406,30 @@ class HttpAwsSigV4HelperTestCase {
         assertEquals("/", HttpAwsSigV4Helper.getCanonicalUri("/..", true));
         assertEquals("/a%2520b/c", HttpAwsSigV4Helper.getCanonicalUri("/a%20b/./x/../c", true));
         assertEquals("/a//b/./c/../d", HttpAwsSigV4Helper.getCanonicalUri("/a//b/./c/../d", false));
+
+        // A final dot segment keeps the trailing slash, as in RFC 3986
+        assertEquals("/a/", HttpAwsSigV4Helper.getCanonicalUri("/a/b/..", true));
+        assertEquals("/a/", HttpAwsSigV4Helper.getCanonicalUri("/a/.", true));
+        assertEquals("/a/", HttpAwsSigV4Helper.getCanonicalUri("/a/./", true));
+        assertEquals("/a/", HttpAwsSigV4Helper.getCanonicalUri("/a/b/../", true));
+    }
+
+    /**
+     * The services other than S3 encode the path as sent once more, so an escape is encoded again
+     * rather than decoded. S3 decodes the path then encodes it once.
+     */
+    @Test
+    void canonicalUriEncodesTheSentPathAgainForOtherServices() {
+        assertEquals("/items/%257E", HttpAwsSigV4Helper.getCanonicalUri("/items/%7E", true));
+        assertEquals("/items/%257e", HttpAwsSigV4Helper.getCanonicalUri("/items/%7e", true));
+        assertEquals("/items/~", HttpAwsSigV4Helper.getCanonicalUri("/items/~", true));
+        // The "get-utf8" and "get-space" cases of the AWS SigV4 test suite
+        assertEquals("/%E1%88%B4", HttpAwsSigV4Helper.getCanonicalUri("/ሴ", true));
+        assertEquals(
+                "/example%20space/", HttpAwsSigV4Helper.getCanonicalUri("/example space/", true));
+
+        assertEquals("/items/~", HttpAwsSigV4Helper.getCanonicalUri("/items/%7E", false));
+        assertEquals("/items/~", HttpAwsSigV4Helper.getCanonicalUri("/items/%7e", false));
     }
 
     /** A relative reference is signed as the client connector resolves it against its base. */
