@@ -14,7 +14,10 @@ import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
+import io.modelcontextprotocol.modern.server.feature.McpChangeBroadcaster;
+import io.modelcontextprotocol.modern.server.feature.McpChangeFeed;
 import io.modelcontextprotocol.server.McpAsyncListFilter;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpStatelessAsyncServer;
@@ -61,6 +64,9 @@ import reactor.core.publisher.Sinks;
 public final class McpServerAdapter extends Restlet {
     private static final McpJsonMapper MAPPER = initMapper();
 
+    /** How long stopping waits for listen streams to end with their result. */
+    private static final Duration LISTEN_DRAIN = Duration.ofSeconds(2);
+
     private static McpJsonMapper initMapper() {
         McpJsonMapper mapper = McpJsonDefaults.getMapper();
         if (mapper instanceof JacksonMcpJsonMapper jacksonMapper) {
@@ -82,7 +88,13 @@ public final class McpServerAdapter extends Restlet {
             new CopyOnWriteArrayList<>();
     private final List<McpInterceptor> interceptors = new CopyOnWriteArrayList<>();
     private final List<McpAsyncTool> modernTools = new CopyOnWriteArrayList<>();
+    private final List<McpModernResource> modernResources = new CopyOnWriteArrayList<>();
+    private final List<McpModernResourceTemplate> modernResourceTemplates =
+            new CopyOnWriteArrayList<>();
+    private final List<McpAsyncPrompt> modernPrompts = new CopyOnWriteArrayList<>();
+    private final McpChangeFeed changes = new McpChangeFeed();
     private byte[] requestStateKey;
+    private int maxListenStreams = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
     private final Set<String> allowedOrigins = ConcurrentHashMap.newKeySet();
     private McpSchema.Implementation serverInfo =
             McpSchema.Implementation.builder("restlet", "3.0").build();
@@ -94,6 +106,7 @@ public final class McpServerAdapter extends Restlet {
     private volatile McpStatelessAsyncServer sdkServer;
     private volatile io.modelcontextprotocol.modern.server.McpServer modernServer;
     private volatile McpModernExchange modernExchange;
+    private volatile McpWorkers listeners;
     private volatile McpWorkers workers;
     private volatile boolean accepting;
     private volatile Sinks.One<Boolean> stopping;
@@ -145,6 +158,70 @@ public final class McpServerAdapter extends Restlet {
      */
     public List<McpAsyncTool> getModernTools() {
         return modernTools;
+    }
+
+    /**
+     * Resources served to MCP {@link McpProtocol#MODERN_VERSION} clients only, whose read may
+     * answer {@code input_required}. The resources of {@link #getResources()} are served to both
+     * revisions; a URI may only be used once across both lists. Experimental.
+     *
+     * @return The modern resources, modifiable until the adapter starts.
+     */
+    public List<McpModernResource> getModernResources() {
+        return modernResources;
+    }
+
+    /**
+     * Resource templates served to MCP {@link McpProtocol#MODERN_VERSION} clients only. The
+     * templates of {@link #getResourceTemplates()} are served to both revisions; a URI template may
+     * only be used once across both lists. Experimental.
+     *
+     * @return The modern resource templates, modifiable until the adapter starts.
+     */
+    public List<McpModernResourceTemplate> getModernResourceTemplates() {
+        return modernResourceTemplates;
+    }
+
+    /**
+     * Prompts served to MCP {@link McpProtocol#MODERN_VERSION} clients only, on the SDK's modern
+     * types. The prompts of {@link #getPrompts()} are served to both revisions; a name may only be
+     * used once across both lists. Experimental.
+     *
+     * @return The modern prompts, modifiable until the adapter starts.
+     */
+    public List<McpAsyncPrompt> getModernPrompts() {
+        return modernPrompts;
+    }
+
+    /**
+     * Publishes changes to the MCP {@link McpProtocol#MODERN_VERSION} clients listening through
+     * {@code subscriptions/listen}: tools, prompts and resources list changes, and resource
+     * updates. A change nobody listens to is dropped. Experimental.
+     *
+     * @return The change broadcaster, usable at any time.
+     */
+    public McpChangeBroadcaster getChanges() {
+        return changes;
+    }
+
+    public synchronized int getMaxListenStreams() {
+        return maxListenStreams;
+    }
+
+    /**
+     * Sets how many {@code subscriptions/listen} streams may be open at once, {@value
+     * McpProtocol#DEFAULT_MAX_LISTEN_STREAMS} by default. Listen streams have no time limit and
+     * don't count against {@link #getMaxConcurrentCalls()}; they end when the adapter stops or the
+     * client goes away, and carry heartbeats.
+     *
+     * @param value The number of streams, positive.
+     */
+    public synchronized void setMaxListenStreams(int value) {
+        requireConfigurable();
+        if (value <= 0) {
+            throw new IllegalArgumentException("maxListenStreams must be positive");
+        }
+        maxListenStreams = value;
     }
 
     /**
@@ -278,6 +355,7 @@ public final class McpServerAdapter extends Restlet {
                         .toolFilters(filters -> filters.addAll(toolFilters))
                         .build();
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
+        listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
         stopping = Sinks.one();
         modernServer = modern;
         modernExchange =
@@ -285,6 +363,7 @@ public final class McpServerAdapter extends Restlet {
                         modernServer,
                         MAPPER,
                         workers,
+                        listeners,
                         requestTimeout,
                         maxMessageBytes,
                         (message, context, terminal) -> invoke(0, message, context, terminal),
@@ -316,7 +395,11 @@ public final class McpServerAdapter extends Restlet {
                                                 List.copyOf(resourceTemplates),
                                                 List.copyOf(prompts),
                                                 List.copyOf(toolFilters),
-                                                List.copyOf(modernTools))));
+                                                List.copyOf(modernTools),
+                                                List.copyOf(modernResources),
+                                                List.copyOf(modernResourceTemplates),
+                                                List.copyOf(modernPrompts))))
+                        .subscriptions(changes);
         var codec =
                 HmacRequestStateCodec.builder()
                         .principalExtractor(McpServerAdapter::principal)
@@ -356,18 +439,26 @@ public final class McpServerAdapter extends Restlet {
             return;
         }
         accepting = false;
+        // Listen streams end with their result first; what remains is then cut short.
+        modernServer.closeGracefully();
+        try {
+            listeners.awaitIdle(
+                    requestTimeout.compareTo(LISTEN_DRAIN) < 0 ? requestTimeout : LISTEN_DRAIN);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+        }
         stopping.tryEmitValue(Boolean.TRUE);
         try {
-            workers.close();
+            try {
+                workers.close();
+            } finally {
+                listeners.close();
+            }
         } finally {
             try {
                 sdkServer.closeGracefully().block(requestTimeout);
             } finally {
-                try {
-                    modernServer.closeGracefully();
-                } finally {
-                    super.stop();
-                }
+                super.stop();
             }
         }
     }

@@ -26,5 +26,8 @@ public final class McpProtocol {
     public static final int DEFAULT_MAX_MESSAGE_BYTES = 1024 * 1024;
     public static final int DEFAULT_MAX_CONCURRENT_CALLS = 128;
 
+    /** The default number of open MCP 2026-07-28 {@code subscriptions/listen} streams. */
+    public static final int DEFAULT_MAX_LISTEN_STREAMS = 64;
+
     private McpProtocol() {}
 }

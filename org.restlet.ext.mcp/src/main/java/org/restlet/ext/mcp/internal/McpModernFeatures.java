@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.mcp.internal;
 
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
@@ -33,6 +34,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import org.restlet.ext.mcp.McpModernResource;
+import org.restlet.ext.mcp.McpModernResourceTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -40,8 +44,8 @@ import reactor.core.publisher.Mono;
  * The features of the MCP {@code 2026-07-28} server, built from the adapter's registrations. The
  * {@code 2025-11-25} specifications are bridged: their definitions and results are converted
  * between the two SDK schemas through JSON, and their handlers receive the same transport context
- * as on the stateless server. Modern tools are served as registered. List filters apply to every
- * listed tool.
+ * as on the stateless server. Modern registrations are served as registered. List filters apply to
+ * every listed tool. A name, URI or URI template may only be registered once across both kinds.
  */
 public final class McpModernFeatures {
 
@@ -56,6 +60,9 @@ public final class McpModernFeatures {
      * @param prompts The {@code 2025-11-25} prompts.
      * @param toolFilters The tool list filters.
      * @param modernTools The {@code 2026-07-28} tools.
+     * @param modernResources The {@code 2026-07-28} resources.
+     * @param modernResourceTemplates The {@code 2026-07-28} resource templates.
+     * @param modernPrompts The {@code 2026-07-28} prompts.
      */
     public record Registrations(
             List<McpStatelessServerFeatures.AsyncToolSpecification> tools,
@@ -63,7 +70,10 @@ public final class McpModernFeatures {
             List<McpStatelessServerFeatures.AsyncResourceTemplateSpecification> resourceTemplates,
             List<McpStatelessServerFeatures.AsyncPromptSpecification> prompts,
             List<McpAsyncListFilter<io.modelcontextprotocol.spec.McpSchema.Tool>> toolFilters,
-            List<McpAsyncTool> modernTools) {}
+            List<McpAsyncTool> modernTools,
+            List<McpModernResource> modernResources,
+            List<McpModernResourceTemplate> modernResourceTemplates,
+            List<McpAsyncPrompt> modernPrompts) {}
 
     /**
      * Builds the features for registrations, one per kind present.
@@ -71,18 +81,21 @@ public final class McpModernFeatures {
      * @param mapper The JSON mapper converting between the two schemas.
      * @param registrations The adapter's registrations.
      * @return The features.
-     * @throws IllegalArgumentException If two tools share a name.
+     * @throws IllegalArgumentException If a name, URI or URI template is registered twice.
      */
     public static List<McpFeature> of(McpJsonMapper mapper, Registrations registrations) {
         List<McpFeature> features = new ArrayList<>();
         if (!registrations.tools().isEmpty() || !registrations.modernTools().isEmpty()) {
             features.add(ToolsFeature.ofAsync(new Tools(mapper, registrations)));
         }
-        if (!registrations.resources().isEmpty() || !registrations.resourceTemplates().isEmpty()) {
+        if (!registrations.resources().isEmpty()
+                || !registrations.resourceTemplates().isEmpty()
+                || !registrations.modernResources().isEmpty()
+                || !registrations.modernResourceTemplates().isEmpty()) {
             features.add(ResourcesFeature.ofAsync(new Resources(mapper, registrations)));
         }
-        if (!registrations.prompts().isEmpty()) {
-            features.add(PromptsFeature.ofAsync(new Prompts(mapper, registrations.prompts())));
+        if (!registrations.prompts().isEmpty() || !registrations.modernPrompts().isEmpty()) {
+            features.add(PromptsFeature.ofAsync(new Prompts(mapper, registrations)));
         }
         return features;
     }
@@ -154,66 +167,70 @@ public final class McpModernFeatures {
         }
     }
 
-    /** The bridged resources: exact URIs first, then templates, in registration order. */
+    /** A URI template with its matcher and read handler. */
+    private record Template(
+            McpSchema.ResourceTemplate definition,
+            DefaultMcpUriTemplateManager matcher,
+            McpAsyncResource resource) {}
+
+    /**
+     * The resources, bridged and modern: exact URIs first, then templates, in registration order.
+     * Subscriptions are supported: the adapter publishes resource updates through its change feed.
+     */
     private static final class Resources implements McpAsyncResourceRepository {
         private final McpJsonMapper mapper;
-        private final List<McpStatelessServerFeatures.AsyncResourceSpecification> exact;
-        private final List<McpStatelessServerFeatures.AsyncResourceTemplateSpecification> templates;
+        private final List<McpSchema.Resource> listed = new ArrayList<>();
+        private final Map<String, McpAsyncResource> byUri = new LinkedHashMap<>();
+        private final List<Template> templates = new ArrayList<>();
 
         private Resources(McpJsonMapper mapper, Registrations registrations) {
             this.mapper = mapper;
-            this.exact = List.copyOf(registrations.resources());
-            this.templates = List.copyOf(registrations.resourceTemplates());
+            for (McpStatelessServerFeatures.AsyncResourceSpecification spec :
+                    registrations.resources()) {
+                add(
+                        mapper.convertValue(spec.resource(), McpSchema.Resource.class),
+                        read(spec.readHandler()));
+            }
+            for (McpModernResource resource : registrations.modernResources()) {
+                add(resource.definition(), resource.resource());
+            }
+            for (McpStatelessServerFeatures.AsyncResourceTemplateSpecification spec :
+                    registrations.resourceTemplates()) {
+                add(
+                        mapper.convertValue(
+                                spec.resourceTemplate(), McpSchema.ResourceTemplate.class),
+                        read(spec.readHandler()));
+            }
+            for (McpModernResourceTemplate template : registrations.modernResourceTemplates()) {
+                add(template.definition(), template.resource());
+            }
         }
 
-        @Override
-        public Mono<ResourcesPage> list(McpRequestContext ctx, String cursor) {
-            return Mono.fromSupplier(
-                    () ->
-                            ResourcesPage.of(
-                                    exact.stream()
-                                            .map(
-                                                    spec ->
-                                                            mapper.convertValue(
-                                                                    spec.resource(),
-                                                                    McpSchema.Resource.class))
-                                            .toList()));
+        private void add(McpSchema.Resource definition, McpAsyncResource resource) {
+            if (byUri.putIfAbsent(definition.uri(), resource) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate MCP resource URI: " + definition.uri());
+            }
+            listed.add(definition);
         }
 
-        @Override
-        public Mono<ResourceTemplatesPage> listTemplates(McpRequestContext ctx, String cursor) {
-            return Mono.fromSupplier(
-                    () ->
-                            ResourceTemplatesPage.of(
-                                    templates.stream()
-                                            .map(
-                                                    spec ->
-                                                            mapper.convertValue(
-                                                                    spec.resourceTemplate(),
-                                                                    McpSchema.ResourceTemplate
-                                                                            .class))
-                                            .toList()));
-        }
-
-        @Override
-        public Mono<McpAsyncResource> find(McpRequestContext ctx, String uri) {
-            for (McpStatelessServerFeatures.AsyncResourceSpecification spec : exact) {
-                if (spec.resource().uri().equals(uri)) {
-                    return Mono.just(read(spec.readHandler()));
+        private void add(McpSchema.ResourceTemplate definition, McpAsyncResource resource) {
+            for (Template template : templates) {
+                if (template.definition().uriTemplate().equals(definition.uriTemplate())) {
+                    throw new IllegalArgumentException(
+                            "Duplicate MCP resource template: " + definition.uriTemplate());
                 }
             }
-            for (McpStatelessServerFeatures.AsyncResourceTemplateSpecification spec : templates) {
-                if (new DefaultMcpUriTemplateManager(spec.resourceTemplate().uriTemplate())
-                        .matches(uri)) {
-                    return Mono.just(read(spec.readHandler()));
-                }
-            }
-            return Mono.empty();
+            templates.add(
+                    new Template(
+                            definition,
+                            new DefaultMcpUriTemplateManager(definition.uriTemplate()),
+                            resource));
         }
 
         private McpAsyncResource read(
-                java.util.function.BiFunction<
-                                io.modelcontextprotocol.common.McpTransportContext,
+                BiFunction<
+                                McpTransportContext,
                                 io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest,
                                 Mono<io.modelcontextprotocol.spec.McpSchema.ReadResourceResult>>
                         handler) {
@@ -235,65 +252,93 @@ public final class McpModernFeatures {
                                                                                     .ReadResourceResult
                                                                                     .class))));
         }
+
+        @Override
+        public Mono<ResourcesPage> list(McpRequestContext ctx, String cursor) {
+            return Mono.just(ResourcesPage.of(List.copyOf(listed)));
+        }
+
+        @Override
+        public Mono<ResourceTemplatesPage> listTemplates(McpRequestContext ctx, String cursor) {
+            return Mono.just(
+                    ResourceTemplatesPage.of(
+                            templates.stream().map(Template::definition).toList()));
+        }
+
+        @Override
+        public Mono<McpAsyncResource> find(McpRequestContext ctx, String uri) {
+            McpAsyncResource exact = byUri.get(uri);
+            if (exact != null) {
+                return Mono.just(exact);
+            }
+            for (Template template : templates) {
+                if (template.matcher().matches(uri)) {
+                    return Mono.just(template.resource());
+                }
+            }
+            return Mono.empty();
+        }
+
+        @Override
+        public boolean supportsSubscribe() {
+            return true;
+        }
     }
 
-    /** The bridged prompts, indexed by name. */
+    /** The prompts, bridged and modern, indexed by name. */
     private static final class Prompts implements McpAsyncPromptRepository {
-        private final McpJsonMapper mapper;
-        private final Map<String, McpStatelessServerFeatures.AsyncPromptSpecification> byName =
-                new LinkedHashMap<>();
+        private final Map<String, McpAsyncPrompt> byName = new LinkedHashMap<>();
 
-        private Prompts(
-                McpJsonMapper mapper,
-                List<McpStatelessServerFeatures.AsyncPromptSpecification> prompts) {
-            this.mapper = mapper;
-            for (McpStatelessServerFeatures.AsyncPromptSpecification spec : prompts) {
-                byName.put(spec.prompt().name(), spec);
+        private Prompts(McpJsonMapper mapper, Registrations registrations) {
+            for (McpStatelessServerFeatures.AsyncPromptSpecification spec :
+                    registrations.prompts()) {
+                add(bridge(mapper, spec));
+            }
+            for (McpAsyncPrompt prompt : registrations.modernPrompts()) {
+                add(prompt);
+            }
+        }
+
+        private static McpAsyncPrompt bridge(
+                McpJsonMapper mapper, McpStatelessServerFeatures.AsyncPromptSpecification spec) {
+            return McpAsyncPrompt.of(
+                    mapper.convertValue(spec.prompt(), McpSchema.Prompt.class),
+                    (ctx, request) ->
+                            spec.promptHandler()
+                                    .apply(
+                                            ctx.transportContext(),
+                                            mapper.convertValue(
+                                                    request,
+                                                    io.modelcontextprotocol.spec.McpSchema
+                                                            .GetPromptRequest.class))
+                                    .map(
+                                            result ->
+                                                    McpAsyncResponse
+                                                            .<McpSchema.GetPromptOutcome>result(
+                                                                    mapper.convertValue(
+                                                                            result,
+                                                                            McpSchema
+                                                                                    .GetPromptResult
+                                                                                    .class))));
+        }
+
+        private void add(McpAsyncPrompt prompt) {
+            if (byName.putIfAbsent(prompt.definition().name(), prompt) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate MCP prompt name: " + prompt.definition().name());
             }
         }
 
         @Override
         public Mono<PromptsPage> list(McpRequestContext ctx, String cursor) {
-            return Mono.fromSupplier(
-                    () ->
-                            PromptsPage.of(
-                                    byName.values().stream()
-                                            .map(
-                                                    spec ->
-                                                            mapper.convertValue(
-                                                                    spec.prompt(),
-                                                                    McpSchema.Prompt.class))
-                                            .toList()));
+            return Mono.just(
+                    PromptsPage.of(
+                            byName.values().stream().map(McpAsyncPrompt::definition).toList()));
         }
 
         @Override
         public Mono<McpAsyncPrompt> find(McpRequestContext ctx, String name) {
-            McpStatelessServerFeatures.AsyncPromptSpecification spec = byName.get(name);
-            if (spec == null) {
-                return Mono.empty();
-            }
-            return Mono.just(
-                    McpAsyncPrompt.of(
-                            mapper.convertValue(spec.prompt(), McpSchema.Prompt.class),
-                            (ctx2, request) ->
-                                    spec.promptHandler()
-                                            .apply(
-                                                    ctx2.transportContext(),
-                                                    mapper.convertValue(
-                                                            request,
-                                                            io.modelcontextprotocol.spec.McpSchema
-                                                                    .GetPromptRequest.class))
-                                            .map(
-                                                    result ->
-                                                            McpAsyncResponse
-                                                                    .<McpSchema.GetPromptOutcome>
-                                                                            result(
-                                                                                    mapper
-                                                                                            .convertValue(
-                                                                                                    result,
-                                                                                                    McpSchema
-                                                                                                            .GetPromptResult
-                                                                                                            .class)))));
+            return Mono.justOrEmpty(byName.get(name));
         }
     }
 }
