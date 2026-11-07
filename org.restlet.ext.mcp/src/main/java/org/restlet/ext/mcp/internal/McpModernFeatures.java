@@ -157,12 +157,12 @@ public final class McpModernFeatures {
     /** The bridged resources: exact URIs first, then templates, in registration order. */
     private static final class Resources implements McpAsyncResourceRepository {
         private final McpJsonMapper mapper;
-        private final List<McpStatelessServerFeatures.AsyncResourceSpecification> resources;
+        private final List<McpStatelessServerFeatures.AsyncResourceSpecification> exact;
         private final List<McpStatelessServerFeatures.AsyncResourceTemplateSpecification> templates;
 
         private Resources(McpJsonMapper mapper, Registrations registrations) {
             this.mapper = mapper;
-            this.resources = List.copyOf(registrations.resources());
+            this.exact = List.copyOf(registrations.resources());
             this.templates = List.copyOf(registrations.resourceTemplates());
         }
 
@@ -171,7 +171,7 @@ public final class McpModernFeatures {
             return Mono.fromSupplier(
                     () ->
                             ResourcesPage.of(
-                                    resources.stream()
+                                    exact.stream()
                                             .map(
                                                     spec ->
                                                             mapper.convertValue(
@@ -197,7 +197,7 @@ public final class McpModernFeatures {
 
         @Override
         public Mono<McpAsyncResource> find(McpRequestContext ctx, String uri) {
-            for (McpStatelessServerFeatures.AsyncResourceSpecification spec : resources) {
+            for (McpStatelessServerFeatures.AsyncResourceSpecification spec : exact) {
                 if (spec.resource().uri().equals(uri)) {
                     return Mono.just(read(spec.readHandler()));
                 }
