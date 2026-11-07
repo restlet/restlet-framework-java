@@ -259,6 +259,12 @@ Changes log
           the match must end on a URI path segment boundary, so a route attached to "/mcp" matches
           "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
           routers or applications under path prefixes on one connector.
+        - Added client-side AWS Signature Version 4 authentication (`ChallengeScheme.HTTP_AWS_SIGV4`,
+          `HttpAwsSigV4Helper` in the Crypto extension), for Amazon S3, the other AWS services and
+          the S3-compatible object stores such as MinIO. The region, the service (`s3` by
+          default), the session token of temporary credentials and an unsigned payload option are
+          given as parameters of the `ChallengeResponse`. The `HTTP_AWS_S3` scheme still uses
+          Signature Version 2, which AWS no longer accepts for buckets created since June 2020.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
