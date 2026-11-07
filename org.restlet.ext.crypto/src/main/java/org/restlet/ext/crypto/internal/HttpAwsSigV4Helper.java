@@ -70,10 +70,10 @@ import org.restlet.util.Series;
  * HeaderConstants#ATTRIBUTE_RAW_REQUEST_HEADERS} attribute, invalidates the signature.
  *
  * <p>The signed path and query are those the client connector sends: a relative reference is
- * resolved against its base. S3 signs the path as is, each segment URI-encoded once. The other
- * services sign it normalized (empty and dot segments removed) and each segment encoded twice.
- * Query parameters are signed sorted and URI-encoded: a {@code +} in the query is a literal plus
- * sign, so encode spaces as {@code %20}.
+ * resolved against its base. S3 signs the path as is, each segment decoded then URI-encoded once.
+ * The other services sign it normalized (empty and dot segments removed) and URI-encoded once more
+ * as sent, so an escape in the path is encoded again. Query parameters are signed sorted and
+ * URI-encoded: a {@code +} in the query is a literal plus sign, so encode spaces as {@code %20}.
  *
  * @see <a
  *     href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-create-signed-request.html">Create
@@ -355,13 +355,18 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
     }
 
     /**
-     * Returns the canonical URI: each path segment decoded then URI-encoded. S3 signs the path as
-     * is, encoded once. The other services sign it normalized (see {@link #normalizePath(String)})
-     * and encoded twice.
+     * Returns the canonical URI.
+     *
+     * <p>S3 decodes the path it receives and encodes it again: each segment is decoded, then
+     * URI-encoded once, and the path is otherwise signed as sent.
+     *
+     * <p>The other services encode the path they receive once more ("double encoding"): the path is
+     * normalized (see {@link #normalizePath(String)}) and each raw segment is URI-encoded as is, so
+     * an escape already in the path is encoded again ({@code %7E} is signed as {@code %257E}) and a
+     * character sent unescaped is encoded once ({@code ~} stays {@code ~}).
      *
      * @param rawPath The raw (encoded) path, or null.
-     * @param doubleEncode True for the services other than S3: normalize the path and URI-encode
-     *     its segments twice.
+     * @param doubleEncode True for the services other than S3.
      * @return The canonical URI.
      */
     static String getCanonicalUri(String rawPath, boolean doubleEncode) {
@@ -375,32 +380,35 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
             if (i > 0) {
                 sb.append('/');
             }
-            String encoded = uriEncode(percentDecode(segments[i]));
-            sb.append(doubleEncode ? uriEncode(encoded) : encoded);
+            sb.append(uriEncode(doubleEncode ? segments[i] : percentDecode(segments[i])));
         }
         return sb.charAt(0) == '/' ? sb.toString() : "/" + sb;
     }
 
     /**
      * Normalizes a path as AWS SigV4 requires for the services other than S3: empty and {@code .}
-     * segments are removed, a {@code ..} segment removes the previous one, and a trailing slash is
-     * kept. For example {@code /a//b/./c/../d} becomes {@code /a/b/d} and {@code //example//}
-     * becomes {@code /example/}.
+     * segments are removed and a {@code ..} segment removes the previous one. The path keeps a
+     * trailing slash when it ends with a slash or with a {@code .} or {@code ..} segment, as in RFC
+     * 3986. For example {@code /a//b/./c/../d} becomes {@code /a/b/d}, {@code //example//} becomes
+     * {@code /example/} and {@code /a/b/..} becomes {@code /a/}.
      *
      * @param rawPath The raw path.
      * @return The normalized path, starting with a slash.
      */
     static String normalizePath(String rawPath) {
         Deque<String> segments = new ArrayDeque<>();
-        for (String segment : rawPath.split("/")) {
+        String[] rawSegments = rawPath.split("/", -1);
+        for (String segment : rawSegments) {
             if (segment.equals("..")) {
                 segments.pollLast();
             } else if (!segment.isEmpty() && !segment.equals(".")) {
                 segments.addLast(segment);
             }
         }
+        String last = rawSegments[rawSegments.length - 1];
+        boolean trailingSlash = last.isEmpty() || last.equals(".") || last.equals("..");
         String result = "/" + String.join("/", segments);
-        return rawPath.endsWith("/") && !result.endsWith("/") ? result + "/" : result;
+        return trailingSlash && !result.endsWith("/") ? result + "/" : result;
     }
 
     /**
