@@ -934,6 +934,24 @@ class McpModernServerTestCase {
         Map<String, Object> last = next(reader);
         assertEquals(1, ((Number) last.get("id")).intValue(), last.toString());
         assertTrue(last.containsKey("result"), last.toString());
+        // Nothing follows the result, such as an error cutting the stream short.
+        assertEquals(
+                null,
+                CompletableFuture.supplyAsync(
+                                () -> {
+                                    try {
+                                        ServerSentEvent event = reader.readEvent();
+                                        while (event != null
+                                                && (event.getData() == null
+                                                        || event.getData().isEmpty())) {
+                                            event = reader.readEvent();
+                                        }
+                                        return event == null ? null : event.getData();
+                                    } catch (java.io.IOException e) {
+                                        throw new IllegalStateException(e);
+                                    }
+                                })
+                        .get(10, TimeUnit.SECONDS));
     }
 
     /** Listen streams beyond the limit are refused, without affecting calls. */
@@ -1166,7 +1184,7 @@ class McpModernServerTestCase {
         Response response = call(adapter, method, params, name);
         while (response.getStatus().getCode() == 503 && System.nanoTime() < deadline) {
             response.getEntity().release();
-            Thread.sleep(10);
+            java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
             response = call(adapter, method, params, name);
         }
         return response;

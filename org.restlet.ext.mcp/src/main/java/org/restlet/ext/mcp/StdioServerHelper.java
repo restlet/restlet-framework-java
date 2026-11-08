@@ -19,9 +19,13 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -32,6 +36,7 @@ import org.restlet.ext.mcp.internal.McpModernExchange;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.routing.Filter;
 
 /**
  * Explicit newline-framed MCP STDIO connector. Every message traverses the Server's configured
@@ -73,6 +78,9 @@ public final class StdioServerHelper extends ServerHelper {
      */
     private McpWorkers modernWorkers;
 
+    /** The pending slots of 2026-07-28 requests, which bound their workers and output. */
+    private Semaphore pending;
+
     private Thread reader;
     private volatile boolean closed;
 
@@ -101,6 +109,7 @@ public final class StdioServerHelper extends ServerHelper {
         stream.start();
         workers = new McpWorkers(McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS, Duration.ofSeconds(30));
         modernWorkers = new McpWorkers(Integer.MAX_VALUE, null, Duration.ofSeconds(30));
+        pending = new Semaphore(pendingLimit());
         reader = Thread.ofVirtual().name("restlet-mcp-stdio-server").start(this::read);
     }
 
@@ -117,6 +126,11 @@ public final class StdioServerHelper extends ServerHelper {
             if (!closed) {
                 fail(new IOException("MCP STDIO input ended"));
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            if (!closed) {
+                fail(e);
+            }
         } catch (IOException | RuntimeException e) {
             if (!closed) {
                 fail(e);
@@ -125,18 +139,33 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /** Builds the request of a frame, in reading order, and hands it to a worker. */
-    private void accept(byte[] bytes) {
+    private void accept(byte[] bytes) throws InterruptedException {
         Map<?, ?> envelope = envelope(bytes);
-        boolean modern = envelope != null && modern(envelope);
-        String method = envelope != null && envelope.get("method") instanceof String m ? m : null;
+        boolean modern = modern(envelope);
+        String method = envelope.get("method") instanceof String m ? m : null;
         // A cancellation of an in-flight 2026-07-28 request, with or without _meta. A request
         // naming this method, or a malformed envelope, goes on to be answered.
-        if (CANCELLED.equals(method)
-                && "2.0".equals(envelope.get("jsonrpc"))
-                && !envelope.containsKey("id")
-                && (cancel(envelope) || modern)) {
+        if (isCancellation(envelope, method) && (cancel(envelope) || modern)) {
             return;
         }
+        Request request = request(bytes, modern);
+        if (modern) {
+            submitModern(request, envelope, method);
+        } else {
+            workers.submit(() -> dispatch(request, null), () -> {})
+                    .subscribe(ignored -> {}, this::fail);
+        }
+    }
+
+    /** Whether a message is a {@code notifications/cancelled} notification. */
+    private static boolean isCancellation(Map<?, ?> envelope, String method) {
+        return CANCELLED.equals(method)
+                && "2.0".equals(envelope.get("jsonrpc"))
+                && !envelope.containsKey("id");
+    }
+
+    /** The request of a frame, with the headers it would have over HTTP. */
+    private static Request request(byte[] bytes, boolean modern) {
         Request request =
                 new Request(
                         Method.POST,
@@ -147,39 +176,52 @@ public final class StdioServerHelper extends ServerHelper {
                         McpProtocol.VERSION_HEADER,
                         modern ? McpProtocol.MODERN_VERSION : McpProtocol.VERSION);
         request.getHeaders().set("Accept", "application/json, text/event-stream");
-        if (!modern) {
-            workers.submit(() -> dispatch(request, null), () -> {})
-                    .subscribe(ignored -> {}, this::fail);
-            return;
-        }
+        return request;
+    }
+
+    /**
+     * Hands a 2026-07-28 request to a worker, once one of the pending slots is free: a client that
+     * stops reading the output stops being read in turn.
+     */
+    private void submitModern(Request request, Map<?, ?> envelope, String method)
+            throws InterruptedException {
         if (method != null) {
             request.getHeaders().set("Mcp-Method", method);
         }
         request.getAttributes().put(McpModernExchange.STDIO_ATTRIBUTE, Boolean.TRUE);
+        if (!awaitPendingSlot()) {
+            return;
+        }
         Object id = envelope.get("id");
         Object key = id == null ? null : key(id);
         if (key != null && inFlight.putIfAbsent(key, request) != null) {
             key = null; // A duplicate id: only the first may be cancelled.
         }
         Object registered = key;
+        AtomicBoolean held = new AtomicBoolean(true);
+        Runnable done =
+                () -> {
+                    if (registered != null) {
+                        inFlight.remove(registered, request);
+                    }
+                    if (held.compareAndSet(true, false)) {
+                        pending.release();
+                    }
+                };
         modernWorkers
                 .submit(
                         () -> {
                             try {
                                 dispatch(request, id);
                             } finally {
-                                if (registered != null) {
-                                    inFlight.remove(registered, request);
-                                }
+                                done.run();
                             }
                         },
                         () -> {})
                 .subscribe(
                         ignored -> {},
                         error -> {
-                            if (registered != null) {
-                                inFlight.remove(registered, request);
-                            }
+                            done.run();
                             if (!closed && !isCancelled(request)) {
                                 // Refused, too large or broken: answered, the connector stays up.
                                 refuse(request, id, error);
@@ -187,15 +229,45 @@ public final class StdioServerHelper extends ServerHelper {
                         });
     }
 
-    /** The JSON object of a frame, or null when it isn't one; the adapter then rejects it. */
+    /**
+     * Waits for a pending slot, until the connector closes.
+     *
+     * @return True once a slot is held, false if the connector closed.
+     */
+    private boolean awaitPendingSlot() throws InterruptedException {
+        while (!pending.tryAcquire(100, TimeUnit.MILLISECONDS)) {
+            if (closed) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * How many 2026-07-28 requests may be pending at once, writing or waiting to write: the open
+     * listen streams the adapter allows, and as many other requests as the default call limit.
+     */
+    private int pendingLimit() {
+        Restlet next = getHelped() == null ? null : getHelped().getNext();
+        while (next instanceof Filter filter) {
+            next = filter.getNext();
+        }
+        int listens =
+                next instanceof McpServerAdapter adapter
+                        ? adapter.getMaxListenStreams()
+                        : McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
+        return listens + McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
+    }
+
+    /** The JSON object of a frame, or an empty map when it isn't one; the adapter rejects it. */
     private Map<?, ?> envelope(byte[] bytes) {
         try {
             return mapper.readValue(McpMessages.utf8(bytes), new TypeRef<Object>() {})
                             instanceof Map<?, ?> map
                     ? map
-                    : null;
+                    : Map.of();
         } catch (IOException | RuntimeException _) {
-            return null;
+            return Map.of();
         }
     }
 
@@ -345,9 +417,7 @@ public final class StdioServerHelper extends ServerHelper {
             return reply;
         }
         Map<?, ?> envelope = envelope(reply);
-        if (envelope == null
-                || envelope.get("id") != null
-                || !(envelope.get("error") instanceof Map<?, ?> error)) {
+        if (envelope.get("id") != null || !(envelope.get("error") instanceof Map<?, ?> error)) {
             return reply;
         }
         Map<String, Object> answered =
@@ -401,29 +471,36 @@ public final class StdioServerHelper extends ServerHelper {
                 length--;
             }
             if (length == 0) {
-                // A cancelled request's stream ends without the error that ends it.
-                if (hasData) {
-                    emit(request, data.toByteArray());
-                }
-                data.reset();
-                hasData = false;
+                endEvent();
                 return;
             }
             String text = new String(bytes, 0, length, StandardCharsets.UTF_8);
             if (text.startsWith("data:")) {
-                String value = text.substring(text.startsWith("data: ") ? 6 : 5);
-                byte[] value8 = value.getBytes(StandardCharsets.UTF_8);
-                int separator = hasData ? 1 : 0;
-                if (data.size() + separator + value8.length
-                        > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES) {
-                    throw new IOException("MCP streamed message exceeds the message size");
-                }
-                if (hasData) {
-                    data.write('\n');
-                }
-                data.writeBytes(value8);
-                hasData = true;
+                addData(text.substring(text.startsWith("data: ") ? 6 : 5));
             }
+        }
+
+        /** Writes the event that ends, if it has data; a cancelled request's is dropped. */
+        private void endEvent() throws IOException {
+            if (hasData) {
+                emit(request, data.toByteArray());
+            }
+            data.reset();
+            hasData = false;
+        }
+
+        /** Adds a data line to the event, joined by a newline, within the message size. */
+        private void addData(String value) throws IOException {
+            byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+            int separator = hasData ? 1 : 0;
+            if (data.size() + separator + bytes.length > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES) {
+                throw new IOException("MCP streamed message exceeds the message size");
+            }
+            if (hasData) {
+                data.write('\n');
+            }
+            data.writeBytes(bytes);
+            hasData = true;
         }
     }
 

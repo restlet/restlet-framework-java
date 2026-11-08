@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 
 /** Finite admission before submission, without a task queue or shared global scheduler. */
 public final class McpWorkers {
@@ -63,53 +64,63 @@ public final class McpWorkers {
     }
 
     public Mono<Void> submit(Operation operation, Runnable cancel) {
-        Mono<Void> call =
-                Mono.<Void>create(
-                        sink -> {
-                            AtomicReference<Thread> worker = new AtomicReference<>();
-                            AtomicBoolean cancelled = new AtomicBoolean();
-                            sink.onCancel(
-                                    () -> {
-                                        cancelled.set(true);
-                                        cancel.run();
-                                        Thread thread = worker.get();
-                                        if (thread != null) {
-                                            thread.interrupt();
-                                        }
-                                    });
-                            synchronized (this) {
-                                if (closed || !admission.tryAcquire()) {
-                                    sink.error(
-                                            new IOException(
-                                                    "MCP transport closed or call limit exceeded"));
-                                    return;
-                                }
-                                executor.execute(
-                                        () -> {
-                                            Thread thread = Thread.currentThread();
-                                            worker.set(thread);
-                                            Exception error = null;
-                                            try {
-                                                if (cancelled.get()) {
-                                                    return;
-                                                }
-                                                operation.run();
-                                            } catch (Exception e) {
-                                                error = e;
-                                            } finally {
-                                                admission.release();
-                                            }
-                                            if (!cancelled.get()) {
-                                                if (error == null) {
-                                                    sink.success();
-                                                } else {
-                                                    sink.error(error);
-                                                }
-                                            }
-                                        });
-                            }
-                        });
+        Mono<Void> call = Mono.<Void>create(sink -> admit(sink, operation, cancel));
         return timeout == null ? call : call.timeout(timeout);
+    }
+
+    /** Admits a call, or refuses it at once; cancelling it interrupts its worker. */
+    private void admit(MonoSink<Void> sink, Operation operation, Runnable cancel) {
+        AtomicReference<Thread> worker = new AtomicReference<>();
+        AtomicBoolean cancelled = new AtomicBoolean();
+        sink.onCancel(
+                () -> {
+                    cancelled.set(true);
+                    cancel.run();
+                    Thread thread = worker.get();
+                    if (thread != null) {
+                        thread.interrupt();
+                    }
+                });
+        synchronized (this) {
+            if (closed || !admission.tryAcquire()) {
+                sink.error(new IOException("MCP transport closed or call limit exceeded"));
+                return;
+            }
+            executor.execute(() -> work(sink, operation, worker, cancelled));
+        }
+    }
+
+    /**
+     * Runs an admitted call and signals its end. The permit is released after the signal, so a
+     * caller of {@link #awaitIdle(Duration)} sees what the call's subscribers did when it ended.
+     */
+    private void work(
+            MonoSink<Void> sink,
+            Operation operation,
+            AtomicReference<Thread> worker,
+            AtomicBoolean cancelled) {
+        worker.set(Thread.currentThread());
+        try {
+            if (cancelled.get()) {
+                return;
+            }
+            Exception error = null;
+            try {
+                operation.run();
+            } catch (Exception e) {
+                error = e;
+            }
+            if (cancelled.get()) {
+                return;
+            }
+            if (error == null) {
+                sink.success();
+            } else {
+                sink.error(error);
+            }
+        } finally {
+            admission.release();
+        }
     }
 
     /**

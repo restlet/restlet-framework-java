@@ -9,6 +9,7 @@
 package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
@@ -311,7 +312,7 @@ class McpModernStdioTestCase {
 
     private Map<String, Object> read() throws Exception {
         String line = lines.poll(10, TimeUnit.SECONDS);
-        assertTrue(line != null, "no server output");
+        assertNotNull(line, "no server output");
         return MAPPER.readValue(line, new TypeRef<Map<String, Object>>() {});
     }
 
