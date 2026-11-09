@@ -14,6 +14,7 @@ import io.modelcontextprotocol.json.TypeRef;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
@@ -265,11 +266,25 @@ public final class StdioServerHelper extends ServerHelper {
                                         .PROTOCOL_VERSION));
     }
 
-    /** A request id comparable across its JSON integer forms, such as 1 and 1.0. */
+    /**
+     * A request id comparable across its JSON number forms, such as 1 and 1.0: a long when the
+     * number is an integer in its range, exactly, else the number itself, normalised.
+     */
     private static Object key(Object id) {
-        return id instanceof Number number && number.doubleValue() == number.longValue()
-                ? (Object) number.longValue()
-                : id;
+        if (!(id instanceof Number number)) {
+            return id;
+        }
+        BigDecimal exact;
+        try {
+            exact = new BigDecimal(number.toString());
+        } catch (NumberFormatException _) {
+            return id; // NaN or infinite: compared as given.
+        }
+        try {
+            return exact.longValueExact();
+        } catch (ArithmeticException _) {
+            return exact.stripTrailingZeros();
+        }
     }
 
     /**

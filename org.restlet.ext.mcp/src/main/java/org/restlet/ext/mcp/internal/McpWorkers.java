@@ -24,7 +24,16 @@ import reactor.core.publisher.MonoSink;
 public final class McpWorkers {
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final Semaphore admission;
-    private final int maxCalls;
+
+    /** Guards {@link #running}, and signals when it drops to zero. */
+    private final Object idle = new Object();
+
+    /**
+     * The calls admitted and not yet done signalling their end. A call frees its admission permit
+     * before it signals, so that a call chained on its end is admitted, but counts here until its
+     * subscribers are done.
+     */
+    private int running;
 
     /** The time limit of each call, or null for none. */
     private final Duration timeout;
@@ -53,7 +62,6 @@ public final class McpWorkers {
             throw new IllegalArgumentException("Positive call limit and timeouts required");
         }
         this.admission = new Semaphore(maxCalls);
-        this.maxCalls = maxCalls;
         this.timeout = timeout == null ? null : Duration.ofNanos(timeout.toNanos());
         this.closeTimeout = Duration.ofNanos(closeTimeout.toNanos());
     }
@@ -86,13 +94,17 @@ public final class McpWorkers {
                 sink.error(new IOException("MCP transport closed or call limit exceeded"));
                 return;
             }
+            synchronized (idle) {
+                running++;
+            }
             executor.execute(() -> work(sink, operation, worker, cancelled));
         }
     }
 
     /**
-     * Runs an admitted call and signals its end. The permit is released after the signal, so a
-     * caller of {@link #awaitIdle(Duration)} sees what the call's subscribers did when it ended.
+     * Runs an admitted call and signals its end. The permit is released before the signal, so a
+     * call its subscribers chain on its end is admitted; the call still counts as running until
+     * they are done, so a caller of {@link #awaitIdle(Duration)} sees what they did.
      */
     private void work(
             MonoSink<Void> sink,
@@ -100,26 +112,32 @@ public final class McpWorkers {
             AtomicReference<Thread> worker,
             AtomicBoolean cancelled) {
         worker.set(Thread.currentThread());
+        Exception error = null;
+        boolean ran = false;
         try {
-            if (cancelled.get()) {
-                return;
-            }
-            Exception error = null;
-            try {
+            if (!cancelled.get()) {
+                ran = true;
                 operation.run();
-            } catch (Exception e) {
-                error = e;
             }
-            if (cancelled.get()) {
-                return;
-            }
-            if (error == null) {
-                sink.success();
-            } else {
-                sink.error(error);
-            }
+        } catch (Exception e) {
+            error = e;
         } finally {
             admission.release();
+        }
+        try {
+            if (ran && !cancelled.get()) {
+                if (error == null) {
+                    sink.success();
+                } else {
+                    sink.error(error);
+                }
+            }
+        } finally {
+            synchronized (idle) {
+                if (--running == 0) {
+                    idle.notifyAll();
+                }
+            }
         }
     }
 
@@ -131,11 +149,17 @@ public final class McpWorkers {
      * @throws InterruptedException If interrupted while waiting.
      */
     public boolean awaitIdle(Duration wait) throws InterruptedException {
-        if (!admission.tryAcquire(maxCalls, wait.toNanos(), TimeUnit.NANOSECONDS)) {
-            return false;
+        long deadline = System.nanoTime() + wait.toNanos();
+        synchronized (idle) {
+            while (running > 0) {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) {
+                    return false;
+                }
+                TimeUnit.NANOSECONDS.timedWait(idle, remaining);
+            }
+            return true;
         }
-        admission.release(maxCalls);
-        return true;
     }
 
     public void close() throws IOException {
