@@ -40,6 +40,30 @@ class McpWorkersTestCase {
         }
     }
 
+    /** A call failing with an Error ends with it, and no longer counts as running. */
+    @Test
+    void aCallFailingWithAnErrorEnds() throws Exception {
+        McpWorkers workers = new McpWorkers(1, Duration.ofSeconds(5));
+        try {
+            RuntimeException blocked =
+                    org.junit.jupiter.api.Assertions.assertThrows(
+                            RuntimeException.class,
+                            () ->
+                                    workers.submit(
+                                                    () -> {
+                                                        throw new AssertionError("broken");
+                                                    },
+                                                    () -> {})
+                                            .block(Duration.ofSeconds(5)));
+            Throwable failure = reactor.core.Exceptions.unwrap(blocked);
+            assertTrue(failure instanceof AssertionError, failure.toString());
+            assertEquals("broken", failure.getMessage());
+            assertTrue(workers.awaitIdle(Duration.ofSeconds(5)));
+        } finally {
+            workers.close();
+        }
+    }
+
     /** A call is running until the subscribers of its end are done. */
     @Test
     void awaitIdleWaitsForTheSubscribersOfTheEnd() throws Exception {

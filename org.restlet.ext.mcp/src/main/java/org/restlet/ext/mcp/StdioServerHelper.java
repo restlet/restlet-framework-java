@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
@@ -274,10 +275,8 @@ public final class StdioServerHelper extends ServerHelper {
         if (!(id instanceof Number number)) {
             return id;
         }
-        BigDecimal exact;
-        try {
-            exact = new BigDecimal(number.toString());
-        } catch (NumberFormatException _) {
+        BigDecimal exact = exact(number);
+        if (exact == null) {
             return id; // NaN or infinite: compared as given.
         }
         try {
@@ -285,6 +284,24 @@ public final class StdioServerHelper extends ServerHelper {
         } catch (ArithmeticException _) {
             return exact.stripTrailingZeros();
         }
+    }
+
+    /**
+     * The exact value of a number: a floating-point one by its binary value, not its shortest
+     * decimal form, which may round an integer such as 1000000000000000128.0.
+     *
+     * @return The value, or null for NaN or an infinity.
+     */
+    private static BigDecimal exact(Number number) {
+        return switch (number) {
+            case BigDecimal decimal -> decimal;
+            case BigInteger integer -> new BigDecimal(integer);
+            case Double _, Float _ ->
+                    Double.isFinite(number.doubleValue())
+                            ? new BigDecimal(number.doubleValue())
+                            : null;
+            default -> BigDecimal.valueOf(number.longValue());
+        };
     }
 
     /**

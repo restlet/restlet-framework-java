@@ -327,6 +327,24 @@ class McpModernStdioTestCase {
         assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the request was not cancelled");
     }
 
+    /** A cancellation naming an integral floating-point id matches its exact value. */
+    @Test
+    void anExactFloatingPointIdCancelsItsRequest() throws Exception {
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p5");
+        Map<String, Object> call =
+                request(0, "tools/call", Map.of("name", "endless", "arguments", Map.of()), meta);
+        call.put("id", 1000000000000000128L);
+        send(call);
+        assertEquals("notifications/progress", read().get("method"));
+
+        sendRaw(
+                "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\","
+                        + "\"params\":{\"requestId\":1000000000000000128.0}}");
+
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the request was not cancelled");
+    }
+
     private static Map<String, Object> request(
             int id, String method, Map<String, Object> params, Map<String, Object> meta) {
         Map<String, Object> withMeta = new LinkedHashMap<>(params);
