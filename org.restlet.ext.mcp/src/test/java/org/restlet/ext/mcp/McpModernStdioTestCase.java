@@ -298,6 +298,35 @@ class McpModernStdioTestCase {
         assertTrue(reply.containsKey("error"), reply.toString());
     }
 
+    /** A cancellation naming an id beyond the long range does not match the largest long. */
+    @Test
+    void anOutOfRangeIdCancelsNothing() throws Exception {
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p4");
+        Map<String, Object> call =
+                request(0, "tools/call", Map.of("name", "endless", "arguments", Map.of()), meta);
+        call.put("id", Long.MAX_VALUE);
+        send(call);
+        assertEquals("notifications/progress", read().get("method"));
+
+        sendRaw(
+                "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\","
+                        + "\"params\":{\"requestId\":9223372036854775808.0}}");
+        send(
+                request(
+                        10,
+                        "tools/call",
+                        Map.of("name", "echo", "arguments", Map.of("text", "still")),
+                        meta()));
+        assertEquals("echo:still", firstText(result(read())));
+        assertEquals(1, cancelled.getCount(), "another request was cancelled");
+
+        sendRaw(
+                "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\","
+                        + "\"params\":{\"requestId\":9223372036854775807}}");
+        assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the request was not cancelled");
+    }
+
     private static Map<String, Object> request(
             int id, String method, Map<String, Object> params, Map<String, Object> meta) {
         Map<String, Object> withMeta = new LinkedHashMap<>(params);
@@ -320,6 +349,11 @@ class McpModernStdioTestCase {
     private void send(Map<String, Object> message) throws IOException {
         toServer.write(
                 (MAPPER.writeValueAsString(message) + "\n").getBytes(StandardCharsets.UTF_8));
+        toServer.flush();
+    }
+
+    private void sendRaw(String line) throws IOException {
+        toServer.write((line + "\n").getBytes(StandardCharsets.UTF_8));
         toServer.flush();
     }
 
