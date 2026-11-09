@@ -10,6 +10,8 @@ package org.restlet.engine.header;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.restlet.data.Range;
 import org.restlet.representation.Representation;
 
@@ -21,6 +23,13 @@ import org.restlet.representation.Representation;
 public class RangeReader {
 
     private static final String BYTES_RANGE_PREFIX = "bytes ";
+
+    /** The range unit and equal sign starting the value of a Range header. */
+    private static final String BYTES_RANGES_PREFIX = "bytes=";
+
+    /** A range-spec, with the optional whitespace allowed around the elements of a list. */
+    private static final Pattern RANGE_SPEC =
+            Pattern.compile("[ \\t]*(?:(\\d+)-(\\d*)|-(\\d+))[ \\t]*");
 
     /**
      * Parse the Content-Range header value and update the given representation.
@@ -51,40 +60,99 @@ public class RangeReader {
     }
 
     /**
-     * Parse the Range header and returns the list of corresponding Range objects.
+     * Parse the Range header and returns the list of corresponding Range objects.<br>
+     * <br>
+     * As allowed by RFC 9110 section 14.2, a header that cannot be served as a range request is
+     * ignored, which returns an empty list and never throws: a range unit other than "bytes"
+     * (matched ignoring case), a syntax error, a number that does not fit in a {@code long}, or an
+     * invalid range-spec (last position lower than the first one, RFC 9110 section 14.1.1). One
+     * invalid range-spec invalidates the whole header. Empty list elements are skipped.<br>
+     * <br>
+     * A valid range-spec that cannot be satisfied (for example "bytes=-0", or a first position past
+     * the end of the entity) is returned, as only the entity tells if it is satisfiable.
      *
      * @param rangeHeader The Range header value.
-     * @return The list of corresponding Range objects.
+     * @return The list of corresponding Range objects, empty if the header must be ignored.
      */
     public static List<Range> read(String rangeHeader) {
         List<Range> result = new ArrayList<>();
-        String prefix = "bytes=";
-        if (rangeHeader != null && rangeHeader.startsWith(prefix)) {
-            rangeHeader = rangeHeader.substring(prefix.length());
 
-            String[] array = rangeHeader.split(",");
-            for (String s : array) {
-                String value = s.trim();
-                long index = 0;
-                long length = 0;
-                if (value.startsWith("-")) {
-                    index = Range.INDEX_LAST;
-                    length = Long.parseLong(value.substring(1));
-                } else if (value.endsWith("-")) {
-                    index = Long.parseLong(value.substring(0, value.length() - 1));
-                    length = Range.SIZE_MAX;
-                } else {
-                    String[] tab = value.split("-");
-                    if (tab.length == 2) {
-                        index = Long.parseLong(tab[0]);
-                        length = Long.parseLong(tab[1]) - index + 1;
-                    }
+        if (rangeHeader != null
+                && rangeHeader.regionMatches(
+                        true, 0, BYTES_RANGES_PREFIX, 0, BYTES_RANGES_PREFIX.length())) {
+            for (String element :
+                    rangeHeader.substring(BYTES_RANGES_PREFIX.length()).split(",", -1)) {
+                if (isOptionalWhitespace(element)) {
+                    // Empty list element, to be ignored (RFC 9110 section 5.6.1.2)
+                    continue;
                 }
-                result.add(new Range(index, length));
+
+                Range range = readRangeSpec(element);
+
+                if (range == null) {
+                    result.clear();
+                    return result;
+                }
+
+                result.add(range);
             }
         }
 
         return result;
+    }
+
+    /**
+     * Parse a range-spec: "first-last", "first-" or "-suffix-length" (RFC 9110 section 14.1.1).
+     *
+     * @param rangeSpec The range-spec, possibly surrounded by optional whitespace.
+     * @return The corresponding range, or null if the range-spec is invalid.
+     */
+    private static Range readRangeSpec(String rangeSpec) {
+        Matcher matcher = RANGE_SPEC.matcher(rangeSpec);
+
+        if (!matcher.matches()) {
+            return null;
+        }
+
+        try {
+            if (matcher.group(3) != null) {
+                return new Range(Range.INDEX_LAST, Long.parseLong(matcher.group(3)));
+            }
+
+            long first = Long.parseLong(matcher.group(1));
+
+            if (matcher.group(2).isEmpty()) {
+                return new Range(first, Range.SIZE_MAX);
+            }
+
+            long last = Long.parseLong(matcher.group(2));
+
+            if (last < first) {
+                return null;
+            }
+
+            try {
+                return new Range(first, Math.addExact(last - first, 1));
+            } catch (ArithmeticException e) {
+                // Only an entity of more than Long.MAX_VALUE bytes could tell the difference with
+                // an open-ended range.
+                return new Range(first, Range.SIZE_MAX);
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static boolean isOptionalWhitespace(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+
+            if (c != ' ' && c != '\t') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
