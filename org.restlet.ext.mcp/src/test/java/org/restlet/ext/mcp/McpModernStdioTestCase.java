@@ -285,6 +285,19 @@ class McpModernStdioTestCase {
         assertTrue(refused.containsKey("error"), refused.toString());
     }
 
+    /** A request whose id is neither a string nor a number is answered with a null id. */
+    @Test
+    void anInvalidIdIsNotEchoed() throws Exception {
+        Map<String, Object> envelope = request(0, "tools/list", Map.of(), meta());
+        envelope.put("id", Map.of("not", "an id"));
+        send(envelope);
+        Map<String, Object> reply = read();
+
+        assertTrue(reply.containsKey("id"), reply.toString());
+        assertEquals(null, reply.get("id"), reply.toString());
+        assertTrue(reply.containsKey("error"), reply.toString());
+    }
+
     private static Map<String, Object> request(
             int id, String method, Map<String, Object> params, Map<String, Object> meta) {
         Map<String, Object> withMeta = new LinkedHashMap<>(params);

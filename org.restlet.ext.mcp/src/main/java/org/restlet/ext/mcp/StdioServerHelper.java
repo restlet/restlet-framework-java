@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import org.restlet.Request;
@@ -126,11 +125,6 @@ public final class StdioServerHelper extends ServerHelper {
             if (!closed) {
                 fail(new IOException("MCP STDIO input ended"));
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            if (!closed) {
-                fail(e);
-            }
         } catch (IOException | RuntimeException e) {
             if (!closed) {
                 fail(e);
@@ -139,7 +133,7 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /** Builds the request of a frame, in reading order, and hands it to a worker. */
-    private void accept(byte[] bytes) throws InterruptedException {
+    private void accept(byte[] bytes) {
         Map<?, ?> envelope = envelope(bytes);
         boolean modern = modern(envelope);
         String method = envelope.get("method") instanceof String m ? m : null;
@@ -180,25 +174,28 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /**
-     * Hands a 2026-07-28 request to a worker, once one of the pending slots is free: a client that
-     * stops reading the output stops being read in turn.
+     * Hands a 2026-07-28 request to a worker if one of the pending slots is free, else refuses it
+     * at once: the reader keeps reading, cancellations included, and a client that stops reading
+     * the output stops being read in turn, when the refusal cannot be written.
      */
-    private void submitModern(Request request, Map<?, ?> envelope, String method)
-            throws InterruptedException {
+    private void submitModern(Request request, Map<?, ?> envelope, String method) {
         if (method != null) {
             request.getHeaders().set("Mcp-Method", method);
         }
         request.getAttributes().put(McpModernExchange.STDIO_ATTRIBUTE, Boolean.TRUE);
-        if (!awaitPendingSlot()) {
+        boolean answered = envelope.containsKey("id");
+        Object id = validId(envelope.get("id"));
+        if (!pending.tryAcquire()) {
+            refuse(request, answered, id, new IOException("Too many pending MCP STDIO requests"));
             return;
         }
-        Object id = envelope.get("id");
         Object key = id == null ? null : key(id);
         if (key != null && inFlight.putIfAbsent(key, request) != null) {
             key = null; // A duplicate id: only the first may be cancelled.
         }
         Object registered = key;
         AtomicBoolean held = new AtomicBoolean(true);
+        // Freed once the response, or the error answering a failure, is written.
         Runnable done =
                 () -> {
                     if (registered != null) {
@@ -209,38 +206,25 @@ public final class StdioServerHelper extends ServerHelper {
                     }
                 };
         modernWorkers
-                .submit(
-                        () -> {
+                .submit(() -> dispatch(request, id), () -> {})
+                .subscribe(
+                        null,
+                        error -> {
                             try {
-                                dispatch(request, id);
+                                if (!closed && !isCancelled(request)) {
+                                    // Refused, too large or broken: answered, the connector stays.
+                                    refuse(request, answered, id, error);
+                                }
                             } finally {
                                 done.run();
                             }
                         },
-                        () -> {})
-                .subscribe(
-                        ignored -> {},
-                        error -> {
-                            done.run();
-                            if (!closed && !isCancelled(request)) {
-                                // Refused, too large or broken: answered, the connector stays up.
-                                refuse(request, id, error);
-                            }
-                        });
+                        done);
     }
 
-    /**
-     * Waits for a pending slot, until the connector closes.
-     *
-     * @return True once a slot is held, false if the connector closed.
-     */
-    private boolean awaitPendingSlot() throws InterruptedException {
-        while (!pending.tryAcquire(100, TimeUnit.MILLISECONDS)) {
-            if (closed) {
-                return false;
-            }
-        }
-        return true;
+    /** A request id as JSON-RPC allows it, a string or a number; else null. */
+    private static Object validId(Object id) {
+        return id instanceof String || id instanceof Number ? id : null;
     }
 
     /**
@@ -326,9 +310,15 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /** Answers a 2026-07-28 request refused, cut short or failed, unless it was cancelled. */
-    private void refuse(Request request, Object id, Throwable cause) {
+    /**
+     * @param request The request.
+     * @param answered Whether it is a request, which gets an answer, rather than a notification.
+     * @param id Its valid id, or null to answer with a null id.
+     * @param cause Why it is refused.
+     */
+    private void refuse(Request request, boolean answered, Object id, Throwable cause) {
         getLogger().log(Level.FINE, "MCP STDIO request refused or failed", cause);
-        if (id == null) {
+        if (!answered) {
             return;
         }
         try {
@@ -516,38 +506,62 @@ public final class StdioServerHelper extends ServerHelper {
         stopped = true;
         closed = true;
         requests.forEach(Request::abort);
-        Exception error = null;
-        try {
-            if (stream != null) {
-                stream.stop();
-            }
-        } catch (IOException e) {
-            error = e;
-        }
+        Exception error =
+                attempt(
+                        null,
+                        () -> {
+                            if (stream != null) {
+                                stream.stop();
+                            }
+                        });
         for (McpWorkers pool : new McpWorkers[] {workers, modernWorkers}) {
-            try {
-                if (pool != null) {
-                    pool.close();
-                }
-            } catch (IOException e) {
-                if (error == null) {
-                    error = e;
-                } else {
-                    error.addSuppressed(e);
-                }
-            }
+            error =
+                    attempt(
+                            error,
+                            () -> {
+                                if (pool != null) {
+                                    pool.close();
+                                }
+                            });
         }
-        if (reader != null && !reader.join(Duration.ofSeconds(30))) {
-            IOException join = new IOException("MCP STDIO server reader shutdown timed out");
-            if (error == null) {
-                error = join;
-            } else {
-                error.addSuppressed(join);
-            }
-        }
+        boolean joined = reader == null || reader.join(Duration.ofSeconds(30));
+        error =
+                attempt(
+                        error,
+                        () -> {
+                            if (!joined) {
+                                throw new IOException("MCP STDIO server reader shutdown timed out");
+                            }
+                        });
         super.stop();
         if (error != null) {
             throw error;
+        }
+    }
+
+    /** A shutdown step. */
+    @FunctionalInterface
+    private interface Step {
+        void run() throws IOException;
+    }
+
+    /**
+     * Runs a shutdown step, keeping the first error and suppressing the next ones in it.
+     *
+     * @param error The error so far, or null.
+     * @param step The step.
+     * @return The error so far, after the step.
+     */
+    private static Exception attempt(Exception error, Step step) {
+        try {
+            step.run();
+            return error;
+        } catch (IOException e) {
+            if (error == null) {
+                return e;
+            }
+            error.addSuppressed(e);
+            return error;
         }
     }
 }
