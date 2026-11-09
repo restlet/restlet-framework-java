@@ -309,8 +309,9 @@ public final class StdioServerHelper extends ServerHelper {
         }
     }
 
-    /** Answers a 2026-07-28 request refused, cut short or failed, unless it was cancelled. */
     /**
+     * Answers a 2026-07-28 request refused, cut short or failed, unless it was cancelled.
+     *
      * @param request The request.
      * @param answered Whether it is a request, which gets an answer, rather than a notification.
      * @param id Its valid id, or null to answer with a null id.
