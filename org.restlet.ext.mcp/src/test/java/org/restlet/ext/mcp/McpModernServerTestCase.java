@@ -1178,8 +1178,7 @@ class McpModernServerTestCase {
      * the handler sees the cancellation.
      */
     private static Response callWhenFree(
-            McpServerAdapter adapter, String method, Map<String, Object> params, String name)
-            throws InterruptedException {
+            McpServerAdapter adapter, String method, Map<String, Object> params, String name) {
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
         Response response = call(adapter, method, params, name);
         while (response.getStatus().getCode() == 503 && System.nanoTime() < deadline) {
