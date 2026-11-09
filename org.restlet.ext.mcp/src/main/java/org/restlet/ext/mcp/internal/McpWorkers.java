@@ -112,19 +112,20 @@ public final class McpWorkers {
             AtomicReference<Thread> worker,
             AtomicBoolean cancelled) {
         worker.set(Thread.currentThread());
-        Exception error = null;
-        boolean ran = false;
+        Throwable error = null;
         try {
-            if (!cancelled.get()) {
-                ran = true;
-                operation.run();
+            boolean ran = false;
+            try {
+                if (!cancelled.get()) {
+                    ran = true;
+                    operation.run();
+                }
+            } catch (Exception | Error e) {
+                // An Error, such as a failed assertion, ends the call too, and is rethrown.
+                error = e;
+            } finally {
+                admission.release();
             }
-        } catch (Exception e) {
-            error = e;
-        } finally {
-            admission.release();
-        }
-        try {
             if (ran && !cancelled.get()) {
                 if (error == null) {
                     sink.success();
@@ -138,6 +139,9 @@ public final class McpWorkers {
                     idle.notifyAll();
                 }
             }
+        }
+        if (error instanceof Error fatal) {
+            throw fatal;
         }
     }
 
