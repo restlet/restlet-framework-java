@@ -10,11 +10,14 @@ package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.restlet.engine.header.TagReader;
 
@@ -70,5 +73,72 @@ class TagTestCase {
         assertEquals("r2d2", tags.get(1).getName());
         assertEquals(Tag.ALL.getName(), tags.get(2).getName());
         assertEquals(3, tags.size());
+    }
+
+    // RFC 9110 section 8.8.3.2: strong and weak comparison of entity tags
+
+    private static final Tag WEAK_1 = new Tag("1", true);
+
+    private static final Tag WEAK_2 = new Tag("2", true);
+
+    private static final Tag STRONG_1 = new Tag("1", false);
+
+    private static final Tag STRONG_2 = new Tag("2", false);
+
+    @Test
+    void strongMatch_followsTheTableOfRfc9110() {
+        assertFalse(WEAK_1.strongMatch(WEAK_1));
+        assertFalse(WEAK_1.strongMatch(WEAK_2));
+        assertFalse(WEAK_1.strongMatch(STRONG_1));
+        assertFalse(STRONG_1.strongMatch(WEAK_1));
+        assertTrue(STRONG_1.strongMatch(new Tag("1", false)));
+        assertFalse(STRONG_1.strongMatch(STRONG_2));
+    }
+
+    @Test
+    void weakMatch_followsTheTableOfRfc9110() {
+        assertTrue(WEAK_1.weakMatch(WEAK_1));
+        assertFalse(WEAK_1.weakMatch(WEAK_2));
+        assertTrue(WEAK_1.weakMatch(STRONG_1));
+        assertTrue(STRONG_1.weakMatch(WEAK_1));
+        assertTrue(STRONG_1.weakMatch(new Tag("1", false)));
+        assertFalse(STRONG_1.weakMatch(STRONG_2));
+    }
+
+    @Test
+    void strongMatchAndWeakMatch_withNull_areFalse() {
+        assertFalse(STRONG_1.strongMatch(null));
+        assertFalse(STRONG_1.weakMatch(null));
+    }
+
+    @Test
+    void equals_comparesTheNameAndTheWeakness() {
+        assertEquals(STRONG_1, new Tag("1", false));
+        assertEquals(WEAK_1, new Tag("1", true));
+        assertNotEquals(WEAK_1, STRONG_1);
+        assertNotEquals(STRONG_1, WEAK_1);
+        assertNotEquals(STRONG_1, STRONG_2);
+        assertNotEquals(STRONG_1, null);
+    }
+
+    @Test
+    void equals_isConsistentWithHashCode() {
+        List<Tag> tags = List.of(WEAK_1, WEAK_2, STRONG_1, STRONG_2, Tag.ALL, new Tag());
+
+        for (Tag a : tags) {
+            for (Tag b : tags) {
+                if (a.equals(b)) {
+                    assertEquals(a.hashCode(), b.hashCode(), a.format() + " / " + b.format());
+                }
+            }
+        }
+    }
+
+    @Test
+    void hashSet_distinguishesWeakAndStrongTags() {
+        Set<Tag> tags = new HashSet<>(List.of(STRONG_1));
+
+        assertTrue(tags.contains(new Tag("1", false)));
+        assertFalse(tags.contains(WEAK_1));
     }
 }
