@@ -8,7 +8,8 @@ Changes log
           Jetty 12. The connector class names are unchanged
           (`org.restlet.engine.connector.HttpServerHelper`, `HttpsServerHelper`,
           `HttpClientHelper`), and the Jetty dependencies are removed. No Netty type is exposed by
-          the public API: the module requires the Netty modules without `requires transitive`.
+          the public API, apart from the `NettyClientTransport` connector SPI: the module requires
+          the Netty modules without `requires transitive`.
         - Server calls run by default on virtual threads, one per call ("threadPool.virtual"
           parameter, `true` by default). Set it to `false` to use a pool of platform threads
           configured by the existing "threadPool.*" parameters.
@@ -291,6 +292,17 @@ Changes log
           default), the session token of temporary credentials and an unsigned payload option are
           given as parameters of the `ChallengeResponse`. The `HTTP_AWS_S3` scheme still uses
           Signature Version 2, which AWS no longer accepts for buckets created since June 2020.
+        - Added the experimental OpenZiti extension (`org.restlet.ext.ziti`, OpenZiti Java SDK
+          0.35.0): `ZitiClientTransport.install(client, zitiContext)` routes the calls of an HTTP
+          client to the origins an OpenZiti identity has a service for, such as
+          `crm.internal:443`, over the Ziti overlay network, without resolving their host name
+          with the system DNS, and the other calls over TCP. TLS, HTTP/1.1 and HTTP/2 run over it
+          as over TCP. Client side only.
+        - Added the `NettyClientTransport` SPI to the Netty client connector, set with the
+          "org.restlet.engine.netty.clientTransport" client context attribute: it can route the
+          connections to some origins through another Netty channel and resolver than TCP, the
+          HTTP and SOCKS proxies being then bypassed. It exposes Netty types and is meant for
+          extensions depending on Netty, such as the OpenZiti one.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
