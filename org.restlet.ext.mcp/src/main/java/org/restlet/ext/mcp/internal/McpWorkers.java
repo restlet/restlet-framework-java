@@ -106,6 +106,8 @@ public final class McpWorkers {
      * call its subscribers chain on its end is admitted; the call still counts as running until
      * they are done, so a caller of {@link #awaitIdle(Duration)} sees what they did.
      */
+    // An Error is caught to end the call and leave the running count, then rethrown.
+    @SuppressWarnings("java:S1181")
     private void work(
             MonoSink<Void> sink,
             Operation operation,
