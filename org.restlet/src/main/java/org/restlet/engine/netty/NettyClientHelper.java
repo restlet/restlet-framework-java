@@ -742,30 +742,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         }
                                     });
 
-            if (route != null) {
-                bootstrap.channelFactory(route.channelFactory()).resolver(route.resolver());
-            } else {
-                bootstrap.channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true);
-                SocketAddress bindAddress = getBindAddress();
-                if (bindAddress != null) {
-                    bootstrap.localAddress(bindAddress);
-                }
-            }
-
-            SocketAddress remote;
-            if (route != null) {
-                // The route's resolver maps the host name, never the system DNS.
-                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
-            } else if ((proxy != null && pool.secure) || (socksProxy != null)) {
-                // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
-                bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
-                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
-            } else if (proxy != null) {
-                // Forward proxy: absolute request URIs are sent to the proxy.
-                remote = proxy;
-            } else {
-                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
-            }
+            SocketAddress remote = configureTransport(bootstrap, pool, route, proxy, socksProxy);
 
             ChannelFuture connectFuture = bootstrap.connect(remote);
             Channel channel =
@@ -796,6 +773,49 @@ public abstract class NettyClientHelper extends ClientHelper {
                 releaseConnection(pool, true);
             }
         }
+    }
+
+    /**
+     * Sets the transport of a connection on its bootstrap: the route's channel and resolver, or NIO
+     * over TCP. Returns the address to connect to.
+     *
+     * @param bootstrap The bootstrap of the connection.
+     * @param pool The pool of the origin.
+     * @param route The transport route of the origin, or null for TCP.
+     * @param proxy The HTTP proxy, or null.
+     * @param socksProxy The SOCKS proxy, or null.
+     * @return The address to connect to.
+     */
+    private SocketAddress configureTransport(
+            Bootstrap bootstrap,
+            OriginPool pool,
+            NettyClientTransport.Route route,
+            InetSocketAddress proxy,
+            InetSocketAddress socksProxy) {
+        if (route != null) {
+            // The route's resolver maps the host name, never the system DNS.
+            bootstrap.channelFactory(route.channelFactory()).resolver(route.resolver());
+            return InetSocketAddress.createUnresolved(pool.host, pool.port);
+        }
+
+        bootstrap.channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true);
+        SocketAddress bindAddress = getBindAddress();
+        if (bindAddress != null) {
+            bootstrap.localAddress(bindAddress);
+        }
+
+        if ((proxy != null && pool.secure) || (socksProxy != null)) {
+            // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
+            bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+            return InetSocketAddress.createUnresolved(pool.host, pool.port);
+        }
+
+        if (proxy != null) {
+            // Forward proxy: absolute request URIs are sent to the proxy.
+            return proxy;
+        }
+
+        return InetSocketAddress.createUnresolved(pool.host, pool.port);
     }
 
     /**

@@ -124,7 +124,7 @@ final class ZitiSocketChannel extends AbstractChannel {
     protected SocketAddress localAddress0() {
         try {
             return socket.getLocalAddress();
-        } catch (IOException e) {
+        } catch (IOException _) {
             return null;
         }
     }
@@ -133,7 +133,7 @@ final class ZitiSocketChannel extends AbstractChannel {
     protected SocketAddress remoteAddress0() {
         try {
             return socket.getRemoteAddress();
-        } catch (IOException e) {
+        } catch (IOException _) {
             return null;
         }
     }
@@ -168,7 +168,7 @@ final class ZitiSocketChannel extends AbstractChannel {
         try {
             eventLoop().execute(task);
             return true;
-        } catch (RejectedExecutionException e) {
+        } catch (RejectedExecutionException _) {
             // The event loop is shutting down, with the channel closed.
             return false;
         }
@@ -193,37 +193,6 @@ final class ZitiSocketChannel extends AbstractChannel {
         }
     }
 
-    /** Fires the bytes of a completed read, on the event loop. */
-    private void readCompleted(ByteBuf buffer, int read) {
-        readPending = false;
-
-        if (read < 0) {
-            buffer.release();
-            pipeline().fireChannelReadComplete();
-            unsafe().close(voidPromise());
-            return;
-        }
-
-        buffer.writerIndex(buffer.writerIndex() + read);
-        pipeline().fireChannelRead(buffer);
-        pipeline().fireChannelReadComplete();
-
-        if (config.isAutoRead()) {
-            read();
-        }
-    }
-
-    /** Reports a failed read, on the event loop. */
-    private void readFailed(ByteBuf buffer, Throwable cause) {
-        readPending = false;
-        buffer.release();
-
-        if (isOpen()) {
-            pipeline().fireExceptionCaught(cause);
-            unsafe().close(voidPromise());
-        }
-    }
-
     /** Completes a read on the event loop. */
     private final class ReadHandler implements CompletionHandler<Integer, Void> {
 
@@ -235,15 +204,46 @@ final class ZitiSocketChannel extends AbstractChannel {
 
         @Override
         public void completed(Integer read, Void attachment) {
-            if (!onEventLoop(() -> readCompleted(buffer, read))) {
+            if (!onEventLoop(() -> readCompleted(read))) {
                 buffer.release();
             }
         }
 
         @Override
         public void failed(Throwable cause, Void attachment) {
-            if (!onEventLoop(() -> readFailed(buffer, cause))) {
+            if (!onEventLoop(() -> readFailed(cause))) {
                 buffer.release();
+            }
+        }
+
+        /** Fires the bytes of a completed read, on the event loop. */
+        private void readCompleted(int read) {
+            readPending = false;
+
+            if (read < 0) {
+                buffer.release();
+                pipeline().fireChannelReadComplete();
+                unsafe().close(voidPromise());
+                return;
+            }
+
+            buffer.writerIndex(buffer.writerIndex() + read);
+            pipeline().fireChannelRead(buffer);
+            pipeline().fireChannelReadComplete();
+
+            if (config.isAutoRead()) {
+                read();
+            }
+        }
+
+        /** Reports a failed read, on the event loop. */
+        private void readFailed(Throwable cause) {
+            readPending = false;
+            buffer.release();
+
+            if (isOpen()) {
+                pipeline().fireExceptionCaught(cause);
+                unsafe().close(voidPromise());
             }
         }
     }
@@ -279,29 +279,6 @@ final class ZitiSocketChannel extends AbstractChannel {
         }
     }
 
-    /** Accounts for a completed write and starts the next one, on the event loop. */
-    private void writeCompleted(int written) {
-        writeInFlight = false;
-        ChannelOutboundBuffer in = unsafe().outboundBuffer();
-
-        if (in != null) {
-            // Moves the reader index of the buffer written and releases it once fully written.
-            in.removeBytes(written);
-            unsafe().flush();
-        }
-    }
-
-    /** Fails the pending writes and closes the channel, on the event loop. */
-    private void writeFailed(Throwable cause) {
-        writeInFlight = false;
-
-        if (isOpen()) {
-            pipeline().fireExceptionCaught(cause);
-        }
-
-        unsafe().close(voidPromise());
-    }
-
     /** Completes a write on the event loop. */
     private final class WriteHandler implements CompletionHandler<Integer, Void> {
 
@@ -323,31 +300,29 @@ final class ZitiSocketChannel extends AbstractChannel {
             buffer.release();
             onEventLoop(() -> writeFailed(cause));
         }
-    }
 
-    /**
-     * Returns the Ziti address to dial for a remote address.
-     *
-     * @param remote An unresolved {@code host:port} or a Ziti address.
-     * @return The Ziti address.
-     */
-    private SocketAddress dialAddress(SocketAddress remote) {
-        if (remote instanceof ZitiAddress) {
-            return remote;
+        /** Accounts for a completed write and starts the next one, on the event loop. */
+        private void writeCompleted(int written) {
+            writeInFlight = false;
+            ChannelOutboundBuffer in = unsafe().outboundBuffer();
+
+            if (in != null) {
+                // Moves the reader index of the buffer written and releases it once fully written.
+                in.removeBytes(written);
+                unsafe().flush();
+            }
         }
 
-        if (remote instanceof InetSocketAddress address) {
-            ServiceDetail service = context.getService(address);
+        /** Fails the pending writes and closes the channel, on the event loop. */
+        private void writeFailed(Throwable cause) {
+            writeInFlight = false;
 
-            if (service != null) {
-                return new ZitiAddress.Dial(service.getName(), null, null, null);
+            if (isOpen()) {
+                pipeline().fireExceptionCaught(cause);
             }
 
-            throw new UnresolvedAddressException();
+            unsafe().close(voidPromise());
         }
-
-        throw new UnsupportedOperationException(
-                "Unsupported address type: " + remote.getClass().getName());
     }
 
     @Override
@@ -357,6 +332,31 @@ final class ZitiSocketChannel extends AbstractChannel {
 
     /** Connects with the SDK's asynchronous connect, completed on the event loop. */
     private final class ZitiUnsafe extends AbstractUnsafe {
+
+        /**
+         * Returns the Ziti address to dial for a remote address.
+         *
+         * @param remote An unresolved {@code host:port} or a Ziti address.
+         * @return The Ziti address.
+         */
+        private SocketAddress dialAddress(SocketAddress remote) {
+            if (remote instanceof ZitiAddress) {
+                return remote;
+            }
+
+            if (remote instanceof InetSocketAddress address) {
+                ServiceDetail service = context.getService(address);
+
+                if (service != null) {
+                    return new ZitiAddress.Dial(service.getName(), null, null, null);
+                }
+
+                throw new UnresolvedAddressException();
+            }
+
+            throw new UnsupportedOperationException(
+                    "Unsupported address type: " + remote.getClass().getName());
+        }
 
         @Override
         public void connect(

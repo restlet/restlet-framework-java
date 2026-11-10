@@ -43,6 +43,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -242,6 +243,8 @@ class ZitiSocketChannelTestCase {
         onEventLoop(channel::read);
 
         assertTrue(channel.closeFuture().await(5, TimeUnit.SECONDS));
+        // Netty fires channelInactive after completing the close future.
+        assertTrue(recorder.inactive.await(5, TimeUnit.SECONDS));
         assertFalse(recorder.active.get());
     }
 
@@ -307,6 +310,8 @@ class ZitiSocketChannelTestCase {
 
         final AtomicBoolean active = new AtomicBoolean();
 
+        final CountDownLatch inactive = new CountDownLatch(1);
+
         final AtomicBoolean allOnEventLoop = new AtomicBoolean(true);
 
         final AtomicBoolean nested = new AtomicBoolean();
@@ -319,10 +324,11 @@ class ZitiSocketChannelTestCase {
             return bytes.toString(StandardCharsets.UTF_8);
         }
 
-        void awaitText(String expected) throws InterruptedException {
+        synchronized void awaitText(String expected) throws InterruptedException {
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-            while (!text().equals(expected) && System.nanoTime() < deadline) {
-                Thread.sleep(10);
+            long left;
+            while (!text().equals(expected) && (left = deadline - System.nanoTime()) > 0) {
+                TimeUnit.NANOSECONDS.timedWait(this, left);
             }
             assertEquals(expected, text());
         }
@@ -335,6 +341,7 @@ class ZitiSocketChannelTestCase {
         @Override
         public void channelInactive(ChannelHandlerContext ctx) {
             active.set(false);
+            inactive.countDown();
         }
 
         @Override
@@ -346,6 +353,7 @@ class ZitiSocketChannelTestCase {
             buffer.release();
             synchronized (this) {
                 bytes.writeBytes(read);
+                notifyAll();
             }
             onRead.accept(read);
             received.complete(null);
