@@ -249,8 +249,8 @@ class McpModernClientTestCase {
         CallToolRequest region =
                 new CallToolRequest("region", Map.of("region", "eu"), null, null, null);
 
-        McpException unlisted =
-                assertThrows(McpException.class, () -> modern.callTool(region).block(WAIT));
+        Mono<CallToolOutcome> unlistedCall = modern.callTool(region);
+        McpException unlisted = assertThrows(McpException.class, () -> unlistedCall.block(WAIT));
         assertEquals(McpSchema.ErrorCodes.HEADER_MISMATCH, unlisted.error().code().intValue());
 
         modern.listTools(null).block(WAIT);
@@ -329,15 +329,11 @@ class McpModernClientTestCase {
     void anErrorResponseFails() throws Exception {
         McpModernClient modern = start("HTTP2", null);
 
-        McpException error =
-                assertThrows(
-                        McpException.class,
-                        () ->
-                                modern.readResource(
-                                                new McpSchema.ReadResourceRequest(
-                                                        "test://missing", null, null, null),
-                                                null)
-                                        .block(WAIT));
+        Mono<McpSchema.ReadResourceOutcome> missing =
+                modern.readResource(
+                        new McpSchema.ReadResourceRequest("test://missing", null, null, null),
+                        null);
+        McpException error = assertThrows(McpException.class, () -> missing.block(WAIT));
         assertEquals(McpSchema.ErrorCodes.INVALID_PARAMS, error.error().code().intValue());
     }
 
