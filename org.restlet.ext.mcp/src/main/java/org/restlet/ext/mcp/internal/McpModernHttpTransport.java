@@ -65,7 +65,6 @@ public final class McpModernHttpTransport {
      * @param mapper The JSON mapper.
      * @param maxMessageBytes The size limit of each message, sent or received.
      * @param maxConcurrentCalls The number of calls in flight at once.
-     * @param maxListenStreams The number of listen streams open at once.
      * @param timeout The time limit of each call, listen streams excepted.
      * @param customizer Adds to each request, such as credentials.
      */
@@ -75,7 +74,6 @@ public final class McpModernHttpTransport {
             McpJsonMapper mapper,
             int maxMessageBytes,
             int maxConcurrentCalls,
-            int maxListenStreams,
             Duration timeout,
             Consumer<Request> customizer) {
         this.client = Objects.requireNonNull(client, "client");
@@ -84,7 +82,7 @@ public final class McpModernHttpTransport {
         this.maxMessageBytes = maxMessageBytes;
         this.customizer = Objects.requireNonNull(customizer, "customizer");
         calls = new McpWorkers(maxConcurrentCalls, timeout);
-        listeners = new McpWorkers(maxListenStreams, null, timeout);
+        listeners = new McpWorkers(McpProtocol.DEFAULT_MAX_LISTEN_STREAMS, null, timeout);
     }
 
     /**

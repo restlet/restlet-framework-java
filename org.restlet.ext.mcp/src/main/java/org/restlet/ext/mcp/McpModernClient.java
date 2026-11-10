@@ -45,6 +45,8 @@ import reactor.core.publisher.Mono;
 public final class McpModernClient {
     private static final Logger LOGGER = Logger.getLogger(McpModernClient.class.getName());
     private static final TypeRef<Map<String, Object>> MAP = new TypeRef<>() {};
+    private static final String META = "_meta";
+    private static final String REQUEST = "request";
 
     private final McpModernHttpTransport transport;
     private final McpJsonMapper mapper;
@@ -119,7 +121,7 @@ public final class McpModernClient {
      */
     public Mono<McpSchema.CallToolOutcome> callTool(
             McpSchema.CallToolRequest request, Consumer<McpSchema.ProgressParams> progress) {
-        Objects.requireNonNull(request, "request");
+        Objects.requireNonNull(request, REQUEST);
         // Worked out when subscribed, from the tools listed by then.
         return Mono.defer(
                 () -> {
@@ -178,7 +180,7 @@ public final class McpModernClient {
      */
     public Mono<McpSchema.ReadResourceOutcome> readResource(
             McpSchema.ReadResourceRequest request, Consumer<McpSchema.ProgressParams> progress) {
-        Objects.requireNonNull(request, "request");
+        Objects.requireNonNull(request, REQUEST);
         return withInput(
                 request.inputResponses(),
                 request.requestState(),
@@ -215,7 +217,7 @@ public final class McpModernClient {
      */
     public Mono<McpSchema.GetPromptOutcome> getPrompt(
             McpSchema.GetPromptRequest request, Consumer<McpSchema.ProgressParams> progress) {
-        Objects.requireNonNull(request, "request");
+        Objects.requireNonNull(request, REQUEST);
         return withInput(
                 request.inputResponses(),
                 request.requestState(),
@@ -353,7 +355,7 @@ public final class McpModernClient {
             Consumer<McpSchema.ProgressParams> progress) {
         // Each subscription sends its own request, with its own id.
         Map<String, Object> params = new LinkedHashMap<>(given);
-        params.put("_meta", new LinkedHashMap<>(meta(given)));
+        params.put(META, new LinkedHashMap<>(meta(given)));
         long id = ids.incrementAndGet();
         Object token = progress == null ? null : "restlet-" + id;
         if (token != null) {
@@ -404,10 +406,10 @@ public final class McpModernClient {
     private Map<String, Object> params(Object request) {
         Map<String, Object> params = new LinkedHashMap<>(mapper.convertValue(request, MAP));
         Map<String, Object> meta = new LinkedHashMap<>();
-        if (params.get("_meta") instanceof Map<?, ?> given) {
+        if (params.get(META) instanceof Map<?, ?> given) {
             given.forEach((key, value) -> meta.put(String.valueOf(key), value));
         }
-        params.put("_meta", meta);
+        params.put(META, meta);
         return params;
     }
 
@@ -424,7 +426,7 @@ public final class McpModernClient {
     @SuppressWarnings("unchecked")
     private static Map<String, Object> meta(Map<String, Object> params) {
         return (Map<String, Object>)
-                params.computeIfAbsent("_meta", ignored -> new LinkedHashMap<String, Object>());
+                params.computeIfAbsent(META, ignored -> new LinkedHashMap<String, Object>());
     }
 
     /**

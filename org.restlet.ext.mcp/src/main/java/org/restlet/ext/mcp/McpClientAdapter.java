@@ -253,7 +253,6 @@ public final class McpClientAdapter implements AutoCloseable {
                                 mapper,
                                 maxMessageBytes,
                                 maxConcurrentCalls,
-                                McpProtocol.DEFAULT_MAX_LISTEN_STREAMS,
                                 requestTimeout,
                                 requestCustomizer),
                         mapper,
