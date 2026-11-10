@@ -12,6 +12,9 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -35,19 +38,26 @@ import org.restlet.representation.EventStreamReader;
 import org.restlet.representation.Representation;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Operators;
 import reactor.core.scheduler.Schedulers;
 
 /**
  * Sends MCP {@code 2026-07-28} requests over a borrowed, started Restlet HTTP connector, one POST
  * each, and streams back what answers them: the notifications the server sends first, then the
  * response. Calls are admitted within the call limit and timeout; listen streams within their own
- * limit, without timeout. Cancelling a request aborts its HTTP exchange, which the server sees as a
- * cancellation. It never retries or reconnects.
+ * limit, without timeout. Messages are read as they are demanded, so a slow subscriber holds back
+ * the server rather than filling memory. Cancelling a request aborts its HTTP exchange, which the
+ * server sees as a cancellation. It never retries or reconnects.
  */
 public final class McpModernHttpTransport {
     private static final String BASE64_PREFIX = "=?base64?";
     private static final String BASE64_SUFFIX = "?=";
+
+    /**
+     * The characters an event may have beyond its message: field names, comments and the other
+     * fields. Each message is limited in bytes on its own.
+     */
+    private static final int MAX_FRAMING_CHARS = 8192;
 
     private final Client client;
     private final String target;
@@ -87,7 +97,8 @@ public final class McpModernHttpTransport {
 
     /**
      * Sends a request, and streams back the messages answering it: notifications, then its
-     * response, after which the stream completes. Cancelling the stream aborts the exchange.
+     * response, after which the stream completes. Responses to other requests are dropped, and the
+     * stream fails if it ends without its response. Cancelling the stream aborts the exchange.
      *
      * @param rpc The request.
      * @param name The value of the {@code Mcp-Name} header, or null.
@@ -100,15 +111,26 @@ public final class McpModernHttpTransport {
         return Flux.<JsonRpc.JSONRPCMessage>create(
                         sink -> {
                             AtomicReference<Request> active = new AtomicReference<>();
+                            Demand demand = new Demand();
+                            sink.onRequest(demand::add);
+                            Emitter emitter =
+                                    message -> {
+                                        demand.take();
+                                        sink.next(message);
+                                    };
                             Disposable running =
                                     (listen ? listeners : calls)
                                             .submit(
-                                                    () -> exchange(rpc, name, params, active, sink),
+                                                    () ->
+                                                            exchange(
+                                                                    rpc, name, params, active,
+                                                                    emitter),
                                                     () -> abort(active.get()))
                                             .subscribe(null, sink::error, sink::complete);
                             sink.onCancel(running);
                         })
-                // What follows runs off the worker, which then frees its slot without waiting.
+                // What follows runs off the worker, which then frees its slot without waiting. The
+                // worker reads only what this bounded queue has room for.
                 .publishOn(Schedulers.boundedElastic());
     }
 
@@ -117,7 +139,7 @@ public final class McpModernHttpTransport {
             String name,
             Map<String, String> params,
             AtomicReference<Request> active,
-            FluxSink<JsonRpc.JSONRPCMessage> sink)
+            Emitter sink)
             throws IOException {
         if (closed) {
             throw new IOException("MCP client is closed");
@@ -137,7 +159,7 @@ public final class McpModernHttpTransport {
             if (type != null && MediaType.TEXT_EVENT_STREAM.isCompatible(type)) {
                 stream(entity, rpc.id(), sink);
             } else if (type != null && MediaType.APPLICATION_JSON.isCompatible(type)) {
-                sink.next(single(entity, response));
+                sink.emit(single(entity, response, rpc.id()));
             } else {
                 throw new IOException(
                         "MCP HTTP failure: " + response.getStatus(),
@@ -178,25 +200,43 @@ public final class McpModernHttpTransport {
     }
 
     /** A JSON reply: the response, success or error, whatever the HTTP status. */
-    private JsonRpc.JSONRPCMessage single(Representation entity, Response response)
+    private JsonRpc.JSONRPCMessage single(Representation entity, Response response, Object id)
             throws IOException {
         byte[] body;
         try (InputStream input = entity.getStream()) {
             body = McpMessages.read(input, maxMessageBytes);
         }
+        JsonRpc.JSONRPCMessage message;
         try {
-            return JsonRpc.deserializeMessage(mapper, McpMessages.utf8(body));
+            message = JsonRpc.deserializeMessage(mapper, McpMessages.utf8(body));
         } catch (IOException | RuntimeException e) {
             throw new IOException("MCP HTTP failure: " + response.getStatus(), e);
         }
+        if (!(message instanceof JsonRpc.JSONRPCResponse reply) || !sameId(reply.id(), id)) {
+            throw new IOException("MCP JSON reply must be the response to its request");
+        }
+        return message;
     }
 
-    /** An event stream: each message as it comes, until the response to the request. */
-    private void stream(Representation entity, Object id, FluxSink<JsonRpc.JSONRPCMessage> sink)
-            throws IOException {
+    /**
+     * An event stream: each message as it comes, until the response to the request. Responses to
+     * other requests are dropped. The stream must be valid UTF-8, and each message within the
+     * message size limit, in bytes.
+     */
+    private void stream(Representation entity, Object id, Emitter sink) throws IOException {
         try (InputStream input = entity.getStream();
-                EventStreamReader reader = new EventStreamReader(input)) {
-            reader.setMaxEventSize(maxMessageBytes);
+                EventStreamReader reader =
+                        new EventStreamReader(
+                                new InputStreamReader(
+                                        input,
+                                        StandardCharsets.UTF_8
+                                                .newDecoder()
+                                                .onMalformedInput(CodingErrorAction.REPORT)
+                                                .onUnmappableCharacter(
+                                                        CodingErrorAction.REPORT)))) {
+            // Characters bound the event as read, its framing included; bytes bound its message.
+            reader.setMaxEventSize(
+                    (int) Math.min(Integer.MAX_VALUE, (long) maxMessageBytes + MAX_FRAMING_CHARS));
             for (ServerSentEvent event = reader.readEvent();
                     event != null;
                     event = reader.readEvent()) {
@@ -204,10 +244,17 @@ public final class McpModernHttpTransport {
                 if (data == null || data.isEmpty()) {
                     continue; // A heartbeat.
                 }
+                if (utf8Length(data) > maxMessageBytes) {
+                    throw new McpMessages.MessageLimitException(
+                            "MCP message exceeds " + maxMessageBytes + " bytes");
+                }
                 JsonRpc.JSONRPCMessage message = JsonRpc.deserializeMessage(mapper, data);
-                sink.next(message);
-                if (message instanceof JsonRpc.JSONRPCResponse response
-                        && sameId(response.id(), id)) {
+                boolean response = message instanceof JsonRpc.JSONRPCResponse;
+                boolean ours = response && sameId(((JsonRpc.JSONRPCResponse) message).id(), id);
+                if (!response || ours) {
+                    sink.emit(message); // Another request's response is dropped.
+                }
+                if (ours) {
                     return;
                 }
             }
@@ -215,18 +262,32 @@ public final class McpModernHttpTransport {
         throw new IOException("MCP event stream ended without a response");
     }
 
+    /** The number of UTF-8 bytes of a well-formed string. */
+    private static long utf8Length(String value) {
+        long bytes = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c < 0x80) {
+                bytes += 1;
+            } else if (c < 0x800 || Character.isSurrogate(c)) {
+                bytes += 2; // Each surrogate: 2 of its supplementary character's 4 bytes.
+            } else {
+                bytes += 3;
+            }
+        }
+        return bytes;
+    }
+
     /**
-     * Whether two JSON-RPC ids are the same, across their JSON integer forms.
+     * Whether two JSON-RPC ids are the same, across their JSON number forms, exactly: 1 and 1.0
+     * are, 1 and 1.5 aren't.
      *
      * @param a An id.
      * @param b Another id.
      * @return True if they are the same.
      */
     public static boolean sameId(Object a, Object b) {
-        if (a instanceof Number x && b instanceof Number y) {
-            return x.longValue() == y.longValue();
-        }
-        return Objects.equals(a, b);
+        return Objects.equals(McpMessages.idKey(a), McpMessages.idKey(b));
     }
 
     /**
@@ -251,6 +312,36 @@ public final class McpModernHttpTransport {
     private static void abort(Request request) {
         if (request != null) {
             request.abort();
+        }
+    }
+
+    /** Hands a message on, once it is demanded. */
+    @FunctionalInterface
+    private interface Emitter {
+        void emit(JsonRpc.JSONRPCMessage message) throws IOException;
+    }
+
+    /** The messages demanded and not handed on yet. Cancelling interrupts a worker waiting. */
+    private static final class Demand {
+        private long requested;
+
+        synchronized void add(long count) {
+            requested = Operators.addCap(requested, count);
+            notifyAll();
+        }
+
+        synchronized void take() throws InterruptedIOException {
+            try {
+                while (requested == 0) {
+                    wait();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException("MCP exchange cancelled");
+            }
+            if (requested != Long.MAX_VALUE) {
+                requested--;
+            }
         }
     }
 

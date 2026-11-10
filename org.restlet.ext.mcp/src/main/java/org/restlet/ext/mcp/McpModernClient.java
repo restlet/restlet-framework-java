@@ -241,9 +241,9 @@ public final class McpModernClient {
     /**
      * Listens to the changes a filter selects: tools, prompts and resources list changes, and the
      * updates of the resources named. The stream emits each change notification as it comes, the
-     * acknowledgement excepted, and completes when the server ends it, such as when it stops.
-     * Cancelling it ends the listen stream. It has no time limit. Notifications a slow subscriber
-     * has not taken yet are buffered; they are small, and a server sends them only on changes.
+     * acknowledgement excepted, and completes when the server ends it with its response, such as
+     * when it stops. Cancelling it ends the listen stream. It has no time limit. A slow subscriber
+     * holds back the stream: only a bounded number of notifications wait for it.
      *
      * @param filter The changes to listen to.
      * @return The change notifications.
