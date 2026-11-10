@@ -9,9 +9,13 @@
 package org.restlet.engine.netty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.sun.net.httpserver.HttpServer;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.quic.Quic;
 import io.netty.resolver.AbstractAddressResolver;
 import io.netty.resolver.AddressResolver;
 import io.netty.resolver.AddressResolverGroup;
@@ -23,6 +27,7 @@ import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +35,8 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -52,6 +59,15 @@ class NettyClientTransportTestCase {
     /** The addresses the route's resolver resolved. */
     private final List<String> resolved = new CopyOnWriteArrayList<>();
 
+    /** The channels the route created, one per routed connection. */
+    private final AtomicInteger routedChannels = new AtomicInteger();
+
+    /** The request targets the peer received. */
+    private final List<String> targets = new CopyOnWriteArrayList<>();
+
+    /** The "Proxy-Authorization" headers the peer received, null when absent. */
+    private final List<String> proxyAuthorizations = new CopyOnWriteArrayList<>();
+
     @BeforeEach
     void start() throws Exception {
         Engine.clearThreadLocalVariables();
@@ -61,6 +77,9 @@ class NettyClientTransportTestCase {
         peer.createContext(
                 "/",
                 exchange -> {
+                    targets.add(exchange.getRequestURI().toString());
+                    proxyAuthorizations.add(
+                            exchange.getRequestHeaders().getFirst("Proxy-Authorization"));
                     byte[] body =
                             exchange.getRequestHeaders()
                                     .getFirst("Host")
@@ -114,7 +133,12 @@ class NettyClientTransportTestCase {
                     }
                 };
         NettyClientTransport.Route route =
-                new NettyClientTransport.Route(NioSocketChannel::new, resolver);
+                new NettyClientTransport.Route(
+                        () -> {
+                            routedChannels.incrementAndGet();
+                            return new NioSocketChannel();
+                        },
+                        resolver);
         return (host, port) -> {
             asked.add(host + ":" + port);
             return ROUTED_HOST.equals(host) ? route : null;
@@ -122,8 +146,12 @@ class NettyClientTransportTestCase {
     }
 
     private void startClient(Context context) throws Exception {
+        startClient(context, Protocol.HTTP);
+    }
+
+    private void startClient(Context context, Protocol protocol) throws Exception {
         context.getAttributes().put(NettyClientTransport.ATTRIBUTE, transport());
-        client = new Client(context, Protocol.HTTP);
+        client = new Client(context, protocol);
         client.start();
     }
 
@@ -151,11 +179,41 @@ class NettyClientTransportTestCase {
             response.getEntity().exhaust();
         }
 
-        assertEquals(1, asked.size(), "The route is asked once per connection");
+        assertEquals(3, asked.size(), "The route is asked for each request");
+        assertEquals(1, routedChannels.get(), "The routed connection is reused");
     }
 
     @Test
     void doesNotUseTheProxyForARoutedOrigin() throws Exception {
+        startClient(contextWithClosedProxy());
+        Request request = new Request(Method.GET, "http://" + ROUTED_HOST + "/c");
+        request.setProxyChallengeResponse(
+                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger"));
+
+        Response response = client.handle(request);
+
+        assertEquals(Status.SUCCESS_OK, response.getStatus(), String.valueOf(response.getStatus()));
+        assertEquals(ROUTED_HOST, response.getEntity().getText());
+        assertEquals(List.of("/c"), targets, "The request target is in origin form");
+        assertNull(proxyAuthorizations.get(0), "The proxy credentials reached the origin");
+    }
+
+    @Test
+    void doesNotUseHttp3ForARoutedOrigin() throws Exception {
+        assumeTrue(Quic.isAvailable(), "The native QUIC library is not available");
+        Context context = new Context();
+        context.getParameters().add("httpClientTransportMode", "HTTP3");
+        startClient(context, Protocol.HTTPS);
+
+        // The peer doesn't speak TLS: the call fails, but over the route, not over QUIC.
+        client.handle(new Request(Method.GET, "https://" + ROUTED_HOST + "/e")).release();
+
+        assertEquals(List.of(ROUTED_HOST + ":443"), resolved);
+        assertFalse(routedChannels.get() == 0, "The route was not used");
+    }
+
+    /** Returns a client context whose HTTP proxy is a closed port. */
+    private static Context contextWithClosedProxy() throws Exception {
         int closedPort;
         try (ServerSocket socket = new ServerSocket(0)) {
             closedPort = socket.getLocalPort();
@@ -163,12 +221,7 @@ class NettyClientTransportTestCase {
         Context context = new Context();
         context.getParameters().add("proxyHost", "127.0.0.1");
         context.getParameters().add("proxyPort", Integer.toString(closedPort));
-        startClient(context);
-
-        Response response = client.handle(new Request(Method.GET, "http://" + ROUTED_HOST + "/c"));
-
-        assertEquals(Status.SUCCESS_OK, response.getStatus(), String.valueOf(response.getStatus()));
-        assertEquals(ROUTED_HOST, response.getEntity().getText());
+        return context;
     }
 
     @Test

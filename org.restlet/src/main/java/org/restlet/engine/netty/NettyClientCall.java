@@ -90,6 +90,9 @@ class NettyClientCall {
     /** Indicates whether the exchange is secured with TLS. */
     private final boolean secure;
 
+    /** The transport route to the origin, or null for TCP and the configured proxies. */
+    private final NettyClientTransport.Route route;
+
     /** The "Proxy-Authorization" header value for the CONNECT request of a tunnel, if any. */
     private volatile String tunnelProxyAuthorization;
 
@@ -209,6 +212,26 @@ class NettyClientCall {
             Reference resourceRef,
             String target,
             boolean secure) {
+        this(helper, method, resourceRef, target, secure, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param helper The parent HTTP client helper.
+     * @param method The method name.
+     * @param resourceRef The absolute target resource reference.
+     * @param target The request target sent on the wire.
+     * @param secure True for HTTPS.
+     * @param route The transport route to the origin, or null for TCP and the proxies.
+     */
+    NettyClientCall(
+            NettyClientHelper helper,
+            String method,
+            Reference resourceRef,
+            String target,
+            boolean secure,
+            NettyClientTransport.Route route) {
         this.helper = helper;
         this.method = method;
         this.target = target;
@@ -217,6 +240,7 @@ class NettyClientCall {
         int defaultPort = secure ? 443 : 80;
         this.targetPort = (port == -1) ? defaultPort : port;
         this.secure = secure;
+        this.route = route;
     }
 
     /**
@@ -241,6 +265,15 @@ class NettyClientCall {
     }
 
     /**
+     * Returns the transport route to the origin, chosen when the exchange was created.
+     *
+     * @return The route, or null for TCP and the configured proxies.
+     */
+    NettyClientTransport.Route getRoute() {
+        return route;
+    }
+
+    /**
      * Returns the "Proxy-Authorization" header value to send with the CONNECT request of a new
      * tunnel, if any.
      *
@@ -259,14 +292,19 @@ class NettyClientCall {
         return tunnelProxyIdentity;
     }
 
-    /** Indicates whether the exchange goes through a CONNECT tunnel of the HTTP proxy. */
+    /**
+     * Indicates whether the exchange goes through a CONNECT tunnel of the HTTP proxy. A routed
+     * exchange never does.
+     */
     private boolean isTunneled() {
-        return secure && (helper.getProxy(true, targetHost) != null);
+        return (route == null) && secure && (helper.getProxy(true, targetHost) != null);
     }
 
-    /** Indicates whether the exchange is sent to an HTTP forward proxy. */
+    /**
+     * Indicates whether the exchange is sent to an HTTP forward proxy. A routed exchange never is.
+     */
     private boolean isForwardProxied() {
-        return !secure && (helper.getProxy(false, targetHost) != null);
+        return (route == null) && !secure && (helper.getProxy(false, targetHost) != null);
     }
 
     /**
@@ -376,7 +414,7 @@ class NettyClientCall {
         if (isTunneled()) {
             moveTunnelProxyAuthorization(request);
         } else if (!isForwardProxied()) {
-            // Direct or SOCKS connection: the proxy credentials must not reach the origin server.
+            // Direct, SOCKS or routed connection: the proxy credentials must not reach the origin.
             requestHeaders.removeAll(HeaderConstants.HEADER_PROXY_AUTHORIZATION, true);
         }
 

@@ -11,6 +11,7 @@ package org.restlet.ext.ziti;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -23,11 +24,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -43,6 +47,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.netty.NettyClientTransport;
 import org.restlet.representation.ByteArrayRepresentation;
 
 /**
@@ -63,6 +68,18 @@ class ZitiClientTransportTestCase {
     /** The number of channels opened through the fake overlay. */
     private final AtomicInteger opened = new AtomicInteger();
 
+    /** Whether the fake context has loaded its services when the transport is created. */
+    private volatile boolean activeAtStart = true;
+
+    /** The number of service lookups made on the fake context. */
+    private final AtomicInteger lookups = new AtomicInteger();
+
+    /** The status listener registered on the fake context. */
+    private volatile Consumer<ZitiContext.Status> statusListener;
+
+    /** The service event listener registered on the fake context. */
+    private volatile Consumer<ZitiContext.ServiceEvent> serviceListener;
+
     private Server server;
 
     private Client client;
@@ -77,7 +94,11 @@ class ZitiClientTransportTestCase {
         }
     }
 
-    /** A Ziti context intercepting crm.internal:8443 and dialing the local server. */
+    /**
+     * A Ziti context intercepting crm.internal:8443 and dialing the local server. Like the SDK's,
+     * its {@code getService(InetSocketAddress)} waits for a service event: here it fails instead.
+     */
+    @SuppressWarnings("unchecked")
     private ZitiContext fakeZiti() {
         return (ZitiContext)
                 Proxy.newProxyInstance(
@@ -85,13 +106,31 @@ class ZitiClientTransportTestCase {
                         new Class<?>[] {ZitiContext.class},
                         (proxy, method, args) ->
                                 switch (method.getName()) {
-                                    case "getService" ->
-                                            (args[0] instanceof InetSocketAddress a
-                                                            && SERVICE_HOST.equals(
-                                                                    a.getHostString())
-                                                            && a.getPort() == SERVICE_PORT)
-                                                    ? new ServiceDetail().name("crm")
-                                                    : null;
+                                    case "getService" -> {
+                                        if (args.length == 1) {
+                                            throw new AssertionError(
+                                                    "Waits for a service event, forever if none");
+                                        }
+                                        lookups.incrementAndGet();
+                                        yield (args[0] instanceof InetSocketAddress a
+                                                        && SERVICE_HOST.equals(a.getHostString())
+                                                        && a.getPort() == SERVICE_PORT)
+                                                ? new ServiceDetail().name("crm")
+                                                : null;
+                                    }
+                                    case "onStatus" -> {
+                                        statusListener = (Consumer<ZitiContext.Status>) args[0];
+                                        if (activeAtStart) {
+                                            statusListener.accept(
+                                                    ZitiContext.Status.Active.INSTANCE);
+                                        }
+                                        yield new CompletableFuture<>();
+                                    }
+                                    case "onServiceEvent" -> {
+                                        serviceListener =
+                                                (Consumer<ZitiContext.ServiceEvent>) args[0];
+                                        yield new CompletableFuture<>();
+                                    }
                                     case "open" -> {
                                         opened.incrementAndGet();
                                         yield new OverlaySocket(
@@ -209,8 +248,48 @@ class ZitiClientTransportTestCase {
         ZitiClientTransport transport = new ZitiClientTransport(fakeZiti());
 
         assertNotNull(transport.route(SERVICE_HOST, SERVICE_PORT));
+        // Without waiting for a service event, which may never come.
         assertNull(transport.route(SERVICE_HOST, 80));
         assertNull(transport.route("example.org", SERVICE_PORT));
+    }
+
+    @Test
+    void cachesTheLookupsUntilAServiceEvent() {
+        ZitiClientTransport transport = new ZitiClientTransport(fakeZiti());
+
+        transport.route("example.org", 443);
+        transport.route("example.org", 443);
+        assertEquals(1, lookups.get(), "The lookup is cached");
+
+        serviceListener.accept(
+                new ZitiContext.ServiceEvent(
+                        new ServiceDetail().name("crm"), ZitiContext.ServiceUpdate.Available));
+        transport.route("example.org", 443);
+        assertEquals(2, lookups.get(), "A service event clears the cache");
+    }
+
+    @Test
+    void waitsForTheServicesUpToTheTimeout() {
+        activeAtStart = false;
+        ZitiClientTransport transport = new ZitiClientTransport(fakeZiti(), Duration.ofMillis(200));
+
+        long start = System.nanoTime();
+        assertNull(transport.route(SERVICE_HOST, SERVICE_PORT), "Not loaded: over TCP");
+        assertTrue(System.nanoTime() - start >= Duration.ofMillis(150).toNanos());
+        assertEquals(0, lookups.get());
+
+        statusListener.accept(ZitiContext.Status.Active.INSTANCE);
+        assertNotNull(transport.route(SERVICE_HOST, SERVICE_PORT), "Loaded: over Ziti");
+    }
+
+    @Test
+    void installsOnAClientWithoutContext() {
+        client = new Client(Protocol.HTTP);
+
+        ZitiClientTransport transport = ZitiClientTransport.install(client, fakeZiti());
+
+        assertSame(
+                transport, client.getContext().getAttributes().get(NettyClientTransport.ATTRIBUTE));
     }
 
     /** TLS runs end to end over the Ziti channel, with the host name of the service verified. */

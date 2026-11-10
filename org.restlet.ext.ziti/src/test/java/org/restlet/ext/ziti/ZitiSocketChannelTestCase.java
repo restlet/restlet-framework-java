@@ -122,12 +122,12 @@ class ZitiSocketChannelTestCase {
     }
 
     @Test
-    void dialsTheServiceInterceptingTheOrigin() throws Exception {
+    void letsTheSdkDialTheServiceInterceptingTheOrigin() throws Exception {
         connect();
 
         assertTrue(channel.isActive());
-        ZitiAddress.Dial dialed = assertInstanceOf(ZitiAddress.Dial.class, socket.dialed);
-        assertEquals("crm", dialed.getService());
+        // The SDK maps it to the service, with the dial data and options of its intercept.
+        assertSame(SERVICE, socket.dialed);
         assertTrue(recorder.active.get());
     }
 
@@ -147,7 +147,7 @@ class ZitiSocketChannelTestCase {
                         .awaitUninterruptibly();
 
         assertInstanceOf(UnresolvedAddressException.class, future.cause());
-        assertEquals(0, socket.connects.get());
+        assertFalse(channel.isActive());
     }
 
     @Test
@@ -279,6 +279,30 @@ class ZitiSocketChannelTestCase {
     }
 
     @Test
+    void resumesOnlyTheFlushedWrites() throws Exception {
+        connect();
+        socket.holdWrites = true;
+
+        ChannelFuture first =
+                channel.writeAndFlush(Unpooled.copiedBuffer("first", StandardCharsets.UTF_8));
+        ChannelFuture second =
+                channel.write(Unpooled.copiedBuffer("second", StandardCharsets.UTF_8));
+        // Both writes reached the event loop: the first is in flight, the second queued.
+        onEventLoop(() -> {});
+        socket.holdWrites = false;
+        socket.completeHeldWrite();
+
+        assertTrue(first.await(5, TimeUnit.SECONDS));
+        onEventLoop(() -> {});
+        assertFalse(second.isDone(), "A write not flushed was sent");
+        assertEquals("first", socket.writtenText());
+
+        channel.flush();
+        assertTrue(second.await(5, TimeUnit.SECONDS));
+        assertEquals("firstsecond", socket.writtenText());
+    }
+
+    @Test
     void reportsAWriteFailure() throws Exception {
         connect();
         socket.writeFailure = new IOException("broken pipe");
@@ -368,7 +392,8 @@ class ZitiSocketChannelTestCase {
     /**
      * A socket of the SDK, scripted by the test. A read completes inside the call with the next
      * buffered result, or stays pending until {@link #completePendingRead(String)}. A write
-     * completes inside the call.
+     * completes inside the call, or when held, at {@link #completeHeldWrite()}. A connect to an
+     * address other than the service's fails as with the SDK.
      */
     private static final class ScriptedSocket extends AsynchronousSocketChannel {
 
@@ -399,6 +424,12 @@ class ZitiSocketChannelTestCase {
 
         private final AtomicInteger writesInFlight = new AtomicInteger();
 
+        /** Whether the next write is held until {@link #completeHeldWrite()}. */
+        volatile boolean holdWrites;
+
+        /** Completes the held write, if any. */
+        private volatile Runnable heldWrite;
+
         final AtomicInteger maxWritesInFlight = new AtomicInteger();
 
         ScriptedSocket() {
@@ -409,6 +440,10 @@ class ZitiSocketChannelTestCase {
         public <A> void connect(
                 SocketAddress remote, A attachment, CompletionHandler<Void, ? super A> handler) {
             connects.incrementAndGet();
+            if (remote instanceof InetSocketAddress address && !SERVICE.equals(address)) {
+                // The SDK finds no service intercepting it.
+                throw new UnresolvedAddressException();
+            }
             dialed = remote;
             if (connectHangs) {
                 return;
@@ -484,8 +519,26 @@ class ZitiSocketChannelTestCase {
             synchronized (written) {
                 written.writeBytes(bytes);
             }
-            writesInFlight.decrementAndGet();
-            handler.completed(bytes.length, attachment);
+            Runnable completion =
+                    () -> {
+                        writesInFlight.decrementAndGet();
+                        handler.completed(bytes.length, attachment);
+                    };
+            if (holdWrites) {
+                heldWrite = completion;
+            } else {
+                completion.run();
+            }
+        }
+
+        void completeHeldWrite() {
+            heldWrite.run();
+        }
+
+        String writtenText() {
+            synchronized (written) {
+                return written.toString(StandardCharsets.UTF_8);
+            }
         }
 
         @Override

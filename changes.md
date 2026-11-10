@@ -292,8 +292,8 @@ Changes log
           as over TCP. Client side only.
         - Added the `NettyClientTransport` SPI to the Netty client connector, set with the
           "org.restlet.engine.netty.clientTransport" client context attribute: it can route the
-          connections to some origins through another Netty channel and resolver than TCP, the
-          HTTP and SOCKS proxies being then bypassed. It exposes Netty types and is meant for
+          requests to some origins through another Netty channel and resolver than TCP, the HTTP
+          and SOCKS proxies and HTTP/3 being then bypassed, and the proxy credentials removed. It exposes Netty types and is meant for
           extensions depending on Netty, such as the OpenZiti one.
     - Bugs fixed
         - The Netty connectors now flush each full output buffer of a request or response body,

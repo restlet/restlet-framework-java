@@ -280,6 +280,9 @@ public abstract class NettyClientHelper extends ClientHelper {
 
         final int port;
 
+        /** The transport route of the connections, or null for TCP and the proxies. */
+        final NettyClientTransport.Route route;
+
         final Deque<Channel> idle = new ConcurrentLinkedDeque<>();
 
         /** The connection permits of the origin, shared by its pools. */
@@ -302,12 +305,14 @@ public abstract class NettyClientHelper extends ClientHelper {
                 boolean secure,
                 String host,
                 int port,
+                NettyClientTransport.Route route,
                 Semaphore permits) {
             this.key = key;
             this.transientPool = transientPool;
             this.secure = secure;
             this.host = host;
             this.port = port;
+            this.route = route;
             this.permits = permits;
         }
     }
@@ -357,9 +362,17 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         boolean secure = "https".equalsIgnoreCase(scheme);
-        boolean forwardProxy = !secure && (getProxy(false, ref.getHostDomain()) != null);
+        // The route is chosen once per exchange: the request target, the proxy credentials and
+        // the connection all follow from it.
+        int port = ref.getHostPort();
+        int defaultPort = secure ? 443 : 80;
+        NettyClientTransport.Route route =
+                getRoute(ref.getHostDomain(), (port == -1) ? defaultPort : port);
+        boolean forwardProxy =
+                (route == null) && !secure && (getProxy(false, ref.getHostDomain()) != null);
         String target = ReferenceUtils.format(request.getResourceRef(), forwardProxy, request);
-        return new NettyClientCall(this, request.getMethod().toString(), ref, target, secure);
+        return new NettyClientCall(
+                this, request.getMethod().toString(), ref, target, secure, route);
     }
 
     @Override
@@ -510,14 +523,18 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @throws IOException If no connection could be established.
      */
     Channel acquire(NettyClientCall call) throws IOException {
+        // A routed origin is reached over its route's channel, never over QUIC.
         if (call.isConfidential()
+                && call.getRoute() == null
                 && getTransportMode() == TransportMode.HTTP3
                 && getProxy(true, call.getTargetHost()) == null
                 && getSocksProxy(call.getTargetHost()) == null) {
             return acquireHttp3(call);
         }
 
-        // Tunnels opened with different proxy credentials are kept apart.
+        // Tunnels opened with different proxy credentials are kept apart, and so are the routed
+        // connections from the TCP ones, should the route of an origin change.
+        NettyClientTransport.Route route = call.getRoute();
         String origin =
                 (call.isConfidential() ? "https://" : "http://")
                         + call.getTargetHost()
@@ -526,7 +543,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         String proxyIdentity = call.getTunnelProxyIdentity();
         OriginPool pool =
                 pools.computeIfAbsent(
-                        (proxyIdentity == null) ? origin : origin + "#" + proxyIdentity,
+                        poolKey(origin, proxyIdentity, route),
                         k ->
                                 new OriginPool(
                                         k,
@@ -534,6 +551,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         call.isConfidential(),
                                         call.getTargetHost(),
                                         call.getTargetPort(),
+                                        route,
                                         getPermits(origin)));
 
         Channel http2 = pool.http2;
@@ -715,7 +733,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
             // A transport route (e.g. an overlay network) replaces TCP and the proxies.
-            final NettyClientTransport.Route route = getRoute(pool);
+            final NettyClientTransport.Route route = pool.route;
             final InetSocketAddress proxy =
                     (route == null) ? resolve(getProxy(pool.secure, pool.host)) : null;
             final InetSocketAddress socksProxy =
@@ -861,15 +879,30 @@ public abstract class NettyClientHelper extends ClientHelper {
      * {@value NettyClientTransport#ATTRIBUTE} attribute of the client context, or null to connect
      * over TCP.
      *
-     * @param pool The connection pool of the origin.
+     * @param host The host name of the origin.
+     * @param port The port of the origin.
      * @return The route, or null.
      */
-    private NettyClientTransport.Route getRoute(OriginPool pool) {
+    private NettyClientTransport.Route getRoute(String host, int port) {
         Object transport =
                 (getContext() == null)
                         ? null
                         : getContext().getAttributes().get(NettyClientTransport.ATTRIBUTE);
-        return (transport instanceof NettyClientTransport t) ? t.route(pool.host, pool.port) : null;
+        return (transport instanceof NettyClientTransport t) ? t.route(host, port) : null;
+    }
+
+    /**
+     * Returns the key of the connection pool of an origin.
+     *
+     * @param origin The origin.
+     * @param proxyIdentity The identity of the tunnel proxy credentials, or null.
+     * @param route The transport route, or null.
+     * @return The key.
+     */
+    private static String poolKey(
+            String origin, String proxyIdentity, NettyClientTransport.Route route) {
+        String key = (proxyIdentity == null) ? origin : origin + "#" + proxyIdentity;
+        return (route == null) ? key : key + "#route@" + System.identityHashCode(route);
     }
 
     /**
