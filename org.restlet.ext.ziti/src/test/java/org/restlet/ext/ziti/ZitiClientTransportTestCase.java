@@ -9,6 +9,7 @@
 package org.restlet.ext.ziti;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -207,7 +208,7 @@ class ZitiClientTransportTestCase {
     void routesOnlyInterceptedOrigins() {
         ZitiClientTransport transport = new ZitiClientTransport(fakeZiti());
 
-        assertTrue(transport.route(SERVICE_HOST, SERVICE_PORT) != null);
+        assertNotNull(transport.route(SERVICE_HOST, SERVICE_PORT));
         assertNull(transport.route(SERVICE_HOST, 80));
         assertNull(transport.route("example.org", SERVICE_PORT));
     }

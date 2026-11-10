@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +28,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -89,11 +94,9 @@ class ZitiNetworkTestCase {
 
         // A context learns its services asynchronously after authenticating: binding before the
         // server identity has loaded the service is refused as "no permission to bind".
-        long bindDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
-        while (serverZiti.getService(SERVICE) == null) {
-            assertTrue(System.nanoTime() < bindDeadline, "The server never saw the crm service");
-            Thread.sleep(250);
-        }
+        awaitUntil(
+                () -> serverZiti.getService(SERVICE) != null,
+                "The server never saw the crm service");
 
         // Host the service: accept the Ziti connections and pipe them to the local server.
         binding = serverZiti.openServer();
@@ -101,20 +104,53 @@ class ZitiNetworkTestCase {
         bridge = Executors.newVirtualThreadPerTaskExecutor();
         bridge.submit(ZitiNetworkTestCase::acceptLoop);
 
-        // The client learns its services asynchronously after authenticating.
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
-        while (clientZiti.getService(InetSocketAddress.createUnresolved(HOST, 8443)) == null) {
-            assertTrue(System.nanoTime() < deadline, "The client never saw the crm service");
-            Thread.sleep(250);
-        }
+        // The client learns its services asynchronously after authenticating, and the bind
+        // registers a terminator asynchronously: dialing before gives "no terminators".
+        awaitReachable(InetSocketAddress.createUnresolved(HOST, 8443));
+    }
 
-        // The bind registers a terminator asynchronously: dialing before gives "no terminators".
-        while (clientZiti
-                .getServiceTerminators(
-                        clientZiti.getService(InetSocketAddress.createUnresolved(HOST, 8443)))
-                .isEmpty()) {
-            assertTrue(System.nanoTime() < deadline, "The crm service never got a terminator");
-            Thread.sleep(250);
+    /**
+     * Waits until the client sees a service intercepting an address, with a terminator.
+     *
+     * @param address The intercepted address.
+     */
+    private static void awaitReachable(InetSocketAddress address) throws Exception {
+        awaitUntil(
+                () ->
+                        clientZiti.getService(address) != null
+                                && !clientZiti
+                                        .getServiceTerminators(clientZiti.getService(address))
+                                        .isEmpty(),
+                "The service of " + address + " is not reachable");
+    }
+
+    /**
+     * Waits up to a minute for a condition on the network, checked every 250 ms.
+     *
+     * @param condition The condition.
+     * @param message The failure message.
+     */
+    private static void awaitUntil(BooleanSupplier condition, String message) throws Exception {
+        CompletableFuture<Void> met = new CompletableFuture<>();
+        try (ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor()) {
+            poller.scheduleWithFixedDelay(
+                    () -> {
+                        try {
+                            if (condition.getAsBoolean()) {
+                                met.complete(null);
+                            }
+                        } catch (RuntimeException e) {
+                            met.completeExceptionally(e);
+                        }
+                    },
+                    0,
+                    250,
+                    TimeUnit.MILLISECONDS);
+            met.get(60, TimeUnit.SECONDS);
+        } catch (TimeoutException _) {
+            fail(message);
+        } finally {
+            met.cancel(false);
         }
     }
 
@@ -171,7 +207,7 @@ class ZitiNetworkTestCase {
                     buffer.clear();
                 }
                 to.shutdownOutput();
-            } catch (Exception e) {
+            } catch (Exception _) {
                 // The other side closed: the pipe ends.
             }
             return null;
@@ -301,12 +337,7 @@ class ZitiNetworkTestCase {
     @EnabledIfSystemProperty(named = "ziti.router.port", matches = "\\d+")
     void callsConcurrentlyARouterHostedService() throws Exception {
         InetSocketAddress service = InetSocketAddress.createUnresolved("crm2.internal", 8443);
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
-        while (clientZiti.getService(service) == null
-                || clientZiti.getServiceTerminators(clientZiti.getService(service)).isEmpty()) {
-            assertTrue(System.nanoTime() < deadline, "The crm2 service is not reachable");
-            Thread.sleep(250);
-        }
+        awaitReachable(service);
 
         Server routerTarget =
                 new Server(
