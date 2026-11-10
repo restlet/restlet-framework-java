@@ -9,7 +9,7 @@
 package org.restlet.engine.netty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -209,7 +209,7 @@ class NettyClientTransportTestCase {
         client.handle(new Request(Method.GET, "https://" + ROUTED_HOST + "/e")).release();
 
         assertEquals(List.of(ROUTED_HOST + ":443"), resolved);
-        assertFalse(routedChannels.get() == 0, "The route was not used");
+        assertNotEquals(0, routedChannels.get(), "The route was not used");
     }
 
     /** Returns a client context whose HTTP proxy is a closed port. */

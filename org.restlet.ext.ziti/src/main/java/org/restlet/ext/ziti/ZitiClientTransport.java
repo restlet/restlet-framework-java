@@ -180,8 +180,10 @@ public class ZitiClientTransport implements NettyClientTransport {
 
         LOGGER.log(
                 Level.WARNING,
-                "The Ziti context {0} has not loaded its services: connecting over TCP",
-                context.name());
+                () ->
+                        "The Ziti context "
+                                + context.name()
+                                + " has not loaded its services: connecting over TCP");
         return false;
     }
 
@@ -195,15 +197,20 @@ public class ZitiClientTransport implements NettyClientTransport {
      * @return True if a service intercepts it.
      */
     private boolean isIntercepted(String host, int port) {
+        // Looks the loaded services up, then times out at once. Kotlin doesn't declare the
+        // TimeoutException thrown when no service intercepts it: the lookup declares it.
+        ServiceLookup lookup =
+                () -> context.getService(InetSocketAddress.createUnresolved(host, port), 0L);
         try {
-            // Looks the loaded services up, then times out at once.
-            return context.getService(InetSocketAddress.createUnresolved(host, port), 0L) != null;
-        } catch (Exception e) {
-            // Kotlin doesn't declare the TimeoutException thrown when no service intercepts it.
-            if (e instanceof TimeoutException) {
-                return false;
-            }
-            throw e;
+            return lookup.get() != null;
+        } catch (TimeoutException _) {
+            return false;
         }
+    }
+
+    /** A service lookup declaring the TimeoutException that the SDK throws undeclared. */
+    @FunctionalInterface
+    private interface ServiceLookup {
+        Object get() throws TimeoutException;
     }
 }
