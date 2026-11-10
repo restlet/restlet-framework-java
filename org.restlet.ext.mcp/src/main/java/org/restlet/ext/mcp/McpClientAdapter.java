@@ -10,9 +10,13 @@ package org.restlet.ext.mcp;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.json.McpJsonDefaults;
+import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +25,22 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.restlet.Client;
 import org.restlet.Request;
+import org.restlet.ext.mcp.internal.McpModernHttpTransport;
 import org.restlet.ext.mcp.internal.StdioMcpClientTransport;
 import reactor.core.publisher.Mono;
 
-/** Lifecycle facade over the native SDK. Borrowed Restlet connectors are never stopped. */
+/**
+ * Lifecycle facade over the native SDK. Borrowed Restlet connectors are never stopped.
+ *
+ * <p>By default it speaks MCP {@link McpProtocol#VERSION} through the SDK's client, {@link
+ * #getSdkClient()}. With {@link #setProtocolVersion(String)} set to {@link
+ * McpProtocol#MODERN_VERSION}, it speaks {@code 2026-07-28} over HTTP instead, experimentally:
+ * {@link #start()} discovers the server, and {@link #getModernClient()} makes the requests.
+ */
 public final class McpClientAdapter implements AutoCloseable {
+    /** The default number of {@code input_required} rounds answered for one request. */
+    public static final int DEFAULT_MAX_INPUT_ROUNDS = 8;
+
     private final Client client;
     private final String target;
     private final org.restlet.util.StreamTransport stream;
@@ -33,6 +48,12 @@ public final class McpClientAdapter implements AutoCloseable {
     private int maxMessageBytes = McpProtocol.DEFAULT_MAX_MESSAGE_BYTES;
     private int maxConcurrentCalls = McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
     private Consumer<Request> requestCustomizer = request -> {};
+    private String protocolVersion = McpProtocol.VERSION;
+    private io.modelcontextprotocol.modern.McpSchema.ClientCapabilities modernCapabilities =
+            io.modelcontextprotocol.modern.McpSchema.ClientCapabilities.NONE;
+    private McpInputHandler inputHandler;
+    private int maxInputRounds = DEFAULT_MAX_INPUT_ROUNDS;
+    private McpModernClient modern;
     private McpAsyncClient sdk;
     private McpClientTransport transport;
     private boolean started;
@@ -102,12 +123,85 @@ public final class McpClientAdapter implements AutoCloseable {
         return requestCustomizer;
     }
 
+    /**
+     * Sets the MCP revision spoken: {@link McpProtocol#VERSION}, the default, through the SDK's
+     * client, or {@link McpProtocol#MODERN_VERSION} through {@link #getModernClient()}, over HTTP
+     * only for now. Experimental for {@code 2026-07-28}.
+     *
+     * @param value The revision.
+     */
+    public synchronized void setProtocolVersion(String value) {
+        requireConfigurable();
+        if (!McpProtocol.VERSION.equals(value) && !McpProtocol.MODERN_VERSION.equals(value)) {
+            throw new IllegalArgumentException("Unsupported MCP revision: " + value);
+        }
+        protocolVersion = value;
+    }
+
+    public synchronized String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    /**
+     * Sets the client capabilities sent with each {@link McpProtocol#MODERN_VERSION} request, none
+     * by default. A server asks only for the input they declare, such as elicitation.
+     *
+     * @param value The capabilities.
+     */
+    public synchronized void setModernCapabilities(
+            io.modelcontextprotocol.modern.McpSchema.ClientCapabilities value) {
+        requireConfigurable();
+        modernCapabilities = Objects.requireNonNull(value, "value");
+    }
+
+    public synchronized io.modelcontextprotocol.modern.McpSchema.ClientCapabilities
+            getModernCapabilities() {
+        return modernCapabilities;
+    }
+
+    /**
+     * Sets what answers the {@code input_required} results of {@link McpProtocol#MODERN_VERSION}
+     * requests, after which the request is retried; without one, the result is returned.
+     *
+     * @param value The handler, or null for none.
+     */
+    public synchronized void setInputHandler(McpInputHandler value) {
+        requireConfigurable();
+        inputHandler = value;
+    }
+
+    public synchronized McpInputHandler getInputHandler() {
+        return inputHandler;
+    }
+
+    /**
+     * Sets how many {@code input_required} results the input handler answers for one request,
+     * {@value #DEFAULT_MAX_INPUT_ROUNDS} by default; the next one is returned.
+     *
+     * @param value The number of rounds, zero or more.
+     */
+    public synchronized void setMaxInputRounds(int value) {
+        requireConfigurable();
+        if (value < 0) {
+            throw new IllegalArgumentException("Input rounds must not be negative");
+        }
+        maxInputRounds = value;
+    }
+
+    public synchronized int getMaxInputRounds() {
+        return maxInputRounds;
+    }
+
     public synchronized void start() {
         if (started) {
             return;
         }
         requireConfigurable();
         configured = true;
+        if (McpProtocol.MODERN_VERSION.equals(protocolVersion)) {
+            startModern();
+            return;
+        }
         transport = createTransport();
         try {
             sdk =
@@ -132,6 +226,70 @@ public final class McpClientAdapter implements AutoCloseable {
             }
             throw e;
         }
+    }
+
+    /** Starts a {@code 2026-07-28} client, and discovers the server's support of it. */
+    private void startModern() {
+        if (stream != null || target.startsWith("stdio:")) {
+            throw new UnsupportedOperationException(
+                    "The MCP 2026-07-28 client supports HTTP only for now");
+        }
+        if (!client.isStarted()
+                || client.getContext() == null
+                || !"false"
+                        .equalsIgnoreCase(
+                                client.getContext()
+                                        .getParameters()
+                                        .getFirstValue("followRedirects", "true"))) {
+            throw new IllegalStateException(
+                    "Borrowed MCP client must be started with followRedirects=false");
+        }
+        McpJsonMapper mapper = McpJsonDefaults.getMapper();
+        McpModernClient candidate =
+                new McpModernClient(
+                        new McpModernHttpTransport(
+                                client,
+                                target,
+                                mapper,
+                                maxMessageBytes,
+                                maxConcurrentCalls,
+                                McpProtocol.DEFAULT_MAX_LISTEN_STREAMS,
+                                requestTimeout,
+                                requestCustomizer),
+                        mapper,
+                        modernCapabilities,
+                        inputHandler,
+                        maxInputRounds);
+        try {
+            io.modelcontextprotocol.modern.McpSchema.DiscoverResult discovered =
+                    candidate.discover().block(requestTimeout);
+            if (discovered == null
+                    || discovered.supportedVersions() == null
+                    || !discovered.supportedVersions().contains(McpProtocol.MODERN_VERSION)) {
+                throw new IllegalStateException("Peer does not support MCP 2026-07-28");
+            }
+        } catch (RuntimeException e) {
+            try {
+                candidate.close();
+            } catch (IOException cleanup) {
+                e.addSuppressed(cleanup);
+            }
+            throw e;
+        }
+        modern = candidate;
+        started = true;
+    }
+
+    /**
+     * The {@link McpProtocol#MODERN_VERSION} client, when that is the revision set.
+     *
+     * @return The client.
+     */
+    public synchronized McpModernClient getModernClient() {
+        if (!started || modern == null) {
+            throw new IllegalStateException("MCP 2026-07-28 client is not started");
+        }
+        return modern;
     }
 
     private McpClientTransport createTransport() {
@@ -163,6 +321,10 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /** Exposes native MCP operations, errors and call options without a parallel invocation API. */
     public synchronized McpAsyncClient getSdkClient() {
+        if (modern != null) {
+            throw new IllegalStateException(
+                    "This MCP client speaks 2026-07-28: use getModernClient()");
+        }
         if (!started) {
             throw new IllegalStateException("MCP client is not started");
         }
@@ -184,6 +346,16 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     public synchronized void stop() {
+        if (modern != null) {
+            started = false;
+            try {
+                modern.close();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            } finally {
+                modern = null;
+            }
+        }
         if (sdk != null) {
             started = false;
             sdk.closeGracefully().block(requestTimeout);

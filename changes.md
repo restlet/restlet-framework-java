@@ -111,8 +111,16 @@ Changes log
           `setMaxListenStreams()`, no time limit, and end when the adapter stops or the client
           goes away. Over stdio, a message whose `_meta` names 2026-07-28 goes to the modern
           server: streamed messages are written as separate lines as they come, and
-          `notifications/cancelled` ends the request it names without a response. Not yet
-          supported for 2026-07-28: the MCP client. The SDK's modern API is a preview.
+          `notifications/cancelled` ends the request it names without a response.
+          `McpClientAdapter.setProtocolVersion(McpProtocol.MODERN_VERSION)` makes the client
+          speak 2026-07-28 over HTTP: `start()` runs `server/discover`, and
+          `getModernClient()` returns an `McpModernClient`, on the SDK's modern types, for
+          listings, tool calls, resource reads and prompts, with streamed progress,
+          `subscriptions/listen`, and cancellation by disposing the request. An
+          `input_required` result is answered by the `McpInputHandler` set with
+          `setInputHandler()` and the request retried, within `setMaxInputRounds()`;
+          without a handler, it is returned. Not yet supported for 2026-07-28: the client over
+          stdio. The SDK's modern API is a preview.
         - Added experimental SDK-native gRPC hosting of unary, server-streaming,
           client-streaming and bidirectional methods on a borrowed Restlet/Netty HTTP/2 listener.
           Request messages are read as the application requests them, within the queue budget,
