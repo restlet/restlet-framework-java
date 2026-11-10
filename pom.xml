@@ -70,6 +70,7 @@
         <lib-swagger-parser-version>2.1.48</lib-swagger-parser-version>
         <lib-thymeleaf-version>3.1.5.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
+        <lib-ziti-version>0.35.0</lib-ziti-version>
         <!-- fix CVEs -->
         <lib-cves-commons-lang3-version>3.21.0</lib-cves-commons-lang3-version>
         <!-- tests -->
@@ -96,6 +97,7 @@
         <module>org.restlet.ext.velocity</module>
         <module>org.restlet.ext.websocket</module>
         <module>org.restlet.ext.xml</module>
+        <module>org.restlet.ext.ziti</module>
     </modules>
 
     <profiles>

@@ -21,7 +21,6 @@ import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -715,23 +714,24 @@ public abstract class NettyClientHelper extends ClientHelper {
         boolean acquired = true;
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
-            final InetSocketAddress proxy = resolve(getProxy(pool.secure, pool.host));
+            // A transport route (e.g. an overlay network) replaces TCP and the proxies.
+            final NettyClientTransport.Route route = getRoute(pool);
+            final InetSocketAddress proxy =
+                    (route == null) ? resolve(getProxy(pool.secure, pool.host)) : null;
             final InetSocketAddress socksProxy =
-                    (proxy == null) ? resolve(getSocksProxy(pool.host)) : null;
+                    (route == null && proxy == null) ? resolve(getSocksProxy(pool.host)) : null;
 
             Bootstrap bootstrap =
                     new Bootstrap()
                             .group(group)
-                            .channel(NioSocketChannel.class)
                             .option(ChannelOption.AUTO_READ, false)
-                            .option(ChannelOption.TCP_NODELAY, true)
                             .option(
                                     ChannelOption.CONNECT_TIMEOUT_MILLIS,
                                     (int) Math.min(Integer.MAX_VALUE, timeout))
                             .handler(
-                                    new ChannelInitializer<SocketChannel>() {
+                                    new ChannelInitializer<Channel>() {
                                         @Override
-                                        protected void initChannel(SocketChannel ch) {
+                                        protected void initChannel(Channel ch) {
                                             initConnection(
                                                     ch,
                                                     pool,
@@ -742,13 +742,21 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         }
                                     });
 
-            SocketAddress bindAddress = getBindAddress();
-            if (bindAddress != null) {
-                bootstrap.localAddress(bindAddress);
+            if (route != null) {
+                bootstrap.channelFactory(route.channelFactory()).resolver(route.resolver());
+            } else {
+                bootstrap.channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true);
+                SocketAddress bindAddress = getBindAddress();
+                if (bindAddress != null) {
+                    bootstrap.localAddress(bindAddress);
+                }
             }
 
             SocketAddress remote;
-            if ((proxy != null && pool.secure) || (socksProxy != null)) {
+            if (route != null) {
+                // The route's resolver maps the host name, never the system DNS.
+                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
+            } else if ((proxy != null && pool.secure) || (socksProxy != null)) {
                 // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
                 bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
                 remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
@@ -829,6 +837,22 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
+     * Returns the transport route to an origin, from the {@link NettyClientTransport} set in the
+     * {@value NettyClientTransport#ATTRIBUTE} attribute of the client context, or null to connect
+     * over TCP.
+     *
+     * @param pool The connection pool of the origin.
+     * @return The route, or null.
+     */
+    private NettyClientTransport.Route getRoute(OriginPool pool) {
+        Object transport =
+                (getContext() == null)
+                        ? null
+                        : getContext().getAttributes().get(NettyClientTransport.ATTRIBUTE);
+        return (transport instanceof NettyClientTransport t) ? t.route(pool.host, pool.port) : null;
+    }
+
+    /**
      * Releases a connection of a pool, closed or not opened. A pool specific to proxy credentials
      * is dropped once it has no connection left, so that such pools do not accumulate. A call
      * holding it meanwhile still works, its connection is simply not reused by the next calls.
@@ -846,7 +870,7 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     private void initConnection(
-            SocketChannel ch,
+            Channel ch,
             OriginPool pool,
             SslContext ssl,
             InetSocketAddress proxy,
@@ -918,7 +942,7 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @param forwardProxy True for a cleartext connection to a forward proxy.
      */
     private void initProtocols(
-            SocketChannel ch,
+            Channel ch,
             OriginPool pool,
             SslContext ssl,
             Promise<String> ready,
