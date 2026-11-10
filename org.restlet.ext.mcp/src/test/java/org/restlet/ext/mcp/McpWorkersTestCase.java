@@ -45,16 +45,15 @@ class McpWorkersTestCase {
     void aCallFailingWithAnErrorEnds() throws Exception {
         McpWorkers workers = new McpWorkers(1, Duration.ofSeconds(5));
         try {
+            reactor.core.publisher.Mono<Void> call =
+                    workers.submit(
+                            () -> {
+                                throw new AssertionError("broken");
+                            },
+                            () -> {});
             RuntimeException blocked =
                     org.junit.jupiter.api.Assertions.assertThrows(
-                            RuntimeException.class,
-                            () ->
-                                    workers.submit(
-                                                    () -> {
-                                                        throw new AssertionError("broken");
-                                                    },
-                                                    () -> {})
-                                            .block(Duration.ofSeconds(5)));
+                            RuntimeException.class, () -> call.block(Duration.ofSeconds(5)));
             Throwable failure = reactor.core.Exceptions.unwrap(blocked);
             assertTrue(failure instanceof AssertionError, failure.toString());
             assertEquals("broken", failure.getMessage());
