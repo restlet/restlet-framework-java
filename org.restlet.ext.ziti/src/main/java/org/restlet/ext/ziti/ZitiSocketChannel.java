@@ -25,13 +25,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.CompletionHandler;
-import java.nio.channels.UnresolvedAddressException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.openziti.ZitiAddress;
 import org.openziti.ZitiContext;
-import org.openziti.edge.model.ServiceDetail;
 
 /**
  * A Netty channel over a connection of the OpenZiti SDK ({@link ZitiContext#open()}), with the
@@ -56,8 +54,11 @@ import org.openziti.edge.model.ServiceDetail;
  * AUTO_READ} are lost, and it blocks the event loop on every write.
  *
  * <p>The channel connects to an unresolved {@link InetSocketAddress} such as {@code
- * crm.internal:443}: it dials the Ziti service that intercepts it, so the host name is never
- * resolved by the system DNS. A {@link ZitiAddress} is dialed as is.
+ * crm.internal:443}, or to a {@link ZitiAddress}, both handed to the SDK as is. The SDK dials the
+ * Ziti service intercepting the address, with the destination data and the dial options of its
+ * intercept configuration (such as the identity of the terminator), and fails with an {@link
+ * java.nio.channels.UnresolvedAddressException} if none does. It never resolves a host name with
+ * the system DNS.
  */
 final class ZitiSocketChannel extends AbstractChannel {
 
@@ -65,9 +66,6 @@ final class ZitiSocketChannel extends AbstractChannel {
 
     /** The size of the buffer of a read, the payload size of a Ziti message. */
     private static final int READ_BUFFER_SIZE = 16 * 1024;
-
-    /** The Ziti context dialing the services. */
-    private final ZitiContext context;
 
     /** The socket of the Ziti connection. */
     private final AsynchronousSocketChannel socket;
@@ -90,7 +88,6 @@ final class ZitiSocketChannel extends AbstractChannel {
      */
     ZitiSocketChannel(ZitiContext context) {
         super(null);
-        this.context = context;
         this.socket = context.open();
         this.config = new DefaultChannelConfig(this);
     }
@@ -309,7 +306,9 @@ final class ZitiSocketChannel extends AbstractChannel {
             if (in != null) {
                 // Moves the reader index of the buffer written and releases it once fully written.
                 in.removeBytes(written);
-                unsafe().flush();
+                // Resumes the flushed writes only: the messages written since, without a flush,
+                // wait for one.
+                ((ZitiUnsafe) unsafe()).resumeWrites();
             }
         }
 
@@ -333,44 +332,16 @@ final class ZitiSocketChannel extends AbstractChannel {
     /** Connects with the SDK's asynchronous connect, completed on the event loop. */
     private final class ZitiUnsafe extends AbstractUnsafe {
 
-        /**
-         * Returns the Ziti address to dial for a remote address.
-         *
-         * @param remote An unresolved {@code host:port} or a Ziti address.
-         * @return The Ziti address.
-         */
-        private SocketAddress dialAddress(SocketAddress remote) {
-            if (remote instanceof ZitiAddress) {
-                return remote;
-            }
-
-            if (remote instanceof InetSocketAddress address) {
-                ServiceDetail service = context.getService(address);
-
-                if (service != null) {
-                    return new ZitiAddress.Dial(service.getName(), null, null, null);
-                }
-
-                throw new UnresolvedAddressException();
-            }
-
-            throw new UnsupportedOperationException(
-                    "Unsupported address type: " + remote.getClass().getName());
+        /** Writes the flushed messages left, after a write completed. */
+        void resumeWrites() {
+            // Unlike flush(), doesn't flush the messages written since the last flush.
+            flush0();
         }
 
         @Override
         public void connect(
                 SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) {
             if (!promise.setUncancellable() || !ensureOpen(promise)) {
-                return;
-            }
-
-            SocketAddress dial;
-            try {
-                dial = dialAddress(remoteAddress);
-            } catch (RuntimeException e) {
-                promise.tryFailure(e);
-                closeIfClosed();
                 return;
             }
 
@@ -394,8 +365,9 @@ final class ZitiSocketChannel extends AbstractChannel {
                             : null;
 
             try {
+                // The SDK maps an InetSocketAddress to its Ziti dial address itself.
                 socket.connect(
-                        dial,
+                        remoteAddress,
                         null,
                         new CompletionHandler<Void, Void>() {
                             @Override
