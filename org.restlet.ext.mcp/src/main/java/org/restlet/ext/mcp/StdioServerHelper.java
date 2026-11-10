@@ -14,8 +14,6 @@ import io.modelcontextprotocol.json.TypeRef;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
@@ -191,7 +189,7 @@ public final class StdioServerHelper extends ServerHelper {
             refuse(request, answered, id, new IOException("Too many pending MCP STDIO requests"));
             return;
         }
-        Object key = id == null ? null : key(id);
+        Object key = id == null ? null : McpMessages.idKey(id);
         if (key != null && inFlight.putIfAbsent(key, request) != null) {
             key = null; // A duplicate id: only the first may be cancelled.
         }
@@ -268,43 +266,6 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /**
-     * A request id comparable across its JSON number forms, such as 1 and 1.0: a long when the
-     * number is an integer in its range, exactly, else the number itself, normalised.
-     */
-    private static Object key(Object id) {
-        if (!(id instanceof Number number)) {
-            return id;
-        }
-        BigDecimal exact = exact(number);
-        if (exact == null) {
-            return id; // NaN or infinite: compared as given.
-        }
-        try {
-            return exact.longValueExact();
-        } catch (ArithmeticException _) {
-            return exact.stripTrailingZeros();
-        }
-    }
-
-    /**
-     * The exact value of a number: a floating-point one by its binary value, not its shortest
-     * decimal form, which may round an integer such as 1000000000000000128.0.
-     *
-     * @return The value, or null for NaN or an infinity.
-     */
-    private static BigDecimal exact(Number number) {
-        return switch (number) {
-            case BigDecimal decimal -> decimal;
-            case BigInteger integer -> new BigDecimal(integer);
-            case Double _, Float _ ->
-                    Double.isFinite(number.doubleValue())
-                            ? new BigDecimal(number.doubleValue())
-                            : null;
-            default -> BigDecimal.valueOf(number.longValue());
-        };
-    }
-
-    /**
      * Ends the in-flight request a {@code notifications/cancelled} names, if any.
      *
      * @return True if it named one.
@@ -312,7 +273,7 @@ public final class StdioServerHelper extends ServerHelper {
     private boolean cancel(Map<?, ?> envelope) {
         Object id =
                 envelope.get("params") instanceof Map<?, ?> params ? params.get("requestId") : null;
-        Request request = id == null ? null : inFlight.remove(key(id));
+        Request request = id == null ? null : inFlight.remove(McpMessages.idKey(id));
         if (request == null) {
             return false;
         }
