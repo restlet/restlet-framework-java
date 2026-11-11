@@ -184,6 +184,42 @@ class NettyClientTransportTestCase {
     }
 
     @Test
+    void usesTheConnectionsOfTheCurrentRoute() throws Exception {
+        AtomicInteger otherChannels = new AtomicInteger();
+        NettyClientTransport first = transport();
+        NettyClientTransport.Route other =
+                new NettyClientTransport.Route(
+                        () -> {
+                            otherChannels.incrementAndGet();
+                            return new NioSocketChannel();
+                        },
+                        first.route(ROUTED_HOST, 80).resolver());
+        AtomicInteger requests = new AtomicInteger();
+        Context context = new Context();
+        // The route of the origin changes after the first request.
+        context.getAttributes()
+                .put(
+                        NettyClientTransport.ATTRIBUTE,
+                        (NettyClientTransport)
+                                (host, port) ->
+                                        (requests.getAndIncrement() == 0)
+                                                ? first.route(host, port)
+                                                : other);
+        client = new Client(context, Protocol.HTTP);
+        client.start();
+
+        for (int i = 0; i < 2; i++) {
+            Response response =
+                    client.handle(new Request(Method.GET, "http://" + ROUTED_HOST + "/f" + i));
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response.getEntity().exhaust();
+        }
+
+        assertEquals(1, routedChannels.get(), "The first route connected once");
+        assertEquals(1, otherChannels.get(), "The new route didn't reuse the old connection");
+    }
+
+    @Test
     void doesNotUseTheProxyForARoutedOrigin() throws Exception {
         startClient(contextWithClosedProxy());
         Request request = new Request(Method.GET, "http://" + ROUTED_HOST + "/c");

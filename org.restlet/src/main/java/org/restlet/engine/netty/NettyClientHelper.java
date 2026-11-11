@@ -269,9 +269,12 @@ public abstract class NettyClientHelper extends ClientHelper {
     static final class OriginPool {
 
         /** The key of the pool. */
-        final String key;
+        final PoolKey key;
 
-        /** Indicates whether the pool is specific to proxy credentials, and dropped once unused. */
+        /**
+         * Indicates whether the pool is specific to proxy credentials or to a route, and dropped
+         * once unused.
+         */
         final boolean transientPool;
 
         final boolean secure;
@@ -300,7 +303,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         volatile Channel http2;
 
         OriginPool(
-                String key,
+                PoolKey key,
                 boolean transientPool,
                 boolean secure,
                 String host,
@@ -333,7 +336,7 @@ public abstract class NettyClientHelper extends ClientHelper {
     private final Map<String, Channel> http3Connections = new ConcurrentHashMap<>();
 
     /** The connection pools, per origin, and per proxy credentials for tunnels. */
-    private final Map<String, OriginPool> pools = new ConcurrentHashMap<>();
+    private final Map<PoolKey, OriginPool> pools = new ConcurrentHashMap<>();
 
     /** The connection permits, per origin. */
     private final Map<String, Semaphore> permits = new ConcurrentHashMap<>();
@@ -543,11 +546,11 @@ public abstract class NettyClientHelper extends ClientHelper {
         String proxyIdentity = call.getTunnelProxyIdentity();
         OriginPool pool =
                 pools.computeIfAbsent(
-                        poolKey(origin, proxyIdentity, route),
+                        new PoolKey(origin, proxyIdentity, route),
                         k ->
                                 new OriginPool(
                                         k,
-                                        proxyIdentity != null,
+                                        (proxyIdentity != null) || (route != null),
                                         call.isConfidential(),
                                         call.getTargetHost(),
                                         call.getTargetPort(),
@@ -892,23 +895,20 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
-     * Returns the key of the connection pool of an origin.
+     * The key of the connection pool of an origin. Equal routes (same channel factory and resolver)
+     * share a pool, distinct ones never do.
      *
      * @param origin The origin.
      * @param proxyIdentity The identity of the tunnel proxy credentials, or null.
      * @param route The transport route, or null.
-     * @return The key.
      */
-    private static String poolKey(
-            String origin, String proxyIdentity, NettyClientTransport.Route route) {
-        String key = (proxyIdentity == null) ? origin : origin + "#" + proxyIdentity;
-        return (route == null) ? key : key + "#route@" + System.identityHashCode(route);
-    }
+    record PoolKey(String origin, String proxyIdentity, NettyClientTransport.Route route) {}
 
     /**
      * Releases a connection of a pool, closed or not opened. A pool specific to proxy credentials
-     * is dropped once it has no connection left, so that such pools do not accumulate. A call
-     * holding it meanwhile still works, its connection is simply not reused by the next calls.
+     * or to a route is dropped once it has no connection left, so that such pools do not
+     * accumulate, for example when a transport returns a new route over time. A call holding it
+     * meanwhile still works, its connection is simply not reused by the next calls.
      *
      * @param pool The pool.
      * @param permit True if the connection held a permit.
