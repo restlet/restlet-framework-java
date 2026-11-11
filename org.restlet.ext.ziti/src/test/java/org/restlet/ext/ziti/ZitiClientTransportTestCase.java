@@ -26,8 +26,10 @@ import java.nio.channels.CompletionHandler;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,6 +82,9 @@ class ZitiClientTransportTestCase {
     /** The service event listener registered on the fake context. */
     private volatile Consumer<ZitiContext.ServiceEvent> serviceListener;
 
+    /** The subscriptions made to the fake context, cancelled when ended. */
+    private final List<CompletableFuture<Void>> subscriptions = new CopyOnWriteArrayList<>();
+
     private Server server;
 
     private Client client;
@@ -124,12 +129,12 @@ class ZitiClientTransportTestCase {
                                             statusListener.accept(
                                                     ZitiContext.Status.Active.INSTANCE);
                                         }
-                                        yield new CompletableFuture<>();
+                                        yield subscription();
                                     }
                                     case "onServiceEvent" -> {
                                         serviceListener =
                                                 (Consumer<ZitiContext.ServiceEvent>) args[0];
-                                        yield new CompletableFuture<>();
+                                        yield subscription();
                                     }
                                     case "open" -> {
                                         opened.incrementAndGet();
@@ -144,6 +149,13 @@ class ZitiClientTransportTestCase {
                                             throw new UnsupportedOperationException(
                                                     method.getName());
                                 });
+    }
+
+    /** A subscription to the fake context, running until cancelled. */
+    private CompletableFuture<Void> subscription() {
+        CompletableFuture<Void> subscription = new CompletableFuture<>();
+        subscriptions.add(subscription);
+        return subscription;
     }
 
     /** Echoes the path and the number of bytes received, then the received bytes if asked. */
@@ -290,6 +302,36 @@ class ZitiClientTransportTestCase {
 
         assertSame(
                 transport, client.getContext().getAttributes().get(NettyClientTransport.ATTRIBUTE));
+    }
+
+    /** Closing stops listening to the context, which lives on, and stops caching the lookups. */
+    @Test
+    void closingStopsListeningToTheContext() {
+        ZitiClientTransport transport = new ZitiClientTransport(fakeZiti());
+        assertEquals(2, subscriptions.size());
+        assertTrue(subscriptions.stream().noneMatch(CompletableFuture::isCancelled));
+
+        transport.close();
+
+        assertTrue(subscriptions.stream().allMatch(CompletableFuture::isCancelled));
+        assertNotNull(transport.route(SERVICE_HOST, SERVICE_PORT), "It still routes");
+        transport.route(SERVICE_HOST, SERVICE_PORT);
+        assertEquals(2, lookups.get(), "Without the service events, no lookup is cached");
+    }
+
+    /** Installing a transport on a client closes the one it replaces. */
+    @Test
+    void installingClosesTheReplacedTransport() {
+        client = new Client(new Context(), Protocol.HTTP);
+        ZitiContext ziti = fakeZiti();
+        ZitiClientTransport.install(client, ziti);
+        List<CompletableFuture<Void>> first = List.copyOf(subscriptions);
+
+        ZitiClientTransport.install(client, ziti);
+
+        assertTrue(first.stream().allMatch(CompletableFuture::isCancelled));
+        assertEquals(4, subscriptions.size());
+        assertTrue(subscriptions.subList(2, 4).stream().noneMatch(CompletableFuture::isCancelled));
     }
 
     /** TLS runs end to end over the Ziti channel, with the host name of the service verified. */

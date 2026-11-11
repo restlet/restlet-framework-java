@@ -254,6 +254,16 @@ public abstract class NettyClientHelper extends ClientHelper {
     private static final AttributeKey<OriginPool> POOL =
             AttributeKey.valueOf(NettyClientHelper.class, "pool");
 
+    /**
+     * The streams of an HTTP/2 connection, open or reserved, or -1 once it is retired to free its
+     * permit.
+     */
+    private static final AttributeKey<AtomicInteger> STREAMS =
+            AttributeKey.valueOf(NettyClientHelper.class, "streams");
+
+    /** How often a call waiting for a connection permit looks for an idle connection to close. */
+    private static final long PERMIT_POLL_NANOS = TimeUnit.MILLISECONDS.toNanos(50);
+
     /** Supported transport modes. */
     protected enum TransportMode {
         HTTP1_1,
@@ -535,10 +545,26 @@ public abstract class NettyClientHelper extends ClientHelper {
             return acquireHttp3(call);
         }
 
-        OriginPool pool = getPool(call);
+        Channel channel;
+        do {
+            // Null when the pool was dropped before it could connect: the next one is taken.
+            channel = acquire(getPool(call), call);
+        } while (channel == null);
+        return channel;
+    }
 
+    /**
+     * Acquires a channel of a pool: an idle or new HTTP/1.1 connection, or a new stream of its
+     * HTTP/2 connection.
+     *
+     * @param pool The pool.
+     * @param call The call that will use the channel.
+     * @return The channel, or null if the pool was dropped before it could open a connection.
+     * @throws IOException If no connection could be established.
+     */
+    private Channel acquire(OriginPool pool, NettyClientCall call) throws IOException {
         Channel http2 = pool.http2;
-        if (http2 != null && http2.isActive()) {
+        if (http2 != null && http2.isActive() && reserveStream(http2)) {
             return openStream(http2, call);
         }
 
@@ -560,11 +586,13 @@ public abstract class NettyClientHelper extends ClientHelper {
             pool.connectLock.lock();
             try {
                 http2 = pool.http2;
-                if (http2 != null && http2.isActive()) {
+                if (http2 != null && http2.isActive() && reserveStream(http2)) {
                     return openStream(http2, call);
                 }
                 channel = connect(pool, call.getTunnelProxyAuthorization());
-                if (channel.pipeline().get(Http2MultiplexHandler.class) != null) {
+                if (channel != null
+                        && channel.pipeline().get(Http2MultiplexHandler.class) != null) {
+                    channel.attr(STREAMS).set(new AtomicInteger(1));
                     pool.http2 = channel;
                     return openStream(channel, call);
                 }
@@ -573,8 +601,54 @@ public abstract class NettyClientHelper extends ClientHelper {
             }
         }
 
-        bindHttp1(channel, call);
+        if (channel != null) {
+            bindHttp1(channel, call);
+        }
         return channel;
+    }
+
+    /**
+     * Reserves a stream on an HTTP/2 connection, unless it was retired to free its permit.
+     *
+     * @param parent The HTTP/2 connection.
+     * @return True if reserved: the stream must then be opened, or the reservation released.
+     */
+    private static boolean reserveStream(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        if (streams == null) {
+            return false;
+        }
+        int count;
+        do {
+            count = streams.get();
+            if (count < 0) {
+                return false;
+            }
+        } while (!streams.compareAndSet(count, count + 1));
+        return true;
+    }
+
+    /**
+     * Releases a stream reserved on an HTTP/2 connection.
+     *
+     * @param parent The HTTP/2 connection.
+     */
+    private static void releaseStream(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        if (streams != null) {
+            streams.decrementAndGet();
+        }
+    }
+
+    /**
+     * Retires an HTTP/2 connection without streams, so that no stream is opened on it any more.
+     *
+     * @param parent The HTTP/2 connection.
+     * @return True if retired: it can then be closed.
+     */
+    private static boolean retireIdle(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        return (streams != null) && streams.compareAndSet(0, -1);
     }
 
     /**
@@ -674,7 +748,23 @@ public abstract class NettyClientHelper extends ClientHelper {
         handler.bind(call);
     }
 
+    /**
+     * Opens a stream reserved on an HTTP/2 connection. The reservation is released when the stream
+     * closes, or at once if it can't be opened.
+     */
     private Channel openStream(Channel parent, NettyClientCall call) throws IOException {
+        Channel stream;
+        try {
+            stream = openReservedStream(parent, call);
+        } catch (IOException | RuntimeException e) {
+            releaseStream(parent);
+            throw e;
+        }
+        stream.closeFuture().addListener(f -> releaseStream(parent));
+        return stream;
+    }
+
+    private Channel openReservedStream(Channel parent, NettyClientCall call) throws IOException {
         final NettyClientHandler handler = new NettyClientHandler();
         handler.bind(call);
         call.setStreamKind(StreamKind.HTTP2);
@@ -699,7 +789,9 @@ public abstract class NettyClientHelper extends ClientHelper {
     private Channel connect(final OriginPool pool, final String proxyAuthorization)
             throws IOException {
         long timeout = getConnectTimeout();
-        pool.connections.incrementAndGet();
+        if (!reserveConnection(pool)) {
+            return null;
+        }
         try {
             if (!acquirePermit(pool, timeout)) {
                 releaseConnection(pool, false);
@@ -860,8 +952,8 @@ public abstract class NettyClientHelper extends ClientHelper {
 
     /**
      * Acquires a connection permit of the origin of a pool. When they are all taken, an idle
-     * connection of another pool of the origin (opened with other proxy credentials) is closed to
-     * free one.
+     * connection of another pool of the origin (opened with other proxy credentials, or over
+     * another route) is closed to free one: an HTTP/1.1 one, or an HTTP/2 one without streams.
      *
      * @param pool The pool.
      * @param timeout The max time to wait, in milliseconds.
@@ -869,20 +961,57 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @throws InterruptedException If interrupted while waiting.
      */
     private boolean acquirePermit(OriginPool pool, long timeout) throws InterruptedException {
-        if (pool.permits.tryAcquire()) {
-            return true;
-        }
-
-        for (OriginPool other : pools.values()) {
-            if ((other != pool) && (other.permits == pool.permits)) {
-                Channel idle = other.idle.pollLast();
-                if (idle != null) {
-                    idle.close();
-                    break;
-                }
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout);
+        boolean closed = false;
+        while (!pool.permits.tryAcquire()) {
+            // A connection becomes idle once its exchange or its last stream ends: until one is
+            // closed, look again while waiting.
+            closed = closed || closeIdleOfOtherPool(pool);
+            long left = deadline - System.nanoTime();
+            if (left <= 0) {
+                return false;
+            }
+            long wait = closed ? left : Math.min(left, PERMIT_POLL_NANOS);
+            if (pool.permits.tryAcquire(wait, TimeUnit.NANOSECONDS)) {
+                return true;
             }
         }
-        return pool.permits.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+        return true;
+    }
+
+    /**
+     * Closes an idle connection of another pool of the origin of a pool.
+     *
+     * @param pool The pool.
+     * @return True if a connection was closed.
+     */
+    private boolean closeIdleOfOtherPool(OriginPool pool) {
+        for (OriginPool other : pools.values()) {
+            if ((other != pool) && (other.permits == pool.permits) && closeIdle(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Closes an idle connection of a pool, to free its permit: an HTTP/1.1 one not carrying an
+     * exchange, or its HTTP/2 one without streams.
+     *
+     * @param pool The pool.
+     * @return True if a connection was closed.
+     */
+    private static boolean closeIdle(OriginPool pool) {
+        Channel idle = pool.idle.pollLast();
+        if (idle == null) {
+            Channel http2 = pool.http2;
+            idle = (http2 != null && retireIdle(http2)) ? http2 : null;
+        }
+        if (idle == null) {
+            return false;
+        }
+        idle.close();
+        return true;
     }
 
     /**
@@ -925,9 +1054,43 @@ public abstract class NettyClientHelper extends ClientHelper {
         if (permit) {
             pool.permits.release();
         }
-        if ((pool.connections.decrementAndGet() == 0) && pool.transientPool) {
-            pools.remove(pool.key, pool);
+        if (!pool.transientPool) {
+            pool.connections.decrementAndGet();
+            return;
         }
+        // Under the lock of the key, so that no connection is reserved meanwhile.
+        pools.compute(
+                pool.key,
+                (k, current) ->
+                        ((pool.connections.decrementAndGet() == 0) && (current == pool))
+                                ? null
+                                : current);
+    }
+
+    /**
+     * Counts a connection about to be opened in a pool, unless the pool was dropped: a connection
+     * of a dropped pool could not be reused nor have its permit reclaimed.
+     *
+     * @param pool The pool.
+     * @return True if counted, false if the pool was dropped.
+     */
+    private boolean reserveConnection(OriginPool pool) {
+        if (!pool.transientPool) {
+            pool.connections.incrementAndGet();
+            return true;
+        }
+        // Under the lock of the key, so that the pool isn't dropped meanwhile.
+        boolean[] reserved = {false};
+        pools.computeIfPresent(
+                pool.key,
+                (k, current) -> {
+                    if (current == pool) {
+                        pool.connections.incrementAndGet();
+                        reserved[0] = true;
+                    }
+                    return current;
+                });
+        return reserved[0];
     }
 
     private void initConnection(

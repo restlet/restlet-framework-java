@@ -35,13 +35,17 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.HttpClientHelper;
+import org.restlet.engine.connector.HttpServerHelper;
 
 /** Tests the routes of a {@link NettyClientTransport} set on a client. */
 class NettyClientTransportTestCase {
@@ -103,7 +107,11 @@ class NettyClientTransportTestCase {
 
     /** Routes ROUTED_HOST over TCP to the peer, with a resolver that never asks the DNS. */
     private NettyClientTransport transport() {
-        int peerPort = peer.getAddress().getPort();
+        return transport(peer.getAddress().getPort());
+    }
+
+    /** Routes ROUTED_HOST over TCP to a local port, with a resolver that never asks the DNS. */
+    private NettyClientTransport transport(int peerPort) {
         AddressResolverGroup<InetSocketAddress> resolver =
                 new AddressResolverGroup<>() {
                     @Override
@@ -217,6 +225,72 @@ class NettyClientTransportTestCase {
 
         assertEquals(1, routedChannels.get(), "The first route connected once");
         assertEquals(1, otherChannels.get(), "The new route didn't reuse the old connection");
+    }
+
+    /**
+     * With one connection per origin, the HTTP/2 connection of the old route, without streams once
+     * its call ended, is closed to let the new route connect.
+     */
+    @Test
+    void reclaimsTheIdleHttp2ConnectionOfAnotherRoute() throws Exception {
+        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
+        Context serverContext = new Context();
+        serverContext.getParameters().add("http.transport.protocol", "HTTP2");
+        Server h2 =
+                new Server(
+                        serverContext,
+                        Protocol.HTTP,
+                        0,
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, Response response) {
+                                response.setEntity("ok", MediaType.TEXT_PLAIN);
+                            }
+                        });
+        h2.start();
+        try {
+            NettyClientTransport first = transport(h2.getActualPort());
+            AtomicInteger otherChannels = new AtomicInteger();
+            NettyClientTransport.Route other =
+                    new NettyClientTransport.Route(
+                            () -> {
+                                otherChannels.incrementAndGet();
+                                return new NioSocketChannel();
+                            },
+                            first.route(ROUTED_HOST, 80).resolver());
+            AtomicInteger requests = new AtomicInteger();
+            Context context = new Context();
+            context.getParameters().add("httpClientTransportMode", "HTTP2");
+            context.getParameters().add("maxConnectionsPerDestination", "1");
+            context.getParameters().add("connectTimeout", "5000");
+            // The route of the origin changes after the first request.
+            context.getAttributes()
+                    .put(
+                            NettyClientTransport.ATTRIBUTE,
+                            (NettyClientTransport)
+                                    (host, port) ->
+                                            (requests.getAndIncrement() == 0)
+                                                    ? first.route(host, port)
+                                                    : other);
+            client = new Client(context, Protocol.HTTP);
+            client.start();
+
+            for (int i = 0; i < 2; i++) {
+                Response response =
+                        client.handle(new Request(Method.GET, "http://" + ROUTED_HOST + "/g" + i));
+                assertEquals(
+                        Status.SUCCESS_OK,
+                        response.getStatus(),
+                        "Call " + i + ": " + response.getStatus());
+                assertEquals("2.0", response.getProtocol().getVersion());
+                assertEquals("ok", response.getEntity().getText());
+            }
+
+            assertEquals(1, routedChannels.get(), "The first route connected once");
+            assertEquals(1, otherChannels.get(), "The new route connected once");
+        } finally {
+            h2.stop();
+        }
     }
 
     @Test

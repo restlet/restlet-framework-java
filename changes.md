@@ -297,7 +297,8 @@ Changes log
           client to the origins an OpenZiti identity has a service for, such as
           `crm.internal:443`, over the Ziti overlay network, without resolving their host name
           with the system DNS, and the other calls over TCP. TLS, HTTP/1.1 and HTTP/2 run over it
-          as over TCP. Client side only.
+          as over TCP. Client side only. The transport listens to the context's events until
+          closed: close it once the client is stopped, or install another one, which closes it.
         - Added the `NettyClientTransport` SPI to the Netty client connector, set with the
           "org.restlet.engine.netty.clientTransport" client context attribute: it can route the
           requests to some origins through another Netty channel and resolver than TCP, the HTTP
