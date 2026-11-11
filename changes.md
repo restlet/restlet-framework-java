@@ -297,6 +297,9 @@ Changes log
           and SOCKS proxies and HTTP/3 being then bypassed, and the proxy credentials removed. It exposes Netty types and is meant for
           extensions depending on Netty, such as the OpenZiti one.
     - Bugs fixed
+        - The Netty HTTP/2 client no longer turns a complete response into a communication error,
+          nor reports the request as disconnected, when the server answers before the end of the
+          request, such as with an immediate error, then closes the stream.
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
           until it resumes or ends. Issue #1632.

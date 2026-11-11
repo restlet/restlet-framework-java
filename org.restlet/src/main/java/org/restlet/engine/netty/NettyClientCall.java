@@ -893,7 +893,15 @@ class NettyClientCall {
             }
             lastContent = withTrailers;
         }
-        check(ch.writeAndFlush(lastContent));
+        ChannelFuture sent = ch.writeAndFlush(lastContent);
+        if (sent.isDone() && !sent.isSuccess() && isResponseComplete()) {
+            // The server answered without waiting for the end of the request, then closed the
+            // stream, as HTTP/2 allows: the exchange ended with its response.
+            helper.getLogger()
+                    .fine(() -> "The response came before the end of the request on " + ch);
+        } else {
+            check(sent);
+        }
         helper.getLogger().fine(() -> "Sent the request " + method + " " + target + " on " + ch);
 
         lock.lock();
@@ -973,6 +981,15 @@ class NettyClientCall {
 
     private static boolean requiresContentLength(String method) {
         return "POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method);
+    }
+
+    private boolean isResponseComplete() {
+        lock.lock();
+        try {
+            return responseComplete;
+        } finally {
+            lock.unlock();
+        }
     }
 
     private static void check(ChannelFuture future) throws IOException {
@@ -1120,6 +1137,7 @@ class NettyClientCall {
     void onFailure(Throwable cause) {
         boolean notifyResponseFailure = false;
         boolean responseHeadReceived;
+        boolean answered;
         lock.lock();
         try {
             if (!requestSent) {
@@ -1129,6 +1147,9 @@ class NettyClientCall {
             if (responseComplete && requestSent) {
                 return;
             }
+            // A server may answer before the request is marked sent, such as an error refusing
+            // it at once: the exchange then ended with its response, not with this failure.
+            answered = responseComplete;
             reusable = false;
             if (!head) {
                 failure = cause;
@@ -1144,7 +1165,7 @@ class NettyClientCall {
         helper.logFailure("The exchange failed on " + channel, cause);
         ChannelInputStream stream = this.body;
         org.restlet.Request request = currentRequest;
-        if (request != null) {
+        if (request != null && !answered) {
             request.notifyDisconnect(cause);
         }
         if (stream != null) {
