@@ -535,27 +535,7 @@ public abstract class NettyClientHelper extends ClientHelper {
             return acquireHttp3(call);
         }
 
-        // Tunnels opened with different proxy credentials are kept apart, and so are the routed
-        // connections from the TCP ones, should the route of an origin change.
-        NettyClientTransport.Route route = call.getRoute();
-        String origin =
-                (call.isConfidential() ? "https://" : "http://")
-                        + call.getTargetHost()
-                        + ":"
-                        + call.getTargetPort();
-        String proxyIdentity = call.getTunnelProxyIdentity();
-        OriginPool pool =
-                pools.computeIfAbsent(
-                        new PoolKey(origin, proxyIdentity, route),
-                        k ->
-                                new OriginPool(
-                                        k,
-                                        (proxyIdentity != null) || (route != null),
-                                        call.isConfidential(),
-                                        call.getTargetHost(),
-                                        call.getTargetPort(),
-                                        route,
-                                        getPermits(origin)));
+        OriginPool pool = getPool(call);
 
         Channel http2 = pool.http2;
         if (http2 != null && http2.isActive()) {
@@ -837,6 +817,34 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         return InetSocketAddress.createUnresolved(pool.host, pool.port);
+    }
+
+    /**
+     * Returns the connection pool of a call. Tunnels opened with different proxy credentials are
+     * kept apart, and so are the routed connections from the TCP ones, and per route.
+     *
+     * @param call The call.
+     * @return The pool.
+     */
+    private OriginPool getPool(NettyClientCall call) {
+        NettyClientTransport.Route route = call.getRoute();
+        String origin =
+                (call.isConfidential() ? "https://" : "http://")
+                        + call.getTargetHost()
+                        + ":"
+                        + call.getTargetPort();
+        String proxyIdentity = call.getTunnelProxyIdentity();
+        return pools.computeIfAbsent(
+                new PoolKey(origin, proxyIdentity, route),
+                k ->
+                        new OriginPool(
+                                k,
+                                (proxyIdentity != null) || (route != null),
+                                call.isConfidential(),
+                                call.getTargetHost(),
+                                call.getTargetPort(),
+                                route,
+                                getPermits(origin)));
     }
 
     /**
