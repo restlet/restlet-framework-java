@@ -44,6 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.openziti.Ziti;
 import org.openziti.ZitiAddress;
 import org.openziti.ZitiContext;
+import org.openziti.edge.model.ServiceDetail;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -95,7 +96,7 @@ class ZitiNetworkTestCase {
         // A context learns its services asynchronously after authenticating: binding before the
         // server identity has loaded the service is refused as "no permission to bind".
         awaitUntil(
-                () -> serverZiti.getService(SERVICE) != null,
+                () -> loaded(() -> serverZiti.getService(SERVICE, 0L)) != null,
                 "The server never saw the crm service");
 
         // Host the service: accept the Ziti connections and pipe them to the local server.
@@ -116,12 +117,32 @@ class ZitiNetworkTestCase {
      */
     private static void awaitReachable(InetSocketAddress address) throws Exception {
         awaitUntil(
-                () ->
-                        clientZiti.getService(address) != null
-                                && !clientZiti
-                                        .getServiceTerminators(clientZiti.getService(address))
-                                        .isEmpty(),
+                () -> {
+                    ServiceDetail service = loaded(() -> clientZiti.getService(address, 0L));
+                    return service != null && !clientZiti.getServiceTerminators(service).isEmpty();
+                },
                 "The service of " + address + " is not reachable");
+    }
+
+    /**
+     * Looks a service up among the loaded ones, without waiting: the overloads without timeout wait
+     * for a service event, forever if the identity has none.
+     *
+     * @param lookup A lookup with a zero timeout.
+     * @return The service, or null if not loaded.
+     */
+    private static ServiceDetail loaded(ServiceLookup lookup) {
+        try {
+            return lookup.get();
+        } catch (TimeoutException _) {
+            return null;
+        }
+    }
+
+    /** A service lookup declaring the TimeoutException that the SDK throws undeclared. */
+    @FunctionalInterface
+    private interface ServiceLookup {
+        ServiceDetail get() throws TimeoutException;
     }
 
     /**
@@ -132,7 +153,8 @@ class ZitiNetworkTestCase {
      */
     private static void awaitUntil(BooleanSupplier condition, String message) throws Exception {
         CompletableFuture<Void> met = new CompletableFuture<>();
-        try (ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor()) {
+        ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor();
+        try {
             poller.scheduleWithFixedDelay(
                     () -> {
                         try {
@@ -151,6 +173,8 @@ class ZitiNetworkTestCase {
             fail(message);
         } finally {
             met.cancel(false);
+            // Interrupts a check still running, rather than waiting for it.
+            poller.shutdownNow();
         }
     }
 

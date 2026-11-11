@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,9 +49,11 @@ import org.restlet.engine.netty.NettyClientTransport;
  * ZitiClientTransport.install(client, ztx);
  * </pre>
  *
- * <p>The context is not owned: destroy it after the client is stopped.
+ * <p>The context is not owned: destroy it after the client is stopped. The transport listens to the
+ * events of the context: close it once the client is stopped, to stop listening while the context
+ * lives on. Installing a new transport on a client closes the one it replaces.
  */
-public class ZitiClientTransport implements NettyClientTransport {
+public class ZitiClientTransport implements NettyClientTransport, AutoCloseable {
 
     private static final Logger LOGGER = Logger.getLogger(ZitiClientTransport.class.getName());
 
@@ -78,6 +81,15 @@ public class ZitiClientTransport implements NettyClientTransport {
     /** Counts the service events, so that a lookup made meanwhile isn't cached. */
     private final AtomicLong serviceEvents = new AtomicLong();
 
+    /** The subscription to the status of the context. */
+    private final Future<?> statusSubscription;
+
+    /** The subscription to the service events of the context. */
+    private final Future<?> serviceSubscription;
+
+    /** Whether the transport is closed: it then no longer caches the lookups. */
+    private volatile boolean closed;
+
     /**
      * Constructor, waiting up to 10 seconds for the services of the context.
      *
@@ -99,22 +111,25 @@ public class ZitiClientTransport implements NettyClientTransport {
         this.route =
                 new Route(() -> new ZitiSocketChannel(context), NoopAddressResolverGroup.INSTANCE);
         this.servicesDeadline = System.nanoTime() + servicesTimeout.toNanos();
-        // Both run as long as the context. The status is active once the services are loaded.
-        context.onStatus(
-                status -> {
-                    if (status instanceof ZitiContext.Status.Active) {
-                        servicesLoaded.complete(null);
-                    }
-                });
-        context.onServiceEvent(
-                event -> {
-                    serviceEvents.incrementAndGet();
-                    intercepted.clear();
-                });
+        // Both run until closed. The status is active once the services are loaded.
+        this.statusSubscription =
+                context.onStatus(
+                        status -> {
+                            if (status instanceof ZitiContext.Status.Active) {
+                                servicesLoaded.complete(null);
+                            }
+                        });
+        this.serviceSubscription =
+                context.onServiceEvent(
+                        event -> {
+                            serviceEvents.incrementAndGet();
+                            intercepted.clear();
+                        });
     }
 
     /**
-     * Routes a client's calls to the origins the Ziti identity can reach over Ziti.
+     * Routes a client's calls to the origins the Ziti identity can reach over Ziti. A Ziti
+     * transport installed before on the client is closed.
      *
      * @param client The client, before it is started. A context is set on it if it has none.
      * @param context The Ziti context of the identity used to dial the services.
@@ -125,8 +140,24 @@ public class ZitiClientTransport implements NettyClientTransport {
         if (client.getContext() == null) {
             client.setContext(new Context());
         }
-        client.getContext().getAttributes().put(NettyClientTransport.ATTRIBUTE, transport);
+        Object replaced =
+                client.getContext().getAttributes().put(NettyClientTransport.ATTRIBUTE, transport);
+        if (replaced instanceof ZitiClientTransport previous) {
+            previous.close();
+        }
         return transport;
+    }
+
+    /**
+     * Stops listening to the events of the context, without destroying it. A closed transport still
+     * routes, without caching the lookups since it no longer sees the service events.
+     */
+    @Override
+    public void close() {
+        closed = true;
+        statusSubscription.cancel(true);
+        serviceSubscription.cancel(true);
+        intercepted.clear();
     }
 
     /**
@@ -149,7 +180,9 @@ public class ZitiClientTransport implements NettyClientTransport {
         if (routed == null) {
             long events = serviceEvents.get();
             routed = isIntercepted(host, port);
-            if ((serviceEvents.get() == events) && (intercepted.size() < MAX_CACHED_ORIGINS)) {
+            if (!closed
+                    && (serviceEvents.get() == events)
+                    && (intercepted.size() < MAX_CACHED_ORIGINS)) {
                 intercepted.put(origin, routed);
                 // A service event counted after the check above may have cleared the cache
                 // before the put: the result may be stale, so it is uncached. One counted after
