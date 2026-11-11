@@ -151,6 +151,12 @@ public class ZitiClientTransport implements NettyClientTransport {
             routed = isIntercepted(host, port);
             if ((serviceEvents.get() == events) && (intercepted.size() < MAX_CACHED_ORIGINS)) {
                 intercepted.put(origin, routed);
+                // A service event counted after the check above may have cleared the cache
+                // before the put: the result may be stale, so it is uncached. One counted after
+                // this check clears it afterwards.
+                if (serviceEvents.get() != events) {
+                    intercepted.remove(origin, routed);
+                }
             }
         }
         return routed ? route : null;
