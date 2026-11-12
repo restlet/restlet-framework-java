@@ -391,6 +391,17 @@ class HttpAwsSigV4HelperTestCase {
     }
 
     /**
+     * S3 and MinIO decode the whole path before splitting it, so an encoded slash is signed as a
+     * separator. The other services sign it as sent, encoded once more.
+     */
+    @Test
+    void canonicalUriDecodesAnEncodedSlashBeforeSplittingForS3Only() {
+        assertEquals("/bucket/a/b", HttpAwsSigV4Helper.getCanonicalUri("/bucket/a%2Fb", false));
+        assertEquals("/bucket/a/b", HttpAwsSigV4Helper.getCanonicalUri("/bucket/a%2fb", false));
+        assertEquals("/bucket/a%252Fb", HttpAwsSigV4Helper.getCanonicalUri("/bucket/a%2Fb", true));
+    }
+
+    /**
      * The services other than S3 sign the path normalized, as in the "normalize-path" cases of the
      * AWS SigV4 test suite. S3 signs it as sent.
      */

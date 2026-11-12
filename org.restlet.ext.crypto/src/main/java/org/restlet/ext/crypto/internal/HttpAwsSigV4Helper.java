@@ -70,10 +70,11 @@ import org.restlet.util.Series;
  * HeaderConstants#ATTRIBUTE_RAW_REQUEST_HEADERS} attribute, invalidates the signature.
  *
  * <p>The signed path and query are those the client connector sends: a relative reference is
- * resolved against its base. S3 signs the path as is, each segment decoded then URI-encoded once.
- * The other services sign it normalized (empty and dot segments removed) and URI-encoded once more
- * as sent, so an escape in the path is encoded again. Query parameters are signed sorted and
- * URI-encoded: a {@code +} in the query is a literal plus sign, so encode spaces as {@code %20}.
+ * resolved against its base. S3 signs the path as is, decoded (an encoded slash included) then each
+ * segment URI-encoded once. The other services sign it normalized (empty and dot segments removed)
+ * and URI-encoded once more as sent, so an escape in the path is encoded again. Query parameters
+ * are signed sorted and URI-encoded: a {@code +} in the query is a literal plus sign, so encode
+ * spaces as {@code %20}.
  *
  * @see <a
  *     href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-create-signed-request.html">Create
@@ -357,8 +358,10 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
     /**
      * Returns the canonical URI.
      *
-     * <p>S3 decodes the path it receives and encodes it again: each segment is decoded, then
-     * URI-encoded once, and the path is otherwise signed as sent.
+     * <p>S3 decodes the path it receives and encodes it again: the whole path is decoded, then
+     * split into segments, each URI-encoded once, and the path is otherwise signed as sent. An
+     * encoded slash ({@code %2F}) is decoded before the split, so it is signed as a separator, as
+     * S3 and MinIO do ({@code /bucket/a%2Fb} is signed as {@code /bucket/a/b}).
      *
      * <p>The other services encode the path they receive once more ("double encoding"): the path is
      * normalized (see {@link #normalizePath(String)}) and each raw segment is URI-encoded as is, so
@@ -373,14 +376,14 @@ public class HttpAwsSigV4Helper extends AuthenticatorHelper {
         if (rawPath == null || rawPath.isEmpty()) {
             return "/";
         }
-        String path = doubleEncode ? normalizePath(rawPath) : rawPath;
+        String path = doubleEncode ? normalizePath(rawPath) : percentDecode(rawPath);
         String[] segments = path.split("/", -1);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < segments.length; i++) {
             if (i > 0) {
                 sb.append('/');
             }
-            sb.append(uriEncode(doubleEncode ? segments[i] : percentDecode(segments[i])));
+            sb.append(uriEncode(segments[i]));
         }
         return sb.charAt(0) == '/' ? sb.toString() : "/" + sb;
     }
