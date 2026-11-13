@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.mcp.internal;
+package org.restlet.ext.mcp.internal.legacy;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
@@ -27,13 +27,19 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.ext.mcp.McpProtocol;
+import org.restlet.ext.mcp.internal.McpLegacyEdge;
+import org.restlet.ext.mcp.internal.McpMessages;
+import org.restlet.ext.mcp.internal.McpWorkers;
 import reactor.core.publisher.Mono;
 
 /**
  * One reader per pipe, finite outstanding IDs for admission only; the SDK owns correlation. An ID
- * left unanswered past the call timeout frees its slot, and its late reply is dropped.
+ * left unanswered past the call timeout frees its slot, and its late reply is dropped. Requests the
+ * server sends, such as sampling, roots or elicitation, are answered as not found without reaching
+ * the SDK client: the legacy edge declares no capability and answers none.
  */
-public final class StdioMcpClientTransport implements McpClientTransport {
+public final class StdioMcpClientTransport
+        implements McpClientTransport, McpLegacyEdge.StdioTransport {
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
     private final org.restlet.util.StreamTransport stream;
     private volatile int maxMessageBytes;
@@ -62,6 +68,7 @@ public final class StdioMcpClientTransport implements McpClientTransport {
     }
 
     /** Replaces the byte, call and timeout limits; only allowed before connecting. */
+    @Override
     public synchronized void setLimits(int maxMessageBytes, int maxPendingCalls, Duration timeout) {
         if (closed || incoming != null) {
             throw new IllegalStateException("MCP STDIO limits are fixed once connected");
@@ -179,7 +186,9 @@ public final class StdioMcpClientTransport implements McpClientTransport {
             while (!closed && (bytes = McpMessages.readFrame(stream, maxMessageBytes)) != null) {
                 McpSchema.JSONRPCMessage message =
                         McpSchema.deserializeJsonRpcMessage(mapper, McpMessages.utf8(bytes));
-                if (!(message instanceof McpSchema.JSONRPCResponse response)
+                if (message instanceof McpSchema.JSONRPCRequest request) {
+                    reject(request);
+                } else if (!(message instanceof McpSchema.JSONRPCResponse response)
                         || correlate(response)) {
                     incoming.apply(Mono.just(message)).block(timeout);
                 }
@@ -193,6 +202,29 @@ public final class StdioMcpClientTransport implements McpClientTransport {
                 exceptionHandler.accept(e);
             }
         }
+    }
+
+    /** Answers a request from the server as not found, off the reader thread. */
+    private void reject(McpSchema.JSONRPCRequest request) {
+        sendMessage(
+                        new McpSchema.JSONRPCResponse(
+                                McpSchema.JSONRPC_VERSION,
+                                request.id(),
+                                null,
+                                new McpSchema.JSONRPCResponse.JSONRPCError(
+                                        McpSchema.ErrorCodes.METHOD_NOT_FOUND,
+                                        "Method not found: " + request.method(),
+                                        null)))
+                .subscribe(
+                        null,
+                        error ->
+                                Logger.getLogger(StdioMcpClientTransport.class.getName())
+                                        .log(Level.FINE, "MCP server request not answered", error));
+    }
+
+    @Override
+    public void close(Duration timeout) {
+        closeGracefully().block(timeout);
     }
 
     @Override

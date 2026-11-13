@@ -8,10 +8,7 @@
  */
 package org.restlet.ext.mcp.internal;
 
-import io.modelcontextprotocol.common.McpTransportContext;
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.McpSchema;
-import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.McpFeature;
 import io.modelcontextprotocol.modern.server.McpRequestContext;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
@@ -27,25 +24,22 @@ import io.modelcontextprotocol.modern.server.feature.ResourcesFeature;
 import io.modelcontextprotocol.modern.server.feature.ResourcesPage;
 import io.modelcontextprotocol.modern.server.feature.ToolsFeature;
 import io.modelcontextprotocol.modern.server.feature.ToolsPage;
-import io.modelcontextprotocol.server.McpAsyncListFilter;
-import io.modelcontextprotocol.server.McpStatelessServerFeatures;
 import io.modelcontextprotocol.util.DefaultMcpUriTemplateManager;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import org.restlet.ext.mcp.McpModernResource;
-import org.restlet.ext.mcp.McpModernResourceTemplate;
+import org.restlet.ext.mcp.McpProtocol;
+import org.restlet.ext.mcp.McpResource;
+import org.restlet.ext.mcp.McpResourceTemplate;
+import org.restlet.ext.mcp.McpToolFilter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * The features of the MCP {@code 2026-07-28} server, built from the adapter's registrations. The
- * {@code 2025-11-25} specifications are bridged: their definitions and results are converted
- * between the two SDK schemas through JSON, and their handlers receive the same transport context
- * as on the stateless server. Modern registrations are served as registered. List filters apply to
- * every listed tool. A name, URI or URI template may only be registered once across both kinds.
+ * The features of the MCP server, built from the adapter's registrations, on the SDK's modern
+ * types. Tool filters apply to every listed tool, with the adapter's request context. A name, URI
+ * or URI template may only be registered once.
  */
 public final class McpModernFeatures {
 
@@ -54,109 +48,76 @@ public final class McpModernFeatures {
     /**
      * The registrations of an adapter.
      *
-     * @param tools The {@code 2025-11-25} tools.
-     * @param resources The {@code 2025-11-25} resources.
-     * @param resourceTemplates The {@code 2025-11-25} resource templates.
-     * @param prompts The {@code 2025-11-25} prompts.
+     * @param tools The tools.
+     * @param resources The resources.
+     * @param resourceTemplates The resource templates.
+     * @param prompts The prompts.
      * @param toolFilters The tool list filters.
-     * @param modernTools The {@code 2026-07-28} tools.
-     * @param modernResources The {@code 2026-07-28} resources.
-     * @param modernResourceTemplates The {@code 2026-07-28} resource templates.
-     * @param modernPrompts The {@code 2026-07-28} prompts.
      */
     public record Registrations(
-            List<McpStatelessServerFeatures.AsyncToolSpecification> tools,
-            List<McpStatelessServerFeatures.AsyncResourceSpecification> resources,
-            List<McpStatelessServerFeatures.AsyncResourceTemplateSpecification> resourceTemplates,
-            List<McpStatelessServerFeatures.AsyncPromptSpecification> prompts,
-            List<McpAsyncListFilter<io.modelcontextprotocol.spec.McpSchema.Tool>> toolFilters,
-            List<McpAsyncTool> modernTools,
-            List<McpModernResource> modernResources,
-            List<McpModernResourceTemplate> modernResourceTemplates,
-            List<McpAsyncPrompt> modernPrompts) {}
+            List<McpAsyncTool> tools,
+            List<McpResource> resources,
+            List<McpResourceTemplate> resourceTemplates,
+            List<McpAsyncPrompt> prompts,
+            List<McpToolFilter> toolFilters) {}
 
     /**
      * Builds the features for registrations, one per kind present.
      *
-     * @param mapper The JSON mapper converting between the two schemas.
      * @param registrations The adapter's registrations.
      * @return The features.
      * @throws IllegalArgumentException If a name, URI or URI template is registered twice.
      */
-    public static List<McpFeature> of(McpJsonMapper mapper, Registrations registrations) {
+    public static List<McpFeature> of(Registrations registrations) {
         List<McpFeature> features = new ArrayList<>();
-        if (!registrations.tools().isEmpty() || !registrations.modernTools().isEmpty()) {
-            features.add(ToolsFeature.ofAsync(new Tools(mapper, registrations)));
+        if (!registrations.tools().isEmpty()) {
+            features.add(ToolsFeature.ofAsync(new Tools(registrations)));
         }
-        if (!registrations.resources().isEmpty()
-                || !registrations.resourceTemplates().isEmpty()
-                || !registrations.modernResources().isEmpty()
-                || !registrations.modernResourceTemplates().isEmpty()) {
-            features.add(ResourcesFeature.ofAsync(new Resources(mapper, registrations)));
+        if (!registrations.resources().isEmpty() || !registrations.resourceTemplates().isEmpty()) {
+            features.add(ResourcesFeature.ofAsync(new Resources(registrations)));
         }
-        if (!registrations.prompts().isEmpty() || !registrations.modernPrompts().isEmpty()) {
-            features.add(PromptsFeature.ofAsync(new Prompts(mapper, registrations)));
+        if (!registrations.prompts().isEmpty()) {
+            features.add(PromptsFeature.ofAsync(new Prompts(registrations)));
         }
         return features;
     }
 
-    /** The tools, bridged and modern, indexed by name. */
+    /** The adapter's context of a request, or null when the transport gave none. */
+    private static org.restlet.ext.mcp.McpRequestContext context(McpRequestContext ctx) {
+        return ctx.transportContext().get(McpProtocol.CONTEXT_KEY)
+                        instanceof org.restlet.ext.mcp.McpRequestContext context
+                ? context
+                : null;
+    }
+
+    /** The tools, indexed by name. */
     private static final class Tools implements McpAsyncToolRepository {
-        private final McpJsonMapper mapper;
         private final Map<String, McpAsyncTool> byName = new LinkedHashMap<>();
-        private final McpAsyncListFilter<io.modelcontextprotocol.spec.McpSchema.Tool> filter;
+        private final List<McpToolFilter> filters;
 
-        private Tools(McpJsonMapper mapper, Registrations registrations) {
-            this.mapper = mapper;
-            this.filter = McpAsyncListFilter.and(List.copyOf(registrations.toolFilters()));
-            for (McpStatelessServerFeatures.AsyncToolSpecification spec : registrations.tools()) {
-                add(bridge(spec));
+        private Tools(Registrations registrations) {
+            this.filters = List.copyOf(registrations.toolFilters());
+            for (McpAsyncTool tool : registrations.tools()) {
+                if (byName.putIfAbsent(tool.definition().name(), tool) != null) {
+                    throw new IllegalArgumentException(
+                            "Duplicate MCP tool name: " + tool.definition().name());
+                }
             }
-            for (McpAsyncTool tool : registrations.modernTools()) {
-                add(tool);
-            }
-        }
-
-        private void add(McpAsyncTool tool) {
-            if (byName.putIfAbsent(tool.definition().name(), tool) != null) {
-                throw new IllegalArgumentException(
-                        "Duplicate MCP tool name: " + tool.definition().name());
-            }
-        }
-
-        private McpAsyncTool bridge(McpStatelessServerFeatures.AsyncToolSpecification spec) {
-            return McpAsyncTool.of(
-                    mapper.convertValue(spec.tool(), McpSchema.Tool.class),
-                    (ctx, request) ->
-                            spec.callHandler()
-                                    .apply(
-                                            ctx.transportContext(),
-                                            mapper.convertValue(
-                                                    request,
-                                                    io.modelcontextprotocol.spec.McpSchema
-                                                            .CallToolRequest.class))
-                                    .map(
-                                            result ->
-                                                    McpAsyncResponse
-                                                            .<McpSchema.CallToolOutcome>result(
-                                                                    mapper.convertValue(
-                                                                            result,
-                                                                            McpSchema.CallToolResult
-                                                                                    .class))));
         }
 
         @Override
         public Mono<ToolsPage> list(McpRequestContext ctx, String cursor) {
+            org.restlet.ext.mcp.McpRequestContext context = context(ctx);
             return Flux.fromIterable(byName.values())
                     .map(McpAsyncTool::definition)
                     .filterWhen(
                             tool ->
-                                    filter.isVisible(
-                                            ctx.transportContext(),
-                                            mapper.convertValue(
-                                                    tool,
-                                                    io.modelcontextprotocol.spec.McpSchema.Tool
-                                                            .class)))
+                                    Flux.fromIterable(filters)
+                                            .concatMap(
+                                                    filter ->
+                                                            filter.isVisible(context, tool)
+                                                                    .defaultIfEmpty(Boolean.FALSE))
+                                            .all(Boolean::booleanValue))
                     .collectList()
                     .map(ToolsPage::of);
         }
@@ -174,34 +135,19 @@ public final class McpModernFeatures {
             McpAsyncResource resource) {}
 
     /**
-     * The resources, bridged and modern: exact URIs first, then templates, in registration order.
-     * Subscriptions are supported: the adapter publishes resource updates through its change feed.
+     * The resources: exact URIs first, then templates, in registration order. Subscriptions are
+     * supported: the adapter publishes resource updates through its change feed.
      */
     private static final class Resources implements McpAsyncResourceRepository {
-        private final McpJsonMapper mapper;
         private final List<McpSchema.Resource> listed = new ArrayList<>();
         private final Map<String, McpAsyncResource> byUri = new LinkedHashMap<>();
         private final List<Template> templates = new ArrayList<>();
 
-        private Resources(McpJsonMapper mapper, Registrations registrations) {
-            this.mapper = mapper;
-            for (McpStatelessServerFeatures.AsyncResourceSpecification spec :
-                    registrations.resources()) {
-                add(
-                        mapper.convertValue(spec.resource(), McpSchema.Resource.class),
-                        read(spec.readHandler()));
-            }
-            for (McpModernResource resource : registrations.modernResources()) {
+        private Resources(Registrations registrations) {
+            for (McpResource resource : registrations.resources()) {
                 add(resource.definition(), resource.resource());
             }
-            for (McpStatelessServerFeatures.AsyncResourceTemplateSpecification spec :
-                    registrations.resourceTemplates()) {
-                add(
-                        mapper.convertValue(
-                                spec.resourceTemplate(), McpSchema.ResourceTemplate.class),
-                        read(spec.readHandler()));
-            }
-            for (McpModernResourceTemplate template : registrations.modernResourceTemplates()) {
+            for (McpResourceTemplate template : registrations.resourceTemplates()) {
                 add(template.definition(), template.resource());
             }
         }
@@ -226,31 +172,6 @@ public final class McpModernFeatures {
                             definition,
                             new DefaultMcpUriTemplateManager(definition.uriTemplate()),
                             resource));
-        }
-
-        private McpAsyncResource read(
-                BiFunction<
-                                McpTransportContext,
-                                io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest,
-                                Mono<io.modelcontextprotocol.spec.McpSchema.ReadResourceResult>>
-                        handler) {
-            return McpAsyncResource.of(
-                    (ctx, request) ->
-                            handler.apply(
-                                            ctx.transportContext(),
-                                            mapper.convertValue(
-                                                    request,
-                                                    io.modelcontextprotocol.spec.McpSchema
-                                                            .ReadResourceRequest.class))
-                                    .map(
-                                            result ->
-                                                    McpAsyncResponse
-                                                            .<McpSchema.ReadResourceOutcome>result(
-                                                                    mapper.convertValue(
-                                                                            result,
-                                                                            McpSchema
-                                                                                    .ReadResourceResult
-                                                                                    .class))));
         }
 
         @Override
@@ -285,41 +206,14 @@ public final class McpModernFeatures {
         }
     }
 
-    /** The prompts, bridged and modern, indexed by name. */
+    /** The prompts, indexed by name. */
     private static final class Prompts implements McpAsyncPromptRepository {
         private final Map<String, McpAsyncPrompt> byName = new LinkedHashMap<>();
 
-        private Prompts(McpJsonMapper mapper, Registrations registrations) {
-            for (McpStatelessServerFeatures.AsyncPromptSpecification spec :
-                    registrations.prompts()) {
-                add(bridge(mapper, spec));
-            }
-            for (McpAsyncPrompt prompt : registrations.modernPrompts()) {
+        private Prompts(Registrations registrations) {
+            for (McpAsyncPrompt prompt : registrations.prompts()) {
                 add(prompt);
             }
-        }
-
-        private static McpAsyncPrompt bridge(
-                McpJsonMapper mapper, McpStatelessServerFeatures.AsyncPromptSpecification spec) {
-            return McpAsyncPrompt.of(
-                    mapper.convertValue(spec.prompt(), McpSchema.Prompt.class),
-                    (ctx, request) ->
-                            spec.promptHandler()
-                                    .apply(
-                                            ctx.transportContext(),
-                                            mapper.convertValue(
-                                                    request,
-                                                    io.modelcontextprotocol.spec.McpSchema
-                                                            .GetPromptRequest.class))
-                                    .map(
-                                            result ->
-                                                    McpAsyncResponse
-                                                            .<McpSchema.GetPromptOutcome>result(
-                                                                    mapper.convertValue(
-                                                                            result,
-                                                                            McpSchema
-                                                                                    .GetPromptResult
-                                                                                    .class))));
         }
 
         private void add(McpAsyncPrompt prompt) {

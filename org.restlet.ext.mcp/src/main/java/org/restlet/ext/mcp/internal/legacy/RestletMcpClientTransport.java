@@ -6,13 +6,14 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.mcp;
+package org.restlet.ext.mcp.internal.legacy;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpTransportSessionNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -35,6 +38,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerSentEvent;
+import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
@@ -42,10 +46,21 @@ import org.restlet.representation.EventStreamReader;
 import reactor.core.publisher.Mono;
 
 /**
- * Native SDK transport using a borrowed, started Restlet HTTP connector. It never owns an HTTP
- * engine or retries/reconnects a POST. The borrowed connector must disable redirects.
+ * The SDK client's transport to a legacy MCP server, on a borrowed, started Restlet HTTP connector.
+ * It never owns an HTTP engine or retries/reconnects a POST. The borrowed connector must disable
+ * redirects. It offers the revisions given, newest first, and sends the one negotiated.
+ *
+ * <p>Sessions are opt-in, since 2026-07-28 removed them. By default a session response fails. With
+ * sessions on, the session a server opens with {@code initialize} is kept, sent with each request,
+ * and deleted when the transport closes; once expired, the SDK client initializes again. A session
+ * id the caller owns is sent with each request instead, never replaced and never deleted, and its
+ * expiry fails the request. Either way, no listening {@code GET} stream is opened, and requests the
+ * server sends on a response stream are answered as not found.
  */
 public final class RestletMcpClientTransport implements McpClientTransport {
+    private static final Logger LOGGER =
+            Logger.getLogger(RestletMcpClientTransport.class.getName());
+
     private final Client client;
     private final String target;
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
@@ -54,27 +69,39 @@ public final class RestletMcpClientTransport implements McpClientTransport {
     private final int maxMessageBytes;
     private final Duration timeout;
     private final Consumer<Request> customizer;
+    private final List<String> versions;
+    private final boolean sessions;
+    private final String owned;
     private volatile Function<Mono<McpSchema.JSONRPCMessage>, Mono<McpSchema.JSONRPCMessage>>
             incoming;
+    private volatile Consumer<Throwable> exceptionHandler = error -> {};
+    private volatile String session;
+    private volatile String negotiated;
     private volatile boolean closed;
 
-    public RestletMcpClientTransport(Client client, String target) {
-        this(
-                client,
-                target,
-                McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
-                McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS,
-                Duration.ofSeconds(30),
-                request -> {});
-    }
-
+    /**
+     * Creates the transport of a legacy client.
+     *
+     * @param client The borrowed, started connector, not following redirects.
+     * @param target The endpoint URI.
+     * @param maxMessageBytes The largest message.
+     * @param maxConcurrentCalls The most exchanges at once.
+     * @param timeout The request timeout.
+     * @param customizer Customizes each request.
+     * @param versions The revisions offered, newest first.
+     * @param sessions Whether a session the server opens is kept, sent and finally deleted.
+     * @param owned A session id the caller owns, sent with each request, or null.
+     */
     public RestletMcpClientTransport(
             Client client,
             String target,
             int maxMessageBytes,
             int maxConcurrentCalls,
             Duration timeout,
-            Consumer<Request> customizer) {
+            Consumer<Request> customizer,
+            List<String> versions,
+            boolean sessions,
+            String owned) {
         this.client = Objects.requireNonNull(client, "client");
         Reference reference = new Reference(target);
         if (!"http".equals(reference.getScheme()) && !"https".equals(reference.getScheme())) {
@@ -83,17 +110,25 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         if (maxMessageBytes <= 0 || maxMessageBytes == Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Invalid MCP message byte limit");
         }
+        if (versions.isEmpty()) {
+            throw new IllegalArgumentException("At least one MCP revision required");
+        }
         this.target = target;
         this.maxMessageBytes = maxMessageBytes;
         this.timeout = Objects.requireNonNull(timeout, "timeout");
         this.customizer = Objects.requireNonNull(customizer, "customizer");
+        this.versions = List.copyOf(versions);
+        this.sessions = sessions;
+        this.owned = owned;
         workers = new McpWorkers(maxConcurrentCalls, timeout);
     }
 
     @Override
     public synchronized Mono<Void> connect(
             Function<Mono<McpSchema.JSONRPCMessage>, Mono<McpSchema.JSONRPCMessage>> handler) {
-        if (closed || incoming != null) {
+        // With sessions, the SDK client connects again when it initializes after an expired
+        // session: the new handler then receives what the server sends.
+        if (closed || (incoming != null && !sessions)) {
             return Mono.error(new IllegalStateException("MCP transport is single-use"));
         }
         if (!client.isStarted()
@@ -112,8 +147,24 @@ public final class RestletMcpClientTransport implements McpClientTransport {
     }
 
     @Override
+    public void setExceptionHandler(Consumer<Throwable> handler) {
+        exceptionHandler = Objects.requireNonNull(handler, "handler");
+    }
+
+    /** Oldest first: the SDK client offers the last one in {@code initialize}. */
+    @Override
     public List<String> protocolVersions() {
-        return List.of(McpProtocol.VERSION);
+        return versions.reversed();
+    }
+
+    /**
+     * The session id sent with each request: the one the caller owns, else the one the server
+     * opened, if any.
+     *
+     * @return The session id, or null.
+     */
+    public String getSessionId() {
+        return owned != null ? owned : session;
     }
 
     @Override
@@ -134,6 +185,15 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         if (closed || incoming == null) {
             throw new IOException("MCP transport is not connected");
         }
+        boolean initializing =
+                message instanceof McpSchema.JSONRPCRequest rpc
+                        && McpSchema.METHOD_INITIALIZE.equals(rpc.method());
+        if (initializing) {
+            // A new handshake, after an expired session too, starts without one.
+            session = null;
+            negotiated = null;
+        }
+        String sent = getSessionId();
         byte[] bytes = McpMessages.encode(mapper, message, maxMessageBytes);
         Request request =
                 new Request(
@@ -141,7 +201,12 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                         target,
                         new ByteArrayRepresentation(bytes, MediaType.APPLICATION_JSON));
         customizer.accept(request);
-        request.getHeaders().set(McpProtocol.VERSION_HEADER, McpProtocol.VERSION);
+        String version = negotiated;
+        request.getHeaders()
+                .set(McpProtocol.VERSION_HEADER, version == null ? versions.getFirst() : version);
+        if (sent != null) {
+            request.getHeaders().set(McpProtocol.SESSION_HEADER, sent);
+        }
         request.getClientInfo()
                 .setAcceptedMediaTypes(
                         List.of(
@@ -157,33 +222,37 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         Response response = null;
         try {
             response = client.handle(request);
+            if (sent != null && response.getStatus().getCode() == 404) {
+                if (sent.equals(owned)) {
+                    throw new IOException("MCP session " + sent + " expired");
+                }
+                expired(sent);
+            }
             if (!response.getStatus().isSuccess()) {
                 throw new IOException(
                         "MCP HTTP failure: " + response.getStatus(),
                         response.getStatus().getThrowable());
             }
-            if (response.getHeaders().getFirstValue("Mcp-Session-Id", true) != null) {
-                throw new IOException(
-                        "MCP session responses are not supported by the stateless profile");
-            }
-            if (message instanceof McpSchema.JSONRPCNotification) {
-                if (response.getStatus().getCode() != 202
-                        && response.getStatus().getCode() != 204) {
+            String opened = response.getHeaders().getFirstValue(McpProtocol.SESSION_HEADER, true);
+            if (opened != null && owned == null) {
+                if (!sessions) {
                     throw new IOException(
-                            "MCP notification must return an empty acceptance response");
+                            "MCP session responses need legacy sessions to be turned on");
                 }
-                if (response.getEntity() != null
-                        && response.getEntity().isAvailable()
-                        && response.getEntity().getSize() != 0) {
-                    throw new IOException("MCP notification unexpectedly returned an entity");
+                if (initializing) {
+                    session = opened;
                 }
+            }
+            if (message instanceof McpSchema.JSONRPCNotification
+                    || (sent != null && message instanceof McpSchema.JSONRPCResponse)) {
+                accepted(response);
                 return;
             }
             if (!(message instanceof McpSchema.JSONRPCRequest rpc)) {
                 throw new IOException(
                         "Server-directed responses are outside the stateless MCP profile");
             }
-            readResponse(response, rpc.id());
+            readResponse(response, rpc.id(), initializing);
         } finally {
             if (response != null && response.getEntity() != null) {
                 response.getEntity().release();
@@ -192,7 +261,33 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         }
     }
 
-    private void readResponse(Response response, Object id) throws IOException {
+    /** A notification, or an answer to a server request, gets an empty acceptance. */
+    private static void accepted(Response response) throws IOException {
+        if (response.getStatus().getCode() != 202 && response.getStatus().getCode() != 204) {
+            throw new IOException("MCP notification must return an empty acceptance response");
+        }
+        if (response.getEntity() != null
+                && response.getEntity().isAvailable()
+                && response.getEntity().getSize() != 0) {
+            throw new IOException("MCP notification unexpectedly returned an entity");
+        }
+    }
+
+    /** Forgets an expired session and tells the SDK client, which initializes again. */
+    private void expired(String sent) throws IOException {
+        synchronized (this) {
+            if (sent.equals(session)) {
+                session = null;
+                negotiated = null;
+            }
+        }
+        var expired = new McpTransportSessionNotFoundException(sent);
+        exceptionHandler.accept(expired);
+        throw new IOException("MCP session " + sent + " expired", expired);
+    }
+
+    private void readResponse(Response response, Object id, boolean initializing)
+            throws IOException {
         if (response.getEntity() == null || response.getEntity().getMediaType() == null) {
             throw new IOException("Missing MCP response entity or media type");
         }
@@ -203,18 +298,19 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                 if (!deliver(
                         McpSchema.deserializeJsonRpcMessage(
                                 mapper, McpMessages.utf8(McpMessages.read(input, maxMessageBytes))),
-                        id)) {
+                        id,
+                        initializing)) {
                     throw new IOException("MCP JSON response must contain the correlated response");
                 }
             } else if (MediaType.TEXT_EVENT_STREAM.isCompatible(mediaType)) {
-                readEvents(input, id);
+                readEvents(input, id, initializing);
             } else {
                 throw new IOException("Unsupported MCP response media type: " + mediaType);
             }
         }
     }
 
-    private void readEvents(InputStream input, Object id) throws IOException {
+    private void readEvents(InputStream input, Object id, boolean initializing) throws IOException {
         Reader decoded =
                 new InputStreamReader(
                         input,
@@ -228,7 +324,9 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                 if (event.getData() != null
                         && !event.getData().isEmpty()
                         && deliver(
-                                McpSchema.deserializeJsonRpcMessage(mapper, event.getData()), id)) {
+                                McpSchema.deserializeJsonRpcMessage(mapper, event.getData()),
+                                id,
+                                initializing)) {
                     return;
                 }
             }
@@ -236,12 +334,39 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         }
     }
 
-    private boolean deliver(McpSchema.JSONRPCMessage message, Object id) throws IOException {
+    private boolean deliver(McpSchema.JSONRPCMessage message, Object id, boolean initializing)
+            throws IOException {
         if (message instanceof McpSchema.JSONRPCResponse rpc && !Objects.equals(id, rpc.id())) {
             throw new IOException("MCP response id does not match its HTTP request");
         }
-        if (message instanceof McpSchema.JSONRPCRequest) {
-            throw new IOException("Server-initiated MCP requests are not supported");
+        if (message instanceof McpSchema.JSONRPCRequest request) {
+            if (getSessionId() == null) {
+                throw new IOException("Server-initiated MCP requests are not supported");
+            }
+            // Refused on its own exchange, without holding up the stream: the legacy edge declares
+            // no capability, and answers no sampling, roots or elicitation.
+            sendMessage(
+                            new McpSchema.JSONRPCResponse(
+                                    McpSchema.JSONRPC_VERSION,
+                                    request.id(),
+                                    null,
+                                    new McpSchema.JSONRPCResponse.JSONRPCError(
+                                            McpSchema.ErrorCodes.METHOD_NOT_FOUND,
+                                            "Method not found: " + request.method(),
+                                            null)))
+                    .subscribe(
+                            null,
+                            error ->
+                                    LOGGER.log(
+                                            Level.FINE, "MCP server request not refused", error));
+            return false;
+        }
+        if (initializing
+                && message instanceof McpSchema.JSONRPCResponse rpc
+                && rpc.result() instanceof java.util.Map<?, ?> result
+                && result.get("protocolVersion") instanceof String version
+                && versions.contains(version)) {
+            negotiated = version;
         }
         incoming.apply(Mono.just(message)).block(timeout);
         return message instanceof McpSchema.JSONRPCResponse;
@@ -259,9 +384,36 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                             closed = true;
                             requests.forEach(Request::abort);
                             workers.close();
+                            deleteSession();
                             return Boolean.TRUE;
                         })
                 .then();
+    }
+
+    /** Ends the session on the server, if one is open; a server may refuse, which is fine. */
+    private void deleteSession() {
+        String open = session;
+        session = null;
+        if (open == null) {
+            return;
+        }
+        Request request = new Request(Method.DELETE, target);
+        customizer.accept(request);
+        request.getHeaders().set(McpProtocol.SESSION_HEADER, open);
+        String version = negotiated;
+        if (version != null) {
+            request.getHeaders().set(McpProtocol.VERSION_HEADER, version);
+        }
+        Response response = null;
+        try {
+            response = client.handle(request);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.FINE, "MCP session not deleted", e);
+        } finally {
+            if (response != null && response.getEntity() != null) {
+                response.getEntity().release();
+            }
+        }
     }
 
     /**

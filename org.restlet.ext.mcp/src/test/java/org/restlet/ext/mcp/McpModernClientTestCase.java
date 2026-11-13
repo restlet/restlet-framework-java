@@ -341,7 +341,6 @@ class McpModernClientTestCase {
     @Test
     void modernModeLimits() throws Exception {
         start("HTTP2", null);
-        assertThrows(IllegalStateException.class, client::getSdkClient);
         client.stop();
         assertFalse(client.isStarted());
 
@@ -392,7 +391,7 @@ class McpModernClientTestCase {
     private McpServerAdapter adapter() throws Exception {
         McpServerAdapter served = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(served);
-        served.getModernTools()
+        served.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("progress", Map.of("type", "object")).build(),
@@ -405,7 +404,7 @@ class McpModernClientTestCase {
                                                                                 Mono.just(
                                                                                         result(
                                                                                                 "done")))))));
-        served.getModernTools()
+        served.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("approve", Map.of("type", "object")).build(),
@@ -429,7 +428,7 @@ class McpModernClientTestCase {
                                                     : result("approved:" + request.requestState());
                                     return Mono.just(McpAsyncResponse.result(outcome));
                                 }));
-        served.getModernTools()
+        served.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("endless", Map.of("type", "object")).build(),
@@ -446,7 +445,7 @@ class McpModernClientTestCase {
                                                                                         .doOnCancel(
                                                                                                 cancelled
                                                                                                         ::countDown))))));
-        served.getModernTools()
+        served.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder(
@@ -470,7 +469,7 @@ class McpModernClientTestCase {
                                                                 "region:"
                                                                         + request.arguments()
                                                                                 .get("region"))))));
-        served.getModernTools()
+        served.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder(
@@ -494,9 +493,9 @@ class McpModernClientTestCase {
                                                                 "level:"
                                                                         + request.arguments()
                                                                                 .get("level"))))));
-        served.getModernResources()
+        served.getResources()
                 .add(
-                        new McpModernResource(
+                        new McpResource(
                                 McpSchema.Resource.builder("test://modern", "modern").build(),
                                 McpAsyncResource.of(
                                         (ctx, request) -> {
@@ -512,7 +511,7 @@ class McpModernClientTestCase {
                                                             .build();
                                             return Mono.just(McpAsyncResponse.result(outcome));
                                         })));
-        served.getModernPrompts()
+        served.getPrompts()
                 .add(
                         McpAsyncPrompt.of(
                                 McpSchema.Prompt.builder("welcome").build(),

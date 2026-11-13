@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
+import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema.CallToolOutcome;
 import io.modelcontextprotocol.modern.McpSchema.CallToolResult;
 import io.modelcontextprotocol.modern.McpSchema.ElicitFormRequest;
@@ -28,8 +29,6 @@ import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.modern.server.feature.ServerChange;
-import io.modelcontextprotocol.server.McpStatelessServerFeatures;
-import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -52,8 +51,8 @@ import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
 
 /**
- * MCP {@code 2026-07-28} served by {@link McpServerAdapter} next to {@code 2025-11-25}: bridged
- * registrations, modern tools, interceptors, filters, limits and protocol errors.
+ * MCP {@code 2026-07-28} served by {@link McpServerAdapter} next to {@code 2025-11-25}:
+ * registrations, interceptors, filters, limits and protocol errors.
  */
 class McpModernServerTestCase {
     private static final McpJsonMapper MAPPER = McpJsonDefaults.getMapper();
@@ -68,9 +67,9 @@ class McpModernServerTestCase {
         }
     }
 
-    /** The 2025-11-25 registrations are served to 2026-07-28 clients, converted. */
+    /** The registrations answer 2026-07-28 clients. */
     @Test
-    void bridgedRegistrationsAnswerModernClients() throws Exception {
+    void registrationsAnswerModernClients() throws Exception {
         McpServerAdapter adapter = adapter();
         addResourcesAndPrompts(adapter);
         adapter.start();
@@ -190,16 +189,14 @@ class McpModernServerTestCase {
                 .add(
                         (message, context, chain) -> {
                             seen.add(context.protocolVersion());
-                            if (message instanceof McpSchema.JSONRPCRequest request
+                            if (message instanceof JsonRpc.JSONRPCRequest request
                                     && request.params() instanceof Map<?, ?> params
                                     && "approve".equals(params.get("name"))) {
                                 return Mono.just(
-                                        new McpSchema.JSONRPCResponse(
-                                                "2.0",
+                                        JsonRpc.JSONRPCResponse.error(
                                                 request.id(),
-                                                null,
-                                                new McpSchema.JSONRPCResponse.JSONRPCError(
-                                                        -32001, "Not allowed", null)));
+                                                new JsonRpc.JSONRPCResponse.JSONRPCError(
+                                                        -32001, "Not allowed")));
                             }
                             return chain.proceed(message, context)
                                     .doOnNext(response -> seen.add("final:" + response.id()));
@@ -261,13 +258,44 @@ class McpModernServerTestCase {
         assertFalse(result.containsKey("resultType"), "2025-11-25 results have no resultType");
     }
 
+    /**
+     * A legacy client gets only the final result of a streaming tool, and an error instead of an
+     * input_required result, which it can't answer.
+     */
+    @Test
+    void legacyClientsGetFinalResultsAndNoInputRequests() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.start();
+
+        Response streamed =
+                adapter.handle(
+                        McpServerAdapterTestCase.request(
+                                "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":"
+                                        + "{\"name\":\"progress\",\"arguments\":{},"
+                                        + "\"_meta\":{\"progressToken\":\"p1\"}}}"));
+        assertEquals(MediaType.APPLICATION_JSON, streamed.getEntity().getMediaType());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result =
+                (Map<String, Object>) McpServerAdapterTestCase.envelope(streamed).get("result");
+        assertEquals("done", firstText(result));
+
+        Response asked =
+                adapter.handle(
+                        McpServerAdapterTestCase.request(
+                                "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":"
+                                        + "{\"name\":\"approve\",\"arguments\":{}}}"));
+        Map<String, Object> envelope = McpServerAdapterTestCase.envelope(asked);
+        assertEquals(2, ((Number) envelope.get("id")).intValue());
+        assertEquals(-32603, ((Map<?, ?>) envelope.get("error")).get("code"));
+    }
+
     /** The call limit counts 2026-07-28 requests: a call over it is unavailable. */
     @Test
     void theCallLimitAppliesToModernRequests() throws Exception {
         McpServerAdapter adapter = adapter();
         CountDownLatch entered = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("hold", Map.of("type", "object")).build(),
@@ -347,7 +375,7 @@ class McpModernServerTestCase {
     @Test
     void paramHeadersAreValidatedForAnnotatedTools() throws Exception {
         McpServerAdapter adapter = adapter();
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder(
@@ -395,7 +423,7 @@ class McpModernServerTestCase {
     void aClientGoneMidStreamCancelsTheTool() throws Exception {
         McpServerAdapter adapter = adapter();
         CountDownLatch cancelled = new CountDownLatch(1);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("endless", Map.of("type", "object")).build(),
@@ -462,7 +490,7 @@ class McpModernServerTestCase {
     @Test
     void aTimeoutDuringAStreamEndsItWithAnError() throws Exception {
         McpServerAdapter adapter = adapter();
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("stuck", Map.of("type", "object")).build(),
@@ -551,11 +579,11 @@ class McpModernServerTestCase {
         assertEquals(403, adapter.handle(request).getStatus().getCode());
     }
 
-    /** A tool name can't be used by both a 2025-11-25 tool and a modern one. */
+    /** A tool name can't be used twice. */
     @Test
     void aDuplicateToolNameFailsTheStart() {
         McpServerAdapter adapter = adapter();
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("echo", Map.of("type", "object")).build(),
@@ -580,8 +608,7 @@ class McpModernServerTestCase {
                                 chain.proceed(message, context)
                                         .map(
                                                 response ->
-                                                        new McpSchema.JSONRPCResponse(
-                                                                response.jsonrpc(),
+                                                        JsonRpc.JSONRPCResponse.result(
                                                                 response.id(),
                                                                 Map.of(
                                                                         "content",
@@ -592,8 +619,7 @@ class McpModernServerTestCase {
                                                                                         "text",
                                                                                         "intercepted")),
                                                                         "resultType",
-                                                                        "complete"),
-                                                                null)));
+                                                                        "complete"))));
         adapter.start();
         Map<String, Object> meta = meta();
         meta.put(MetaKeys.PROGRESS_TOKEN, "p1");
@@ -618,7 +644,7 @@ class McpModernServerTestCase {
     @Test
     void aTimedOutCallNamesTheRequest() throws Exception {
         McpServerAdapter adapter = adapter();
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("silent", Map.of("type", "object")).build(),
@@ -648,21 +674,21 @@ class McpModernServerTestCase {
         adapters.add(adapter);
         adapter.getTools()
                 .add(
-                        new McpStatelessServerFeatures.AsyncToolSpecification(
-                                McpServerAdapterTestCase.echoTool(),
-                                (transport, call) ->
+                        McpAsyncTool.of(
+                                Tool.builder("echo", Map.of("type", "object")).build(),
+                                (ctx, request) ->
                                         Mono.just(
-                                                McpSchema.CallToolResult.builder()
-                                                        .addTextContent(
+                                                McpAsyncResponse.<CallToolOutcome>result(
+                                                        text(
                                                                 String.valueOf(
                                                                         ((McpRequestContext)
-                                                                                        transport
+                                                                                        ctx.transportContext()
                                                                                                 .get(
                                                                                                         McpProtocol
                                                                                                                 .CONTEXT_KEY))
                                                                                 .attributes()
-                                                                                .get("tenant")))
-                                                        .build())));
+                                                                                .get(
+                                                                                        "tenant")))))));
         adapter.getInterceptors()
                 .add(
                         (message, context, chain) -> {
@@ -718,7 +744,7 @@ class McpModernServerTestCase {
     void aClientGoneAtTheFirstFlushCancelsTheTool() throws Exception {
         McpServerAdapter adapter = adapter();
         CountDownLatch cancelled = new CountDownLatch(1);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("endless", Map.of("type", "object")).build(),
@@ -786,7 +812,7 @@ class McpModernServerTestCase {
     void aReleasedUnwrittenStreamCancelsTheTool() throws Exception {
         McpServerAdapter adapter = adapter();
         CountDownLatch cancelled = new CountDownLatch(1);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("endless", Map.of("type", "object")).build(),
@@ -833,7 +859,7 @@ class McpModernServerTestCase {
                                         "echo"))));
     }
 
-    /** Modern resources, templates and prompts are served next to the bridged ones. */
+    /** Resources, templates and prompts of both helpers are served together, in order. */
     @Test
     void modernResourcesAndPromptsAreServed() throws Exception {
         McpServerAdapter adapter = adapter();
@@ -875,25 +901,25 @@ class McpModernServerTestCase {
     void aDuplicateResourceOrPromptFailsTheStart() {
         McpServerAdapter uri = adapter();
         addResourcesAndPrompts(uri);
-        uri.getModernResources()
+        uri.getResources()
                 .add(
-                        new McpModernResource(
+                        new McpResource(
                                 io.modelcontextprotocol.modern.McpSchema.Resource.builder(
                                                 "test://fixed", "again")
                                         .build(),
                                 modernRead()));
         McpServerAdapter template = adapter();
         addResourcesAndPrompts(template);
-        template.getModernResourceTemplates()
+        template.getResourceTemplates()
                 .add(
-                        new McpModernResourceTemplate(
+                        new McpResourceTemplate(
                                 io.modelcontextprotocol.modern.McpSchema.ResourceTemplate.builder(
                                                 "test://items/{id}", "again")
                                         .build(),
                                 modernRead()));
         McpServerAdapter prompt = adapter();
         addResourcesAndPrompts(prompt);
-        prompt.getModernPrompts().add(modernPrompt("greet"));
+        prompt.getPrompts().add(modernPrompt("greet"));
 
         for (var each :
                 Map.of(uri, "test://fixed", template, "items/{id}", prompt, "greet").entrySet()) {
@@ -976,7 +1002,7 @@ class McpModernServerTestCase {
     private McpServerAdapter adapter() {
         McpServerAdapter adapter = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(adapter);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("progress", Map.of("type", "object")).build(),
@@ -989,7 +1015,7 @@ class McpModernServerTestCase {
                                                                                 Mono.just(
                                                                                         text(
                                                                                                 "done")))))));
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("approve", Map.of("type", "object")).build(),
@@ -1023,50 +1049,27 @@ class McpModernServerTestCase {
     }
 
     private static void addResourcesAndPrompts(McpServerAdapter adapter) {
-        adapter.getResources()
-                .add(
-                        new McpStatelessServerFeatures.AsyncResourceSpecification(
-                                McpSchema.Resource.builder("test://fixed", "fixed").build(),
-                                (context, request) -> Mono.just(contents(request.uri()))));
-        adapter.getResourceTemplates()
-                .add(
-                        new McpStatelessServerFeatures.AsyncResourceTemplateSpecification(
-                                McpSchema.ResourceTemplate.builder("test://items/{id}", "items")
-                                        .build(),
-                                (context, request) -> Mono.just(contents(request.uri()))));
-        adapter.getPrompts()
-                .add(
-                        new McpStatelessServerFeatures.AsyncPromptSpecification(
-                                McpSchema.Prompt.builder("greet").build(),
-                                (context, request) ->
-                                        Mono.just(
-                                                new McpSchema.GetPromptResult(
-                                                        "greeting",
-                                                        List.of(
-                                                                new McpSchema.PromptMessage(
-                                                                        McpSchema.Role.USER,
-                                                                        McpSchema.TextContent
-                                                                                .builder("hello")
-                                                                                .build())),
-                                                        null))));
+        adapter.getResources().add(McpTestFeatures.resource("test://fixed", "text"));
+        adapter.getResourceTemplates().add(McpTestFeatures.template("test://items/{id}", "text"));
+        adapter.getPrompts().add(McpTestFeatures.prompt("greet", "greeting", "hello"));
     }
 
     private static void addModernResourcesAndPrompts(McpServerAdapter adapter) {
-        adapter.getModernResources()
+        adapter.getResources()
                 .add(
-                        new McpModernResource(
+                        new McpResource(
                                 io.modelcontextprotocol.modern.McpSchema.Resource.builder(
                                                 "test://modern", "modern")
                                         .build(),
                                 modernRead()));
-        adapter.getModernResourceTemplates()
+        adapter.getResourceTemplates()
                 .add(
-                        new McpModernResourceTemplate(
+                        new McpResourceTemplate(
                                 io.modelcontextprotocol.modern.McpSchema.ResourceTemplate.builder(
                                                 "test://things/{id}", "things")
                                         .build(),
                                 modernRead()));
-        adapter.getModernPrompts().add(modernPrompt("welcome"));
+        adapter.getPrompts().add(modernPrompt("welcome"));
     }
 
     private static McpAsyncResource modernRead() {
@@ -1150,11 +1153,6 @@ class McpModernServerTestCase {
                             }
                         })
                 .get(10, TimeUnit.SECONDS);
-    }
-
-    private static McpSchema.ReadResourceResult contents(String uri) {
-        return new McpSchema.ReadResourceResult(
-                List.of(new McpSchema.TextResourceContents(uri, "text/plain", "text", null)), null);
     }
 
     private static CallToolResult text(String text) {
