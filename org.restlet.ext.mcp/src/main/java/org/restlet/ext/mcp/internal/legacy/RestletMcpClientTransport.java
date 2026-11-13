@@ -39,6 +39,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerSentEvent;
 import org.restlet.ext.mcp.McpProtocol;
+import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
@@ -171,6 +172,16 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         return owned != null ? owned : session;
     }
 
+    /**
+     * The revision the last {@code initialize} handshake negotiated, which a handshake after an
+     * expired session may change.
+     *
+     * @return The revision, or null before a handshake completes.
+     */
+    public String getNegotiatedVersion() {
+        return negotiated;
+    }
+
     @Override
     public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
         var active = new AtomicReference<Request>();
@@ -236,8 +247,9 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                 expired(sent);
             }
             if (!response.getStatus().isSuccess()) {
-                throw new IOException(
+                throw new McpHttpStatusException(
                         "MCP HTTP failure: " + response.getStatus(),
+                        response.getStatus().getCode(),
                         response.getStatus().getThrowable());
             }
             String opened = response.getHeaders().getFirstValue(McpProtocol.SESSION_HEADER, true);
@@ -276,16 +288,24 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         }
     }
 
-    /** Forgets an expired session and tells the SDK client, which initializes again. */
+    /**
+     * Fails a request whose session expired. If that session is still the current one, it is
+     * forgotten and the SDK client told, which initializes again; a delayed answer for a session
+     * already replaced leaves the replacement alone.
+     */
     private void expired(String sent) throws IOException {
+        boolean current;
         synchronized (this) {
-            if (sent.equals(session)) {
+            current = sent.equals(session);
+            if (current) {
                 session = null;
                 negotiated = null;
             }
         }
         var expired = new McpTransportSessionNotFoundException(sent);
-        exceptionHandler.accept(expired);
+        if (current) {
+            exceptionHandler.accept(expired);
+        }
         throw new IOException("MCP session " + sent + " expired", expired);
     }
 

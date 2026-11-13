@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * The era each MCP HTTP endpoint was found to speak, modern or legacy, as the 2026-07-28 revision
  * recommends a dual-era client remember it. It is kept by endpoint URI rather than by origin, since
- * one origin may host servers of both eras on different paths, and only for this JVM. A client that
- * finds the cached era wrong forgets it and probes again.
+ * one origin may host servers of both eras on different paths, and only for this JVM. A client
+ * starting on a cached era that the server contradicts forgets it and probes again.
  */
 public final class McpEras {
     /** An endpoint answering {@code server/discover}. */

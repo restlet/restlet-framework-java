@@ -72,6 +72,9 @@ final class McpLegacySessionHost extends Restlet implements McpStreamableServerT
     /** Whether no session id is returned, the only session serving requests without one. */
     volatile boolean sessionless;
 
+    /** The revision each {@code initialize} is answered with instead of the SDK's, or null. */
+    volatile String negotiate;
+
     McpLegacySessionHost(Duration heartbeat, Duration timeout) {
         this.heartbeat = heartbeat;
         this.timeout = timeout;
@@ -163,7 +166,14 @@ final class McpLegacySessionHost extends Restlet implements McpStreamableServerT
             if (!sessionless) {
                 response.getHeaders().add(McpProtocol.SESSION_HEADER, init.session().getId());
             }
-            json(response, McpSchema.JSONRPCResponse.result(rpc.id(), result));
+            Object answer = result;
+            String revision = negotiate;
+            if (revision != null) {
+                Map<String, Object> fields = MAPPER.convertValue(result, new TypeRef<>() {});
+                fields.put("protocolVersion", revision);
+                answer = fields;
+            }
+            json(response, McpSchema.JSONRPCResponse.result(rpc.id(), answer));
             return;
         }
         McpStreamableServerSession session = session(request, response);

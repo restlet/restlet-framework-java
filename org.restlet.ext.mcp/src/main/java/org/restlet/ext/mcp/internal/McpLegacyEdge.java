@@ -87,7 +87,8 @@ public interface McpLegacyEdge {
     interface Client {
 
         /**
-         * The revision the {@code initialize} handshake negotiated.
+         * The revision the last {@code initialize} handshake negotiated, which may change when a
+         * session expires and the client initializes again.
          *
          * @return The revision.
          */
@@ -164,6 +165,17 @@ public interface McpLegacyEdge {
      */
     static Server server(McpJsonMapper mapper, Core core, int maxMessageBytes, Duration timeout) {
         return new McpLegacyServer(mapper, core, maxMessageBytes, timeout);
+    }
+
+    /**
+     * Whether a legacy client's failed start proves the server isn't a legacy one: a {@code 4xx} or
+     * a JSON-RPC error answering {@code initialize}, unlike a timeout or a {@code 5xx}.
+     *
+     * @param failure The failure.
+     * @return True if it does.
+     */
+    static boolean wrongEra(Throwable failure) {
+        return McpLegacyClient.wrongEra(failure);
     }
 
     /**

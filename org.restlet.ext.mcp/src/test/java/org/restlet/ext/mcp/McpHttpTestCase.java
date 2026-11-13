@@ -376,4 +376,102 @@ class McpHttpTestCase {
             transport.closeGracefully().block();
         }
     }
+
+    /**
+     * A delayed 404 for a session already replaced fails its request, without reporting an expiry
+     * to the SDK client: that would make it initialize again, dropping the valid replacement.
+     */
+    @Test
+    void aStaleSessionExpiryLeavesItsReplacementAlone() throws Exception {
+        var mapper = io.modelcontextprotocol.json.McpJsonDefaults.getMapper();
+        var opened = new AtomicInteger();
+        var held = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+        String target =
+                start(
+                        "HTTP1_1",
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, org.restlet.Response response) {
+                                if (!org.restlet.data.Method.POST.equals(request.getMethod())) {
+                                    response.setStatus(Status.SUCCESS_OK);
+                                    return;
+                                }
+                                try {
+                                    var message =
+                                            McpSchema.deserializeJsonRpcMessage(
+                                                    mapper, request.getEntity().getText());
+                                    if (message instanceof McpSchema.JSONRPCRequest rpc
+                                            && McpSchema.METHOD_INITIALIZE.equals(rpc.method())) {
+                                        response.getHeaders()
+                                                .set(
+                                                        McpProtocol.SESSION_HEADER,
+                                                        "S" + opened.incrementAndGet());
+                                        response.setEntity(
+                                                mapper.writeValueAsString(
+                                                        Map.of(
+                                                                "jsonrpc",
+                                                                "2.0",
+                                                                "id",
+                                                                rpc.id(),
+                                                                "result",
+                                                                Map.of(
+                                                                        "protocolVersion",
+                                                                        McpProtocol.VERSION))),
+                                                MediaType.APPLICATION_JSON);
+                                        return;
+                                    }
+                                    // The request on the first session waits for it to be
+                                    // replaced, then learns it expired.
+                                    held.countDown();
+                                    release.await(10, TimeUnit.SECONDS);
+                                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                                } catch (Exception e) {
+                                    response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
+                                }
+                            }
+                        });
+        var transport =
+                new RestletMcpClientTransport(
+                        connector,
+                        target,
+                        McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
+                        4,
+                        Duration.ofSeconds(10),
+                        request -> {},
+                        List.of(McpProtocol.VERSION),
+                        true,
+                        null);
+        try {
+            var expiries = new AtomicInteger();
+            transport.setExceptionHandler(error -> expiries.incrementAndGet());
+            transport.connect(message -> message).block();
+            transport
+                    .sendMessage(
+                            new McpSchema.JSONRPCRequest(
+                                    "2.0", McpSchema.METHOD_INITIALIZE, "i1", Map.of()))
+                    .block(Duration.ofSeconds(10));
+            assertEquals("S1", transport.getSessionId());
+
+            var stale = new CompletableFuture<Throwable>();
+            transport
+                    .sendMessage(new McpSchema.JSONRPCRequest("2.0", "tools/list", "t1", Map.of()))
+                    .subscribe(null, stale::complete, () -> stale.complete(null));
+            assertTrue(held.await(10, TimeUnit.SECONDS));
+            transport
+                    .sendMessage(
+                            new McpSchema.JSONRPCRequest(
+                                    "2.0", McpSchema.METHOD_INITIALIZE, "i2", Map.of()))
+                    .block(Duration.ofSeconds(10));
+            assertEquals("S2", transport.getSessionId());
+            release.countDown();
+
+            assertTrue(stale.get(10, TimeUnit.SECONDS) != null, "the stale request fails");
+            assertEquals(0, expiries.get());
+            assertEquals("S2", transport.getSessionId());
+        } finally {
+            release.countDown();
+            transport.closeGracefully().block();
+        }
+    }
 }

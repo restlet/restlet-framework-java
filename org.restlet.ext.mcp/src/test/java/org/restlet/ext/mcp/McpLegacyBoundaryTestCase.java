@@ -10,6 +10,7 @@ package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,9 +32,9 @@ class McpLegacyBoundaryTestCase {
     private static final Path LEGACY = SOURCES.resolve("internal/legacy");
     private static final Path SEAM = SOURCES.resolve("internal/McpLegacyEdge.java");
 
-    /** The SDK's legacy client, server and schema packages. */
+    /** The SDK's legacy client, server and schema packages, wildcard imports included. */
     private static final Pattern LEGACY_SDK =
-            Pattern.compile("io\\.modelcontextprotocol\\.(spec|server|client)\\.[\\w.]+");
+            Pattern.compile("io\\.modelcontextprotocol\\.(spec|server|client)\\.[\\w.]*[\\w*]");
 
     /**
      * Legacy SDK types the modern core can't avoid, by file: the modern SDK's own API takes them.
@@ -90,6 +91,26 @@ class McpLegacyBoundaryTestCase {
             }
         }
         assertEquals(List.of(), offenders);
+    }
+
+    /** A wildcard import is caught too, while the allowed type still matches exactly. */
+    @Test
+    void theLegacySdkPatternCatchesWildcardImports() {
+        for (String line :
+                List.of(
+                        "import io.modelcontextprotocol.spec.*;",
+                        "import io.modelcontextprotocol.server.*;",
+                        "import io.modelcontextprotocol.client.*;",
+                        "import static io.modelcontextprotocol.spec.McpSchema.*;")) {
+            var matcher = LEGACY_SDK.matcher(line);
+            assertTrue(matcher.find(), line);
+            assertTrue(matcher.group().endsWith("*"), matcher.group());
+        }
+        var matcher =
+                LEGACY_SDK.matcher(
+                        "import io.modelcontextprotocol.server.transport.HeaderAccessor;");
+        assertTrue(matcher.find());
+        assertEquals("io.modelcontextprotocol.server.transport.HeaderAccessor", matcher.group());
     }
 
     @Test
