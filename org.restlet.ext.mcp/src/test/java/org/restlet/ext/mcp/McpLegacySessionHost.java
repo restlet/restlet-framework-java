@@ -43,7 +43,8 @@ import reactor.core.publisher.Mono;
  * on the MCP endpoint, with core SSE. A request is answered on an SSE stream that the SDK session
  * writes to and closes; a listening stream stays open until the session replaces or releases it, or
  * its client goes away. A request without a session, {@code initialize} excepted, gets a bare
- * {@code 400}, as such servers answer {@code server/discover}.
+ * {@code 400}, as such servers answer {@code server/discover}. A sessionless host returns no
+ * session id, and serves requests without one from its only session.
  */
 final class McpLegacySessionHost extends Restlet implements McpStreamableServerTransportProvider {
     private static final McpJsonMapper MAPPER = McpJsonDefaults.getMapper();
@@ -67,6 +68,9 @@ final class McpLegacySessionHost extends Restlet implements McpStreamableServerT
     private final Duration timeout;
     private volatile McpStreamableServerSession.Factory factory;
     private volatile boolean closing;
+
+    /** Whether no session id is returned, the only session serving requests without one. */
+    volatile boolean sessionless;
 
     McpLegacySessionHost(Duration heartbeat, Duration timeout) {
         this.heartbeat = heartbeat;
@@ -156,7 +160,9 @@ final class McpLegacySessionHost extends Restlet implements McpStreamableServerT
                     factory.startSession(MAPPER.convertValue(rpc.params(), new TypeRef<>() {}));
             sessions.put(init.session().getId(), init.session());
             McpSchema.InitializeResult result = init.initResult().block(timeout);
-            response.getHeaders().add(McpProtocol.SESSION_HEADER, init.session().getId());
+            if (!sessionless) {
+                response.getHeaders().add(McpProtocol.SESSION_HEADER, init.session().getId());
+            }
             json(response, McpSchema.JSONRPCResponse.result(rpc.id(), result));
             return;
         }
@@ -226,6 +232,9 @@ final class McpLegacySessionHost extends Restlet implements McpStreamableServerT
 
     private McpStreamableServerSession session(Request request, Response response) {
         String id = request.getHeaders().getFirstValue(McpProtocol.SESSION_HEADER, true);
+        if (id == null && sessionless && sessions.size() == 1) {
+            return sessions.values().iterator().next();
+        }
         if (id == null) {
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return null;

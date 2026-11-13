@@ -544,6 +544,8 @@ public final class McpServerAdapter extends Restlet {
         }
         var context =
                 new McpRequestContext(request, version == null ? McpProtocol.VERSION : version);
+        // The id of the request once decoded, for a failure past the edge to answer.
+        var decoded = new AtomicReference<>();
         McpLegacyEdge.Reply reply;
         try {
             reply =
@@ -551,7 +553,11 @@ public final class McpServerAdapter extends Restlet {
                                     context,
                                     () ->
                                             Optional.of(
-                                                    legacyEdge.exchange(request, version, context)),
+                                                    legacyEdge.exchange(
+                                                            request,
+                                                            version,
+                                                            context,
+                                                            decoded::set)),
                                     () -> request.getEntity().release())
                             .orElseThrow(() -> new IllegalStateException("MCP exchange ended"));
         } catch (RuntimeException e) {
@@ -559,7 +565,7 @@ public final class McpServerAdapter extends Restlet {
             reply =
                     new McpLegacyEdge.Reply(
                             Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
-                            McpMessages.error(null, -32603, "MCP exchange unavailable"));
+                            McpMessages.error(decoded.get(), -32603, "MCP exchange unavailable"));
         }
         response.setStatus(reply.status());
         if (reply.body() != null) {

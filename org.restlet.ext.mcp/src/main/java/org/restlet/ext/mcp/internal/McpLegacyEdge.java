@@ -69,9 +69,15 @@ public interface McpLegacyEdge {
          * @param request The request, whose headers the adapter already checked.
          * @param version The {@code MCP-Protocol-Version} header, or null.
          * @param context The request context.
+         * @param decoded Given the id of the request once decoded, so that a failure the adapter
+         *     answers past the edge, such as a timeout, still names it.
          * @return The reply.
          */
-        Reply exchange(Request request, String version, McpRequestContext context);
+        Reply exchange(
+                Request request,
+                String version,
+                McpRequestContext context,
+                Consumer<Object> decoded);
     }
 
     /**

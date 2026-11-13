@@ -55,7 +55,9 @@ import reactor.core.publisher.Mono;
  * and deleted when the transport closes; once expired, the SDK client initializes again. A session
  * id the caller owns is sent with each request instead, never replaced and never deleted, and its
  * expiry fails the request. Either way, no listening {@code GET} stream is opened, and requests the
- * server sends on a response stream are answered as not found.
+ * server sends on a response stream are answered as not found, with or without a session.
+ * Notifications and replies, which open no stream, are sent on workers of their own: they never
+ * wait for a call slot that the exchange they follow still holds.
  */
 public final class RestletMcpClientTransport implements McpClientTransport {
     private static final Logger LOGGER =
@@ -65,6 +67,7 @@ public final class RestletMcpClientTransport implements McpClientTransport {
     private final String target;
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
     private final McpWorkers workers;
+    private final McpWorkers replies;
     private final Set<Request> requests = ConcurrentHashMap.newKeySet();
     private final int maxMessageBytes;
     private final Duration timeout;
@@ -121,6 +124,7 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         this.sessions = sessions;
         this.owned = owned;
         workers = new McpWorkers(maxConcurrentCalls, timeout);
+        replies = new McpWorkers(maxConcurrentCalls, timeout);
     }
 
     @Override
@@ -170,7 +174,10 @@ public final class RestletMcpClientTransport implements McpClientTransport {
     @Override
     public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
         var active = new AtomicReference<Request>();
-        return workers.submit(
+        // A reply to a server request, or a notification such as notifications/initialized, may be
+        // sent while the exchange it follows still holds its call slot: it takes a reply slot.
+        McpWorkers admission = message instanceof McpSchema.JSONRPCRequest ? workers : replies;
+        return admission.submit(
                 () -> exchange(message, active),
                 () -> {
                     Request request = active.get();
@@ -244,15 +251,11 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                 }
             }
             if (message instanceof McpSchema.JSONRPCNotification
-                    || (sent != null && message instanceof McpSchema.JSONRPCResponse)) {
+                    || message instanceof McpSchema.JSONRPCResponse) {
                 accepted(response);
                 return;
             }
-            if (!(message instanceof McpSchema.JSONRPCRequest rpc)) {
-                throw new IOException(
-                        "Server-directed responses are outside the stateless MCP profile");
-            }
-            readResponse(response, rpc.id(), initializing);
+            readResponse(response, ((McpSchema.JSONRPCRequest) message).id(), initializing);
         } finally {
             if (response != null && response.getEntity() != null) {
                 response.getEntity().release();
@@ -340,9 +343,6 @@ public final class RestletMcpClientTransport implements McpClientTransport {
             throw new IOException("MCP response id does not match its HTTP request");
         }
         if (message instanceof McpSchema.JSONRPCRequest request) {
-            if (getSessionId() == null) {
-                throw new IOException("Server-initiated MCP requests are not supported");
-            }
             // Refused on its own exchange, without holding up the stream: the legacy edge declares
             // no capability, and answers no sampling, roots or elicitation.
             sendMessage(
@@ -383,14 +383,22 @@ public final class RestletMcpClientTransport implements McpClientTransport {
                         () -> {
                             closed = true;
                             requests.forEach(Request::abort);
-                            workers.close();
-                            deleteSession();
+                            try {
+                                workers.close();
+                                deleteSession();
+                            } finally {
+                                replies.close();
+                            }
                             return Boolean.TRUE;
                         })
                 .then();
     }
 
-    /** Ends the session on the server, if one is open; a server may refuse, which is fine. */
+    /**
+     * Ends the session on the server, if one is open; a server may refuse, which is fine. The
+     * exchange runs on its own thread, aborted at the request timeout, so that a stalled server
+     * never holds up the close.
+     */
     private void deleteSession() {
         String open = session;
         session = null;
@@ -404,15 +412,32 @@ public final class RestletMcpClientTransport implements McpClientTransport {
         if (version != null) {
             request.getHeaders().set(McpProtocol.VERSION_HEADER, version);
         }
-        Response response = null;
+        Thread exchange =
+                Thread.ofVirtual()
+                        .name("mcp-session-delete")
+                        .start(
+                                () -> {
+                                    Response response = null;
+                                    try {
+                                        response = client.handle(request);
+                                    } catch (RuntimeException e) {
+                                        LOGGER.log(Level.FINE, "MCP session not deleted", e);
+                                    } finally {
+                                        if (response != null && response.getEntity() != null) {
+                                            response.getEntity().release();
+                                        }
+                                    }
+                                });
         try {
-            response = client.handle(request);
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.FINE, "MCP session not deleted", e);
-        } finally {
-            if (response != null && response.getEntity() != null) {
-                response.getEntity().release();
+            if (!exchange.join(timeout)) {
+                LOGGER.log(Level.FINE, "MCP session deletion timed out");
+                request.abort();
+                exchange.interrupt();
             }
+        } catch (InterruptedException e) {
+            request.abort();
+            exchange.interrupt();
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.Request;
@@ -86,7 +87,7 @@ public final class McpLegacyServer implements McpLegacyEdge.Server {
 
     @Override
     public McpLegacyEdge.Reply exchange(
-            Request request, String version, McpRequestContext context) {
+            Request request, String version, McpRequestContext context, Consumer<Object> decoded) {
         McpSchema.JSONRPCMessage message;
         try (var input = request.getEntity().getStream()) {
             byte[] bytes = McpMessages.read(input, maxMessageBytes);
@@ -108,6 +109,7 @@ public final class McpLegacyServer implements McpLegacyEdge.Server {
             // Notifications, such as notifications/initialized or roots changes, have no use here.
             return new McpLegacyEdge.Reply(Status.SUCCESS_ACCEPTED, null);
         }
+        decoded.accept(rpc.id());
         boolean initialize = McpSchema.METHOD_INITIALIZE.equals(rpc.method());
         if (version == null && !initialize) {
             return badRequest(
