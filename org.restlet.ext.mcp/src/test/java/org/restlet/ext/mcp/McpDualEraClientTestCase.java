@@ -440,37 +440,63 @@ class McpDualEraClientTestCase {
     }
 
     /**
-     * A server error is not a sign of either era: the start fails without a handshake or another
-     * probe, and an era remembered for the endpoint stays.
+     * A server error is not a sign of either era, bare or with a JSON-RPC error answering the
+     * request: the start fails without a handshake or another probe, and an era remembered for the
+     * endpoint stays.
      */
     @Test
     void doesNotFallBackOnAServerError() throws Exception {
-        var posts = new AtomicInteger();
-        Restlet unavailable =
-                new Restlet() {
-                    @Override
-                    public void handle(Request request, Response response) {
-                        posts.incrementAndGet();
-                        response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
-                    }
-                };
-        String target = serve(unavailable, () -> {});
+        for (boolean correlated : List.of(false, true)) {
+            var posts = new AtomicInteger();
+            Restlet unavailable =
+                    new Restlet() {
+                        @Override
+                        public void handle(Request request, Response response) {
+                            posts.incrementAndGet();
+                            response.setStatus(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+                            if (correlated) {
+                                response.setEntity(internalError(request));
+                            }
+                        }
+                    };
+            String target = serve(unavailable, () -> {});
 
-        McpClientAdapter client = adapter(target);
+            McpClientAdapter client = adapter(target);
 
-        assertThrows(RuntimeException.class, client::start);
-        assertEquals(1, posts.get());
-        assertNull(McpEras.get(target));
+            assertThrows(RuntimeException.class, client::start);
+            assertEquals(1, posts.get(), "correlated=" + correlated);
+            assertNull(McpEras.get(target));
 
-        for (String era : List.of(McpEras.MODERN, McpEras.LEGACY)) {
-            posts.set(0);
-            McpEras.put(target, era);
+            for (String era : List.of(McpEras.MODERN, McpEras.LEGACY)) {
+                posts.set(0);
+                McpEras.put(target, era);
 
-            McpClientAdapter cached = adapter(target);
+                McpClientAdapter cached = adapter(target);
 
-            assertThrows(RuntimeException.class, cached::start, era);
-            assertEquals(1, posts.get(), era);
-            assertEquals(era, McpEras.get(target));
+                assertThrows(RuntimeException.class, cached::start, era);
+                assertEquals(1, posts.get(), era + ", correlated=" + correlated);
+                assertEquals(era, McpEras.get(target));
+            }
+        }
+    }
+
+    /** A JSON-RPC internal error answering the request, whatever its era. */
+    private static StringRepresentation internalError(Request request) {
+        try {
+            Map<String, Object> rpc =
+                    MAPPER.readValue(request.getEntity().getText(), new TypeRef<>() {});
+            var error =
+                    Map.of(
+                            "jsonrpc",
+                            "2.0",
+                            "id",
+                            rpc.get("id"),
+                            "error",
+                            Map.of("code", -32603, "message", "Service unavailable"));
+            return new StringRepresentation(
+                    MAPPER.writeValueAsString(error), MediaType.APPLICATION_JSON);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
