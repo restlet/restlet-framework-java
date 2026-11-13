@@ -42,9 +42,12 @@ import reactor.core.Exceptions;
  * {@code 4xx} without a JSON-RPC response, or a JSON-RPC error other than an unsupported version,
  * marks a legacy server, which gets an {@code initialize} handshake offering {@link
  * McpProtocol#LEGACY_VERSIONS}. Other failures, such as a {@code 5xx} or a timeout, are thrown
- * without falling back. The era found is remembered for the endpoint URI, for the life of the JVM,
- * and probed again if it later proves wrong. Over stdio, it speaks {@link McpProtocol#VERSION}, the
- * modern client being HTTP only.
+ * without falling back. The era found is remembered for the endpoint URI, for the life of the JVM:
+ * a later start skips the probe, and probes again only if the server contradicts that era, with a
+ * {@code 4xx} or a JSON-RPC error that the other era would answer with, not with a timeout or a
+ * {@code 5xx}. A started client keeps its era: requests are never replayed on the other one, so
+ * when a server changes era, stop the client and start a new one. Over stdio, it speaks {@link
+ * McpProtocol#VERSION}, the modern client being HTTP only.
  *
  * <p>With a legacy server, the client exposes nothing 2026-07-28 deprecates or removes: it declares
  * no roots, sampling or elicitation capability, never sets a logging level, refuses the requests a
@@ -168,12 +171,16 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * The revision spoken with the server, once started: {@link McpProtocol#MODERN_VERSION}, or the
-     * one negotiated by {@code initialize}.
+     * one negotiated by the last {@code initialize}, which a handshake after an expired legacy
+     * session may change.
      *
      * @return The revision, or null before {@link #start()}.
      */
     public synchronized String getNegotiatedVersion() {
-        return started ? negotiatedVersion : null;
+        if (!started) {
+            return null;
+        }
+        return legacy != null ? legacy.negotiatedVersion() : negotiatedVersion;
     }
 
     public synchronized String getProtocolVersion() {
@@ -311,7 +318,7 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * Starts the client of the era the server speaks: the one remembered for the endpoint, unless
-     * it fails, else the one a {@code server/discover} probe tells.
+     * the server contradicts it, else the one a {@code server/discover} probe tells.
      */
     private void startAuto() {
         if (stream != null || target.startsWith("stdio:")) {
@@ -328,6 +335,11 @@ public final class McpClientAdapter implements AutoCloseable {
                 }
                 return;
             } catch (RuntimeException e) {
+                // A timeout or a server error says nothing of the era: probing again would only
+                // add requests, and might repeat a handshake that opened a session.
+                if (!contradicts(cached, e)) {
+                    throw e;
+                }
                 McpEras.remove(target);
             }
         }
@@ -340,6 +352,36 @@ public final class McpClientAdapter implements AutoCloseable {
         } else {
             startLegacy(McpProtocol.LEGACY_VERSIONS);
             McpEras.put(target, McpEras.LEGACY);
+        }
+    }
+
+    /**
+     * Whether a client's failed start contradicts the era remembered for the endpoint.
+     *
+     * @param era The era remembered.
+     * @param failure The failure.
+     * @return True if the endpoint should be probed again.
+     */
+    private static boolean contradicts(String era, RuntimeException failure) {
+        if (McpEras.LEGACY.equals(era)) {
+            return McpLegacyEdge.wrongEra(failure);
+        }
+        if (failure instanceof NotModern) {
+            return true;
+        }
+        try {
+            return isLegacy(Exceptions.unwrap(failure));
+        } catch (IllegalStateException noSharedRevision) {
+            return true;
+        }
+    }
+
+    /** A discovery result not naming {@code 2026-07-28}. */
+    private static final class NotModern extends IllegalStateException {
+        private static final long serialVersionUID = 1L;
+
+        private NotModern() {
+            super("Peer does not support MCP 2026-07-28");
         }
     }
 
@@ -457,7 +499,7 @@ public final class McpClientAdapter implements AutoCloseable {
             if (discovered == null
                     || discovered.supportedVersions() == null
                     || !discovered.supportedVersions().contains(McpProtocol.MODERN_VERSION)) {
-                throw new IllegalStateException("Peer does not support MCP 2026-07-28");
+                throw new NotModern();
             }
         } catch (RuntimeException e) {
             try {

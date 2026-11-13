@@ -439,7 +439,10 @@ class McpDualEraClientTestCase {
         }
     }
 
-    /** A server error is not a sign of a legacy server: the start fails without a handshake. */
+    /**
+     * A server error is not a sign of either era: the start fails without a handshake or another
+     * probe, and an era remembered for the endpoint stays.
+     */
     @Test
     void doesNotFallBackOnAServerError() throws Exception {
         var posts = new AtomicInteger();
@@ -458,6 +461,95 @@ class McpDualEraClientTestCase {
         assertThrows(RuntimeException.class, client::start);
         assertEquals(1, posts.get());
         assertNull(McpEras.get(target));
+
+        for (String era : List.of(McpEras.MODERN, McpEras.LEGACY)) {
+            posts.set(0);
+            McpEras.put(target, era);
+
+            McpClientAdapter cached = adapter(target);
+
+            assertThrows(RuntimeException.class, cached::start, era);
+            assertEquals(1, posts.get(), era);
+            assertEquals(era, McpEras.get(target));
+        }
+    }
+
+    /**
+     * A remembered legacy era that a modern-only server refuses with a {@code 4xx} is forgotten,
+     * and the endpoint probed again.
+     */
+    @Test
+    void probesAgainWhenAModernServerRefusesTheHandshake() throws Exception {
+        McpServerAdapter served = new McpServerAdapter();
+        McpServerAdapterTestCase.addEcho(served);
+        Filter modernOnly =
+                new Filter() {
+                    @Override
+                    protected int beforeHandle(Request request, Response response) {
+                        if (McpProtocol.MODERN_VERSION.equals(
+                                request.getHeaders()
+                                        .getFirstValue(McpProtocol.VERSION_HEADER, true))) {
+                            return CONTINUE;
+                        }
+                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                        return STOP;
+                    }
+                };
+        modernOnly.setNext(served);
+        String target = serve(modernOnly, served::stop, served);
+        McpEras.put(target, McpEras.LEGACY);
+
+        McpClientAdapter client = auto(target);
+
+        assertEquals(McpProtocol.MODERN_VERSION, client.getNegotiatedVersion());
+        assertEquals(McpEras.MODERN, McpEras.get(target));
+    }
+
+    /**
+     * Each earlier revision an auto client offers is accepted from a legacy server, and sent with
+     * the requests that follow; a revision it doesn't offer fails the start.
+     */
+    @Test
+    void negotiatesEachLegacyRevision() throws Exception {
+        for (String revision : McpProtocol.LEGACY_VERSIONS) {
+            Legacy legacy = legacy();
+            legacy.host.negotiate = revision;
+
+            McpClientAdapter client = sessions(legacy.target);
+
+            assertEquals(revision, client.getNegotiatedVersion());
+            assertEquals(
+                    "echo:" + revision, text(client.callTool("echo", Map.of("text", revision))));
+            assertEquals(revision, legacy.host.versions.getLast(), legacy.host.versions.toString());
+        }
+
+        Legacy unlisted = legacy();
+        unlisted.host.negotiate = "2024-10-07";
+        McpClientAdapter client = adapter(unlisted.target);
+        client.setLegacySessions(true);
+
+        assertThrows(RuntimeException.class, client::start);
+        assertFalse(client.isStarted());
+        assertNull(McpEras.get(unlisted.target));
+    }
+
+    /**
+     * The revision reported follows the handshake made after an expired session, which may
+     * negotiate another one.
+     */
+    @Test
+    void reportsTheRevisionNegotiatedAfterTheSessionExpires() throws Exception {
+        Legacy legacy = legacy();
+        McpClientAdapter client = sessions(legacy.target);
+        assertEquals(McpProtocol.VERSION, client.getNegotiatedVersion());
+
+        legacy.host.negotiate = "2025-06-18";
+        legacy.host.expire(legacy.host.sessions.keySet().iterator().next());
+        assertThrows(RuntimeException.class, () -> client.callTool("echo", Map.of("text", "a")));
+        assertEquals("echo:b", text(client.callTool("echo", Map.of("text", "b"))));
+
+        assertEquals("2025-06-18", client.getNegotiatedVersion());
+        assertEquals("2025-06-18", legacy.host.versions.getLast());
     }
 
     /** An expired session is reported to the SDK client, whose next request initializes again. */

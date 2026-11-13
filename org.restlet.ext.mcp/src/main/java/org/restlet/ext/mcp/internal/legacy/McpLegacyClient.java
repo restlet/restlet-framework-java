@@ -15,12 +15,14 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.spec.McpClientTransport;
+import io.modelcontextprotocol.spec.McpError;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.restlet.ext.mcp.McpProtocol;
+import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import reactor.core.publisher.Mono;
 
@@ -37,7 +39,7 @@ public final class McpLegacyClient implements McpLegacyEdge.Client {
     private final McpAsyncClient sdk;
     private final RestletMcpClientTransport http;
     private final Duration timeout;
-    private final String negotiated;
+    private volatile String negotiated;
 
     private McpLegacyClient(
             McpAsyncClient sdk,
@@ -120,9 +122,33 @@ public final class McpLegacyClient implements McpLegacyEdge.Client {
         }
     }
 
+    /** The revision negotiated last: a handshake after an expired session may change it. */
     @Override
     public String negotiatedVersion() {
+        String current = http == null ? null : http.getNegotiatedVersion();
+        if (current != null) {
+            negotiated = current;
+        }
         return negotiated;
+    }
+
+    /**
+     * Whether a failed start proves the server isn't a legacy one: a {@code 4xx} or a JSON-RPC
+     * error answering {@code initialize}. A timeout or a {@code 5xx} proves nothing.
+     *
+     * @param failure The failure.
+     * @return True if it does.
+     */
+    public static boolean wrongEra(Throwable failure) {
+        int depth = 0;
+        for (Throwable cause = failure; cause != null && depth < 16; cause = cause.getCause()) {
+            if (cause instanceof McpError
+                    || (cause instanceof McpHttpStatusException status && status.isClientError())) {
+                return true;
+            }
+            depth++;
+        }
+        return false;
     }
 
     @Override
