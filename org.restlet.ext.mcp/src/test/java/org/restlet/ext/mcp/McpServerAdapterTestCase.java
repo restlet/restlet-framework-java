@@ -382,6 +382,38 @@ class McpServerAdapterTestCase {
                 seen);
     }
 
+    /**
+     * A legacy request that fails past the edge, in an interceptor or at the deadline, is answered
+     * with its id, which a stdio client needs to match the error to its call.
+     */
+    @Test
+    void legacyFailuresPastTheEdgeKeepTheRequestId() throws Exception {
+        addEcho(server);
+        server.setRequestTimeout(Duration.ofMillis(300));
+        server.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            if ("tools/list".equals(((JsonRpc.JSONRPCRequest) message).method())) {
+                                throw new IllegalStateException("interceptor failed");
+                            }
+                            return Mono.never();
+                        });
+        server.start();
+
+        Response failed = send(LIST.formatted(7));
+        Response late =
+                send(
+                        "{\"jsonrpc\":\"2.0\",\"id\":\"late\",\"method\":\"tools/call\","
+                                + "\"params\":{\"name\":\"echo\",\"arguments\":{\"text\":\"x\"}}}");
+
+        for (var answered : List.of(Map.entry(failed, (Object) 7), Map.entry(late, "late"))) {
+            assertEquals(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, answered.getKey().getStatus());
+            Map<String, Object> error = envelope(answered.getKey());
+            assertEquals(answered.getValue(), error.get("id"));
+            assertEquals(-32603, ((Map<?, ?>) error.get("error")).get("code"));
+        }
+    }
+
     @Test
     void initializeRequiresSupportedBodyVersionAndPostInitializeHeader() throws Exception {
         server.start();

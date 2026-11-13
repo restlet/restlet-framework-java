@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -57,6 +58,12 @@ import reactor.core.Exceptions;
 public final class McpClientAdapter implements AutoCloseable {
     /** The default number of {@code input_required} rounds answered for one request. */
     public static final int DEFAULT_MAX_INPUT_ROUNDS = 8;
+
+    /** JSON-RPC errors only a {@code 2026-07-28} server answers {@code server/discover} with. */
+    private static final Set<Integer> MODERN_ERRORS =
+            Set.of(
+                    McpSchema.ErrorCodes.HEADER_MISMATCH,
+                    McpSchema.ErrorCodes.MISSING_REQUIRED_CLIENT_CAPABILITY);
 
     private final Client client;
     private final String target;
@@ -374,12 +381,17 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * Whether a failed {@code server/discover} marks a legacy server: a JSON-RPC error that isn't a
-     * recognized modern one, or a {@code 4xx} without a response. An unsupported version error
-     * comes from a modern server, which is legacy-compatible only if it offers a legacy revision.
+     * recognized modern one, or a {@code 4xx} without a response. A header mismatch or a missing
+     * client capability error comes from a modern server, whose failure is kept. An unsupported
+     * version error comes from a modern server too, which is legacy-compatible only if it offers a
+     * legacy revision.
      */
     private static boolean isLegacy(Throwable failure) {
         if (failure instanceof io.modelcontextprotocol.modern.McpException mcp) {
             var error = mcp.error();
+            if (error != null && error.code() != null && MODERN_ERRORS.contains(error.code())) {
+                return false;
+            }
             if (error != null
                     && error.code() != null
                     && error.code() == McpProtocol.UNSUPPORTED_PROTOCOL_VERSION) {

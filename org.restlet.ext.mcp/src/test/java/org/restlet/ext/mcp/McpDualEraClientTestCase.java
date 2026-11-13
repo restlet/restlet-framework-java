@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
@@ -20,15 +21,19 @@ import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.McpAsyncServer;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +44,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.mcp.internal.McpEras;
@@ -253,6 +259,80 @@ class McpDualEraClientTestCase {
         assertEquals(List.of("request", "response"), legacy.host.replies.get("ping"));
     }
 
+    /**
+     * A legacy server without sessions may still send a request on a response stream: it is
+     * refused, and the call goes on.
+     */
+    @Test
+    void refusesWhatASessionlessLegacyServerAsks() throws Exception {
+        Legacy legacy = legacy();
+        legacy.host.sessionless = true;
+
+        McpClientAdapter client = auto(legacy.target);
+
+        assertNull(client.getLegacySessionId());
+        assertEquals("refused", text(client.callTool("ping", Map.of())));
+        assertEquals(List.of("request", "response"), legacy.host.replies.get("ping"));
+    }
+
+    /** The refusal doesn't wait for a call slot: the stream it answers may hold the only one. */
+    @Test
+    void refusesWhatALegacyServerAsksWithASingleCallSlot() throws Exception {
+        Legacy legacy = legacy();
+
+        McpClientAdapter client =
+                auto(
+                        legacy.target,
+                        adapter -> {
+                            adapter.setLegacySessions(true);
+                            adapter.setMaxConcurrentCalls(1);
+                        });
+
+        assertEquals("refused", text(client.callTool("ping", Map.of())));
+        assertEquals(List.of("request", "response"), legacy.host.replies.get("ping"));
+    }
+
+    /** A stalled session deletion is aborted at the request timeout: stopping doesn't hang. */
+    @Test
+    void stopsWhenTheSessionDeletionStalls() throws Exception {
+        var release = new CountDownLatch(1);
+        var deleting = new CountDownLatch(1);
+        Legacy legacy =
+                legacy(
+                        host -> {
+                            Filter stall =
+                                    new Filter() {
+                                        @Override
+                                        protected int beforeHandle(
+                                                Request request, Response response) {
+                                            if (Method.DELETE.equals(request.getMethod())) {
+                                                deleting.countDown();
+                                                try {
+                                                    release.await();
+                                                } catch (InterruptedException e) {
+                                                    Thread.currentThread().interrupt();
+                                                }
+                                            }
+                                            return CONTINUE;
+                                        }
+                                    };
+                            stall.setNext(host);
+                            return stall;
+                        });
+        closing.add(release::countDown);
+        McpClientAdapter client =
+                auto(
+                        legacy.target,
+                        adapter -> {
+                            adapter.setLegacySessions(true);
+                            adapter.setRequestTimeout(Duration.ofMillis(500));
+                        });
+        assertEquals("echo:x", text(client.callTool("echo", Map.of("text", "x"))));
+
+        assertTimeoutPreemptively(Duration.ofSeconds(5), client::stop);
+        assertEquals(0, deleting.getCount(), "the deletion was sent");
+    }
+
     /** The legacy fallback only sends what 2026-07-28 keeps, asserted on the wire. */
     @Test
     void theLegacyFallbackSendsNoDeprecatedMethod() throws Exception {
@@ -324,6 +404,41 @@ class McpDualEraClientTestCase {
         assertNull(McpEras.get(target));
     }
 
+    /**
+     * A header mismatch or a missing client capability error comes from a modern server: the start
+     * fails with it, without an {@code initialize} handshake.
+     */
+    @Test
+    void doesNotFallBackOnAModernOnlyError() throws Exception {
+        for (int code :
+                List.of(
+                        io.modelcontextprotocol.modern.McpSchema.ErrorCodes.HEADER_MISMATCH,
+                        io.modelcontextprotocol.modern.McpSchema.ErrorCodes
+                                .MISSING_REQUIRED_CLIENT_CAPABILITY)) {
+            var handshakes = new AtomicInteger();
+            Restlet legacy =
+                    new Restlet() {
+                        @Override
+                        public void handle(Request request, Response response) {
+                            handshakes.incrementAndGet();
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                        }
+                    };
+            String target = serve(new UnsupportedModern(code, null, legacy), () -> {});
+
+            McpClientAdapter client = adapter(target);
+
+            RuntimeException failure = assertThrows(RuntimeException.class, client::start);
+            assertTrue(
+                    failure instanceof io.modelcontextprotocol.modern.McpException mcp
+                            && mcp.error().code() == code,
+                    failure.toString());
+            assertEquals(0, handshakes.get());
+            assertFalse(client.isStarted());
+            assertNull(McpEras.get(target));
+        }
+    }
+
     /** A server error is not a sign of a legacy server: the start fails without a handshake. */
     @Test
     void doesNotFallBackOnAServerError() throws Exception {
@@ -378,6 +493,11 @@ class McpDualEraClientTestCase {
 
     /** A sessionful 2025-11-25 server with an echo tool and an elicitation tool. */
     private Legacy legacy() throws Exception {
+        return legacy(UnaryOperator.identity());
+    }
+
+    /** A sessionful 2025-11-25 server, reached through what {@code front} puts before it. */
+    private Legacy legacy(UnaryOperator<Restlet> front) throws Exception {
         var host = new McpLegacySessionHost(Duration.ofMillis(200), WAIT);
         McpAsyncServer sdk =
                 McpServer.async(host)
@@ -419,11 +539,22 @@ class McpDualEraClientTestCase {
                                                                         error ->
                                                                                 Mono.just(
                                                                                         result(
-                                                                                                "refused"))))
+                                                                                                refused(
+                                                                                                                error)
+                                                                                                        ? "refused"
+                                                                                                        : "failed"))))
                                         .build())
                         .build();
-        String target = serve(host, () -> sdk.closeGracefully().onErrorComplete().block(WAIT));
+        String target =
+                serve(front.apply(host), () -> sdk.closeGracefully().onErrorComplete().block(WAIT));
         return new Legacy(host, target);
+    }
+
+    /** Whether the client answered a server request as not found, rather than not at all. */
+    private static boolean refused(Throwable error) {
+        return error instanceof McpError mcp
+                && mcp.getJsonRpcError() != null
+                && mcp.getJsonRpcError().code() == McpSchema.ErrorCodes.METHOD_NOT_FOUND;
     }
 
     /** Asks the client for a region; any failure, such as no capability, is a refusal. */
@@ -506,11 +637,21 @@ class McpDualEraClientTestCase {
      * revisions; other requests go to a 2025-11-25 server.
      */
     private static final class UnsupportedModern extends Restlet {
-        private final List<String> supported;
+        private final int code;
+        private final Object data;
         private final Restlet legacy;
 
         private UnsupportedModern(List<String> supported, Restlet legacy) {
-            this.supported = supported;
+            this(
+                    McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
+                    Map.of("supported", supported, "requested", McpProtocol.MODERN_VERSION),
+                    legacy);
+        }
+
+        /** Refuses modern requests with another error code, and its data, if any. */
+        private UnsupportedModern(int code, Object data, Restlet legacy) {
+            this.code = code;
+            this.data = data;
             this.legacy = legacy;
         }
 
@@ -524,24 +665,13 @@ class McpDualEraClientTestCase {
             try {
                 Map<String, Object> rpc =
                         MAPPER.readValue(request.getEntity().getText(), new TypeRef<>() {});
-                var error =
-                        Map.of(
-                                "jsonrpc",
-                                "2.0",
-                                "id",
-                                rpc.get("id"),
-                                "error",
-                                Map.of(
-                                        "code",
-                                        McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
-                                        "message",
-                                        "Unsupported protocol version",
-                                        "data",
-                                        Map.of(
-                                                "supported",
-                                                supported,
-                                                "requested",
-                                                McpProtocol.MODERN_VERSION)));
+                Map<String, Object> failure = new LinkedHashMap<>();
+                failure.put("code", code);
+                failure.put("message", "Refused MCP request");
+                if (data != null) {
+                    failure.put("data", data);
+                }
+                var error = Map.of("jsonrpc", "2.0", "id", rpc.get("id"), "error", failure);
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                 response.setEntity(
                         new StringRepresentation(
