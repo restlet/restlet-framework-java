@@ -13,23 +13,23 @@ import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import java.util.Objects;
 
 /**
- * A resource template served to MCP {@link McpProtocol#MODERN_VERSION} clients only, for {@link
- * McpServerAdapter#getModernResourceTemplates()}: its definition, listed, and the read handler of
- * the URIs it matches. Experimental: the SDK's modern API is a preview.
+ * A resource template of an {@link McpServerAdapter}, for {@link
+ * McpServerAdapter#getResourceTemplates()}: its definition, listed, and the read handler of the
+ * URIs it matches. Experimental: the SDK's modern API is a preview.
  *
  * @param definition The template, with its URI template.
  * @param resource The read handler of the matching URIs.
  */
-public record McpModernResourceTemplate(
+public record McpResourceTemplate(
         McpSchema.ResourceTemplate definition, McpAsyncResource resource) {
 
     /**
-     * Creates a modern resource template.
+     * Creates a resource template.
      *
      * @param definition The template, with its URI template.
      * @param resource The read handler of the matching URIs.
      */
-    public McpModernResourceTemplate {
+    public McpResourceTemplate {
         Objects.requireNonNull(definition, "definition");
         Objects.requireNonNull(resource, "resource");
     }

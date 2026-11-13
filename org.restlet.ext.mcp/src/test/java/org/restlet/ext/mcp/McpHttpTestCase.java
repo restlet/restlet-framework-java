@@ -10,10 +10,11 @@ package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.time.Duration;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.ext.mcp.internal.legacy.RestletMcpClientTransport;
 import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
 
@@ -53,6 +55,29 @@ class McpHttpTestCase {
         connector = new Client(cc, Protocol.HTTP);
         connector.start();
         return "http://localhost:" + server.getActualPort() + "/mcp";
+    }
+
+    /** The legacy transport, with the default limits and no session. */
+    private RestletMcpClientTransport transport(String target) {
+        return transport(
+                target,
+                McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
+                McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS,
+                Duration.ofSeconds(30));
+    }
+
+    private RestletMcpClientTransport transport(
+            String target, int maxMessageBytes, int maxCalls, Duration timeout) {
+        return new RestletMcpClientTransport(
+                connector,
+                target,
+                maxMessageBytes,
+                maxCalls,
+                timeout,
+                request -> {},
+                List.of(McpProtocol.VERSION),
+                false,
+                null);
     }
 
     @AfterEach
@@ -89,15 +114,18 @@ class McpHttpTestCase {
         client.start();
         assertEquals(
                 List.of("echo"),
-                client.listTools(null).tools().stream().map(McpSchema.Tool::name).toList());
+                client.listTools(null).tools().stream()
+                        .map(io.modelcontextprotocol.modern.McpSchema.Tool::name)
+                        .toList());
         assertEquals(
                 "echo:network",
-                ((McpSchema.TextContent)
+                ((io.modelcontextprotocol.modern.McpSchema.TextContent)
                                 client.callTool("echo", Map.of("text", "network"))
                                         .content()
                                         .getFirst())
                         .text());
-        assertNotNull(client.getSdkClient().ping().block(Duration.ofSeconds(5)));
+        assertEquals(McpProtocol.VERSION, client.getNegotiatedVersion());
+        assertNull(client.getLegacySessionId());
         client.stop();
         assertTrue(connector.isStarted());
         assertTrue(server.isStarted());
@@ -125,12 +153,12 @@ class McpHttpTestCase {
                 .add(
                         (message, context, chain) -> {
                             entered.countDown();
-                            return Mono.<McpSchema.JSONRPCResponse>never()
+                            return Mono.<JsonRpc.JSONRPCResponse>never()
                                     .doOnCancel(cancelled::countDown);
                         });
         adapter.start();
         String target = start("HTTP2", adapter);
-        var transport = new RestletMcpClientTransport(connector, target);
+        var transport = transport(target);
         try {
             transport.connect(message -> message).block();
             var exchange =
@@ -139,7 +167,7 @@ class McpHttpTestCase {
                                     transport
                                             .sendMessage(
                                                     new McpSchema.JSONRPCRequest(
-                                                            "2.0", "ping", 1, Map.of()))
+                                                            "2.0", "tools/list", 1, Map.of()))
                                             .block());
             assertTrue(entered.await(30, TimeUnit.SECONDS));
             transport.closeGracefully().block(Duration.ofSeconds(30));
@@ -233,7 +261,7 @@ class McpHttpTestCase {
         Context context = new Context();
         connector = new Client(context, Protocol.HTTP);
         connector.start();
-        var transport = new RestletMcpClientTransport(connector, "http://localhost/mcp");
+        var transport = transport("http://localhost/mcp");
         try {
             assertThrows(
                     RuntimeException.class, () -> transport.connect(message -> message).block());
@@ -257,9 +285,7 @@ class McpHttpTestCase {
                                                 MediaType.TEXT_EVENT_STREAM));
                             }
                         });
-        var transport =
-                new RestletMcpClientTransport(
-                        connector, target, 512, 1, Duration.ofSeconds(3), request -> {});
+        var transport = transport(target, 512, 1, Duration.ofSeconds(3));
         try {
             transport.connect(message -> message).block();
             assertThrows(
@@ -288,14 +314,7 @@ class McpHttpTestCase {
                                                 body, MediaType.TEXT_EVENT_STREAM));
                             }
                         });
-        var transport =
-                new RestletMcpClientTransport(
-                        connector,
-                        target,
-                        maxMessageBytes,
-                        1,
-                        Duration.ofSeconds(10),
-                        request -> {});
+        var transport = transport(target, maxMessageBytes, 1, Duration.ofSeconds(10));
         List<McpSchema.JSONRPCMessage> delivered = new CopyOnWriteArrayList<>();
         try {
             transport.connect(message -> message.doOnNext(delivered::add)).block();
@@ -338,7 +357,7 @@ class McpHttpTestCase {
                                         MediaType.APPLICATION_JSON);
                             }
                         });
-        var transport = new RestletMcpClientTransport(connector, target);
+        var transport = transport(target);
         try {
             AtomicInteger delivered = new AtomicInteger();
             transport

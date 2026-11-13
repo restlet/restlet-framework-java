@@ -9,8 +9,6 @@
 package org.restlet.ext.mcp.internal;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.TypeRef;
-import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,25 +49,6 @@ public final class McpMessages {
             throw new IOException("MCP encoded message exceeds " + limit + " bytes");
         }
         return bytes;
-    }
-
-    public static McpSchema.JSONRPCMessage decode(McpJsonMapper mapper, String json)
-            throws IOException {
-        Object decoded = mapper.readValue(json, new TypeRef<Object>() {});
-        if (!(decoded instanceof Map<?, ?> envelope)
-                || !"2.0".equals(envelope.get("jsonrpc"))
-                || !(envelope.get("method") instanceof String method)
-                || method.isBlank()
-                || envelope.containsKey("params")
-                        && envelope.get("params") != null
-                        && !(envelope.get("params") instanceof Map<?, ?>)
-                || envelope.containsKey("id")
-                        && !(envelope.get("id") instanceof String
-                                || envelope.get("id") instanceof Number)) {
-            throw new InvalidEnvelopeException("Invalid MCP request or notification envelope");
-        }
-
-        return McpSchema.deserializeJsonRpcMessage(mapper, json);
     }
 
     public static final class MessageLimitException extends IOException {

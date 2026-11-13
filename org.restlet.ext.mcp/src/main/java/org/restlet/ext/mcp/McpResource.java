@@ -13,22 +13,22 @@ import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import java.util.Objects;
 
 /**
- * A resource served to MCP {@link McpProtocol#MODERN_VERSION} clients only, for {@link
- * McpServerAdapter#getModernResources()}: its definition, listed, and its read handler, which may
- * answer {@code input_required}. Experimental: the SDK's modern API is a preview.
+ * A resource of an {@link McpServerAdapter}, for {@link McpServerAdapter#getResources()}: its
+ * definition, listed, and its read handler, which may answer {@code input_required}. Legacy clients
+ * read it too, without input. Experimental: the SDK's modern API is a preview.
  *
  * @param definition The resource, with its URI.
  * @param resource The read handler.
  */
-public record McpModernResource(McpSchema.Resource definition, McpAsyncResource resource) {
+public record McpResource(McpSchema.Resource definition, McpAsyncResource resource) {
 
     /**
-     * Creates a modern resource.
+     * Creates a resource.
      *
      * @param definition The resource, with its URI.
      * @param resource The read handler.
      */
-    public McpModernResource {
+    public McpResource {
         Objects.requireNonNull(definition, "definition");
         Objects.requireNonNull(resource, "resource");
     }

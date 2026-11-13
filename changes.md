@@ -91,37 +91,53 @@ Changes log
           select one explicitly.
     - Enhancements
         - Added the MCP extension using the official Java SDK (2.2.0-M2) on shared Restlet HTTP
-          connectors and explicitly configured STDIO helpers. The supported stateless profile
-          uses revision 2025-11-25, native SDK tools/resources/prompts and in-JVM dispatch,
-          bounded messages/calls, one-shot SSE responses, and request cancellation. Sessions,
-          listening GET streams, replay and Ikanos revision compatibility are not supported.
-          Borrowed HTTP connectors are not stopped by the MCP client.
-        - The MCP server adapter also serves MCP revision 2026-07-28, experimentally, on the same
-          endpoint: a request whose `MCP-Protocol-Version` header names it goes to the SDK's
-          modern stateless server, other requests to the 2025-11-25 one. The tools, resources,
-          templates and prompts registered on the adapter are served to both revisions;
-          `McpServerAdapter.getModernTools()` adds tools on the SDK's modern types, served to
-          2026-07-28 clients only, for `input_required` results and streamed progress. The
-          interceptors wrap each 2026-07-28 request and its final result, the tool filters and
-          the call limit apply to both revisions, and `setRequestStateKey()` shares the key
-          sealing `input_required` state between instances. `getModernResources()`,
-          `getModernResourceTemplates()` and `getModernPrompts()` add resources, templates and
-          prompts served to 2026-07-28 clients only; a URI, URI template or prompt name may only
-          be used once across both revisions' lists. `subscriptions/listen` streams carry the
-          changes published through `getChanges()`; they have their own limit,
-          `setMaxListenStreams()`, no time limit, and end when the adapter stops or the client
-          goes away. Over stdio, a message whose `_meta` names 2026-07-28 goes to the modern
-          server: streamed messages are written as separate lines as they come, and
-          `notifications/cancelled` ends the request it names without a response.
-          `McpClientAdapter.setProtocolVersion(McpProtocol.MODERN_VERSION)` makes the client
-          speak 2026-07-28 over HTTP: `start()` runs `server/discover`, and
-          `getModernClient()` returns an `McpModernClient`, on the SDK's modern types, for
-          listings, tool calls, resource reads and prompts, with streamed progress,
-          `subscriptions/listen`, and cancellation by disposing the request. An
+          connectors and explicitly configured STDIO helpers, built on the SDK's stateless MCP
+          2026-07-28 model, experimentally: the SDK's modern API is a preview. Messages and calls
+          are bounded, responses may stream over SSE, and requests are cancelled when the client
+          goes away. Borrowed HTTP connectors are not stopped by the MCP client.
+        - `McpServerAdapter` registers tools, resources, resource templates and prompts on the
+          SDK's modern types (`getTools()`, `getResources()` with `McpResource`,
+          `getResourceTemplates()` with `McpResourceTemplate`, `getPrompts()`); a name, URI or URI
+          template may only be used once. Tool filters (`McpToolFilter`) and interceptors
+          (`McpInterceptor`) also use the modern types, and apply once to each request of either
+          era. 2026-07-28 requests get `input_required` results, sealed with a key that
+          `setRequestStateKey()` shares between instances, and streamed progress;
+          `subscriptions/listen` streams carry the changes published through `getChanges()`,
+          within `setMaxListenStreams()`. Over stdio, a message whose `_meta` names 2026-07-28 is
+          answered line by line as it streams, and `notifications/cancelled` ends the request it
+          names.
+        - MCP 2025-11-25 clients are served by a legacy edge translating their requests into the
+          2026-07-28 model, so it can be dropped when the deprecation window closes. It exposes
+          nothing 2026-07-28 deprecates or removes: `initialize` is answered from
+          `server/discover` with tools, resources and prompts only, `ping` gets an empty result,
+          notifications are dropped, `logging/setLevel` and resource subscriptions are not found,
+          no session is issued, `GET` gets a `405`, and nothing is requested from the client. A
+          legacy client gets the final result of a streaming request, and an error instead of an
+          `input_required` result.
+        - `McpClientAdapter` speaks MCP 2025-11-25 by default, through the SDK's client behind the
+          same legacy edge. `setProtocolVersion(McpProtocol.MODERN_VERSION)` makes it speak
+          2026-07-28 over HTTP: `start()` runs `server/discover`, and `getModernClient()` returns
+          an `McpModernClient` for listings, tool calls, resource reads and prompts, with streamed
+          progress, `subscriptions/listen`, and cancellation by disposing the request. An
           `input_required` result is answered by the `McpInputHandler` set with
-          `setInputHandler()` and the request retried, within `setMaxInputRounds()`;
-          without a handler, it is returned. Not yet supported for 2026-07-28: the client over
-          stdio. The SDK's modern API is a preview.
+          `setInputHandler()` and the request retried, within `setMaxInputRounds()`.
+          `setProtocolVersion(McpProtocol.AUTO)` speaks whichever era the server does, as the
+          2026-07-28 revision specifies for a dual-era client: over HTTP, `start()` sends
+          `server/discover`; a `4xx` without a JSON-RPC response, or a JSON-RPC error other than
+          an unsupported version (`-32022`), marks a legacy server, which gets an `initialize`
+          handshake offering `McpProtocol.LEGACY_VERSIONS` (2025-11-25 back to 2024-11-05). The era
+          found is remembered per endpoint URI for the life of the JVM, and probed again when it
+          proves wrong; over stdio, `auto` speaks 2025-11-25. `getNegotiatedVersion()` tells the
+          revision in use, and `listTools()`, `callTool()`, `readResource()` and `getPrompt()` work
+          in both eras on the modern types. With a legacy server, the client declares no roots,
+          sampling or elicitation capability, never sets a logging level, refuses the requests the
+          server sends, and opens no listening `GET` stream.
+        - Legacy MCP sessions are opt-in, since 2026-07-28 removed them:
+          `McpClientAdapter.setLegacySessions(true)` keeps the `Mcp-Session-Id` a legacy server
+          returns on `initialize`, sends it with later requests, initializes again after it
+          expires, and deletes it on `stop()`; `setLegacySessionId()` sends a session id the caller
+          owns, which is never replaced or deleted; `getLegacySessionId()` tells the one in use.
+          They have no effect on modern servers, and go away with the legacy edge.
         - Added experimental SDK-native gRPC hosting of unary, server-streaming,
           client-streaming and bidirectional methods on a borrowed Restlet/Netty HTTP/2 listener.
           Request messages are read as the application requests them, within the queue budget,
