@@ -25,6 +25,7 @@ import org.restlet.ext.mcp.internal.McpEras;
 import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpModernHttpTransport;
+import org.restlet.ext.mcp.internal.McpServerErrorException;
 import reactor.core.Exceptions;
 
 /**
@@ -423,12 +424,15 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * Whether a failed {@code server/discover} marks a legacy server: a JSON-RPC error that isn't a
-     * recognized modern one, or a {@code 4xx} without a response. A header mismatch or a missing
-     * client capability error comes from a modern server, whose failure is kept. An unsupported
-     * version error comes from a modern server too, which is legacy-compatible only if it offers a
-     * legacy revision.
+     * recognized modern one and doesn't come with a {@code 5xx}, or a {@code 4xx} without a
+     * response. A header mismatch or a missing client capability error comes from a modern server,
+     * whose failure is kept. An unsupported version error comes from a modern server too, which is
+     * legacy-compatible only if it offers a legacy revision.
      */
     private static boolean isLegacy(Throwable failure) {
+        if (failure instanceof McpServerErrorException) {
+            return false; // A server error says nothing of the era, whatever its JSON-RPC error.
+        }
         if (failure instanceof io.modelcontextprotocol.modern.McpException mcp) {
             var error = mcp.error();
             if (error != null && error.code() != null && MODERN_ERRORS.contains(error.code())) {

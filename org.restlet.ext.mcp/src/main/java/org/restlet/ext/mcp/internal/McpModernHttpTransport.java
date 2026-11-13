@@ -224,6 +224,10 @@ public final class McpModernHttpTransport {
             }
             throw new IOException("MCP JSON reply must be the response to its request");
         }
+        if (reply.error() != null && response.getStatus().isServerError()) {
+            // Keeps the status, which tells a failing server from a legacy one.
+            throw new McpServerErrorException(reply.error(), response.getStatus().getCode());
+        }
         return message;
     }
 

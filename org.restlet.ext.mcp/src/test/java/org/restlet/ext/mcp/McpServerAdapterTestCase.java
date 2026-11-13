@@ -129,6 +129,42 @@ class McpServerAdapterTestCase {
                         .contains("echo"));
     }
 
+    /**
+     * A context made without a revision is a modern one: interceptors and tool filters of a
+     * dispatched request see the revision it is served in.
+     */
+    @Test
+    void defaultContextReportsTheModernRevision() throws Exception {
+        addEcho(server);
+        List<String> seen = new CopyOnWriteArrayList<>();
+        server.getToolFilters()
+                .add(
+                        (context, tool) -> {
+                            seen.add("filter:" + context.protocolVersion());
+                            return Mono.just(Boolean.TRUE);
+                        });
+        server.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            seen.add("interceptor:" + context.protocolVersion());
+                            return chain.proceed(message, context);
+                        });
+        server.start();
+
+        assertNull(
+                server.dispatch(
+                                McpTestFeatures.request("tools/list", 1, Map.of()),
+                                new McpRequestContext(null))
+                        .orElseThrow()
+                        .error());
+
+        assertEquals(
+                List.of(
+                        "interceptor:" + McpProtocol.MODERN_VERSION,
+                        "filter:" + McpProtocol.MODERN_VERSION),
+                seen);
+    }
+
     @Test
     void sdkOwnsMethodErrorsAndNotificationResponses() throws Exception {
         server.start();
