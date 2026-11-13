@@ -19,8 +19,15 @@ public final class McpRequestContext {
     private final String protocolVersion;
     private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
+    /**
+     * Creates the context of a {@link McpProtocol#MODERN_VERSION} request, the revision {@link
+     * McpServerAdapter#dispatch} serves. The legacy edge passes its revision to the other
+     * constructor.
+     *
+     * @param request The transport request, or null.
+     */
     public McpRequestContext(Request request) {
-        this(request, McpProtocol.VERSION);
+        this(request, McpProtocol.MODERN_VERSION);
     }
 
     /**

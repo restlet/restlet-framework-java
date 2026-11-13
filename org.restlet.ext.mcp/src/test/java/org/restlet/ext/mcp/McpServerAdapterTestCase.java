@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.TypeRef;
-import io.modelcontextprotocol.server.McpStatelessServerFeatures;
-import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.modern.JsonRpc;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,33 +47,12 @@ import reactor.core.publisher.Mono;
 class McpServerAdapterTestCase {
     private final McpServerAdapter server = new McpServerAdapter();
 
-    static McpSchema.Tool echoTool() {
-        return McpSchema.Tool.builder(
-                        "echo",
-                        Map.of(
-                                "type",
-                                "object",
-                                "properties",
-                                Map.of("text", Map.of("type", "string"))))
-                .description("Echoes text")
-                .build();
+    static void addEcho(McpServerAdapter adapter) {
+        adapter.getTools().add(McpTestFeatures.echo());
     }
 
-    static void addEcho(McpServerAdapter adapter) {
-        adapter.getTools()
-                .add(
-                        new McpStatelessServerFeatures.AsyncToolSpecification(
-                                echoTool(),
-                                (context, call) ->
-                                        Mono.just(
-                                                McpSchema.CallToolResult.builder()
-                                                        .addTextContent(
-                                                                "echo:"
-                                                                        + call.arguments()
-                                                                                .get("text"))
-                                                        .isError(false)
-                                                        .build())));
-    }
+    /** A legacy call through the adapter's core, as interceptors see it. */
+    private static final String LIST = "{\"jsonrpc\":\"2.0\",\"id\":%d,\"method\":\"tools/list\"}";
 
     @AfterEach
     void cleanup() throws Exception {
@@ -105,7 +85,7 @@ class McpServerAdapterTestCase {
         AtomicBoolean filtered = new AtomicBoolean();
         server.getToolFilters()
                 .add(
-                        (context, values) -> {
+                        (context, tool) -> {
                             filtered.set(true);
                             return Mono.just(Boolean.TRUE);
                         });
@@ -116,19 +96,16 @@ class McpServerAdapterTestCase {
                             return chain.proceed(message, context);
                         });
         server.start();
-        McpRequestContext context = new McpRequestContext(null);
+        McpRequestContext context = new McpRequestContext(null, McpProtocol.MODERN_VERSION);
         var listed =
-                server.dispatch(
-                                new McpSchema.JSONRPCRequest("2.0", "tools/list", 1, Map.of()),
-                                context)
+                server.dispatch(McpTestFeatures.request("tools/list", 1, Map.of()), context)
                         .orElseThrow();
         assertNull(listed.error());
         assertTrue(filtered.get());
         assertEquals(true, context.attributes().get("intercepted"));
         var result =
                 server.dispatch(
-                                new McpSchema.JSONRPCRequest(
-                                        "2.0",
+                                McpTestFeatures.request(
                                         "tools/call",
                                         2,
                                         Map.of(
@@ -146,11 +123,46 @@ class McpServerAdapterTestCase {
                 McpJsonDefaults.getMapper()
                         .writeValueAsString(
                                 server.dispatch(
-                                                new McpSchema.JSONRPCRequest(
-                                                        "2.0", "tools/list", 3, Map.of()),
+                                                McpTestFeatures.request("tools/list", 3, Map.of()),
                                                 context)
                                         .orElseThrow())
                         .contains("echo"));
+    }
+
+    /**
+     * A context made without a revision is a modern one: interceptors and tool filters of a
+     * dispatched request see the revision it is served in.
+     */
+    @Test
+    void defaultContextReportsTheModernRevision() throws Exception {
+        addEcho(server);
+        List<String> seen = new CopyOnWriteArrayList<>();
+        server.getToolFilters()
+                .add(
+                        (context, tool) -> {
+                            seen.add("filter:" + context.protocolVersion());
+                            return Mono.just(Boolean.TRUE);
+                        });
+        server.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            seen.add("interceptor:" + context.protocolVersion());
+                            return chain.proceed(message, context);
+                        });
+        server.start();
+
+        assertNull(
+                server.dispatch(
+                                McpTestFeatures.request("tools/list", 1, Map.of()),
+                                new McpRequestContext(null))
+                        .orElseThrow()
+                        .error());
+
+        assertEquals(
+                List.of(
+                        "interceptor:" + McpProtocol.MODERN_VERSION,
+                        "filter:" + McpProtocol.MODERN_VERSION),
+                seen);
     }
 
     @Test
@@ -158,82 +170,43 @@ class McpServerAdapterTestCase {
         server.start();
         Response response = send("{\"jsonrpc\":\"2.0\",\"id\":\"x\",\"method\":\"unknown\"}");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        var decoded =
-                McpSchema.deserializeJsonRpcMessage(
-                        McpJsonDefaults.getMapper(), response.getEntity().getText());
-        assertTrue(
-                decoded instanceof McpSchema.JSONRPCResponse rpc
-                        && rpc.error().code() == -32601
-                        && "x".equals(rpc.id()));
-        response = send("{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}");
-        assertEquals(Status.SUCCESS_ACCEPTED, response.getStatus());
-        assertNull(response.getEntity());
+        Map<String, Object> decoded = envelope(response);
+        assertEquals("x", decoded.get("id"));
+        assertEquals(-32601, ((Map<?, ?>) decoded.get("error")).get("code"));
+        response =
+                send(
+                        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"logging/setLevel\",\"params\":{\"level\":\"info\"}}");
+        assertEquals(-32601, ((Map<?, ?>) envelope(response).get("error")).get("code"));
+        response = send("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}");
+        assertEquals(Map.of(), envelope(response).get("result"));
+        for (String notification :
+                List.of("notifications/initialized", "notifications/roots/list_changed")) {
+            response = send("{\"jsonrpc\":\"2.0\",\"method\":\"" + notification + "\"}");
+            assertEquals(Status.SUCCESS_ACCEPTED, response.getStatus());
+            assertNull(response.getEntity());
+        }
     }
 
     @Test
     void nativeResourcesTemplatesPromptsAndCapabilities() throws Exception {
-        server.getResources()
-                .add(
-                        new McpStatelessServerFeatures.AsyncResourceSpecification(
-                                McpSchema.Resource.builder("test://fixed", "fixed")
-                                        .mimeType("text/plain")
-                                        .build(),
-                                (context, request) ->
-                                        Mono.just(
-                                                new McpSchema.ReadResourceResult(
-                                                        List.of(
-                                                                new McpSchema.TextResourceContents(
-                                                                        request.uri(),
-                                                                        "text/plain",
-                                                                        "resource",
-                                                                        null)),
-                                                        null))));
+        server.getResources().add(McpTestFeatures.resource("test://fixed", "resource"));
         server.getResourceTemplates()
-                .add(
-                        new McpStatelessServerFeatures.AsyncResourceTemplateSpecification(
-                                McpSchema.ResourceTemplate.builder("test://items/{id}", "items")
-                                        .build(),
-                                (context, request) ->
-                                        Mono.just(
-                                                new McpSchema.ReadResourceResult(
-                                                        List.of(
-                                                                new McpSchema.TextResourceContents(
-                                                                        request.uri(),
-                                                                        "text/plain",
-                                                                        "template",
-                                                                        null)),
-                                                        null))));
-        server.getPrompts()
-                .add(
-                        new McpStatelessServerFeatures.AsyncPromptSpecification(
-                                McpSchema.Prompt.builder("greet").build(),
-                                (context, request) ->
-                                        Mono.just(
-                                                new McpSchema.GetPromptResult(
-                                                        "greeting",
-                                                        List.of(
-                                                                new McpSchema.PromptMessage(
-                                                                        McpSchema.Role.USER,
-                                                                        McpSchema.TextContent
-                                                                                .builder("hello")
-                                                                                .build())),
-                                                        null))));
+                .add(McpTestFeatures.template("test://items/{id}", "template"));
+        server.getPrompts().add(McpTestFeatures.prompt("greet", "greeting", "hello"));
         server.start();
-        McpRequestContext context = new McpRequestContext(null);
+        McpRequestContext context = new McpRequestContext(null, McpProtocol.MODERN_VERSION);
         for (String method :
                 List.of("resources/list", "resources/templates/list", "prompts/list")) {
             assertNull(
-                    server.dispatch(
-                                    new McpSchema.JSONRPCRequest("2.0", method, 1, Map.of()),
-                                    context)
+                    server.dispatch(McpTestFeatures.request(method, 1, Map.of()), context)
                             .orElseThrow()
                             .error());
         }
         for (String uri : List.of("test://fixed", "test://items/1")) {
             var response =
                     server.dispatch(
-                                    new McpSchema.JSONRPCRequest(
-                                            "2.0", "resources/read", 2, Map.of("uri", uri)),
+                                    McpTestFeatures.request(
+                                            "resources/read", 2, Map.of("uri", uri)),
                                     context)
                             .orElseThrow();
             assertNull(response.error());
@@ -241,8 +214,7 @@ class McpServerAdapterTestCase {
         }
         var prompt =
                 server.dispatch(
-                                new McpSchema.JSONRPCRequest(
-                                        "2.0",
+                                McpTestFeatures.request(
                                         "prompts/get",
                                         3,
                                         Map.of("name", "greet", "arguments", Map.of())),
@@ -279,10 +251,10 @@ class McpServerAdapterTestCase {
                 .add(
                         (message, context, chain) ->
                                 Mono.just(
-                                        new McpSchema.JSONRPCResponse(
-                                                "2.0", 1, Map.of("text", "x".repeat(256)), null)));
+                                        JsonRpc.JSONRPCResponse.result(
+                                                1, Map.of("text", "x".repeat(256)))));
         server.start();
-        Response response = send("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}");
+        Response response = send(LIST.formatted(1));
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
         assertNull(response.getEntity());
     }
@@ -350,6 +322,134 @@ class McpServerAdapterTestCase {
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, server.handle(request).getStatus());
     }
 
+    /**
+     * A legacy initialize is answered from server/discover: tools, resources and prompts only,
+     * without change notifications, subscriptions or a session.
+     */
+    @Test
+    void legacyInitializeAdvertisesOnlyWhatBothErasShare() throws Exception {
+        addEcho(server);
+        server.getResources().add(McpTestFeatures.resource("test://fixed", "resource"));
+        server.getPrompts().add(McpTestFeatures.prompt("greet", "greeting", "hello"));
+        server.setInstructions("Be brief");
+        server.start();
+        Response response =
+                send(
+                        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\","
+                                + "\"params\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":"
+                                + "{\"roots\":{},\"sampling\":{}},"
+                                + "\"clientInfo\":{\"name\":\"test\",\"version\":\"1\"}}}");
+        assertNull(response.getHeaders().getFirstValue(McpProtocol.SESSION_HEADER, true));
+        Map<?, ?> result = (Map<?, ?>) envelope(response).get("result");
+        assertEquals(McpProtocol.VERSION, result.get("protocolVersion"));
+        assertEquals("Be brief", result.get("instructions"));
+        assertEquals("restlet", ((Map<?, ?>) result.get("serverInfo")).get("name"));
+        Map<?, ?> capabilities = (Map<?, ?>) result.get("capabilities");
+        assertEquals(Set.of("tools", "resources", "prompts"), capabilities.keySet());
+        assertEquals(Map.of("listChanged", false), capabilities.get("tools"));
+        assertEquals(
+                Map.of("subscribe", false, "listChanged", false), capabilities.get("resources"));
+        assertEquals(
+                -32601,
+                ((Map<?, ?>)
+                                envelope(
+                                                send(
+                                                        "{\"jsonrpc\":\"2.0\",\"id\":2,"
+                                                                + "\"method\":\"resources/subscribe\","
+                                                                + "\"params\":{\"uri\":\"test://fixed\"}}"))
+                                        .get("error"))
+                        .get("code"));
+    }
+
+    /**
+     * The same registrations serve both eras: interceptors and tool filters see each request once,
+     * on the modern types, with the revision it came in.
+     */
+    @Test
+    void policyRunsOnceForBothEras() throws Exception {
+        addEcho(server);
+        server.getTools()
+                .add(
+                        io.modelcontextprotocol.modern.server.feature.McpAsyncTool.of(
+                                io.modelcontextprotocol.modern.McpSchema.Tool.builder(
+                                                "hidden", Map.of("type", "object"))
+                                        .build(),
+                                (ctx, request) -> Mono.empty()));
+        List<String> seen = new CopyOnWriteArrayList<>();
+        server.getToolFilters()
+                .add(
+                        (context, tool) -> {
+                            seen.add("filter:" + context.protocolVersion());
+                            return Mono.just(!"hidden".equals(tool.name()));
+                        });
+        server.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            assertTrue(message instanceof JsonRpc.JSONRPCRequest);
+                            seen.add(
+                                    ((JsonRpc.JSONRPCRequest) message).method()
+                                            + ":"
+                                            + context.protocolVersion());
+                            return chain.proceed(message, context);
+                        });
+        server.start();
+
+        Map<?, ?> legacy = (Map<?, ?>) envelope(send(LIST.formatted(1))).get("result");
+        var modern =
+                server.dispatch(
+                                McpTestFeatures.request("tools/list", 2, Map.of()),
+                                new McpRequestContext(null, McpProtocol.MODERN_VERSION))
+                        .orElseThrow();
+
+        assertEquals(1, ((List<?>) legacy.get("tools")).size());
+        assertFalse(legacy.containsKey("resultType"));
+        assertTrue(McpJsonDefaults.getMapper().writeValueAsString(modern).contains("\"echo\""));
+        assertFalse(McpJsonDefaults.getMapper().writeValueAsString(modern).contains("hidden"));
+        String classic = McpProtocol.VERSION;
+        String current = McpProtocol.MODERN_VERSION;
+        assertEquals(
+                List.of(
+                        "tools/list:" + classic,
+                        "filter:" + classic,
+                        "filter:" + classic,
+                        "tools/list:" + current,
+                        "filter:" + current,
+                        "filter:" + current),
+                seen);
+    }
+
+    /**
+     * A legacy request that fails past the edge, in an interceptor or at the deadline, is answered
+     * with its id, which a stdio client needs to match the error to its call.
+     */
+    @Test
+    void legacyFailuresPastTheEdgeKeepTheRequestId() throws Exception {
+        addEcho(server);
+        server.setRequestTimeout(Duration.ofMillis(300));
+        server.getInterceptors()
+                .add(
+                        (message, context, chain) -> {
+                            if ("tools/list".equals(((JsonRpc.JSONRPCRequest) message).method())) {
+                                throw new IllegalStateException("interceptor failed");
+                            }
+                            return Mono.never();
+                        });
+        server.start();
+
+        Response failed = send(LIST.formatted(7));
+        Response late =
+                send(
+                        "{\"jsonrpc\":\"2.0\",\"id\":\"late\",\"method\":\"tools/call\","
+                                + "\"params\":{\"name\":\"echo\",\"arguments\":{\"text\":\"x\"}}}");
+
+        for (var answered : List.of(Map.entry(failed, (Object) 7), Map.entry(late, "late"))) {
+            assertEquals(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, answered.getKey().getStatus());
+            Map<String, Object> error = envelope(answered.getKey());
+            assertEquals(answered.getValue(), error.get("id"));
+            assertEquals(-32603, ((Map<?, ?>) error.get("error")).get("code"));
+        }
+    }
+
     @Test
     void initializeRequiresSupportedBodyVersionAndPostInitializeHeader() throws Exception {
         server.start();
@@ -391,13 +491,9 @@ class McpServerAdapterTestCase {
                             return Mono.error(new IllegalStateException("interrupted"));
                         });
         server.start();
-        var first =
-                CompletableFuture.supplyAsync(
-                        () -> send("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}"));
+        var first = CompletableFuture.supplyAsync(() -> send(LIST.formatted(1)));
         assertTrue(entered.await(3, TimeUnit.SECONDS));
-        assertEquals(
-                Status.SERVER_ERROR_SERVICE_UNAVAILABLE,
-                send("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}").getStatus());
+        assertEquals(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, send(LIST.formatted(2)).getStatus());
         server.stop();
         assertTrue(exited.await(3, TimeUnit.SECONDS));
         assertEquals(
@@ -456,11 +552,11 @@ class McpServerAdapterTestCase {
                 .add(
                         (message, context, chain) -> {
                             entered.countDown();
-                            return Mono.<McpSchema.JSONRPCResponse>never()
+                            return Mono.<JsonRpc.JSONRPCResponse>never()
                                     .doOnCancel(exited::countDown);
                         });
         server.start();
-        Request request = request("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}");
+        Request request = request(LIST.formatted(1));
         var result = CompletableFuture.supplyAsync(() -> server.handle(request));
         assertTrue(entered.await(3, TimeUnit.SECONDS));
         request.abort();
@@ -481,7 +577,7 @@ class McpServerAdapterTestCase {
                 IllegalStateException.class,
                 () ->
                         server.dispatch(
-                                new McpSchema.JSONRPCRequest("2.0", "ping", 1, Map.of()),
+                                McpTestFeatures.request("server/discover", 1, Map.of()),
                                 new McpRequestContext(null)));
     }
 }

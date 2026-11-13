@@ -101,7 +101,7 @@ class McpModernStdioTestCase {
                         });
         adapter = new McpServerAdapter();
         McpServerAdapterTestCase.addEcho(adapter);
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("progress", Map.of("type", "object")).build(),
@@ -114,7 +114,7 @@ class McpModernStdioTestCase {
                                                                                 Mono.just(
                                                                                         text(
                                                                                                 "done")))))));
-        adapter.getModernTools()
+        adapter.getTools()
                 .add(
                         McpAsyncTool.of(
                                 Tool.builder("endless", Map.of("type", "object")).build(),

@@ -61,7 +61,7 @@ class McpModuleTestCase {
                 example,
                 """
                 package example;
-                import io.modelcontextprotocol.spec.McpSchema;
+                import io.modelcontextprotocol.modern.JsonRpc;
                 import java.util.Map;
                 import org.restlet.ext.mcp.McpRequestContext;
                 import org.restlet.ext.mcp.McpServerAdapter;
@@ -72,8 +72,11 @@ class McpModuleTestCase {
                                 chain.proceed(message, context));
                         server.start();
                         try {
-                            var result = server.dispatch(new McpSchema.JSONRPCRequest(
-                                    "2.0", "ping", 1, Map.of()), new McpRequestContext(null)).orElseThrow();
+                            var meta = Map.of("io.modelcontextprotocol/protocolVersion", "2026-07-28",
+                                    "io.modelcontextprotocol/clientCapabilities", Map.of());
+                            var result = server.dispatch(new JsonRpc.JSONRPCRequest(
+                                    "server/discover", 1, Map.of("_meta", meta)),
+                                    new McpRequestContext(null)).orElseThrow();
                             if (result.error() != null) { throw new AssertionError(result.error()); }
                         } finally { server.stop(); }
                     }

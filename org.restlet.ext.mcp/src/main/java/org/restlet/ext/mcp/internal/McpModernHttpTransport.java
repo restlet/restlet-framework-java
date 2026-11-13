@@ -161,8 +161,9 @@ public final class McpModernHttpTransport {
             } else if (type != null && MediaType.APPLICATION_JSON.isCompatible(type)) {
                 sink.emit(single(entity, response, rpc.id()));
             } else {
-                throw new IOException(
+                throw new McpHttpStatusException(
                         "MCP HTTP failure: " + response.getStatus(),
+                        response.getStatus().getCode(),
                         response.getStatus().getThrowable());
             }
         } finally {
@@ -210,10 +211,22 @@ public final class McpModernHttpTransport {
         try {
             message = JsonRpc.deserializeMessage(mapper, McpMessages.utf8(body));
         } catch (IOException | RuntimeException e) {
-            throw new IOException("MCP HTTP failure: " + response.getStatus(), e);
+            throw new McpHttpStatusException(
+                    "MCP HTTP failure: " + response.getStatus(), response.getStatus().getCode(), e);
         }
         if (!(message instanceof JsonRpc.JSONRPCResponse reply) || !sameId(reply.id(), id)) {
+            if (response.getStatus().isError()) {
+                // Not an answer to this request, such as a legacy server's error without an id.
+                throw new McpHttpStatusException(
+                        "MCP HTTP failure: " + response.getStatus(),
+                        response.getStatus().getCode(),
+                        null);
+            }
             throw new IOException("MCP JSON reply must be the response to its request");
+        }
+        if (reply.error() != null && response.getStatus().isServerError()) {
+            // Keeps the status, which tells a failing server from a legacy one.
+            throw new McpServerErrorException(reply.error(), response.getStatus().getCode());
         }
         return message;
     }

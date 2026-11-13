@@ -18,7 +18,6 @@ import io.modelcontextprotocol.modern.server.McpServer;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
 import io.modelcontextprotocol.modern.server.transport.McpHeaderDecoder;
 import io.modelcontextprotocol.server.transport.HeaderAccessor;
-import io.modelcontextprotocol.spec.McpSchema;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -61,11 +60,10 @@ import reactor.core.publisher.Mono;
  * SSE stream when the SDK streams notifications before the result.
  *
  * <p>The exchange runs in an admitted worker, within the adapter's call limit and timeout. The
- * adapter's interceptors wrap the request and the final result or error, on the {@code 2025-11-25}
- * message types. Notifications streamed before the result pass without them, and so does the
- * in-band error ending a stream cut short by a timeout, a disconnect or a stop. Streamed messages
- * reach the response through a bounded queue, so a slow client holds back the SDK, and leaving the
- * stream early cancels the SDK's.
+ * adapter's interceptors wrap the request and the final result or error. Notifications streamed
+ * before the result pass without them, and so does the in-band error ending a stream cut short by a
+ * timeout, a disconnect or a stop. Streamed messages reach the response through a bounded queue, so
+ * a slow client holds back the SDK, and leaving the stream early cancels the SDK's.
  */
 public final class McpModernExchange {
 
@@ -76,13 +74,13 @@ public final class McpModernExchange {
         /**
          * Runs the interceptor chain.
          *
-         * @param message The message, on the {@code 2025-11-25} types.
+         * @param message The message.
          * @param context The request context.
          * @param terminal The step after the last interceptor.
          * @return The final response, empty for a notification.
          */
-        Mono<McpSchema.JSONRPCResponse> run(
-                McpSchema.JSONRPCMessage message,
+        Mono<JsonRpc.JSONRPCResponse> run(
+                JsonRpc.JSONRPCMessage message,
                 McpRequestContext context,
                 McpInterceptor.Chain terminal);
     }
@@ -250,7 +248,7 @@ public final class McpModernExchange {
         }
 
         /** Waits for a chain's response, within the request timeout unless listening. */
-        private Optional<McpSchema.JSONRPCResponse> await(Mono<McpSchema.JSONRPCResponse> chain) {
+        private Optional<JsonRpc.JSONRPCResponse> await(Mono<JsonRpc.JSONRPCResponse> chain) {
             return listen ? chain.blockOptional() : chain.blockOptional(timeout);
         }
 
@@ -291,15 +289,16 @@ public final class McpModernExchange {
         private void notification(JsonRpc.JSONRPCNotification notification) {
             interceptors
                     .run(
-                            mapper.convertValue(notification, McpSchema.JSONRPCNotification.class),
+                            notification,
                             context,
                             (next, nextContext) ->
-                                    sdk.handleNotification(
-                                                    transport(nextContext),
-                                                    mapper.convertValue(
-                                                            next,
-                                                            JsonRpc.JSONRPCNotification.class))
-                                            .then(Mono.empty()))
+                                    next instanceof JsonRpc.JSONRPCNotification forwarded
+                                            ? sdk.handleNotification(
+                                                            transport(nextContext), forwarded)
+                                                    .then(Mono.empty())
+                                            : Mono.error(
+                                                    new IllegalArgumentException(
+                                                            "An MCP notification must stay one")))
                     .blockOptional(timeout);
             head.complete(new Reply(Status.SUCCESS_ACCEPTED, null, false));
         }
@@ -311,10 +310,10 @@ public final class McpModernExchange {
                 head.complete(error(rpc.id(), ErrorCodes.HEADER_MISMATCH, mismatch));
                 return;
             }
-            Optional<McpSchema.JSONRPCResponse> last =
+            Optional<JsonRpc.JSONRPCResponse> last =
                     await(
                             interceptors.run(
-                                    mapper.convertValue(rpc, McpSchema.JSONRPCRequest.class),
+                                    rpc,
                                     context,
                                     (next, nextContext) ->
                                             Mono.fromCallable(() -> terminal(next, nextContext))));
@@ -342,12 +341,14 @@ public final class McpModernExchange {
         }
 
         /** Dispatches to the SDK after the interceptors, streaming what comes before the result. */
-        private McpSchema.JSONRPCResponse terminal(
-                McpSchema.JSONRPCMessage next, McpRequestContext forwarded)
+        private JsonRpc.JSONRPCResponse terminal(
+                JsonRpc.JSONRPCMessage next, McpRequestContext forwarded)
                 throws IOException, InterruptedException {
-            JsonRpc.JSONRPCRequest rpc = mapper.convertValue(next, JsonRpc.JSONRPCRequest.class);
+            if (!(next instanceof JsonRpc.JSONRPCRequest rpc)) {
+                throw new IOException("An MCP request must stay one");
+            }
             McpTransportContext sdkContext = transport(forwarded);
-            if (McpSchema.METHOD_TOOLS_CALL.equals(rpc.method())) {
+            if (io.modelcontextprotocol.modern.McpSchema.METHOD_TOOLS_CALL.equals(rpc.method())) {
                 // The tools feature validates x-mcp-header arguments against these.
                 sdkContext =
                         sdkContext.putAll(
@@ -362,10 +363,10 @@ public final class McpModernExchange {
                             ? sdk.handle(sdkContext, rpc).block(timeout)
                             : sdk.handleBlocking(sdkContext, rpc).block(timeout);
             if (reply instanceof McpTransportResponse.Result result) {
-                return classic(result.response());
+                return result.response();
             }
             if (reply instanceof McpTransportResponse.Error failure) {
-                return classic(failure.response());
+                return failure.response();
             }
             if (!(reply instanceof McpTransportResponse.Streaming streaming)) {
                 throw new IOException("MCP request got no response");
@@ -386,11 +387,7 @@ public final class McpModernExchange {
             if (last == null) {
                 throw new IOException("MCP stream ended without a response");
             }
-            return classic(last);
-        }
-
-        private McpSchema.JSONRPCResponse classic(JsonRpc.JSONRPCResponse response) {
-            return mapper.convertValue(response, McpSchema.JSONRPCResponse.class);
+            return last;
         }
 
         /** The servlet transport's header checks, on Restlet headers. */
@@ -539,7 +536,7 @@ public final class McpModernExchange {
         return new Reply(status, body, false);
     }
 
-    private static Status status(McpSchema.JSONRPCResponse response) {
+    private static Status status(JsonRpc.JSONRPCResponse response) {
         return response.error() == null
                 ? Status.SUCCESS_OK
                 : ERROR_STATUSES.getOrDefault(response.error().code(), Status.SUCCESS_OK);

@@ -8,38 +8,66 @@
  */
 package org.restlet.ext.mcp;
 
-import io.modelcontextprotocol.client.McpAsyncClient;
-import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.TypeRef;
-import io.modelcontextprotocol.spec.McpClientTransport;
-import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.modern.McpSchema;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import org.restlet.Client;
 import org.restlet.Request;
+import org.restlet.ext.mcp.internal.McpEras;
+import org.restlet.ext.mcp.internal.McpHttpStatusException;
+import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpModernHttpTransport;
-import org.restlet.ext.mcp.internal.StdioMcpClientTransport;
-import reactor.core.publisher.Mono;
+import org.restlet.ext.mcp.internal.McpServerErrorException;
+import reactor.core.Exceptions;
 
 /**
- * Lifecycle facade over the native SDK. Borrowed Restlet connectors are never stopped.
+ * Lifecycle facade of an MCP client, on the SDK's {@code 2026-07-28} types. Borrowed Restlet
+ * connectors are never stopped.
  *
- * <p>By default it speaks MCP {@link McpProtocol#VERSION} through the SDK's client, {@link
- * #getSdkClient()}. With {@link #setProtocolVersion(String)} set to {@link
- * McpProtocol#MODERN_VERSION}, it speaks {@code 2026-07-28} over HTTP instead, experimentally:
- * {@link #start()} discovers the server, and {@link #getModernClient()} makes the requests.
+ * <p>By default it speaks MCP {@link McpProtocol#VERSION} through the SDK's client, behind a legacy
+ * edge. With {@link #setProtocolVersion(String)} set to {@link McpProtocol#MODERN_VERSION}, it
+ * speaks {@code 2026-07-28} over HTTP instead, experimentally: {@link #start()} discovers the
+ * server, and {@link #getModernClient()} makes the requests.
+ *
+ * <p>With {@link McpProtocol#AUTO}, also experimental, it speaks whichever era the server does, as
+ * the 2026-07-28 revision specifies for a dual-era client. Over HTTP, {@link #start()} sends {@code
+ * server/discover}: a discovery result naming {@code 2026-07-28} selects the modern client; a
+ * {@code 4xx} without a JSON-RPC response, or a JSON-RPC error other than an unsupported version,
+ * marks a legacy server, which gets an {@code initialize} handshake offering {@link
+ * McpProtocol#LEGACY_VERSIONS}. Other failures, such as a {@code 5xx} or a timeout, are thrown
+ * without falling back. The era found is remembered for the endpoint URI, for the life of the JVM:
+ * a later start skips the probe, and probes again only if the server contradicts that era, with a
+ * {@code 4xx} or a JSON-RPC error that the other era would answer with, not with a timeout or a
+ * {@code 5xx}. A started client keeps its era: requests are never replayed on the other one, so
+ * when a server changes era, stop the client and start a new one. Over stdio, it speaks {@link
+ * McpProtocol#VERSION}, the modern client being HTTP only.
+ *
+ * <p>With a legacy server, the client exposes nothing 2026-07-28 deprecates or removes: it declares
+ * no roots, sampling or elicitation capability, never sets a logging level, refuses the requests a
+ * server sends, and opens no listening {@code GET} stream. It keeps no session unless asked to,
+ * through {@link #setLegacySessions(boolean)} or {@link #setLegacySessionId(String)}.
+ *
+ * <p>{@link #getNegotiatedVersion()} tells the revision in use. {@link #listTools(String)}, {@link
+ * #callTool(String, Map)}, {@link #readResource(String)} and {@link #getPrompt(String, Map)} work
+ * in both eras, on the modern types.
  */
 public final class McpClientAdapter implements AutoCloseable {
     /** The default number of {@code input_required} rounds answered for one request. */
     public static final int DEFAULT_MAX_INPUT_ROUNDS = 8;
+
+    /** JSON-RPC errors only a {@code 2026-07-28} server answers {@code server/discover} with. */
+    private static final Set<Integer> MODERN_ERRORS =
+            Set.of(
+                    McpSchema.ErrorCodes.HEADER_MISMATCH,
+                    McpSchema.ErrorCodes.MISSING_REQUIRED_CLIENT_CAPABILITY);
 
     private final Client client;
     private final String target;
@@ -49,13 +77,14 @@ public final class McpClientAdapter implements AutoCloseable {
     private int maxConcurrentCalls = McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
     private Consumer<Request> requestCustomizer = request -> {};
     private String protocolVersion = McpProtocol.VERSION;
-    private io.modelcontextprotocol.modern.McpSchema.ClientCapabilities modernCapabilities =
-            io.modelcontextprotocol.modern.McpSchema.ClientCapabilities.NONE;
+    private McpSchema.ClientCapabilities modernCapabilities = McpSchema.ClientCapabilities.NONE;
     private McpInputHandler inputHandler;
     private int maxInputRounds = DEFAULT_MAX_INPUT_ROUNDS;
+    private boolean legacySessions;
+    private String legacySessionId;
     private McpModernClient modern;
-    private McpAsyncClient sdk;
-    private McpClientTransport transport;
+    private McpLegacyEdge.Client legacy;
+    private String negotiatedVersion;
     private boolean started;
     private boolean configured;
 
@@ -125,17 +154,34 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * Sets the MCP revision spoken: {@link McpProtocol#VERSION}, the default, through the SDK's
-     * client, or {@link McpProtocol#MODERN_VERSION} through {@link #getModernClient()}, over HTTP
-     * only for now. Experimental for {@code 2026-07-28}.
+     * client; {@link McpProtocol#MODERN_VERSION} through {@link #getModernClient()}, over HTTP only
+     * for now; or {@link McpProtocol#AUTO}, whichever the server speaks. Experimental for {@code
+     * 2026-07-28} and {@code auto}.
      *
-     * @param value The revision.
+     * @param value The revision, or {@link McpProtocol#AUTO}.
      */
     public synchronized void setProtocolVersion(String value) {
         requireConfigurable();
-        if (!McpProtocol.VERSION.equals(value) && !McpProtocol.MODERN_VERSION.equals(value)) {
+        if (!McpProtocol.VERSION.equals(value)
+                && !McpProtocol.MODERN_VERSION.equals(value)
+                && !McpProtocol.AUTO.equals(value)) {
             throw new IllegalArgumentException("Unsupported MCP revision: " + value);
         }
         protocolVersion = value;
+    }
+
+    /**
+     * The revision spoken with the server, once started: {@link McpProtocol#MODERN_VERSION}, or the
+     * one negotiated by the last {@code initialize}, which a handshake after an expired legacy
+     * session may change.
+     *
+     * @return The revision, or null before {@link #start()}.
+     */
+    public synchronized String getNegotiatedVersion() {
+        if (!started) {
+            return null;
+        }
+        return legacy != null ? legacy.negotiatedVersion() : negotiatedVersion;
     }
 
     public synchronized String getProtocolVersion() {
@@ -148,20 +194,19 @@ public final class McpClientAdapter implements AutoCloseable {
      *
      * @param value The capabilities.
      */
-    public synchronized void setModernCapabilities(
-            io.modelcontextprotocol.modern.McpSchema.ClientCapabilities value) {
+    public synchronized void setModernCapabilities(McpSchema.ClientCapabilities value) {
         requireConfigurable();
         modernCapabilities = Objects.requireNonNull(value, "value");
     }
 
-    public synchronized io.modelcontextprotocol.modern.McpSchema.ClientCapabilities
-            getModernCapabilities() {
+    public synchronized McpSchema.ClientCapabilities getModernCapabilities() {
         return modernCapabilities;
     }
 
     /**
      * Sets what answers the {@code input_required} results of {@link McpProtocol#MODERN_VERSION}
-     * requests, after which the request is retried; without one, the result is returned.
+     * requests, after which the request is retried; without one, the result is returned. Legacy
+     * servers ask for no input: the legacy edge declares no elicitation capability.
      *
      * @param value The handler, or null for none.
      */
@@ -192,6 +237,62 @@ public final class McpClientAdapter implements AutoCloseable {
         return maxInputRounds;
     }
 
+    /**
+     * Keeps the {@code Mcp-Session-Id} a legacy server returns on {@code initialize}, off by
+     * default: the id is then sent with each later request, the client initializes once more when
+     * the session expires, and it deletes the session when it stops. Without it, a legacy server
+     * opening a session fails the handshake.
+     *
+     * <p><b>Legacy only.</b> MCP 2026-07-28 removed sessions: this property exists so the client
+     * can reach legacy servers that require one, and goes away with the legacy edge. It has no
+     * effect on modern servers. Even with a session, the client opens no listening {@code GET}
+     * stream, does not resume with {@code Last-Event-ID}, and refuses the requests the server
+     * sends, such as elicitation, sampling or roots, so servers depending on those will not work.
+     *
+     * @param value True to keep a legacy server's session.
+     */
+    public synchronized void setLegacySessions(boolean value) {
+        requireConfigurable();
+        legacySessions = value;
+    }
+
+    /**
+     * Whether the session of a legacy server is kept.
+     *
+     * @return True if kept.
+     * @see #setLegacySessions(boolean)
+     */
+    public synchronized boolean isLegacySessions() {
+        return legacySessions;
+    }
+
+    /**
+     * Sets a legacy server's {@code Mcp-Session-Id} the caller owns, such as one a proxy relays: it
+     * is sent with each legacy request, from {@code initialize} on, but never replaced, never
+     * deleted, and its expiry fails the request.
+     *
+     * <p><b>Legacy only</b>, with the same limits as {@link #setLegacySessions(boolean)}: MCP
+     * 2026-07-28 removed sessions, and this property goes away with the legacy edge. It has no
+     * effect on modern servers.
+     *
+     * @param value The session id, or null for none.
+     */
+    public synchronized void setLegacySessionId(String value) {
+        requireConfigurable();
+        legacySessionId = value;
+    }
+
+    /**
+     * The {@code Mcp-Session-Id} sent to a legacy server: once started, the one in use, either the
+     * caller's or the server's; before, the one the caller set. <b>Legacy only</b>: see {@link
+     * #setLegacySessions(boolean)}.
+     *
+     * @return The session id, or null.
+     */
+    public synchronized String getLegacySessionId() {
+        return legacy != null ? legacy.sessionId() : legacySessionId;
+    }
+
     public synchronized void start() {
         if (started) {
             return;
@@ -199,37 +300,172 @@ public final class McpClientAdapter implements AutoCloseable {
         requireConfigurable();
         configured = true;
         if (McpProtocol.MODERN_VERSION.equals(protocolVersion)) {
-            startModern();
+            startModern(createModern());
             return;
         }
-        transport = createTransport();
-        try {
-            sdk =
-                    McpClient.async(transport)
-                            .requestTimeout(requestTimeout)
-                            .initializationTimeout(requestTimeout)
-                            .build();
-            McpSchema.InitializeResult initialized = sdk.initialize().block(requestTimeout);
-            if (initialized == null || !McpProtocol.VERSION.equals(initialized.protocolVersion())) {
-                throw new IllegalStateException("Peer did not negotiate the supported MCP version");
-            }
-            started = true;
-        } catch (RuntimeException e) {
+        if (McpProtocol.AUTO.equals(protocolVersion)) {
+            startAuto();
+            return;
+        }
+        startLegacy(List.of(McpProtocol.VERSION));
+    }
+
+    /** Starts the legacy client: an {@code initialize} handshake offering these revisions. */
+    private void startLegacy(List<String> versions) {
+        legacy = createLegacy(versions);
+        negotiatedVersion = legacy.negotiatedVersion();
+        started = true;
+    }
+
+    /**
+     * Starts the client of the era the server speaks: the one remembered for the endpoint, unless
+     * the server contradicts it, else the one a {@code server/discover} probe tells.
+     */
+    private void startAuto() {
+        if (stream != null || target.startsWith("stdio:")) {
+            startLegacy(List.of(McpProtocol.VERSION));
+            return;
+        }
+        String cached = McpEras.get(target);
+        if (cached != null) {
             try {
-                if (sdk != null) {
-                    sdk.closeGracefully().block(requestTimeout);
+                if (McpEras.MODERN.equals(cached)) {
+                    startModern(createModern());
                 } else {
-                    transport.closeGracefully().block(requestTimeout);
+                    startLegacy(McpProtocol.LEGACY_VERSIONS);
                 }
-            } catch (RuntimeException cleanup) {
-                e.addSuppressed(cleanup);
+                return;
+            } catch (RuntimeException e) {
+                // A timeout or a server error says nothing of the era: probing again would only
+                // add requests, and might repeat a handshake that opened a session.
+                if (!contradicts(cached, e)) {
+                    throw e;
+                }
+                McpEras.remove(target);
             }
-            throw e;
+        }
+        McpModernClient candidate = createModern();
+        if (probe(candidate)) {
+            modern = candidate;
+            negotiatedVersion = McpProtocol.MODERN_VERSION;
+            started = true;
+            McpEras.put(target, McpEras.MODERN);
+        } else {
+            startLegacy(McpProtocol.LEGACY_VERSIONS);
+            McpEras.put(target, McpEras.LEGACY);
         }
     }
 
-    /** Starts a {@code 2026-07-28} client, and discovers the server's support of it. */
-    private void startModern() {
+    /**
+     * Whether a client's failed start contradicts the era remembered for the endpoint.
+     *
+     * @param era The era remembered.
+     * @param failure The failure.
+     * @return True if the endpoint should be probed again.
+     */
+    private static boolean contradicts(String era, RuntimeException failure) {
+        if (McpEras.LEGACY.equals(era)) {
+            return McpLegacyEdge.wrongEra(failure);
+        }
+        if (failure instanceof NotModern) {
+            return true;
+        }
+        try {
+            return isLegacy(Exceptions.unwrap(failure));
+        } catch (IllegalStateException noSharedRevision) {
+            return true;
+        }
+    }
+
+    /** A discovery result not naming {@code 2026-07-28}. */
+    private static final class NotModern extends IllegalStateException {
+        private static final long serialVersionUID = 1L;
+
+        private NotModern() {
+            super("Peer does not support MCP 2026-07-28");
+        }
+    }
+
+    /**
+     * Probes the server with {@code server/discover}.
+     *
+     * @return True for a modern server, which the candidate then serves; false for a legacy one,
+     *     for which the candidate is closed.
+     */
+    private boolean probe(McpModernClient candidate) {
+        boolean kept = false;
+        try {
+            McpSchema.DiscoverResult discovered = candidate.discover().block(requestTimeout);
+            List<String> supported =
+                    discovered == null || discovered.supportedVersions() == null
+                            ? List.of()
+                            : discovered.supportedVersions();
+            kept = supported.contains(McpProtocol.MODERN_VERSION);
+            if (!kept && !offersLegacy(supported)) {
+                throw new IllegalStateException(
+                        "No MCP revision supported by both the client and the peer: " + supported);
+            }
+            return kept;
+        } catch (RuntimeException e) {
+            if (!isLegacy(Exceptions.unwrap(e))) {
+                throw e;
+            }
+            return false;
+        } finally {
+            if (!kept) {
+                try {
+                    candidate.close();
+                } catch (IOException cleanup) {
+                    // The probe exchange is over: nothing is left to release.
+                }
+            }
+        }
+    }
+
+    /**
+     * Whether a failed {@code server/discover} marks a legacy server: a JSON-RPC error that isn't a
+     * recognized modern one and doesn't come with a {@code 5xx}, or a {@code 4xx} without a
+     * response. A header mismatch or a missing client capability error comes from a modern server,
+     * whose failure is kept. An unsupported version error comes from a modern server too, which is
+     * legacy-compatible only if it offers a legacy revision.
+     */
+    private static boolean isLegacy(Throwable failure) {
+        if (failure instanceof McpServerErrorException) {
+            return false; // A server error says nothing of the era, whatever its JSON-RPC error.
+        }
+        if (failure instanceof io.modelcontextprotocol.modern.McpException mcp) {
+            var error = mcp.error();
+            if (error != null && error.code() != null && MODERN_ERRORS.contains(error.code())) {
+                return false;
+            }
+            if (error != null
+                    && error.code() != null
+                    && error.code() == McpProtocol.UNSUPPORTED_PROTOCOL_VERSION) {
+                List<String> supported = supportedVersions(error.data());
+                if (offersLegacy(supported)) {
+                    return true;
+                }
+                throw new IllegalStateException(
+                        "No MCP revision supported by both the client and the peer: " + supported,
+                        mcp);
+            }
+            return true;
+        }
+        return failure instanceof McpHttpStatusException status && status.isClientError();
+    }
+
+    private static List<String> supportedVersions(Object data) {
+        if (data instanceof Map<?, ?> map && map.get("supported") instanceof List<?> list) {
+            return list.stream().map(String::valueOf).toList();
+        }
+        return List.of();
+    }
+
+    private static boolean offersLegacy(List<String> supported) {
+        return supported.stream().anyMatch(McpProtocol.LEGACY_VERSIONS::contains);
+    }
+
+    private McpModernClient createModern() {
         if (stream != null || target.startsWith("stdio:")) {
             throw new UnsupportedOperationException(
                     "The MCP 2026-07-28 client supports HTTP only for now");
@@ -245,27 +481,29 @@ public final class McpClientAdapter implements AutoCloseable {
                     "Borrowed MCP client must be started with followRedirects=false");
         }
         McpJsonMapper mapper = McpJsonDefaults.getMapper();
-        McpModernClient candidate =
-                new McpModernClient(
-                        new McpModernHttpTransport(
-                                client,
-                                target,
-                                mapper,
-                                maxMessageBytes,
-                                maxConcurrentCalls,
-                                requestTimeout,
-                                requestCustomizer),
+        return new McpModernClient(
+                new McpModernHttpTransport(
+                        client,
+                        target,
                         mapper,
-                        modernCapabilities,
-                        inputHandler,
-                        maxInputRounds);
+                        maxMessageBytes,
+                        maxConcurrentCalls,
+                        requestTimeout,
+                        requestCustomizer),
+                mapper,
+                modernCapabilities,
+                inputHandler,
+                maxInputRounds);
+    }
+
+    /** Starts a {@code 2026-07-28} client, and discovers the server's support of it. */
+    private void startModern(McpModernClient candidate) {
         try {
-            io.modelcontextprotocol.modern.McpSchema.DiscoverResult discovered =
-                    candidate.discover().block(requestTimeout);
+            McpSchema.DiscoverResult discovered = candidate.discover().block(requestTimeout);
             if (discovered == null
                     || discovered.supportedVersions() == null
                     || !discovered.supportedVersions().contains(McpProtocol.MODERN_VERSION)) {
-                throw new IllegalStateException("Peer does not support MCP 2026-07-28");
+                throw new NotModern();
             }
         } catch (RuntimeException e) {
             try {
@@ -276,6 +514,7 @@ public final class McpClientAdapter implements AutoCloseable {
             throw e;
         }
         modern = candidate;
+        negotiatedVersion = McpProtocol.MODERN_VERSION;
         started = true;
     }
 
@@ -291,10 +530,10 @@ public final class McpClientAdapter implements AutoCloseable {
         return modern;
     }
 
-    private McpClientTransport createTransport() {
+    /** Starts a legacy client, over the stream, the stdio connector or HTTP. */
+    private McpLegacyEdge.Client createLegacy(List<String> versions) {
         if (stream != null) {
-            return new StdioMcpClientTransport(
-                    stream, maxMessageBytes, maxConcurrentCalls, requestTimeout);
+            return McpLegacyEdge.stdio(stream, maxMessageBytes, maxConcurrentCalls, requestTimeout);
         }
         if (target.startsWith("stdio:")) {
             if (!client.isStarted()
@@ -306,42 +545,121 @@ public final class McpClientAdapter implements AutoCloseable {
                 throw new IllegalStateException(
                         "A started explicitly selected MCP STDIO helper is required");
             }
-            return new BorrowedTransport(
-                    helper.bind(maxMessageBytes, maxConcurrentCalls, requestTimeout));
+            return helper.bind(maxMessageBytes, maxConcurrentCalls, requestTimeout);
         }
-        return new RestletMcpClientTransport(
-                client,
-                target,
-                maxMessageBytes,
-                maxConcurrentCalls,
-                requestTimeout,
-                requestCustomizer);
-    }
-
-    /** Exposes native MCP operations, errors and call options without a parallel invocation API. */
-    public synchronized McpAsyncClient getSdkClient() {
-        if (modern != null) {
-            throw new IllegalStateException(
-                    "This MCP client speaks 2026-07-28: use getModernClient()");
-        }
-        if (!started) {
-            throw new IllegalStateException("MCP client is not started");
-        }
-        return sdk;
+        return McpLegacyEdge.http(
+                new McpLegacyEdge.HttpOptions(
+                        client,
+                        target,
+                        maxMessageBytes,
+                        maxConcurrentCalls,
+                        requestTimeout,
+                        requestCustomizer,
+                        versions,
+                        legacySessions,
+                        legacySessionId));
     }
 
     public synchronized boolean isStarted() {
         return started;
     }
 
-    public McpSchema.ListToolsResult listTools(String cursor) {
-        return getSdkClient().listTools(cursor).block(requestTimeout);
+    private synchronized McpModernClient modernOrNull() {
+        if (!started) {
+            throw new IllegalStateException("MCP client is not started");
+        }
+        return modern;
     }
 
+    /**
+     * Lists tools, in either era.
+     *
+     * @param cursor The cursor of the page, or null for the first.
+     * @return The page of tools.
+     */
+    public McpSchema.ListToolsResult listTools(String cursor) {
+        McpModernClient current = modernOrNull();
+        if (current != null) {
+            return current.listTools(cursor).block(requestTimeout);
+        }
+        return legacy().listTools(cursor).block(requestTimeout);
+    }
+
+    /**
+     * Calls a tool, in either era. An {@code input_required} result the input handler doesn't
+     * answer fails the call.
+     *
+     * @param name The tool.
+     * @param arguments Its arguments.
+     * @return The tool's result.
+     */
     public McpSchema.CallToolResult callTool(String name, Map<String, Object> arguments) {
-        return getSdkClient()
-                .callTool(new McpSchema.CallToolRequest(name, arguments, null))
-                .block(requestTimeout);
+        McpModernClient current = modernOrNull();
+        if (current == null) {
+            return legacy().callTool(
+                            new McpSchema.CallToolRequest(name, arguments, null, null, null))
+                    .block(requestTimeout);
+        }
+        var outcome =
+                current.callTool(new McpSchema.CallToolRequest(name, arguments, null, null, null))
+                        .block(requestTimeout);
+        if (!(outcome instanceof McpSchema.CallToolResult result)) {
+            throw new IllegalStateException(
+                    "MCP tool " + name + " requires input that was not provided");
+        }
+        return result;
+    }
+
+    /**
+     * Reads a resource, in either era. An {@code input_required} result the input handler doesn't
+     * answer fails the read.
+     *
+     * @param uri The resource URI.
+     * @return The resource's contents.
+     */
+    public McpSchema.ReadResourceResult readResource(String uri) {
+        McpModernClient current = modernOrNull();
+        if (current == null) {
+            return legacy().readResource(new McpSchema.ReadResourceRequest(uri, null, null, null))
+                    .block(requestTimeout);
+        }
+        var outcome =
+                current.readResource(new McpSchema.ReadResourceRequest(uri, null, null, null), null)
+                        .block(requestTimeout);
+        if (!(outcome instanceof McpSchema.ReadResourceResult result)) {
+            throw new IllegalStateException(
+                    "MCP resource " + uri + " requires input that was not provided");
+        }
+        return result;
+    }
+
+    /**
+     * Gets a prompt, in either era. An {@code input_required} result the input handler doesn't
+     * answer fails the request.
+     *
+     * @param name The prompt.
+     * @param arguments Its arguments.
+     * @return The prompt.
+     */
+    public McpSchema.GetPromptResult getPrompt(String name, Map<String, String> arguments) {
+        McpModernClient current = modernOrNull();
+        var request = new McpSchema.GetPromptRequest(name, arguments, null, null, null);
+        if (current == null) {
+            return legacy().getPrompt(request).block(requestTimeout);
+        }
+        var outcome = current.getPrompt(request, null).block(requestTimeout);
+        if (!(outcome instanceof McpSchema.GetPromptResult result)) {
+            throw new IllegalStateException(
+                    "MCP prompt " + name + " requires input that was not provided");
+        }
+        return result;
+    }
+
+    private synchronized McpLegacyEdge.Client legacy() {
+        if (!started || legacy == null) {
+            throw new IllegalStateException("MCP client is not started");
+        }
+        return legacy;
     }
 
     public synchronized void stop() {
@@ -355,48 +673,18 @@ public final class McpClientAdapter implements AutoCloseable {
                 modern = null;
             }
         }
-        if (sdk != null) {
+        if (legacy != null) {
             started = false;
-            sdk.closeGracefully().block(requestTimeout);
-            sdk = null;
+            try {
+                legacy.close();
+            } finally {
+                legacy = null;
+            }
         }
     }
 
     @Override
     public void close() {
         stop();
-    }
-
-    private record BorrowedTransport(McpClientTransport delegate) implements McpClientTransport {
-        @Override
-        public Mono<Void> connect(
-                Function<Mono<McpSchema.JSONRPCMessage>, Mono<McpSchema.JSONRPCMessage>> handler) {
-            return delegate.connect(handler);
-        }
-
-        @Override
-        public void setExceptionHandler(Consumer<Throwable> handler) {
-            delegate.setExceptionHandler(handler);
-        }
-
-        @Override
-        public List<String> protocolVersions() {
-            return delegate.protocolVersions();
-        }
-
-        @Override
-        public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
-            return delegate.sendMessage(message);
-        }
-
-        @Override
-        public <T> T unmarshalFrom(Object data, TypeRef<T> type) {
-            return delegate.unmarshalFrom(data, type);
-        }
-
-        @Override
-        public Mono<Void> closeGracefully() {
-            return Mono.empty();
-        }
     }
 }
