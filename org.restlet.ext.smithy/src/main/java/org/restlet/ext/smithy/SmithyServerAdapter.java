@@ -38,10 +38,14 @@ import software.amazon.smithy.java.server.Service;
  * response. A client disconnecting also interrupts its operation, and stopping the adapter
  * interrupts every running one: the SDK has no cancellation of its own. This adapter is single-use.
  *
+ * <p>{@link SmithyServerBuilder} builds SDK servers of such adapters, listening on Restlet server
+ * connectors.
+ *
  * <p>The smithy-java server API is unstable ({@code @SmithyUnstableApi}) in 1.8.0, and its modules
- * split a package, so that it only runs on the class path. This artifact shares the packages of
- * {@code org.restlet.ext.smithy}, which must then be on the class path too. Event streams are not
- * supported.
+ * split a package, so that they only run on the class path. The optional {@code server-core}
+ * dependency of this extension must then be added to the class path. A named module using the
+ * server reads it, as this module does, with {@code --add-reads
+ * org.restlet.ext.smithy=ALL-UNNAMED}, when compiled and run. Event streams are not supported.
  */
 public final class SmithyServerAdapter extends Restlet {
     private final List<Service> services = new CopyOnWriteArrayList<>();
@@ -68,6 +72,8 @@ public final class SmithyServerAdapter extends Restlet {
      *
      * @return The modifiable list of services.
      */
+    // Service comes from the SDK server on the class path, which a named module can't export.
+    @SuppressWarnings("exports")
     public List<Service> getServices() {
         return services;
     }
