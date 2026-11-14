@@ -43,9 +43,11 @@ import software.amazon.smithy.java.server.Service;
  *
  * <p>The smithy-java server API is unstable ({@code @SmithyUnstableApi}) in 1.8.0, and its modules
  * split a package, so that they only run on the class path. The optional {@code server-core}
- * dependency of this extension must then be added to the class path. A named module using the
- * server reads it, as this module does, with {@code --add-reads
- * org.restlet.ext.smithy=ALL-UNNAMED}, when compiled and run. Event streams are not supported.
+ * dependency of this extension must then be added to the class path. When this module runs as a
+ * named module, it reads the class path with {@code --add-reads
+ * org.restlet.ext.smithy=ALL-UNNAMED}. A named module using the SDK or generated service types
+ * reads it too, with {@code --add-reads your.module=ALL-UNNAMED} (its own name), when compiled and
+ * run. Event streams are not supported.
  */
 public final class SmithyServerAdapter extends Restlet {
     private final List<Service> services = new CopyOnWriteArrayList<>();

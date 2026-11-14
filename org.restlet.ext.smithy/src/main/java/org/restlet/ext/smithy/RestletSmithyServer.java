@@ -193,8 +193,10 @@ final class RestletSmithyServer implements Server {
      * @return True if the route matches.
      */
     static boolean matches(Route route, Reference ref, String scheme, int port) {
-        // Decoded, as the SDK matches prefixes.
-        String path = ref.getPath(true);
+        // Decoded, as the SDK matches prefixes, with URI path semantics: Reference.decode() uses
+        // URLDecoder, which would turn a literal '+' into a space, so '+' is escaped first.
+        String rawPath = ref.getPath();
+        String path = rawPath == null ? null : Reference.decode(rawPath.replace("+", "%2B"));
         if (route.getPathPrefix() != null
                 && (path == null || !path.startsWith(route.getPathPrefix()))) {
             return false;
