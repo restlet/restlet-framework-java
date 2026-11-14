@@ -127,6 +127,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Like the compiler, Javadoc reads the SDK server on the class path. -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalOptions>
+                        <additionalOption>--add-reads</additionalOption>
+                        <additionalOption>org.restlet.ext.smithy=ALL-UNNAMED</additionalOption>
+                    </additionalOptions>
+                </configuration>
+            </plugin>
             <!-- Generates SDK code from src/test/smithy with smithy-java, for the tests. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
