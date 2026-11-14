@@ -164,8 +164,10 @@ Changes log
           thread. Request bodies, concurrent calls and call durations are bounded; deadlines,
           client disconnects and stopping interrupt the operation. As smithy-java's server
           modules split a package, its optional `server-core` dependency stays on the class path:
-          named modules read it with `--add-reads org.restlet.ext.smithy=ALL-UNNAMED`, and the
-          builder is only discovered on the class path.
+          run as a named module, the extension reads it with
+          `--add-reads org.restlet.ext.smithy=ALL-UNNAMED`, a named module using SDK or generated
+          service types reads it with `--add-reads <its module>=ALL-UNNAMED` when compiled and
+          run, and the builder is only discovered on the class path.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol

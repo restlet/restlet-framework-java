@@ -210,6 +210,19 @@ class SmithyServerBuilderTestCase {
     }
 
     @Test
+    void prefixesKeepALiteralPlusSign() {
+        Reference plus = new Reference("http://localhost/a+b/service/Counter/operation/Add");
+        assertTrue(matches(route().pathPrefix("/a+b"), plus));
+        assertFalse(matches(route().pathPrefix("/a b"), plus));
+        Reference encodedPlus =
+                new Reference("http://localhost/a%2Bb/service/Counter/operation/Add");
+        assertTrue(matches(route().pathPrefix("/a+b"), encodedPlus));
+        Reference space = new Reference("http://localhost/a%20b/service/Counter/operation/Add");
+        assertTrue(matches(route().pathPrefix("/a b"), space));
+        assertFalse(matches(route().pathPrefix("/a+b"), space));
+    }
+
+    @Test
     void ipv6EndpointsLoseTheirBrackets() {
         assertEquals("::1", RestletSmithyServer.address(URI.create("http://[::1]:8080")));
         assertEquals("localhost", RestletSmithyServer.address(URI.create("http://localhost:1")));
