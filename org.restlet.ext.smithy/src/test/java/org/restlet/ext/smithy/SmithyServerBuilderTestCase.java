@@ -210,6 +210,13 @@ class SmithyServerBuilderTestCase {
     }
 
     @Test
+    void malformedPercentEscapesMatchNoPrefix() {
+        Reference ref = new Reference("http://localhost/a%zz/service/Counter/operation/Add");
+        assertFalse(matches(route().pathPrefix("/a"), ref));
+        assertTrue(matches(route(), ref));
+    }
+
+    @Test
     void prefixesKeepALiteralPlusSign() {
         Reference plus = new Reference("http://localhost/a+b/service/Counter/operation/Add");
         assertTrue(matches(route().pathPrefix("/a+b"), plus));
