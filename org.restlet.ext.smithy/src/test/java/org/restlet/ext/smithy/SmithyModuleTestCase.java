@@ -294,6 +294,7 @@ class SmithyModuleTestCase {
                 example,
                 """
                 package example;
+                import java.net.ServerSocket;
                 import java.net.URI;
                 import org.restlet.ext.smithy.SmithyServerBuilder;
                 import org.restlet.ext.smithy.generated.counter.client.CounterClient;
@@ -301,7 +302,6 @@ class SmithyModuleTestCase {
                 import org.restlet.ext.smithy.generated.counter.model.AddOutput;
                 import org.restlet.ext.smithy.generated.counter.service.AddOperation;
                 import org.restlet.ext.smithy.generated.counter.service.Counter;
-                import org.restlet.ext.smithy.internal.RestletSmithyServer;
                 import software.amazon.smithy.java.client.core.ClientTransportFactory;
                 import software.amazon.smithy.java.server.Server;
                 public final class Main {
@@ -318,8 +318,12 @@ class SmithyModuleTestCase {
                         if (!"restlet".equals(first)) {
                             throw new AssertionError("Discovered first: " + first);
                         }
-                        var server = (RestletSmithyServer) builder
-                            .endpoints(URI.create("http://localhost:0"))
+                        int port;
+                        try (var socket = new ServerSocket(0)) {
+                            port = socket.getLocalPort();
+                        }
+                        var server = builder
+                            .endpoints(URI.create("http://localhost:" + port))
                             .addService(Counter.builder()
                                 .addAddOperation((AddOperation) (input, context) ->
                                     AddOutput.builder().total(input.getValue() + 1).build())
@@ -327,7 +331,7 @@ class SmithyModuleTestCase {
                             .build();
                         server.start();
                         var client = CounterClient.builder()
-                            .endpoint("http://localhost:" + server.getActualPorts().getFirst())
+                            .endpoint("http://localhost:" + port)
                             .build();
                         try {
                             long total = client.add(AddInput.builder().value(1L).label("cp")

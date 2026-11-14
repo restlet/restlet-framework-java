@@ -37,8 +37,18 @@ import org.restlet.ext.smithy.generated.counter.model.AddOutput;
 import org.restlet.ext.smithy.generated.counter.model.Overflow;
 import org.restlet.ext.smithy.generated.counter.service.AddOperation;
 import org.restlet.ext.smithy.generated.counter.service.Counter;
+import org.restlet.ext.smithy.generated.notes.model.GetNoteOutput;
+import org.restlet.ext.smithy.generated.notes.model.PutNoteOutput;
+import org.restlet.ext.smithy.generated.notes.model.RequiredUploadOutput;
+import org.restlet.ext.smithy.generated.notes.model.UploadOutput;
+import org.restlet.ext.smithy.generated.notes.model.WaitOutput;
+import org.restlet.ext.smithy.generated.notes.service.GetNoteOperation;
+import org.restlet.ext.smithy.generated.notes.service.Notes;
+import org.restlet.ext.smithy.generated.notes.service.PutNoteOperation;
+import org.restlet.ext.smithy.generated.notes.service.RequiredUploadOperation;
+import org.restlet.ext.smithy.generated.notes.service.UploadOperation;
+import org.restlet.ext.smithy.generated.notes.service.WaitOperation;
 import org.restlet.ext.smithy.internal.RestletServerProvider;
-import org.restlet.ext.smithy.internal.RestletSmithyServer;
 import org.restlet.representation.ByteArrayRepresentation;
 import software.amazon.smithy.java.client.core.error.TransportException;
 import software.amazon.smithy.java.core.error.CallException;
@@ -193,6 +203,45 @@ class SmithyServerBuilderTestCase {
         return RestletSmithyServer.matches(route.build(), ref, "http", 8080);
     }
 
+    @Test
+    void prefixesMatchTheDecodedPath() {
+        Reference ref = new Reference("http://localhost/my%20svc/service/Counter/operation/Add");
+        assertTrue(matches(route().pathPrefix("/my svc"), ref));
+    }
+
+    @Test
+    void ipv6EndpointsLoseTheirBrackets() {
+        assertEquals("::1", RestletSmithyServer.address(URI.create("http://[::1]:8080")));
+        assertEquals("localhost", RestletSmithyServer.address(URI.create("http://localhost:1")));
+    }
+
+    /** A matching route whose services lack the operation lets a later route take the call. */
+    @Test
+    void callsFallThroughToARouteResolvingThem() throws Exception {
+        Notes notes =
+                Notes.builder()
+                        .addGetNoteOperation(
+                                (GetNoteOperation)
+                                        (input, context) -> GetNoteOutput.builder().build())
+                        .addPutNoteOperation(
+                                (PutNoteOperation)
+                                        (input, context) -> PutNoteOutput.builder().build())
+                        .addRequiredUploadOperation(
+                                (RequiredUploadOperation)
+                                        (input, context) -> RequiredUploadOutput.builder().build())
+                        .addUploadOperation(
+                                (UploadOperation)
+                                        (input, context) -> UploadOutput.builder().build())
+                        .addWaitOperation(
+                                (WaitOperation) (input, context) -> WaitOutput.builder().build())
+                        .build();
+        start(
+                new SmithyServerBuilder().addService("/", counter()).addService("/service", notes),
+                false);
+        assertEquals(
+                2L, client("").add(AddInput.builder().value(1L).label("a").build()).getTotal());
+    }
+
     /** A Host header naming another port doesn't reach the routes of that port. */
     @Test
     void hostHeaderPortsDontSelectRoutes() throws Exception {
@@ -268,7 +317,9 @@ class SmithyServerBuilderTestCase {
                         "http://localhost:1/api",
                         "http://localhost:1?q",
                         "http://localhost:1#f",
-                        "http://u@localhost:1")) {
+                        "http://u@localhost:1",
+                        "http://my_host:1",
+                        "http:localhost")) {
             assertThrows(
                     IllegalArgumentException.class,
                     () -> builder.endpoints(URI.create(endpoint)),
@@ -306,7 +357,9 @@ class SmithyServerBuilderTestCase {
                         .addService(counter())
                         .endpoints(URI.create("http://localhost:" + taken))
                         .build();
-        assertThrows(IllegalStateException.class, clash::start);
+        IllegalStateException failure = assertThrows(IllegalStateException.class, clash::start);
+        // The bind failure stays the cause.
+        assertTrue(failure.getCause() != null, failure.toString());
         clash.shutdown().get(10, TimeUnit.SECONDS);
     }
 
