@@ -158,8 +158,8 @@ Changes log
         - Added experimental smithy-java 1.8.0 server hosting to the Smithy extension. Its
           `SmithyServerAdapter` hosts services, generated or built from a model, behind a Restlet
           router beside other routes, and its `SmithyServerBuilder`, which `Server.builder()`
-          discovers under the name `restlet` before the SDK's Netty server, listens on Restlet
-          HTTP/1.1 and HTTP/2 server connectors. The SDK protocols, such as restJson1 and RPCv2
+          finds under the name `restlet`, or alone when the SDK's Netty server is absent, listens
+          on Restlet HTTP/1.1 and HTTP/2 server connectors. The SDK protocols, such as restJson1 and RPCv2
           CBOR, resolve, validate and serialize each call, and its handlers run on the request
           thread. Request bodies, concurrent calls and call durations are bounded; deadlines,
           client disconnects and stopping interrupt the operation. As smithy-java's server
