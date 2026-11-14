@@ -29,7 +29,9 @@ public final class RestletServerProvider implements ServerProvider {
 
     @Override
     public int priority() {
-        // The highest priority is picked first: 1 comes before the SDK's Netty server (0).
-        return 1;
+        // The highest priority is picked first: the SDK's Netty server (0) stays the default when
+        // present, so that adding this extension for its client doesn't change an application's
+        // server. Name it "restlet" to pick it then.
+        return -1;
     }
 }

@@ -177,15 +177,61 @@ class SmithyServerBuilderTestCase {
     }
 
     @Test
-    void routesMatchTheirPortSchemeAndHostName() {
-        Reference ref = new Reference("http://api.example.com/service/Counter/operation/Add");
-        assertTrue(RestletSmithyServer.matches(route().pathPrefix("/service").build(), ref));
-        assertFalse(RestletSmithyServer.matches(route().pathPrefix("/other").build(), ref));
-        assertTrue(RestletSmithyServer.matches(route().port(80).protocol("http").build(), ref));
-        assertFalse(RestletSmithyServer.matches(route().port(8080).build(), ref));
-        assertFalse(RestletSmithyServer.matches(route().protocol("https").build(), ref));
-        assertTrue(RestletSmithyServer.matches(route().hostName("API.example.com").build(), ref));
-        assertFalse(RestletSmithyServer.matches(route().hostName("other.com").build(), ref));
+    void routesMatchTheirConnectorPortAndSchemeAndHostName() {
+        Reference ref = new Reference("http://api.example.com:9000/service/Counter/operation/Add");
+        assertTrue(matches(route().pathPrefix("/service"), ref));
+        assertFalse(matches(route().pathPrefix("/other"), ref));
+        assertTrue(matches(route().port(8080).protocol("http"), ref));
+        // The port and scheme are the connector's, whatever the Host header says.
+        assertFalse(matches(route().port(9000), ref));
+        assertFalse(matches(route().protocol("https"), ref));
+        assertTrue(matches(route().hostName("API.example.com"), ref));
+        assertFalse(matches(route().hostName("other.com"), ref));
+    }
+
+    private static boolean matches(Route.Builder route, Reference ref) {
+        return RestletSmithyServer.matches(route.build(), ref, "http", 8080);
+    }
+
+    /** A Host header naming another port doesn't reach the routes of that port. */
+    @Test
+    void hostHeaderPortsDontSelectRoutes() throws Exception {
+        start(new SmithyServerBuilder().addService(counter()), false);
+        int port = server.getActualPorts().getFirst();
+        server.shutdown().get(10, TimeUnit.SECONDS);
+        server =
+                (RestletSmithyServer)
+                        new SmithyServerBuilder()
+                                .addService(route().port(port + 1).build())
+                                .endpoints(URI.create("http://localhost:" + port))
+                                .build();
+        server.start();
+        Request request = new Request(Method.POST, uri("/service/Counter/operation/Add"));
+        request.setHostRef(new Reference("http://localhost:" + (port + 1)));
+        assertEquals(404, restlet.handle(request).getStatus().getCode());
+    }
+
+    /** Routes matching hosts keep the order they were added in. */
+    @Test
+    void routesMatchingHostsKeepTheirOrder() throws Exception {
+        Counter root =
+                Counter.builder()
+                        .addAddOperation(
+                                (AddOperation)
+                                        (input, context) -> AddOutput.builder().total(-1L).build())
+                        .build();
+        start(
+                new SmithyServerBuilder()
+                        .addService(
+                                Route.builder()
+                                        .hostName("localhost")
+                                        .pathPrefix("/")
+                                        .services(List.of(root))
+                                        .build())
+                        .addService(route().pathPrefix("/service").build()),
+                false);
+        assertEquals(
+                -1L, client("").add(AddInput.builder().value(1L).label("a").build()).getTotal());
     }
 
     private static Route.Builder route() {
@@ -217,6 +263,24 @@ class SmithyServerBuilderTestCase {
         assertThrows(
                 IllegalArgumentException.class, () -> builder.endpoints(URI.create("ftp://x:1")));
         assertThrows(IllegalArgumentException.class, () -> builder.endpoints(new URI[0]));
+        for (String endpoint :
+                List.of(
+                        "http://localhost:1/api",
+                        "http://localhost:1?q",
+                        "http://localhost:1#f",
+                        "http://u@localhost:1")) {
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> builder.endpoints(URI.create(endpoint)),
+                    endpoint);
+        }
+        assertThrows(NullPointerException.class, () -> builder.maxCallDuration(null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new SmithyServerBuilder()
+                                .addService(Route.builder().pathPrefix("/x").build())
+                                .build());
         // No service.
         assertThrows(IllegalStateException.class, builder::build);
     }
@@ -247,10 +311,10 @@ class SmithyServerBuilderTestCase {
     }
 
     @Test
-    void providerIsNamedRestletAndPreferred() {
+    void providerIsNamedRestletAndYieldsToNetty() {
         var provider = new RestletServerProvider();
         assertEquals("restlet", provider.name());
-        assertTrue(provider.priority() > 0, "Before the SDK's Netty server");
+        assertTrue(provider.priority() < 0, "After the SDK's Netty server");
         assertInstanceOf(SmithyServerBuilder.class, provider.serverBuilder());
     }
 }

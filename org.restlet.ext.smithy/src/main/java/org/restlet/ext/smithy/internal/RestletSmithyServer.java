@@ -11,7 +11,6 @@ package org.restlet.ext.smithy.internal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -64,15 +63,16 @@ public final class RestletSmithyServer implements Server {
                 for (SmithyServerAdapter adapter : adapters) {
                     adapter.start();
                 }
-                Restlet dispatcher = new Dispatcher();
                 for (URI endpoint : endpoints) {
                     boolean secure = "https".equalsIgnoreCase(endpoint.getScheme());
                     Protocol protocol = secure ? Protocol.HTTPS : Protocol.HTTP;
                     int port =
                             endpoint.getPort() < 0 ? protocol.getDefaultPort() : endpoint.getPort();
+                    var dispatcher = new Dispatcher(protocol.getSchemeName());
                     var connector =
                             new org.restlet.Server(
                                     context, protocol, endpoint.getHost(), port, dispatcher);
+                    dispatcher.connector = connector;
                     connectors.add(connector);
                     connector.start();
                 }
@@ -142,15 +142,29 @@ public final class RestletSmithyServer implements Server {
         }
     }
 
-    /** Dispatches each call to the adapter of the first route matching its URI. */
+    /**
+     * Dispatches the calls of a connector to the adapter of the first route matching them. Ports
+     * and schemes are the connector's, not the ones a client names in its Host header.
+     */
     private final class Dispatcher extends Restlet {
+        private final String scheme;
+        private volatile org.restlet.Server connector;
+
+        private Dispatcher(String scheme) {
+            this.scheme = scheme;
+        }
+
         @Override
         public void handle(Request request, Response response) {
             Reference ref = request.getResourceRef();
-            // The SDK resolves operations on the full path, below the host.
-            ref.setBaseRef(ref.getHostIdentifier());
+            String host = ref.getHostIdentifier();
+            if (host != null) {
+                // The SDK resolves operations on the full path, below the host.
+                ref.setBaseRef(host);
+            }
+            int port = connector.getActualPort();
             for (int i = 0; i < routes.size(); i++) {
-                if (matches(routes.get(i), ref)) {
+                if (matches(routes.get(i), ref, scheme, port)) {
                     adapters.get(i).handle(request, response);
                     return;
                 }
@@ -160,30 +174,25 @@ public final class RestletSmithyServer implements Server {
     }
 
     /**
-     * Indicates whether the prefix, port, scheme and host name of a route, when set, match a URI.
+     * Indicates whether the prefix, port, scheme and host name of a route, when set, match a call.
      *
      * @param route The route.
-     * @param ref The URI of a call.
+     * @param ref The URI of the call, whose host name a client may choose.
+     * @param scheme The scheme of the connector that took the call.
+     * @param port The port of the connector that took the call.
      * @return True if the route matches.
      */
-    public static boolean matches(Route route, Reference ref) {
+    public static boolean matches(Route route, Reference ref, String scheme, int port) {
         String path = ref.getPath();
         if (route.getPathPrefix() != null
                 && (path == null || !path.startsWith(route.getPathPrefix()))) {
             return false;
         }
-        String scheme = ref.getScheme() == null ? "" : ref.getScheme().toLowerCase(Locale.ROOT);
         if (route.getProtocol() != null && !route.getProtocol().equalsIgnoreCase(scheme)) {
             return false;
         }
-        if (route.getPort() != null) {
-            int port = ref.getHostPort();
-            if (port < 0 && ref.getSchemeProtocol() != null) {
-                port = ref.getSchemeProtocol().getDefaultPort();
-            }
-            if (route.getPort() != port) {
-                return false;
-            }
+        if (route.getPort() != null && route.getPort() != port) {
+            return false;
         }
         return route.getHostName() == null
                 || route.getHostName().equalsIgnoreCase(ref.getHostDomain());

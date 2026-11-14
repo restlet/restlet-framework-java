@@ -25,15 +25,16 @@ import software.amazon.smithy.java.server.ServerBuilder;
  * Experimental builder of smithy-java servers listening on Restlet HTTP server connectors, one per
  * endpoint, each route of services hosted by a {@link SmithyServerAdapter}.
  *
- * <p>On the class path, {@code Server.builder()} discovers it under the name {@code restlet}, in
- * preference to the SDK's Netty server. It can also be created directly, to set the Restlet
- * settings that the SDK's builder lacks: the connectors' context, for example with an {@code
- * http.transport.protocol} parameter set to {@code HTTP2} or the TLS parameters of {@code https}
- * endpoints, and the adapters' limits. {@link #numberOfWorkers(int)} sets the number of calls each
- * route handles at once.
+ * <p>On the class path, {@code Server.builder("restlet")} finds it, and so does {@code
+ * Server.builder()} when the SDK's Netty server isn't there too. It can also be created directly,
+ * to set the Restlet settings that the SDK's builder lacks: the connectors' context, for example
+ * with an {@code http.transport.protocol} parameter set to {@code HTTP2} or the TLS parameters of
+ * {@code https} endpoints, and the adapters' limits. {@link #numberOfWorkers(int)} sets the number
+ * of calls each route handles at once.
  *
- * <p>A call goes to the route with the longest path prefix whose prefix, port, scheme and host
- * name, when set, match its URI, the routes added first winning ties. Operations are resolved on
+ * <p>A call goes to the first route whose path prefix, host name, and connector port and scheme,
+ * when set, match it. When the routes only set path prefixes, as with services added under paths,
+ * whose order the SDK doesn't keep, the longest matching prefix wins. Operations are resolved on
  * the full path, as with the SDK's Netty server.
  */
 // The SDK server types come from the class path, which a named module can't export.
@@ -48,8 +49,8 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
 
     /**
      * Sets the endpoints to listen on, {@code http://localhost:8080} by default. Each needs the
-     * {@code http} or {@code https} scheme, and listens on the default port of its scheme when it
-     * has none.
+     * {@code http} or {@code https} scheme, listens on the default port of its scheme when it has
+     * none, and has no user info, path, query or fragment.
      *
      * @param endpoints The endpoints.
      * @return This builder.
@@ -68,6 +69,14 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
                             : endpoint.getScheme().toLowerCase(Locale.ROOT);
             if (!scheme.equals("http") && !scheme.equals("https")) {
                 throw new IllegalArgumentException("Not an HTTP or HTTPS endpoint: " + endpoint);
+            }
+            String path = endpoint.getRawPath();
+            if (endpoint.getRawUserInfo() != null
+                    || (path != null && !path.isEmpty() && !path.equals("/"))
+                    || endpoint.getRawQuery() != null
+                    || endpoint.getRawFragment() != null) {
+                throw new IllegalArgumentException(
+                        "An endpoint only has a scheme, a host and a port: " + endpoint);
             }
             checked.add(endpoint);
         }
@@ -125,6 +134,7 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
      * @return This builder.
      */
     public SmithyServerBuilder maxCallDuration(Duration value) {
+        Objects.requireNonNull(value, "value");
         if (value.isNegative() || value.isZero()) {
             throw new IllegalArgumentException("A positive duration is required");
         }
@@ -134,18 +144,34 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
 
     @Override
     protected SmithyServerBuilder setServerRoutes(List<Route> routes) {
+        for (Route route : routes) {
+            if (route.getServices() == null || route.getServices().isEmpty()) {
+                throw new IllegalArgumentException("A route has no service");
+            }
+        }
         // The SDK collects the services added under paths in a hash map: order them so that "/"
-        // doesn't take the calls of a longer prefix. The sort is stable.
-        this.routes =
+        // doesn't take the calls of a longer prefix. Routes that also match hosts, ports or schemes
+        // keep the order they were added in.
+        boolean prefixesOnly =
                 routes.stream()
-                        .sorted(
-                                Comparator.comparingInt(
-                                                (Route route) ->
-                                                        route.getPathPrefix() == null
-                                                                ? 0
-                                                                : route.getPathPrefix().length())
-                                        .reversed())
-                        .toList();
+                        .allMatch(
+                                route ->
+                                        route.getHostName() == null
+                                                && route.getPort() == null
+                                                && route.getProtocol() == null);
+        this.routes =
+                !prefixesOnly
+                        ? List.copyOf(routes)
+                        : routes.stream()
+                                .sorted(
+                                        Comparator.comparingInt(
+                                                        (Route route) ->
+                                                                route.getPathPrefix() == null
+                                                                        ? 0
+                                                                        : route.getPathPrefix()
+                                                                                .length())
+                                                .reversed())
+                                .toList();
         return self();
     }
 
