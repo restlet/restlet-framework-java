@@ -155,14 +155,17 @@ Changes log
           response. A Host header set by the SDK is kept. Request timeouts, which cover the
           response head, and thread interruption abort the request. Event streams are not
           supported.
-        - Added the experimental Smithy server artifact (`org.restlet.ext.smithy.server`), whose
-          `SmithyServerAdapter` joins the `org.restlet.ext.smithy` package, hosting
-          smithy-java 1.8.0 services, generated or built from a model, behind a Restlet router
-          beside other routes. The SDK protocols resolve, validate and serialize each call, and its
-          handlers run on the request thread. Request bodies, concurrent calls and call durations
-          are bounded; deadlines, client disconnects and stopping interrupt the operation. It runs
-          on the class path only, as smithy-java's server modules split a package, with
-          `org.restlet.ext.smithy` on the class path too.
+        - Added experimental smithy-java 1.8.0 server hosting to the Smithy extension. Its
+          `SmithyServerAdapter` hosts services, generated or built from a model, behind a Restlet
+          router beside other routes, and its `SmithyServerBuilder`, which `Server.builder()`
+          finds under the name `restlet`, or alone when the SDK's Netty server is absent, listens
+          on Restlet HTTP/1.1 and HTTP/2 server connectors. The SDK protocols, such as restJson1 and RPCv2
+          CBOR, resolve, validate and serialize each call, and its handlers run on the request
+          thread. Request bodies, concurrent calls and call durations are bounded; deadlines,
+          client disconnects and stopping interrupt the operation. As smithy-java's server
+          modules split a package, its optional `server-core` dependency stays on the class path:
+          named modules read it with `--add-reads org.restlet.ext.smithy=ALL-UNNAMED`, and the
+          builder is only discovered on the class path.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol

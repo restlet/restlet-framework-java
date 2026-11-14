@@ -9,7 +9,7 @@
     </parent>
     <artifactId>org.restlet.ext.smithy</artifactId>
     <name>Restlet Framework - Smithy extension</name>
-    <description>smithy-java client transport on Restlet HTTP client connectors.</description>
+    <description>smithy-java client transport and server host on Restlet HTTP connectors.</description>
     <dependencies>
         <dependency>
             <groupId>org.restlet</groupId>
@@ -22,6 +22,16 @@
             <groupId>software.amazon.smithy.java</groupId>
             <artifactId>client-http</artifactId>
             <version>${lib-smithy-java-version}</version>
+        </dependency>
+        <!-- Optional, for the server only. Its API is @SmithyUnstableApi in 1.8.0, and it splits
+             package software.amazon.smithy.java.server with server-api, so it stays on the class
+             path, out of the module graph. Applications add the protocol modules they serve, such
+             as aws-server-restjson or server-rpcv2-cbor. -->
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>server-core</artifactId>
+            <version>${lib-smithy-java-version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>software.amazon.smithy.java</groupId>
@@ -43,11 +53,23 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>aws-server-restjson</artifactId>
+            <version>${lib-smithy-java-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
+            <artifactId>server-rpcv2-cbor</artifactId>
+            <version>${lib-smithy-java-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.smithy.java</groupId>
             <artifactId>aws-sigv4</artifactId>
             <version>${lib-smithy-java-version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Generate the client of src/test/smithy, see below. -->
+        <!-- Generate the clients and services of src/test/smithy, see below. -->
         <dependency>
             <groupId>software.amazon.smithy.java</groupId>
             <artifactId>codegen-plugin</artifactId>
@@ -84,15 +106,36 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <!-- The server classes read the SDK server on the class path. -->
+                            <compilerArgs combine.children="append">
+                                <arg>--add-reads</arg>
+                                <arg>org.restlet.ext.smithy=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>default-testCompile</id>
                         <configuration>
-                            <!-- Generated exceptions have no serialVersionUID. -->
+                            <!-- Generated exceptions have no serialVersionUID, and generated
+                                 services overload each operation for sync and async handlers. -->
                             <compilerArgs combine.children="append">
-                                <arg>-Xlint:-serial</arg>
+                                <arg>-Xlint:-serial,-overloads</arg>
                             </compilerArgs>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Like the compiler, Javadoc reads the SDK server on the class path. -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalOptions>
+                        <additionalOption>--add-reads</additionalOption>
+                        <additionalOption>org.restlet.ext.smithy=ALL-UNNAMED</additionalOption>
+                    </additionalOptions>
+                </configuration>
             </plugin>
             <!-- Generates SDK code from src/test/smithy with smithy-java, for the tests. -->
             <plugin>
@@ -138,7 +181,9 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${smithy.output}/source/java-codegen/java</source>
+                                <source>${smithy.output}/greeter/java-codegen/java</source>
+                                <source>${smithy.output}/notes/java-codegen/java</source>
+                                <source>${smithy.output}/counter/java-codegen/java</source>
                             </sources>
                         </configuration>
                     </execution>
