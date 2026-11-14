@@ -24,6 +24,16 @@ public final class RestletServerProvider implements ServerProvider {
 
     @Override
     public ServerBuilder<?> serverBuilder() {
+        try {
+            Class.forName(
+                    "software.amazon.smithy.java.server.core.HandlerAssembler",
+                    false,
+                    RestletServerProvider.class.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(
+                    "The Restlet Smithy server needs smithy-java's server-core on the class path",
+                    e);
+        }
         return new SmithyServerBuilder();
     }
 

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import org.restlet.Context;
-import org.restlet.ext.smithy.internal.RestletSmithyServer;
 import software.amazon.smithy.java.server.Route;
 import software.amazon.smithy.java.server.Server;
 import software.amazon.smithy.java.server.ServerBuilder;
@@ -33,9 +32,9 @@ import software.amazon.smithy.java.server.ServerBuilder;
  * of calls each route handles at once.
  *
  * <p>A call goes to the first route whose path prefix, host name, and connector port and scheme,
- * when set, match it. When the routes only set path prefixes, as with services added under paths,
- * whose order the SDK doesn't keep, the longest matching prefix wins. Operations are resolved on
- * the full path, as with the SDK's Netty server.
+ * when set, match it, and that resolves its operation. When the routes only set path prefixes, as
+ * with services added under paths, whose order the SDK doesn't keep, the longest matching prefix
+ * wins. Operations are resolved on the full path, as with the SDK's Netty server.
  */
 // The SDK server types come from the class path, which a named module can't export.
 @SuppressWarnings("exports")
@@ -50,7 +49,7 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
     /**
      * Sets the endpoints to listen on, {@code http://localhost:8080} by default. Each needs the
      * {@code http} or {@code https} scheme, listens on the default port of its scheme when it has
-     * none, and has no user info, path, query or fragment.
+     * none, and has a host but no user info, path, query or fragment.
      *
      * @param endpoints The endpoints.
      * @return This builder.
@@ -71,6 +70,10 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
                 throw new IllegalArgumentException("Not an HTTP or HTTPS endpoint: " + endpoint);
             }
             String path = endpoint.getRawPath();
+            if (endpoint.getHost() == null) {
+                // Opaque, or an authority that isn't a host name: never listen everywhere.
+                throw new IllegalArgumentException("An endpoint needs a host: " + endpoint);
+            }
             if (endpoint.getRawUserInfo() != null
                     || (path != null && !path.isEmpty() && !path.equals("/"))
                     || endpoint.getRawQuery() != null
@@ -180,7 +183,7 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
         if (routes.isEmpty()) {
             throw new IllegalStateException("Add at least one service before building");
         }
-        var adapters = new ArrayList<SmithyServerAdapter>(routes.size());
+        var hosted = new ArrayList<RestletSmithyServer.Hosted>(routes.size());
         for (Route route : routes) {
             var adapter = new SmithyServerAdapter();
             adapter.getServices().addAll(route.getServices());
@@ -193,9 +196,9 @@ public final class SmithyServerBuilder extends ServerBuilder<SmithyServerBuilder
             if (maxCallDuration != null) {
                 adapter.setMaxCallDuration(maxCallDuration);
             }
-            adapters.add(adapter);
+            hosted.add(new RestletSmithyServer.Hosted(route, adapter));
         }
         return new RestletSmithyServer(
-                endpoints, context == null ? new Context() : context, routes, adapters);
+                endpoints, context == null ? new Context() : context, List.copyOf(hosted));
     }
 }

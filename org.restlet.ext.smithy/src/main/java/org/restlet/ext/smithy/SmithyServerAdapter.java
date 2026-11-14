@@ -163,10 +163,20 @@ public final class SmithyServerAdapter extends Restlet {
                         new Route(router, this) {
                             @Override
                             public float score(Request request, Response response) {
-                                SmithyServerHost current = host;
-                                return current != null && current.resolves(request) ? 1F : 0F;
+                                return resolves(request) ? 1F : 0F;
                             }
                         });
+    }
+
+    /**
+     * Indicates whether the started adapter resolves the operation of a call.
+     *
+     * @param request The call's request.
+     * @return True if a hosted operation takes the call.
+     */
+    boolean resolves(Request request) {
+        SmithyServerHost current = host;
+        return current != null && current.resolves(request);
     }
 
     @Override

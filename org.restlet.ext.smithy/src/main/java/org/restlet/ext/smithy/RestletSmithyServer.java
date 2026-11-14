@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.smithy.internal;
+package org.restlet.ext.smithy;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,19 +19,20 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.smithy.SmithyServerAdapter;
 import software.amazon.smithy.java.server.Route;
 import software.amazon.smithy.java.server.Server;
 
 /**
- * A smithy-java server built by {@code SmithyServerBuilder}: a Restlet server connector per
+ * A smithy-java server built by {@link SmithyServerBuilder}: a Restlet server connector per
  * endpoint, dispatching each call to the adapter of its route. Single-use.
  */
-public final class RestletSmithyServer implements Server {
+final class RestletSmithyServer implements Server {
+    /** A route, and the adapter hosting its services. */
+    record Hosted(Route route, SmithyServerAdapter adapter) {}
+
     private final List<URI> endpoints;
     private final Context context;
-    private final List<Route> routes;
-    private final List<SmithyServerAdapter> adapters;
+    private final List<Hosted> hosted;
     private final List<org.restlet.Server> connectors = new ArrayList<>();
 
     /** Guards the lifecycle state. */
@@ -40,15 +41,10 @@ public final class RestletSmithyServer implements Server {
     private boolean started;
     private CompletableFuture<Void> shutdown;
 
-    public RestletSmithyServer(
-            List<URI> endpoints,
-            Context context,
-            List<Route> routes,
-            List<SmithyServerAdapter> adapters) {
-        this.endpoints = List.copyOf(endpoints);
+    RestletSmithyServer(List<URI> endpoints, Context context, List<Hosted> hosted) {
+        this.endpoints = endpoints;
         this.context = context;
-        this.routes = List.copyOf(routes);
-        this.adapters = List.copyOf(adapters);
+        this.hosted = hosted;
     }
 
     /** Starts the adapters, then a connector per endpoint. */
@@ -60,8 +56,8 @@ public final class RestletSmithyServer implements Server {
             }
             started = true;
             try {
-                for (SmithyServerAdapter adapter : adapters) {
-                    adapter.start();
+                for (Hosted each : hosted) {
+                    each.adapter().start();
                 }
                 for (URI endpoint : endpoints) {
                     boolean secure = "https".equalsIgnoreCase(endpoint.getScheme());
@@ -71,16 +67,29 @@ public final class RestletSmithyServer implements Server {
                     var dispatcher = new Dispatcher(protocol.getSchemeName());
                     var connector =
                             new org.restlet.Server(
-                                    context, protocol, endpoint.getHost(), port, dispatcher);
+                                    context, protocol, address(endpoint), port, dispatcher);
                     dispatcher.connector = connector;
                     connectors.add(connector);
                     connector.start();
                 }
             } catch (Exception e) {
-                stopAll();
-                throw new IllegalStateException("Unable to start the Smithy server", e);
+                var failure = new IllegalStateException("Unable to start the Smithy server", e);
+                try {
+                    stopAll();
+                } catch (RuntimeException stopFailure) {
+                    failure.addSuppressed(stopFailure);
+                }
+                throw failure;
             }
         }
+    }
+
+    /** The host of an endpoint, without the brackets of an IPv6 address. */
+    static String address(URI endpoint) {
+        String host = endpoint.getHost();
+        return host.startsWith("[") && host.endsWith("]")
+                ? host.substring(1, host.length() - 1)
+                : host;
     }
 
     /** Stops the connectors, then the adapters, interrupting the operations still running. */
@@ -112,7 +121,7 @@ public final class RestletSmithyServer implements Server {
      *
      * @return The actual ports.
      */
-    public List<Integer> getActualPorts() {
+    List<Integer> getActualPorts() {
         synchronized (lock) {
             return connectors.stream().map(org.restlet.Server::getActualPort).toList();
         }
@@ -125,7 +134,7 @@ public final class RestletSmithyServer implements Server {
         synchronized (lock) {
             stopping.addAll(connectors);
         }
-        stopping.addAll(adapters);
+        hosted.forEach(each -> stopping.add(each.adapter()));
         for (Restlet restlet : stopping) {
             try {
                 restlet.stop();
@@ -143,8 +152,9 @@ public final class RestletSmithyServer implements Server {
     }
 
     /**
-     * Dispatches the calls of a connector to the adapter of the first route matching them. Ports
-     * and schemes are the connector's, not the ones a client names in its Host header.
+     * Dispatches the calls of a connector to the adapter of the first route matching them that
+     * resolves their operation. Ports and schemes are the connector's, not the ones a client names
+     * in its Host header.
      */
     private final class Dispatcher extends Restlet {
         private final String scheme;
@@ -163,9 +173,9 @@ public final class RestletSmithyServer implements Server {
                 ref.setBaseRef(host);
             }
             int port = connector.getActualPort();
-            for (int i = 0; i < routes.size(); i++) {
-                if (matches(routes.get(i), ref, scheme, port)) {
-                    adapters.get(i).handle(request, response);
+            for (Hosted each : hosted) {
+                if (matches(each.route(), ref, scheme, port) && each.adapter().resolves(request)) {
+                    each.adapter().handle(request, response);
                     return;
                 }
             }
@@ -182,8 +192,9 @@ public final class RestletSmithyServer implements Server {
      * @param port The port of the connector that took the call.
      * @return True if the route matches.
      */
-    public static boolean matches(Route route, Reference ref, String scheme, int port) {
-        String path = ref.getPath();
+    static boolean matches(Route route, Reference ref, String scheme, int port) {
+        // Decoded, as the SDK matches prefixes.
+        String path = ref.getPath(true);
         if (route.getPathPrefix() != null
                 && (path == null || !path.startsWith(route.getPathPrefix()))) {
             return false;
