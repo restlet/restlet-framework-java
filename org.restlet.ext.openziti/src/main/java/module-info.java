@@ -7,7 +7,7 @@
  * <p>Restlet is a registered trademark of QlikTech International AB.
  */
 @SuppressWarnings({"requires-automatic", "requires-transitive-automatic"})
-module org.restlet.ext.ziti {
+module org.restlet.ext.openziti {
     requires transitive org.restlet;
     // The OpenZiti SDK jars are not modular and declare no Automatic-Module-Name.
     requires transitive ziti;
@@ -17,5 +17,5 @@ module org.restlet.ext.ziti {
     requires io.netty.transport;
     requires io.netty.resolver;
 
-    exports org.restlet.ext.ziti;
+    exports org.restlet.ext.openziti;
 }

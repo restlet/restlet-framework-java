@@ -96,7 +96,7 @@
         <module>org.restlet.ext.velocity</module>
         <module>org.restlet.ext.websocket</module>
         <module>org.restlet.ext.xml</module>
-        <module>org.restlet.ext.ziti</module>
+        <module>org.restlet.ext.openziti</module>
     </modules>
 
     <profiles>

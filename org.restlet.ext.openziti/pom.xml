@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>org.restlet.ext.ziti</artifactId>
+	<artifactId>org.restlet.ext.openziti</artifactId>
 	<name>Restlet Framework - OpenZiti extension</name>
 	<description>Routes HTTP client calls over an OpenZiti overlay network.</description>
 

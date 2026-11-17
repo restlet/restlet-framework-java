@@ -297,9 +297,9 @@ Changes log
           default), the session token of temporary credentials and an unsigned payload option are
           given as parameters of the `ChallengeResponse`. The `HTTP_AWS_S3` scheme still uses
           Signature Version 2, which AWS no longer accepts for buckets created since June 2020.
-        - Added the experimental OpenZiti extension (`org.restlet.ext.ziti`, OpenZiti Java SDK
-          0.35.0): `ZitiClientTransport.install(client, zitiContext)` routes the calls of an HTTP
-          client to the origins an OpenZiti identity has a service for, such as
+        - Added the experimental OpenZiti extension (`org.restlet.ext.openziti`, OpenZiti Java
+          SDK 0.35.0): `ZitiClientTransport.install(client, zitiContext)` routes the calls of an
+          HTTP client to the origins an OpenZiti identity has a service for, such as
           `crm.internal:443`, over the Ziti overlay network, without resolving their host name
           with the system DNS, and the other calls over TCP. TLS, HTTP/1.1 and HTTP/2 run over it
           as over TCP. Client side only. The transport listens to the context's events until

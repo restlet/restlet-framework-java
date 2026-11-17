@@ -6,7 +6,7 @@
  *<p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
-package org.restlet.ext.ziti;
+package org.restlet.ext.openziti;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.AbstractChannel;
