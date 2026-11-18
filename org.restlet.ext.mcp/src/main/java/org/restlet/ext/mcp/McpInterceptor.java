@@ -8,18 +8,23 @@
  */
 package org.restlet.ext.mcp;
 
-import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.modern.JsonRpc;
 import reactor.core.publisher.Mono;
 
-/** MCP-native envelope interception around the single SDK dispatcher. Notifications stay empty. */
+/**
+ * MCP-native envelope interception around the server, on the SDK's {@code 2026-07-28} message
+ * types. Requests of legacy clients are translated to those types before the interceptors run, so
+ * one interceptor serves both eras; {@link McpRequestContext#protocolVersion()} tells which one a
+ * request came in. Notifications stay empty.
+ */
 @FunctionalInterface
 public interface McpInterceptor {
-    Mono<McpSchema.JSONRPCResponse> intercept(
-            McpSchema.JSONRPCMessage message, McpRequestContext context, Chain chain);
+    Mono<JsonRpc.JSONRPCResponse> intercept(
+            JsonRpc.JSONRPCMessage message, McpRequestContext context, Chain chain);
 
     @FunctionalInterface
     interface Chain {
-        Mono<McpSchema.JSONRPCResponse> proceed(
-                McpSchema.JSONRPCMessage message, McpRequestContext context);
+        Mono<JsonRpc.JSONRPCResponse> proceed(
+                JsonRpc.JSONRPCMessage message, McpRequestContext context);
     }
 }

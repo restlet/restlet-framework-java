@@ -6,6 +6,11 @@
  *
  * <p>Restlet is a registered trademark of QlikTech International AB.
  */
+/*
+ * The server classes use the smithy-java server, which splits a package in 1.8.0
+ * (smithy-java#1437) and can't be required: they read it on the class path, with --add-reads
+ * org.restlet.ext.smithy=ALL-UNNAMED, and its provider is only declared in META-INF/services.
+ */
 @SuppressWarnings({"requires-automatic", "requires-transitive-automatic"})
 module org.restlet.ext.smithy {
     requires transitive org.restlet;

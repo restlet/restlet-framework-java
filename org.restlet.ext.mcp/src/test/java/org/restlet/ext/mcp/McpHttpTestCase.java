@@ -10,10 +10,11 @@ package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.time.Duration;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.ext.mcp.internal.legacy.RestletMcpClientTransport;
 import org.restlet.representation.StringRepresentation;
 import reactor.core.publisher.Mono;
 
@@ -53,6 +55,29 @@ class McpHttpTestCase {
         connector = new Client(cc, Protocol.HTTP);
         connector.start();
         return "http://localhost:" + server.getActualPort() + "/mcp";
+    }
+
+    /** The legacy transport, with the default limits and no session. */
+    private RestletMcpClientTransport transport(String target) {
+        return transport(
+                target,
+                McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
+                McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS,
+                Duration.ofSeconds(30));
+    }
+
+    private RestletMcpClientTransport transport(
+            String target, int maxMessageBytes, int maxCalls, Duration timeout) {
+        return new RestletMcpClientTransport(
+                connector,
+                target,
+                maxMessageBytes,
+                maxCalls,
+                timeout,
+                request -> {},
+                List.of(McpProtocol.VERSION),
+                false,
+                null);
     }
 
     @AfterEach
@@ -89,15 +114,18 @@ class McpHttpTestCase {
         client.start();
         assertEquals(
                 List.of("echo"),
-                client.listTools(null).tools().stream().map(McpSchema.Tool::name).toList());
+                client.listTools(null).tools().stream()
+                        .map(io.modelcontextprotocol.modern.McpSchema.Tool::name)
+                        .toList());
         assertEquals(
                 "echo:network",
-                ((McpSchema.TextContent)
+                ((io.modelcontextprotocol.modern.McpSchema.TextContent)
                                 client.callTool("echo", Map.of("text", "network"))
                                         .content()
                                         .getFirst())
                         .text());
-        assertNotNull(client.getSdkClient().ping().block(Duration.ofSeconds(5)));
+        assertEquals(McpProtocol.VERSION, client.getNegotiatedVersion());
+        assertNull(client.getLegacySessionId());
         client.stop();
         assertTrue(connector.isStarted());
         assertTrue(server.isStarted());
@@ -125,12 +153,12 @@ class McpHttpTestCase {
                 .add(
                         (message, context, chain) -> {
                             entered.countDown();
-                            return Mono.<McpSchema.JSONRPCResponse>never()
+                            return Mono.<JsonRpc.JSONRPCResponse>never()
                                     .doOnCancel(cancelled::countDown);
                         });
         adapter.start();
         String target = start("HTTP2", adapter);
-        var transport = new RestletMcpClientTransport(connector, target);
+        var transport = transport(target);
         try {
             transport.connect(message -> message).block();
             var exchange =
@@ -139,7 +167,7 @@ class McpHttpTestCase {
                                     transport
                                             .sendMessage(
                                                     new McpSchema.JSONRPCRequest(
-                                                            "2.0", "ping", 1, Map.of()))
+                                                            "2.0", "tools/list", 1, Map.of()))
                                             .block());
             assertTrue(entered.await(30, TimeUnit.SECONDS));
             transport.closeGracefully().block(Duration.ofSeconds(30));
@@ -233,7 +261,7 @@ class McpHttpTestCase {
         Context context = new Context();
         connector = new Client(context, Protocol.HTTP);
         connector.start();
-        var transport = new RestletMcpClientTransport(connector, "http://localhost/mcp");
+        var transport = transport("http://localhost/mcp");
         try {
             assertThrows(
                     RuntimeException.class, () -> transport.connect(message -> message).block());
@@ -257,9 +285,7 @@ class McpHttpTestCase {
                                                 MediaType.TEXT_EVENT_STREAM));
                             }
                         });
-        var transport =
-                new RestletMcpClientTransport(
-                        connector, target, 512, 1, Duration.ofSeconds(3), request -> {});
+        var transport = transport(target, 512, 1, Duration.ofSeconds(3));
         try {
             transport.connect(message -> message).block();
             assertThrows(
@@ -288,14 +314,7 @@ class McpHttpTestCase {
                                                 body, MediaType.TEXT_EVENT_STREAM));
                             }
                         });
-        var transport =
-                new RestletMcpClientTransport(
-                        connector,
-                        target,
-                        maxMessageBytes,
-                        1,
-                        Duration.ofSeconds(10),
-                        request -> {});
+        var transport = transport(target, maxMessageBytes, 1, Duration.ofSeconds(10));
         List<McpSchema.JSONRPCMessage> delivered = new CopyOnWriteArrayList<>();
         try {
             transport.connect(message -> message.doOnNext(delivered::add)).block();
@@ -338,7 +357,7 @@ class McpHttpTestCase {
                                         MediaType.APPLICATION_JSON);
                             }
                         });
-        var transport = new RestletMcpClientTransport(connector, target);
+        var transport = transport(target);
         try {
             AtomicInteger delivered = new AtomicInteger();
             transport
@@ -354,6 +373,104 @@ class McpHttpTestCase {
                                     .block(Duration.ofSeconds(5)));
             assertEquals(0, delivered.get());
         } finally {
+            transport.closeGracefully().block();
+        }
+    }
+
+    /**
+     * A delayed 404 for a session already replaced fails its request, without reporting an expiry
+     * to the SDK client: that would make it initialize again, dropping the valid replacement.
+     */
+    @Test
+    void aStaleSessionExpiryLeavesItsReplacementAlone() throws Exception {
+        var mapper = io.modelcontextprotocol.json.McpJsonDefaults.getMapper();
+        var opened = new AtomicInteger();
+        var held = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+        String target =
+                start(
+                        "HTTP1_1",
+                        new Restlet() {
+                            @Override
+                            public void handle(Request request, org.restlet.Response response) {
+                                if (!org.restlet.data.Method.POST.equals(request.getMethod())) {
+                                    response.setStatus(Status.SUCCESS_OK);
+                                    return;
+                                }
+                                try {
+                                    var message =
+                                            McpSchema.deserializeJsonRpcMessage(
+                                                    mapper, request.getEntity().getText());
+                                    if (message instanceof McpSchema.JSONRPCRequest rpc
+                                            && McpSchema.METHOD_INITIALIZE.equals(rpc.method())) {
+                                        response.getHeaders()
+                                                .set(
+                                                        McpProtocol.SESSION_HEADER,
+                                                        "S" + opened.incrementAndGet());
+                                        response.setEntity(
+                                                mapper.writeValueAsString(
+                                                        Map.of(
+                                                                "jsonrpc",
+                                                                "2.0",
+                                                                "id",
+                                                                rpc.id(),
+                                                                "result",
+                                                                Map.of(
+                                                                        "protocolVersion",
+                                                                        McpProtocol.VERSION))),
+                                                MediaType.APPLICATION_JSON);
+                                        return;
+                                    }
+                                    // The request on the first session waits for it to be
+                                    // replaced, then learns it expired.
+                                    held.countDown();
+                                    release.await(10, TimeUnit.SECONDS);
+                                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                                } catch (Exception e) {
+                                    response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
+                                }
+                            }
+                        });
+        var transport =
+                new RestletMcpClientTransport(
+                        connector,
+                        target,
+                        McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
+                        4,
+                        Duration.ofSeconds(10),
+                        request -> {},
+                        List.of(McpProtocol.VERSION),
+                        true,
+                        null);
+        try {
+            var expiries = new AtomicInteger();
+            transport.setExceptionHandler(error -> expiries.incrementAndGet());
+            transport.connect(message -> message).block();
+            transport
+                    .sendMessage(
+                            new McpSchema.JSONRPCRequest(
+                                    "2.0", McpSchema.METHOD_INITIALIZE, "i1", Map.of()))
+                    .block(Duration.ofSeconds(10));
+            assertEquals("S1", transport.getSessionId());
+
+            var stale = new CompletableFuture<Throwable>();
+            transport
+                    .sendMessage(new McpSchema.JSONRPCRequest("2.0", "tools/list", "t1", Map.of()))
+                    .subscribe(null, stale::complete, () -> stale.complete(null));
+            assertTrue(held.await(10, TimeUnit.SECONDS));
+            transport
+                    .sendMessage(
+                            new McpSchema.JSONRPCRequest(
+                                    "2.0", McpSchema.METHOD_INITIALIZE, "i2", Map.of()))
+                    .block(Duration.ofSeconds(10));
+            assertEquals("S2", transport.getSessionId());
+            release.countDown();
+
+            assertTrue(stale.get(10, TimeUnit.SECONDS) != null, "the stale request fails");
+            assertEquals(0, expiries.get());
+            assertEquals("S2", transport.getSessionId());
+        } finally {
+            release.countDown();
             transport.closeGracefully().block();
         }
     }

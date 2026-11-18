@@ -36,7 +36,8 @@ import org.restlet.data.Protocol;
 class RestletClientStreamTestCase {
     @Test
     void cancelledTimersDoNotStayQueued() {
-        var factory = new RestletTransportFactory(null, 1024, 1, java.time.Duration.ofSeconds(1));
+        var factory =
+                new RestletTransportFactory(null, 1024, 16384, 1, java.time.Duration.ofSeconds(1));
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
             for (int i = 0; i < 100; i++) {
@@ -79,6 +80,7 @@ class RestletClientStreamTestCase {
                 CallOptions.DEFAULT,
                 new ClientStreamTracer[0],
                 128,
+                16384,
                 io,
                 ignored -> released.incrementAndGet());
     }
