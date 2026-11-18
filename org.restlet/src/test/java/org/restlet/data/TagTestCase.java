@@ -118,7 +118,7 @@ class TagTestCase {
         assertNotEquals(WEAK_1, STRONG_1);
         assertNotEquals(STRONG_1, WEAK_1);
         assertNotEquals(STRONG_1, STRONG_2);
-        assertNotEquals(STRONG_1, null);
+        assertNotEquals(null, STRONG_1);
     }
 
     @Test
