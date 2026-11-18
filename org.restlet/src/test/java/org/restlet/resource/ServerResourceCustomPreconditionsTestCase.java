@@ -9,6 +9,7 @@
 package org.restlet.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
@@ -141,6 +142,15 @@ class ServerResourceCustomPreconditionsTestCase {
 
         assertEquals(0, resource.getCount);
         assertEquals(1, resource.putCount);
+    }
+
+    @Test
+    void defaultHooks_withoutRequest_doNotThrow() {
+        ServerResource resource = new ServerResource() {};
+
+        assertNull(resource.getRequest());
+        assertFalse(resource.hasPreconditions());
+        assertNull(resource.getPreconditionStatus(null));
     }
 
     private static final Tag CURRENT_TAG = new Tag("current", false);
