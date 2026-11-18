@@ -36,7 +36,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.ext.mcp.internal.McpMessages;
-import org.restlet.ext.mcp.internal.StdioMcpClientTransport;
+import org.restlet.ext.mcp.internal.legacy.StdioMcpClientTransport;
 
 class McpStdioTestCase {
     @Test
@@ -108,7 +108,7 @@ class McpStdioTestCase {
             for (int i = 0; i < calls.size(); i++) {
                 assertEquals(
                         "echo:pipe-" + i,
-                        ((io.modelcontextprotocol.spec.McpSchema.TextContent)
+                        ((io.modelcontextprotocol.modern.McpSchema.TextContent)
                                         calls.get(i).get(5, TimeUnit.SECONDS).content().getFirst())
                                 .text());
             }
@@ -152,7 +152,7 @@ class McpStdioTestCase {
             assertEquals(1, client.listTools(null).tools().size());
             assertEquals(
                     "echo:process",
-                    ((io.modelcontextprotocol.spec.McpSchema.TextContent)
+                    ((io.modelcontextprotocol.modern.McpSchema.TextContent)
                                     client.callTool("echo", Map.of("text", "process"))
                                             .content()
                                             .getFirst())
@@ -225,16 +225,8 @@ class McpStdioTestCase {
         StdioClientHelper helper = new StdioClientHelper(new Client(context, List.of()));
         helper.start();
         try {
-            var transport = helper.bind(16, 1, Duration.ofSeconds(3));
-            transport.connect(message -> message).block();
-            assertThrows(
-                    RuntimeException.class,
-                    () ->
-                            transport
-                                    .sendMessage(
-                                            new McpSchema.JSONRPCRequest(
-                                                    "2.0", "ping", 1, Map.of()))
-                                    .block(Duration.ofSeconds(5)));
+            // Too small for the initialize request: the handshake fails, the transport stays bound.
+            assertThrows(RuntimeException.class, () -> helper.bind(16, 1, Duration.ofSeconds(3)));
             assertThrows(
                     IllegalStateException.class, () -> helper.bind(1024, 1, Duration.ofSeconds(3)));
         } finally {

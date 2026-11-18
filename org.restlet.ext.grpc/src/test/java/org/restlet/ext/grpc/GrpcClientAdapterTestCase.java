@@ -373,7 +373,9 @@ class GrpcClientAdapterTestCase {
         assertEquals(Status.Code.CANCELLED, status.get().getCode());
         assertEquals("recovered", call("recovered").getValue());
         assertEquals(1, terminals.get());
-        assertEquals(0, messages.get());
+        // Responses stream as they arrive, so the one message sent before the server waited may
+        // be delivered before the cancellation, as with grpc-netty; never more.
+        assertTrue(messages.get() <= 1, "messages: " + messages.get());
     }
 
     private record Pending(CountDownLatch entered, CountDownLatch cancelled) {}
@@ -522,7 +524,7 @@ class GrpcClientAdapterTestCase {
     }
 
     @Test
-    void rejectsStreamingAndOutboundLimitBeforeSending() throws Exception {
+    void rejectsUnknownMethodTypesAndOutboundLimitBeforeSending() throws Exception {
         adapter.setMaxMessageBytes(128);
         start(echo());
         assertEquals(
@@ -531,8 +533,8 @@ class GrpcClientAdapterTestCase {
                         .getStatus()
                         .getCode());
         assertEquals("small", call("small").getValue());
-        var streamMethod =
-                ECHO.toBuilder().setType(MethodDescriptor.MethodType.SERVER_STREAMING).build();
+        // Streaming methods are supported; only methods of unknown type are refused.
+        var streamMethod = ECHO.toBuilder().setType(MethodDescriptor.MethodType.UNKNOWN).build();
         assertEquals(
                 Status.Code.UNIMPLEMENTED,
                 assertThrows(
