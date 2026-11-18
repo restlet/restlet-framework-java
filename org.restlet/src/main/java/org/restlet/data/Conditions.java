@@ -180,7 +180,12 @@ public final class Conditions {
     }
 
     /**
-     * Returns the conditional status of a variant using a given method.
+     * Returns the conditional status of a variant using a given method.<br>
+     * <br>
+     * The preconditions are evaluated in the order of RFC 9110 section 13.2.2: "If-Match", then
+     * "If-Unmodified-Since" (ignored if there is an "If-Match"), then "If-None-Match", then
+     * "If-Modified-Since" (only for GET and HEAD, and ignored if there is an "If-None-Match"). The
+     * "If-Range" condition is evaluated by {@link #getRangeStatus(Tag, Date)}.
      *
      * @param method The request method.
      * @param entityExists Indicates if the entity exists.
@@ -189,31 +194,41 @@ public final class Conditions {
      * @return Null if the requested method can be performed, the status of the response otherwise.
      */
     public Status getStatus(Method method, boolean entityExists, Tag tag, Date modificationDate) {
-        Status result = null;
+        final boolean isGetOrHeadMethod = Method.GET.equals(method) || Method.HEAD.equals(method);
 
-        // Is the "if-Match" rule followed or not?
+        // RFC 9110 section 13.2.2: the order of evaluation of the preconditions
+        Status result;
+
         if ((this.match != null) && !this.match.isEmpty()) {
+            // 1. "If-Match"
             result = getIfMatchStatus(entityExists, tag);
+        } else if (getUnmodifiedSince() != null) {
+            // 2. "If-Unmodified-Since", ignored if there is an "If-Match" (section 13.1.4)
+            result = getIfUnmodifiedSinceStatus(modificationDate);
+        } else {
+            result = null;
         }
 
-        // Is the "if-None-Match" rule followed or not?
-        if ((result == null) && (this.noneMatch != null) && !this.noneMatch.isEmpty()) {
-            result = getIfNoneMatchStatus(method, entityExists, tag, modificationDate);
+        if (result != null) {
+            return result;
         }
 
-        // Is the "if-Modified-Since" rule followed or not?
-        if ((result == null)
+        if ((this.noneMatch != null) && !this.noneMatch.isEmpty()) {
+            // 3. "If-None-Match"
+            if (isIfNoneMatchFalse(entityExists, tag)) {
+                return isGetOrHeadMethod
+                        ? Status.REDIRECTION_NOT_MODIFIED
+                        : Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            }
+        } else if (isGetOrHeadMethod
                 && (getModifiedSince() != null)
                 && isNotModifiedSince(modificationDate)) {
-            result = getIfModifiedSinceStatus(method);
+            // 4. "If-Modified-Since", only for GET and HEAD, and ignored if there is an
+            // "If-None-Match" (section 13.1.3)
+            return Status.REDIRECTION_NOT_MODIFIED;
         }
 
-        // Is the "if-Unmodified-Since" rule followed or not?
-        if ((result == null) && (getUnmodifiedSince() != null)) {
-            result = getIfUnmodifiedSinceStatus(modificationDate);
-        }
-
-        return result;
+        return null;
     }
 
     private Status getIfUnmodifiedSinceStatus(final Date modificationDate) {
@@ -229,58 +244,30 @@ public final class Conditions {
         return null;
     }
 
-    private static Status getIfModifiedSinceStatus(final Method method) {
-        final Status result;
-        if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
-            result = Status.REDIRECTION_NOT_MODIFIED;
-        } else {
-            result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+    /**
+     * Indicates if the "If-None-Match" condition is false, which means that the current
+     * representation is one of those the client already has (RFC 9110 section 13.1.2): the weak
+     * comparison is used, and "*" is false if there is any current representation. The dates play
+     * no part: "If-Modified-Since" is ignored if there is an "If-None-Match".
+     */
+    private boolean isIfNoneMatchFalse(final boolean entityExists, final Tag tag) {
+        if (!entityExists) {
+            return false;
         }
-        return result;
-    }
 
-    private Status getIfNoneMatchStatus(
-            final Method method,
-            final boolean entityExists,
-            final Tag tag,
-            final Date modificationDate) {
-        boolean matched = false;
+        if (isAll(getNoneMatch())) {
+            return true;
+        }
 
-        final boolean isGetOrHeadMethod = Method.GET.equals(method) || Method.HEAD.equals(method);
-        if (entityExists) {
-            if (isAll(getNoneMatch())) {
-                // RFC 9110 section 13.1.2: "*" is false if any current representation exists
-                matched = true;
-            } else if (tag != null) {
-                // Check if the tag matches one of the representations already cached by the
-                // client. RFC 9110 section 13.1.2: weak comparison, whatever the method.
-                Tag noneMatchTag;
-
-                for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched && iter.hasNext(); ) {
-                    noneMatchTag = iter.next();
-                    matched = noneMatchTag.weakMatch(tag);
-                }
-
-                // The current representation matches one of those already
-                // cached by the client
-                if (matched) {
-                    // Check if the current representation has been updated
-                    // since the "if-modified-since" date. In this case, the
-                    // rule is followed.
-                    matched = isNotModifiedSince(modificationDate);
+        if (tag != null) {
+            for (Tag noneMatchTag : getNoneMatch()) {
+                if (noneMatchTag.weakMatch(tag)) {
+                    return true;
                 }
             }
         }
 
-        if (!matched) {
-            return null;
-        }
-
-        if (isGetOrHeadMethod) {
-            return Status.REDIRECTION_NOT_MODIFIED;
-        } else {
-            return Status.CLIENT_ERROR_PRECONDITION_FAILED;
-        }
+        return false;
     }
 
     private Status getIfMatchStatus(final boolean entityExists, final Tag tag) {

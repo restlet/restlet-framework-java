@@ -343,4 +343,84 @@ class ConditionsTestCase {
         assertEquals(
                 Status.CLIENT_ERROR_PRECONDITION_FAILED, conditions.getRangeStatus(null, null));
     }
+
+    // ---------------------------------------------------------------------------------------
+    // RFC 9110 sections 13.1.3, 13.1.4 and 13.2.2: precedence between the conditional headers
+    // ---------------------------------------------------------------------------------------
+
+    private static final Date BEFORE = new Date(T0.getTime() - 10_000);
+
+    private static final Date AFTER = new Date(T0.getTime() + 10_000);
+
+    /** If-Unmodified-Since is ignored if there is an If-Match. */
+    @Test
+    void getStatus_ifMatchHolds_ignoresAViolatedIfUnmodifiedSince() {
+        Conditions conditions = new Conditions();
+        conditions.setMatch(List.of(STRONG_A));
+        conditions.setUnmodifiedSince(BEFORE);
+        assertNull(conditions.getStatus(Method.PUT, true, STRONG_A, T0));
+    }
+
+    /** If-Modified-Since is ignored if there is an If-None-Match: the tag wins. */
+    @Test
+    void getStatus_ifNoneMatchDoesNotMatch_ignoresIfModifiedSince() {
+        Conditions conditions = new Conditions();
+        conditions.setNoneMatch(List.of(new Tag("b", false)));
+        conditions.setModifiedSince(T0);
+        assertNull(conditions.getStatus(Method.GET, true, STRONG_A, T0));
+    }
+
+    @Test
+    void getStatus_ifNoneMatchMatches_ignoresIfModifiedSince() {
+        Conditions conditions = new Conditions();
+        conditions.setNoneMatch(List.of(STRONG_A));
+        conditions.setModifiedSince(BEFORE);
+        assertEquals(
+                Status.REDIRECTION_NOT_MODIFIED,
+                conditions.getStatus(Method.GET, true, STRONG_A, T0));
+    }
+
+    /** If-Modified-Since only applies to GET and HEAD. */
+    @Test
+    void getStatus_ifModifiedSince_isIgnoredByTheOtherMethods() {
+        Conditions conditions = new Conditions();
+        conditions.setModifiedSince(T0);
+
+        for (Method method : List.of(Method.PUT, Method.POST, Method.DELETE)) {
+            assertNull(conditions.getStatus(method, true, null, T0), method.getName());
+        }
+
+        assertEquals(
+                Status.REDIRECTION_NOT_MODIFIED, conditions.getStatus(Method.GET, true, null, T0));
+        assertEquals(
+                Status.REDIRECTION_NOT_MODIFIED, conditions.getStatus(Method.HEAD, true, null, T0));
+    }
+
+    /** RFC 9110 section 13.2.2: If-Unmodified-Since (step 2) comes before If-None-Match (3). */
+    @Test
+    void getStatus_violatedIfUnmodifiedSince_comesBeforeIfNoneMatch() {
+        Conditions conditions = new Conditions();
+        conditions.setUnmodifiedSince(BEFORE);
+        conditions.setNoneMatch(List.of(STRONG_A));
+        assertEquals(
+                Status.CLIENT_ERROR_PRECONDITION_FAILED,
+                conditions.getStatus(Method.GET, true, STRONG_A, T0));
+    }
+
+    @Test
+    void getStatus_violatedIfUnmodifiedSince_comesBeforeIfModifiedSince() {
+        Conditions conditions = new Conditions();
+        conditions.setUnmodifiedSince(BEFORE);
+        conditions.setModifiedSince(T0);
+        assertEquals(
+                Status.CLIENT_ERROR_PRECONDITION_FAILED,
+                conditions.getStatus(Method.GET, true, null, T0));
+    }
+
+    @Test
+    void getStatus_modifiedAfterIfModifiedSince_proceeds() {
+        Conditions conditions = new Conditions();
+        conditions.setModifiedSince(T0);
+        assertNull(conditions.getStatus(Method.GET, true, null, AFTER));
+    }
 }

@@ -99,6 +99,13 @@ Changes log
           `new Tag(String)`) is no longer matched by `If-Match`, which gets a 412, and answers a
           `Range` request with a complete 200 response when it has an `If-Range`. Use `new Tag(value,
           false)` for a strong tag.
+        - `Conditions.getStatus()` evaluates the preconditions in the order of RFC 9110 section
+          13.2.2 and applies its ignore rules: "If-Unmodified-Since" is evaluated before
+          "If-None-Match" and "If-Modified-Since", and is ignored when there is an "If-Match";
+          "If-Modified-Since" is ignored when there is an "If-None-Match", so that the tag decides
+          (a matching tag gives a 304 whatever the dates, and a tag that does not match is no longer
+          overridden by an unmodified date), and it is ignored for the methods other than GET and
+          HEAD (it gave a 412). Requests sending several conditional headers can get another status.
         - `ServerResource` no longer evaluates the preconditions of a request (`If-Match`,
           `If-None-Match`, ...) when the status set while retrieving the validators of the current
           representation, by `get()` or `getInfo()`, is neither a success (2xx) nor 412: an error or
