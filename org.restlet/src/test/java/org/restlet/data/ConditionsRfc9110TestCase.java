@@ -103,11 +103,10 @@ class ConditionsRfc9110TestCase {
             if (!holds) {
                 return 412;
             }
-        } else if (c.ifUnmodifiedSince != null && c.modificationDate != null) {
+        } else if ((c.ifUnmodifiedSince != null && c.modificationDate != null)
+                && (seconds(c.modificationDate) > seconds(c.ifUnmodifiedSince))) {
             // 2. If-Unmodified-Since, ignored if there is an If-Match
-            if (seconds(c.modificationDate) > seconds(c.ifUnmodifiedSince)) {
-                return 412;
-            }
+            return 412;
         }
 
         // 3. If-None-Match, weak comparison
@@ -118,11 +117,10 @@ class ConditionsRfc9110TestCase {
             if (!holds) {
                 return getOrHead ? 304 : 412;
             }
-        } else if (getOrHead && c.ifModifiedSince != null && c.modificationDate != null) {
+        } else if ((getOrHead && c.ifModifiedSince != null && c.modificationDate != null)
+                && (seconds(c.modificationDate) <= seconds(c.ifModifiedSince))) {
             // 4. If-Modified-Since, GET and HEAD only, ignored if there is an If-None-Match
-            if (seconds(c.modificationDate) <= seconds(c.ifModifiedSince)) {
-                return 304;
-            }
+            return 304;
         }
 
         return 0;
