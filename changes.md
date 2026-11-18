@@ -89,6 +89,16 @@ Changes log
         - STDIO connector construction fails fast without an explicit or uniquely registered
           supporting helper class. Applications with multiple STDIO protocol helpers must
           select one explicitly.
+        - `Tag.equals(Object)` compares the name and the weakness again, consistently with
+          `hashCode()`: `W/"a"` no longer equals `"a"`. `Tag.equals(Object, boolean)` is removed;
+          use the new `Tag.strongMatch(Tag)` and `Tag.weakMatch(Tag)` (RFC 9110 section 8.8.3.2).
+          Code comparing a tag parsed from a header with `new Tag("x")` must use `new Tag("x",
+          false)`, as `new Tag(String)` creates a weak tag.
+        - `If-Match` and `If-Range` now use the strong comparison of the entity tags, as required by
+          RFC 9110: a weak tag never matches. A resource that returns a weak tag (the default of
+          `new Tag(String)`) is no longer matched by `If-Match`, which gets a 412, and answers a
+          `Range` request with a complete 200 response when it has an `If-Range`. Use `new Tag(value,
+          false)` for a strong tag.
         - `ServerResource` no longer evaluates the preconditions of a request (`If-Match`,
           `If-None-Match`, ...) when the status set while retrieving the validators of the current
           representation, by `get()` or `getInfo()`, is neither a success (2xx) nor 412: an error or
@@ -391,6 +401,15 @@ Changes log
           or 406). The unread body is discarded when it is already received, or when at most
           256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
           Clients reusing the connection failed with a "Communication Error" (1001).
+        - `If-None-Match: *` was ignored for a resource having an entity tag: a "create only" PUT
+          overwrote the existing resource instead of getting a 412 (a GET did not get a 304). It is
+          now false for any existing resource, as required by RFC 9110 section 13.1.2. `*` is also
+          recognized when it is not the first tag of an `If-Match` or `If-None-Match` list.
+        - `If-None-Match` compares the entity tags with the weak comparison whatever the method: a
+          weak tag and a strong tag with the same name did not match on a PUT, POST or DELETE.
+        - `If-Range` with a date never matched when the modification date of the entity had
+          milliseconds, as `FileRepresentation` has, so clients could not resume a download. The
+          dates are now compared with a precision of one second.
         - The `Range` request header is now handled as RFC 9110 section 14 requires. A header with
           a range unit other than `bytes`, or an invalid one (`bytes=a-b`, `bytes=5-3`, `bytes=`,
           a number too large for a `long`), is ignored and the whole entity is returned, instead of
