@@ -1,11 +1,35 @@
 {
     "version": "1.0",
-    "plugins": {
-        "java-codegen": {
-            "service": "restlet.test#Greeter",
-            "namespace": "org.restlet.ext.smithy.generated",
-            "modes": ["client"],
-            "protocol": "aws.protocols#restJson1"
+    "projections": {
+        "greeter": {
+            "plugins": {
+                "java-codegen": {
+                    "service": "restlet.test#Greeter",
+                    "namespace": "org.restlet.ext.smithy.generated",
+                    "modes": ["client"],
+                    "protocol": "aws.protocols#restJson1"
+                }
+            }
+        },
+        "notes": {
+            "plugins": {
+                "java-codegen": {
+                    "service": "restlet.test.server#Notes",
+                    "namespace": "org.restlet.ext.smithy.generated.notes",
+                    "modes": ["client", "server"],
+                    "protocol": "aws.protocols#restJson1"
+                }
+            }
+        },
+        "counter": {
+            "plugins": {
+                "java-codegen": {
+                    "service": "restlet.test.cbor#Counter",
+                    "namespace": "org.restlet.ext.smithy.generated.counter",
+                    "modes": ["client", "server"],
+                    "protocol": "smithy.protocols#rpcv2Cbor"
+                }
+            }
         }
     }
 }

@@ -30,7 +30,30 @@ public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
 
     @Override
     public CacheDirectiveWriter append(CacheDirective directive) {
-        appendExtension(directive);
+        if (hasFieldNames(directive)) {
+            // RFC 9111 section 5.2.2.4 and 5.2.2.7: the field names are a quoted-string, even when
+            // there is a single name that would be a valid token.
+            append(directive.getName());
+            append("=");
+            appendQuotedString(directive.getValue());
+        } else {
+            appendExtension(directive);
+        }
+
         return this;
+    }
+
+    /**
+     * Indicates if the directive is a "no-cache" or "private" directive qualified by field names.
+     *
+     * @param directive The directive to test.
+     * @return True if the directive has a non-empty list of field names.
+     */
+    private static boolean hasFieldNames(CacheDirective directive) {
+        return (directive != null)
+                && (directive.getValue() != null)
+                && !directive.getValue().isEmpty()
+                && (HeaderConstants.CACHE_NO_CACHE.equalsIgnoreCase(directive.getName())
+                        || HeaderConstants.CACHE_PRIVATE.equalsIgnoreCase(directive.getName()));
     }
 }

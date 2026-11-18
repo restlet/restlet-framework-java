@@ -33,9 +33,24 @@ public final class ChallengeScheme {
             new ChallengeScheme(
                     "HTTP_AWS_QUERY", "AWS_QUERY", "Amazon Query String authentication");
 
-    /** Amazon S3 HTTP scheme. */
+    /**
+     * Amazon S3 HTTP scheme, using AWS Signature Version 2. AWS no longer accepts it for buckets
+     * created since June 2020 nor in the regions opened since 2014: use {@link #HTTP_AWS_SIGV4}.
+     */
     public static final ChallengeScheme HTTP_AWS_S3 =
             new ChallengeScheme("HTTP_AWS_S3", "AWS", "Amazon S3 HTTP authentication");
+
+    /**
+     * AWS Signature Version 4 HTTP scheme, used by Amazon S3, the other AWS services and the
+     * S3-compatible object stores. Each request is signed with HMAC-SHA256 from the secret access
+     * key, the date, the region and the service.
+     *
+     * @see <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html">AWS
+     *     Signature Version 4 for API requests</a>
+     */
+    public static final ChallengeScheme HTTP_AWS_SIGV4 =
+            new ChallengeScheme(
+                    "HTTP_AWS_SIGV4", "AWS4-HMAC-SHA256", "AWS Signature Version 4 authentication");
 
     /**
      * Microsoft Azure Shared Key scheme.
@@ -99,6 +114,7 @@ public final class ChallengeScheme {
                     Map.entry(HTTP_AWS_IAM.getName().toLowerCase(), HTTP_AWS_S3),
                     Map.entry(HTTP_AWS_QUERY.getName().toLowerCase(), HTTP_AWS_S3),
                     Map.entry(HTTP_AWS_S3.getName().toLowerCase(), HTTP_AWS_S3),
+                    Map.entry(HTTP_AWS_SIGV4.getName().toLowerCase(), HTTP_AWS_SIGV4),
                     Map.entry(HTTP_AZURE_SHAREDKEY.getName().toLowerCase(), HTTP_AZURE_SHAREDKEY),
                     Map.entry(
                             HTTP_AZURE_SHAREDKEY_LITE.getName().toLowerCase(),
