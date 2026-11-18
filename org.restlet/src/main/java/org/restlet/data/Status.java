@@ -19,6 +19,8 @@ public final class Status {
     private static final String BASE_ADDED_HTTP = "https://datatracker.ietf.org/doc/html/rfc6585";
 
     private static final String BASE_HTTP = "https://www.rfc-editor.org/rfc/rfc9110.html";
+
+    private static final String BASE_HTTP_LEGAL = "https://datatracker.ietf.org/doc/html/rfc7725";
     private static final String BASE_HTTP_STATUS_CODES =
             "https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes";
 
@@ -87,6 +89,15 @@ public final class Status {
     public static final Status CLIENT_ERROR_METHOD_NOT_ALLOWED = new Status(405);
 
     /**
+     * The request was directed at a server that is not able to produce a response for the
+     * combination of scheme and authority of the target URI.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-421-misdirected-request">HTTP
+     *     RFC - 421 Misdirected Request</a>
+     */
+    public static final Status CLIENT_ERROR_MISDIRECTED_REQUEST = new Status(421);
+
+    /**
      * The resource identified by the request is only capable of generating response entities whose
      * content characteristics do not match the user's requirements (in Accept* headers).
      *
@@ -122,6 +133,17 @@ public final class Status {
     public static final Status CLIENT_ERROR_PRECONDITION_FAILED = new Status(412);
 
     /**
+     * The origin server requires the request to be conditional, typically to avoid the "lost
+     * update" problem. The response should explain how to resubmit the request, for example with an
+     * "If-Match" header.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6585#section-3">HTTP RFC - 428
+     *     Precondition Required</a>
+     * @see org.restlet.resource.ServerResource#hasPreconditions()
+     */
+    public static final Status CLIENT_ERROR_PRECONDITION_REQUIRED = new Status(428);
+
+    /**
      * This code is similar to 401 (Unauthorized) but indicates that the client must first
      * authenticate itself with the proxy.
      *
@@ -139,6 +161,15 @@ public final class Status {
      *     RFC - 413 Request Entity Too Large</a>
      */
     public static final Status CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE = new Status(413);
+
+    /**
+     * The server is unwilling to process the request because its header fields, in total or one of
+     * them, are too large. The response should specify which header field was too large.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6585#section-5">HTTP RFC - 431 Request
+     *     Header Fields Too Large</a>
+     */
+    public static final Status CLIENT_ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE = new Status(431);
 
     /**
      * Sent by the server when an HTTP client opens a connection but has never sent a request (or
@@ -186,6 +217,25 @@ public final class Status {
     public static final Status CLIENT_ERROR_UNAUTHORIZED = new Status(401);
 
     /**
+     * The server cannot provide the resource for legal reasons, such as a court order or a
+     * government-mandated blocking.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc7725#section-3">HTTP RFC - 451
+     *     Unavailable For Legal Reasons</a>
+     */
+    public static final Status CLIENT_ERROR_UNAVAILABLE_FOR_LEGAL_REASONS = new Status(451);
+
+    /**
+     * The server understands the content type of the request and its syntax is correct, but it was
+     * unable to process the contained instructions.
+     *
+     * @see <a
+     *     href="https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content">HTTP
+     *     RFC - 422 Unprocessable Content</a>
+     */
+    public static final Status CLIENT_ERROR_UNPROCESSABLE_CONTENT = new Status(422);
+
+    /**
      * The server is refusing to service the request because the entity of the request is in a
      * format not supported by the requested resource for the requested method.
      *
@@ -194,6 +244,15 @@ public final class Status {
      *     415 Unsupported Media Type</a>
      */
     public static final Status CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE = new Status(415);
+
+    /**
+     * The server refuses to perform the request using the current protocol, but might be willing to
+     * do so after the client upgrades to a different protocol, given in the Upgrade header.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-426-upgrade-required">HTTP RFC
+     *     - 426 Upgrade Required</a>
+     */
+    public static final Status CLIENT_ERROR_UPGRADE_REQUIRED = new Status(426);
 
     /**
      * The client connector faced an error during the communication with the remote server
@@ -313,6 +372,16 @@ public final class Status {
     public static final Status REDIRECTION_PERMANENT = new Status(301);
 
     /**
+     * The resource has been permanently moved to the URI given in the Location header, and the
+     * client must repeat the request to that URI with the same method and content, unlike with
+     * {@link #REDIRECTION_PERMANENT}.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-308-permanent-redirect">HTTP
+     *     RFC - 308 Permanent Redirect</a>
+     */
+    public static final Status REDIRECTION_PERMANENT_STRICT = new Status(308);
+
+    /**
      * The response to the request can be found under a different URI and SHOULD be retrieved using
      * a GET method on that resource.
      *
@@ -364,6 +433,15 @@ public final class Status {
      *     500 Internal Server Error</a>
      */
     public static final Status SERVER_ERROR_INTERNAL = new Status(500);
+
+    /**
+     * The client needs to authenticate to gain network access. It is intended for use by
+     * intercepting proxies, and should not be generated by origin servers.
+     *
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6585#section-6">HTTP RFC - 511 Network
+     *     Authentication Required</a>
+     */
+    public static final Status SERVER_ERROR_NETWORK_AUTHENTICATION_REQUIRED = new Status(511);
 
     /**
      * The server does not support the functionality required to fulfill the request.
@@ -743,6 +821,12 @@ public final class Status {
                         "The requested resource resides temporarily under a different URI",
                         "Temporary Redirect",
                         BASE_HTTP + "#name-307-temporary-redirect");
+        STATUS_ENTRIES[308] =
+                new StatusEntry(
+                        REDIRECTION_PERMANENT_STRICT,
+                        "The requested resource has permanently moved to the URI given in the Location header, and the request must be repeated there with the same method and content",
+                        "Permanent Redirect",
+                        BASE_HTTP + "#name-308-permanent-redirect");
         STATUS_ENTRIES[400] =
                 new StatusEntry(
                         CLIENT_ERROR_BAD_REQUEST,
@@ -851,12 +935,48 @@ public final class Status {
                         "The expectation given in the request header could not be met by this server",
                         "Expectation Failed",
                         BASE_HTTP + "#name-417-expectation-failed");
+        STATUS_ENTRIES[421] =
+                new StatusEntry(
+                        CLIENT_ERROR_MISDIRECTED_REQUEST,
+                        "The request was directed at a server that is not able to produce a response for the combination of scheme and authority of the target URI",
+                        "Misdirected Request",
+                        BASE_HTTP + "#name-421-misdirected-request");
+        STATUS_ENTRIES[422] =
+                new StatusEntry(
+                        CLIENT_ERROR_UNPROCESSABLE_CONTENT,
+                        "The server understands the content type of the request and its syntax is correct, but it was unable to process the contained instructions",
+                        "Unprocessable Content",
+                        BASE_HTTP + "#name-422-unprocessable-content");
+        STATUS_ENTRIES[426] =
+                new StatusEntry(
+                        CLIENT_ERROR_UPGRADE_REQUIRED,
+                        "The server refuses to perform the request using the current protocol but might be willing to do so after the client upgrades to a different protocol",
+                        "Upgrade Required",
+                        BASE_HTTP + "#name-426-upgrade-required");
+        STATUS_ENTRIES[428] =
+                new StatusEntry(
+                        CLIENT_ERROR_PRECONDITION_REQUIRED,
+                        "The origin server requires the request to be conditional, to avoid the lost update problem: resubmit the request with a conditional header such as If-Match",
+                        "Precondition Required",
+                        BASE_ADDED_HTTP + "#section-3");
         STATUS_ENTRIES[429] =
                 new StatusEntry(
                         CLIENT_ERROR_TOO_MANY_REQUESTS,
-                        "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\\\"rate limiting\\\")",
+                        "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")",
                         "Too Many Requests",
                         BASE_ADDED_HTTP + "#section-4");
+        STATUS_ENTRIES[431] =
+                new StatusEntry(
+                        CLIENT_ERROR_REQUEST_HEADER_FIELDS_TOO_LARGE,
+                        "The server is unwilling to process the request because its header fields, in total or one of them, are too large",
+                        "Request Header Fields Too Large",
+                        BASE_ADDED_HTTP + "#section-5");
+        STATUS_ENTRIES[451] =
+                new StatusEntry(
+                        CLIENT_ERROR_UNAVAILABLE_FOR_LEGAL_REASONS,
+                        "The server cannot provide the resource for legal reasons, such as a court order or a government-mandated blocking",
+                        "Unavailable For Legal Reasons",
+                        BASE_HTTP_LEGAL + "#section-3");
         STATUS_ENTRIES[500] =
                 new StatusEntry(
                         SERVER_ERROR_INTERNAL,
@@ -893,6 +1013,12 @@ public final class Status {
                         "The server does not support, or refuses to support, the protocol version that was used in the request message",
                         "Version Not Supported",
                         BASE_HTTP + "#name-505-http-version-not-suppor");
+        STATUS_ENTRIES[511] =
+                new StatusEntry(
+                        SERVER_ERROR_NETWORK_AUTHENTICATION_REQUIRED,
+                        "The client needs to authenticate to gain network access",
+                        "Network Authentication Required",
+                        BASE_ADDED_HTTP + "#section-6");
         STATUS_ENTRIES[1000] =
                 new StatusEntry(
                         CONNECTOR_ERROR_CONNECTION,
