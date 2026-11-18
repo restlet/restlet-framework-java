@@ -16,10 +16,30 @@ import org.restlet.Request;
 /** MCP-only transport metadata, also available in native SDK callbacks under CONTEXT_KEY. */
 public final class McpRequestContext {
     private final Request request;
+    private final String protocolVersion;
     private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
+    /**
+     * Creates the context of a {@link McpProtocol#MODERN_VERSION} request, the revision {@link
+     * McpServerAdapter#dispatch} serves. The legacy edge passes its revision to the other
+     * constructor.
+     *
+     * @param request The transport request, or null.
+     */
     public McpRequestContext(Request request) {
+        this(request, McpProtocol.MODERN_VERSION);
+    }
+
+    /**
+     * Creates the context of a request using a given MCP revision.
+     *
+     * @param request The transport request, or null.
+     * @param protocolVersion The MCP revision of the request, such as {@link
+     *     McpProtocol#MODERN_VERSION}.
+     */
+    public McpRequestContext(Request request, String protocolVersion) {
         this.request = request;
+        this.protocolVersion = java.util.Objects.requireNonNull(protocolVersion, "protocolVersion");
     }
 
     public Optional<Request> transportRequest() {
@@ -27,7 +47,7 @@ public final class McpRequestContext {
     }
 
     public String protocolVersion() {
-        return McpProtocol.VERSION;
+        return protocolVersion;
     }
 
     public Map<String, Object> attributes() {

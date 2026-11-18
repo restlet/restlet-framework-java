@@ -8,7 +8,8 @@ Changes log
           Jetty 12. The connector class names are unchanged
           (`org.restlet.engine.connector.HttpServerHelper`, `HttpsServerHelper`,
           `HttpClientHelper`), and the Jetty dependencies are removed. No Netty type is exposed by
-          the public API: the module requires the Netty modules without `requires transitive`.
+          the public API, apart from the `NettyClientTransport` connector SPI: the module requires
+          the Netty modules without `requires transitive`.
         - Server calls run by default on virtual threads, one per call ("threadPool.virtual"
           parameter, `true` by default). Set it to `false` to use a pool of platform threads
           configured by the existing "threadPool.*" parameters.
@@ -95,12 +96,54 @@ Changes log
           13.2.1, instead of being replaced by a 304 or a 412. Resources that set a non-success status
           and still return a representation are the only ones affected. Issue #129.
     - Enhancements
-        - Added the MCP extension using the official Java SDK 2.1.0 on shared Restlet HTTP
-          connectors and explicitly configured STDIO helpers. The supported stateless profile
-          uses revision 2025-11-25, native SDK tools/resources/prompts and in-JVM dispatch,
-          bounded messages/calls, one-shot SSE responses, and request cancellation. Sessions,
-          listening GET streams, replay and Ikanos revision compatibility are not supported.
-          Borrowed HTTP connectors are not stopped by the MCP client.
+        - Added the MCP extension using the official Java SDK (2.2.0-M2) on shared Restlet HTTP
+          connectors and explicitly configured STDIO helpers, built on the SDK's stateless MCP
+          2026-07-28 model, experimentally: the SDK's modern API is a preview. Messages and calls
+          are bounded, responses may stream over SSE, and requests are cancelled when the client
+          goes away. Borrowed HTTP connectors are not stopped by the MCP client.
+        - `McpServerAdapter` registers tools, resources, resource templates and prompts on the
+          SDK's modern types (`getTools()`, `getResources()` with `McpResource`,
+          `getResourceTemplates()` with `McpResourceTemplate`, `getPrompts()`); a name, URI or URI
+          template may only be used once. Tool filters (`McpToolFilter`) and interceptors
+          (`McpInterceptor`) also use the modern types, and apply once to each request of either
+          era. 2026-07-28 requests get `input_required` results, sealed with a key that
+          `setRequestStateKey()` shares between instances, and streamed progress;
+          `subscriptions/listen` streams carry the changes published through `getChanges()`,
+          within `setMaxListenStreams()`. Over stdio, a message whose `_meta` names 2026-07-28 is
+          answered line by line as it streams, and `notifications/cancelled` ends the request it
+          names.
+        - MCP 2025-11-25 clients are served by a legacy edge translating their requests into the
+          2026-07-28 model, so it can be dropped when the deprecation window closes. It exposes
+          nothing 2026-07-28 deprecates or removes: `initialize` is answered from
+          `server/discover` with tools, resources and prompts only, `ping` gets an empty result,
+          notifications are dropped, `logging/setLevel` and resource subscriptions are not found,
+          no session is issued, `GET` gets a `405`, and nothing is requested from the client. A
+          legacy client gets the final result of a streaming request, and an error instead of an
+          `input_required` result.
+        - `McpClientAdapter` speaks MCP 2025-11-25 by default, through the SDK's client behind the
+          same legacy edge. `setProtocolVersion(McpProtocol.MODERN_VERSION)` makes it speak
+          2026-07-28 over HTTP: `start()` runs `server/discover`, and `getModernClient()` returns
+          an `McpModernClient` for listings, tool calls, resource reads and prompts, with streamed
+          progress, `subscriptions/listen`, and cancellation by disposing the request. An
+          `input_required` result is answered by the `McpInputHandler` set with
+          `setInputHandler()` and the request retried, within `setMaxInputRounds()`.
+          `setProtocolVersion(McpProtocol.AUTO)` speaks whichever era the server does, as the
+          2026-07-28 revision specifies for a dual-era client: over HTTP, `start()` sends
+          `server/discover`; a `4xx` without a JSON-RPC response, or a JSON-RPC error other than
+          an unsupported version (`-32022`), marks a legacy server, which gets an `initialize`
+          handshake offering `McpProtocol.LEGACY_VERSIONS` (2025-11-25 back to 2024-11-05). The era
+          found is remembered per endpoint URI for the life of the JVM, and probed again when it
+          proves wrong; over stdio, `auto` speaks 2025-11-25. `getNegotiatedVersion()` tells the
+          revision in use, and `listTools()`, `callTool()`, `readResource()` and `getPrompt()` work
+          in both eras on the modern types. With a legacy server, the client declares no roots,
+          sampling or elicitation capability, never sets a logging level, refuses the requests the
+          server sends, and opens no listening `GET` stream.
+        - Legacy MCP sessions are opt-in, since 2026-07-28 removed them:
+          `McpClientAdapter.setLegacySessions(true)` keeps the `Mcp-Session-Id` a legacy server
+          returns on `initialize`, sends it with later requests, initializes again after it
+          expires, and deletes it on `stop()`; `setLegacySessionId()` sends a session id the caller
+          owns, which is never replaced or deleted; `getLegacySessionId()` tells the one in use.
+          They have no effect on modern servers, and go away with the legacy edge.
         - Added experimental SDK-native gRPC hosting of unary, server-streaming,
           client-streaming and bidirectional methods on a borrowed Restlet/Netty HTTP/2 listener.
           Request messages are read as the application requests them, within the queue budget,
@@ -113,14 +156,18 @@ Changes log
           leaves the borrowed listener and supplied callback executor running and reports timeout
           explicitly. TLS configuration and physical gRPC connection controls are not supported
           by the server adapter.
-        - Added an experimental SDK-native gRPC unary client on a borrowed Restlet HTTP/2
-          connector, with explicit plaintext opt-in, bounded messages and call admission.
+        - Added an experimental SDK-native gRPC client on a borrowed Restlet HTTP/2 connector,
+          for unary, server-streaming, client-streaming and bidirectional calls, with explicit
+          plaintext opt-in, bounded messages and call admission. Each call is one HTTP/2 exchange
+          whose request body is written while its response is read; request messages are queued
+          within a per-call budget that the SDK's readiness follows, and response messages are read
+          as the application requests them, within the same budget.
           Regression tests cover authority mapping, cancellation before and after headers,
           disconnect recovery, malformed responses and shared connector ownership. Empty
           responses retain SDK missing-status diagnostics instead of failing on a null stream.
           Shutdown arriving before SDK listener installation is replayed once; interrupted
           shutdown still closes owned transport resources and preserves the interrupt.
-          TLS, streaming methods and physical gRPC connection controls remain unsupported.
+          TLS and physical gRPC connection controls remain unsupported.
         - Added the Smithy extension, with a smithy-java 1.8.0 client transport on Restlet HTTP
           client connectors. Generated and dynamic SDK clients find it through service loading,
           before the JDK transport, or are given one borrowing an existing client. Requests are
@@ -130,14 +177,19 @@ Changes log
           response. A Host header set by the SDK is kept. Request timeouts, which cover the
           response head, and thread interruption abort the request. Event streams are not
           supported.
-        - Added the experimental Smithy server artifact (`org.restlet.ext.smithy.server`), whose
-          `SmithyServerAdapter` joins the `org.restlet.ext.smithy` package, hosting
-          smithy-java 1.8.0 services, generated or built from a model, behind a Restlet router
-          beside other routes. The SDK protocols resolve, validate and serialize each call, and its
-          handlers run on the request thread. Request bodies, concurrent calls and call durations
-          are bounded; deadlines, client disconnects and stopping interrupt the operation. It runs
-          on the class path only, as smithy-java's server modules split a package, with
-          `org.restlet.ext.smithy` on the class path too.
+        - Added experimental smithy-java 1.8.0 server hosting to the Smithy extension. Its
+          `SmithyServerAdapter` hosts services, generated or built from a model, behind a Restlet
+          router beside other routes, and its `SmithyServerBuilder`, which `Server.builder()`
+          finds under the name `restlet`, or alone when the SDK's Netty server is absent, listens
+          on Restlet HTTP/1.1 and HTTP/2 server connectors. The SDK protocols, such as restJson1 and RPCv2
+          CBOR, resolve, validate and serialize each call, and its handlers run on the request
+          thread. Request bodies, concurrent calls and call durations are bounded; deadlines,
+          client disconnects and stopping interrupt the operation. As smithy-java's server
+          modules split a package, its optional `server-core` dependency stays on the class path:
+          run as a named module, the extension reads it with
+          `--add-reads org.restlet.ext.smithy=ALL-UNNAMED`, a named module using SDK or generated
+          service types reads it with `--add-reads <its module>=ALL-UNNAMED` when compiled and
+          run, and the builder is only discovered on the class path.
         - Added the supported `org.restlet.util.StreamTransport` seam for protocol-neutral,
           bounded synchronous byte I/O, serialized writes, borrowed-stream cancellation and
           owned subprocess lifecycle with separate bounded stderr capture. No protocol
@@ -268,7 +320,28 @@ Changes log
           when `hasPreconditions()` says so. The Javadoc of `doConditionalHandle()` now explains that
           the validators of a conditional PUT, POST or DELETE come from `getInfo()`, which calls
           `get()` by default. Issues #65 and #262.
+        - Added client-side AWS Signature Version 4 authentication (`ChallengeScheme.HTTP_AWS_SIGV4`,
+          `HttpAwsSigV4Helper` in the Crypto extension), for Amazon S3, the other AWS services and
+          the S3-compatible object stores such as MinIO. The region, the service (`s3` by
+          default), the session token of temporary credentials and an unsigned payload option are
+          given as parameters of the `ChallengeResponse`. The `HTTP_AWS_S3` scheme still uses
+          Signature Version 2, which AWS no longer accepts for buckets created since June 2020.
+        - Added the experimental OpenZiti extension (`org.restlet.ext.openziti`, OpenZiti Java
+          SDK 0.35.0): `ZitiClientTransport.install(client, zitiContext)` routes the calls of an
+          HTTP client to the origins an OpenZiti identity has a service for, such as
+          `crm.internal:443`, over the Ziti overlay network, without resolving their host name
+          with the system DNS, and the other calls over TCP. TLS, HTTP/1.1 and HTTP/2 run over it
+          as over TCP. Client side only. The transport listens to the context's events until
+          closed: close it once the client is stopped, or install another one, which closes it.
+        - Added the `NettyClientTransport` SPI to the Netty client connector, set with the
+          "org.restlet.engine.netty.clientTransport" client context attribute: it can route the
+          requests to some origins through another Netty channel and resolver than TCP, the HTTP
+          and SOCKS proxies and HTTP/3 being then bypassed, and the proxy credentials removed. It exposes Netty types and is meant for
+          extensions depending on Netty, such as the OpenZiti one.
     - Bugs fixed
+        - The Netty HTTP/2 client no longer turns a complete response into a communication error,
+          nor reports the request as disconnected, when the server answers before the end of the
+          request, such as with an immediate error, then closes the stream.
         - The Netty connectors now flush each full output buffer of a request or response body,
           so a producer that pauses after filling one no longer holds back what it produced
           until it resumes or ends. Issue #1632.
@@ -318,6 +391,25 @@ Changes log
           or 406). The unread body is discarded when it is already received, or when at most
           256 KiB of it remain in transit; otherwise the response announces `Connection: close`.
           Clients reusing the connection failed with a "Communication Error" (1001).
+        - The `Range` request header is now handled as RFC 9110 section 14 requires. A header with
+          a range unit other than `bytes`, or an invalid one (`bytes=a-b`, `bytes=5-3`, `bytes=`,
+          a number too large for a `long`), is ignored and the whole entity is returned, instead of
+          a 500 error (`NumberFormatException`), a 501 or a meaningless 206: `RangeReader.read`
+          returns an empty list and never throws. The `bytes` unit is matched ignoring case. A
+          range selecting nothing of the entity (first position at or after its end, or
+          `bytes=-0`) is answered with a 416 (Range Not Satisfiable) and a
+          `Content-Range: bytes */length` header, instead of a 206 or a response the client could
+          not read. A range ending after the end of the entity (`bytes=8-12` on 10 bytes), or a
+          suffix longer than it (`bytes=-500`), is cut at the end of the entity, instead of an
+          invalid `Content-Range` or a broken response. An empty entity still ignores the header,
+          and several ranges still get a 501.
+        - `CacheDirective.noCache(String)`, `noCache(List)`, `privateInfo(String)` and
+          `privateInfo(List)` produced a doubly quoted value (`no-cache="\"Set-Cookie\""`), and a
+          list was written as one quoted name per element. The directive value now holds the raw
+          field names (`Set-Cookie`, or `Set-Cookie, Authorization` for a list, no quotes), and
+          `CacheDirectiveWriter` writes them as a single quoted-string
+          (`no-cache="Set-Cookie, Authorization"`), as required by RFC 9111 section 5.2.2.4. Code
+          reading `getValue()` of these directives no longer sees the quotes. Issue #745.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.

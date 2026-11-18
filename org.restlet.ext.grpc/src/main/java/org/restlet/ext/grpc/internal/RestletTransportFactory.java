@@ -43,6 +43,7 @@ import org.restlet.Client;
 public final class RestletTransportFactory implements ClientTransportFactory {
     private final Client client;
     private final int maxBytes;
+    private final int queueBytes;
     private final Duration shutdownTimeout;
     private final Semaphore admission;
     private final Set<Transport> transports = new HashSet<>();
@@ -52,9 +53,11 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                     1, Thread.ofPlatform().daemon().name("restlet-grpc-timer").factory());
     private boolean closed;
 
-    public RestletTransportFactory(Client client, int maxBytes, int maxCalls, Duration timeout) {
+    public RestletTransportFactory(
+            Client client, int maxBytes, int queueBytes, int maxCalls, Duration timeout) {
         this.client = client;
         this.maxBytes = maxBytes;
+        this.queueBytes = queueBytes;
         admission = new Semaphore(maxCalls);
         shutdownTimeout = timeout;
         // Cancelled deadline timers of completed calls must not stay queued until they expire.
@@ -161,8 +164,10 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                         Status.UNIMPLEMENTED.withDescription(
                                 "Per-call authority override is not supported");
             }
-            if (rejected == null && method.getType() != MethodDescriptor.MethodType.UNARY) {
-                rejected = Status.UNIMPLEMENTED.withDescription("R3 supports unary methods only");
+            if (rejected == null && method.getType() == MethodDescriptor.MethodType.UNKNOWN) {
+                rejected =
+                        Status.UNIMPLEMENTED.withDescription(
+                                "Methods of unknown type are not supported");
             }
             if (rejected == null
                     && options.getCompressor() != null
@@ -189,6 +194,7 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                             options,
                             tracers,
                             maxBytes,
+                            queueBytes,
                             io,
                             this::finished);
             streams.add(stream);

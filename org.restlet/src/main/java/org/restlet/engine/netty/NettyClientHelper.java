@@ -21,7 +21,6 @@ import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioIoHandler;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -255,6 +254,16 @@ public abstract class NettyClientHelper extends ClientHelper {
     private static final AttributeKey<OriginPool> POOL =
             AttributeKey.valueOf(NettyClientHelper.class, "pool");
 
+    /**
+     * The streams of an HTTP/2 connection, open or reserved, or -1 once it is retired to free its
+     * permit.
+     */
+    private static final AttributeKey<AtomicInteger> STREAMS =
+            AttributeKey.valueOf(NettyClientHelper.class, "streams");
+
+    /** How often a call waiting for a connection permit looks for an idle connection to close. */
+    private static final long PERMIT_POLL_NANOS = TimeUnit.MILLISECONDS.toNanos(50);
+
     /** Supported transport modes. */
     protected enum TransportMode {
         HTTP1_1,
@@ -270,9 +279,12 @@ public abstract class NettyClientHelper extends ClientHelper {
     static final class OriginPool {
 
         /** The key of the pool. */
-        final String key;
+        final PoolKey key;
 
-        /** Indicates whether the pool is specific to proxy credentials, and dropped once unused. */
+        /**
+         * Indicates whether the pool is specific to proxy credentials or to a route, and dropped
+         * once unused.
+         */
         final boolean transientPool;
 
         final boolean secure;
@@ -280,6 +292,9 @@ public abstract class NettyClientHelper extends ClientHelper {
         final String host;
 
         final int port;
+
+        /** The transport route of the connections, or null for TCP and the proxies. */
+        final NettyClientTransport.Route route;
 
         final Deque<Channel> idle = new ConcurrentLinkedDeque<>();
 
@@ -298,17 +313,19 @@ public abstract class NettyClientHelper extends ClientHelper {
         volatile Channel http2;
 
         OriginPool(
-                String key,
+                PoolKey key,
                 boolean transientPool,
                 boolean secure,
                 String host,
                 int port,
+                NettyClientTransport.Route route,
                 Semaphore permits) {
             this.key = key;
             this.transientPool = transientPool;
             this.secure = secure;
             this.host = host;
             this.port = port;
+            this.route = route;
             this.permits = permits;
         }
     }
@@ -329,7 +346,7 @@ public abstract class NettyClientHelper extends ClientHelper {
     private final Map<String, Channel> http3Connections = new ConcurrentHashMap<>();
 
     /** The connection pools, per origin, and per proxy credentials for tunnels. */
-    private final Map<String, OriginPool> pools = new ConcurrentHashMap<>();
+    private final Map<PoolKey, OriginPool> pools = new ConcurrentHashMap<>();
 
     /** The connection permits, per origin. */
     private final Map<String, Semaphore> permits = new ConcurrentHashMap<>();
@@ -358,9 +375,17 @@ public abstract class NettyClientHelper extends ClientHelper {
         }
 
         boolean secure = "https".equalsIgnoreCase(scheme);
-        boolean forwardProxy = !secure && (getProxy(false, ref.getHostDomain()) != null);
+        // The route is chosen once per exchange: the request target, the proxy credentials and
+        // the connection all follow from it.
+        int port = ref.getHostPort();
+        int defaultPort = secure ? 443 : 80;
+        NettyClientTransport.Route route =
+                getRoute(ref.getHostDomain(), (port == -1) ? defaultPort : port);
+        boolean forwardProxy =
+                (route == null) && !secure && (getProxy(false, ref.getHostDomain()) != null);
         String target = ReferenceUtils.format(request.getResourceRef(), forwardProxy, request);
-        return new NettyClientCall(this, request.getMethod().toString(), ref, target, secure);
+        return new NettyClientCall(
+                this, request.getMethod().toString(), ref, target, secure, route);
     }
 
     @Override
@@ -511,34 +536,35 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @throws IOException If no connection could be established.
      */
     Channel acquire(NettyClientCall call) throws IOException {
+        // A routed origin is reached over its route's channel, never over QUIC.
         if (call.isConfidential()
+                && call.getRoute() == null
                 && getTransportMode() == TransportMode.HTTP3
                 && getProxy(true, call.getTargetHost()) == null
                 && getSocksProxy(call.getTargetHost()) == null) {
             return acquireHttp3(call);
         }
 
-        // Tunnels opened with different proxy credentials are kept apart.
-        String origin =
-                (call.isConfidential() ? "https://" : "http://")
-                        + call.getTargetHost()
-                        + ":"
-                        + call.getTargetPort();
-        String proxyIdentity = call.getTunnelProxyIdentity();
-        OriginPool pool =
-                pools.computeIfAbsent(
-                        (proxyIdentity == null) ? origin : origin + "#" + proxyIdentity,
-                        k ->
-                                new OriginPool(
-                                        k,
-                                        proxyIdentity != null,
-                                        call.isConfidential(),
-                                        call.getTargetHost(),
-                                        call.getTargetPort(),
-                                        getPermits(origin)));
+        Channel channel;
+        do {
+            // Null when the pool was dropped before it could connect: the next one is taken.
+            channel = acquire(getPool(call), call);
+        } while (channel == null);
+        return channel;
+    }
 
+    /**
+     * Acquires a channel of a pool: an idle or new HTTP/1.1 connection, or a new stream of its
+     * HTTP/2 connection.
+     *
+     * @param pool The pool.
+     * @param call The call that will use the channel.
+     * @return The channel, or null if the pool was dropped before it could open a connection.
+     * @throws IOException If no connection could be established.
+     */
+    private Channel acquire(OriginPool pool, NettyClientCall call) throws IOException {
         Channel http2 = pool.http2;
-        if (http2 != null && http2.isActive()) {
+        if (http2 != null && http2.isActive() && reserveStream(http2)) {
             return openStream(http2, call);
         }
 
@@ -560,11 +586,13 @@ public abstract class NettyClientHelper extends ClientHelper {
             pool.connectLock.lock();
             try {
                 http2 = pool.http2;
-                if (http2 != null && http2.isActive()) {
+                if (http2 != null && http2.isActive() && reserveStream(http2)) {
                     return openStream(http2, call);
                 }
                 channel = connect(pool, call.getTunnelProxyAuthorization());
-                if (channel.pipeline().get(Http2MultiplexHandler.class) != null) {
+                if (channel != null
+                        && channel.pipeline().get(Http2MultiplexHandler.class) != null) {
+                    channel.attr(STREAMS).set(new AtomicInteger(1));
                     pool.http2 = channel;
                     return openStream(channel, call);
                 }
@@ -573,8 +601,54 @@ public abstract class NettyClientHelper extends ClientHelper {
             }
         }
 
-        bindHttp1(channel, call);
+        if (channel != null) {
+            bindHttp1(channel, call);
+        }
         return channel;
+    }
+
+    /**
+     * Reserves a stream on an HTTP/2 connection, unless it was retired to free its permit.
+     *
+     * @param parent The HTTP/2 connection.
+     * @return True if reserved: the stream must then be opened, or the reservation released.
+     */
+    private static boolean reserveStream(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        if (streams == null) {
+            return false;
+        }
+        int count;
+        do {
+            count = streams.get();
+            if (count < 0) {
+                return false;
+            }
+        } while (!streams.compareAndSet(count, count + 1));
+        return true;
+    }
+
+    /**
+     * Releases a stream reserved on an HTTP/2 connection.
+     *
+     * @param parent The HTTP/2 connection.
+     */
+    private static void releaseStream(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        if (streams != null) {
+            streams.decrementAndGet();
+        }
+    }
+
+    /**
+     * Retires an HTTP/2 connection without streams, so that no stream is opened on it any more.
+     *
+     * @param parent The HTTP/2 connection.
+     * @return True if retired: it can then be closed.
+     */
+    private static boolean retireIdle(Channel parent) {
+        AtomicInteger streams = parent.attr(STREAMS).get();
+        return (streams != null) && streams.compareAndSet(0, -1);
     }
 
     /**
@@ -674,7 +748,23 @@ public abstract class NettyClientHelper extends ClientHelper {
         handler.bind(call);
     }
 
+    /**
+     * Opens a stream reserved on an HTTP/2 connection. The reservation is released when the stream
+     * closes, or at once if it can't be opened.
+     */
     private Channel openStream(Channel parent, NettyClientCall call) throws IOException {
+        Channel stream;
+        try {
+            stream = openReservedStream(parent, call);
+        } catch (IOException | RuntimeException e) {
+            releaseStream(parent);
+            throw e;
+        }
+        stream.closeFuture().addListener(f -> releaseStream(parent));
+        return stream;
+    }
+
+    private Channel openReservedStream(Channel parent, NettyClientCall call) throws IOException {
         final NettyClientHandler handler = new NettyClientHandler();
         handler.bind(call);
         call.setStreamKind(StreamKind.HTTP2);
@@ -699,7 +789,9 @@ public abstract class NettyClientHelper extends ClientHelper {
     private Channel connect(final OriginPool pool, final String proxyAuthorization)
             throws IOException {
         long timeout = getConnectTimeout();
-        pool.connections.incrementAndGet();
+        if (!reserveConnection(pool)) {
+            return null;
+        }
         try {
             if (!acquirePermit(pool, timeout)) {
                 releaseConnection(pool, false);
@@ -715,23 +807,24 @@ public abstract class NettyClientHelper extends ClientHelper {
         boolean acquired = true;
         try {
             final SslContext ssl = pool.secure ? getSslContext() : null;
-            final InetSocketAddress proxy = resolve(getProxy(pool.secure, pool.host));
+            // A transport route (e.g. an overlay network) replaces TCP and the proxies.
+            final NettyClientTransport.Route route = pool.route;
+            final InetSocketAddress proxy =
+                    (route == null) ? resolve(getProxy(pool.secure, pool.host)) : null;
             final InetSocketAddress socksProxy =
-                    (proxy == null) ? resolve(getSocksProxy(pool.host)) : null;
+                    (route == null && proxy == null) ? resolve(getSocksProxy(pool.host)) : null;
 
             Bootstrap bootstrap =
                     new Bootstrap()
                             .group(group)
-                            .channel(NioSocketChannel.class)
                             .option(ChannelOption.AUTO_READ, false)
-                            .option(ChannelOption.TCP_NODELAY, true)
                             .option(
                                     ChannelOption.CONNECT_TIMEOUT_MILLIS,
                                     (int) Math.min(Integer.MAX_VALUE, timeout))
                             .handler(
-                                    new ChannelInitializer<SocketChannel>() {
+                                    new ChannelInitializer<Channel>() {
                                         @Override
-                                        protected void initChannel(SocketChannel ch) {
+                                        protected void initChannel(Channel ch) {
                                             initConnection(
                                                     ch,
                                                     pool,
@@ -742,22 +835,7 @@ public abstract class NettyClientHelper extends ClientHelper {
                                         }
                                     });
 
-            SocketAddress bindAddress = getBindAddress();
-            if (bindAddress != null) {
-                bootstrap.localAddress(bindAddress);
-            }
-
-            SocketAddress remote;
-            if ((proxy != null && pool.secure) || (socksProxy != null)) {
-                // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
-                bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
-                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
-            } else if (proxy != null) {
-                // Forward proxy: absolute request URIs are sent to the proxy.
-                remote = proxy;
-            } else {
-                remote = InetSocketAddress.createUnresolved(pool.host, pool.port);
-            }
+            SocketAddress remote = configureTransport(bootstrap, pool, route, proxy, socksProxy);
 
             ChannelFuture connectFuture = bootstrap.connect(remote);
             Channel channel =
@@ -791,6 +869,77 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     /**
+     * Sets the transport of a connection on its bootstrap: the route's channel and resolver, or NIO
+     * over TCP. Returns the address to connect to.
+     *
+     * @param bootstrap The bootstrap of the connection.
+     * @param pool The pool of the origin.
+     * @param route The transport route of the origin, or null for TCP.
+     * @param proxy The HTTP proxy, or null.
+     * @param socksProxy The SOCKS proxy, or null.
+     * @return The address to connect to.
+     */
+    private SocketAddress configureTransport(
+            Bootstrap bootstrap,
+            OriginPool pool,
+            NettyClientTransport.Route route,
+            InetSocketAddress proxy,
+            InetSocketAddress socksProxy) {
+        if (route != null) {
+            // The route's resolver maps the host name, never the system DNS.
+            bootstrap.channelFactory(route.channelFactory()).resolver(route.resolver());
+            return InetSocketAddress.createUnresolved(pool.host, pool.port);
+        }
+
+        bootstrap.channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true);
+        SocketAddress bindAddress = getBindAddress();
+        if (bindAddress != null) {
+            bootstrap.localAddress(bindAddress);
+        }
+
+        if ((proxy != null && pool.secure) || (socksProxy != null)) {
+            // Tunnel with CONNECT or SOCKS, the proxy resolves the host name.
+            bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+            return InetSocketAddress.createUnresolved(pool.host, pool.port);
+        }
+
+        if (proxy != null) {
+            // Forward proxy: absolute request URIs are sent to the proxy.
+            return proxy;
+        }
+
+        return InetSocketAddress.createUnresolved(pool.host, pool.port);
+    }
+
+    /**
+     * Returns the connection pool of a call. Tunnels opened with different proxy credentials are
+     * kept apart, and so are the routed connections from the TCP ones, and per route.
+     *
+     * @param call The call.
+     * @return The pool.
+     */
+    private OriginPool getPool(NettyClientCall call) {
+        NettyClientTransport.Route route = call.getRoute();
+        String origin =
+                (call.isConfidential() ? "https://" : "http://")
+                        + call.getTargetHost()
+                        + ":"
+                        + call.getTargetPort();
+        String proxyIdentity = call.getTunnelProxyIdentity();
+        return pools.computeIfAbsent(
+                new PoolKey(origin, proxyIdentity, route),
+                k ->
+                        new OriginPool(
+                                k,
+                                (proxyIdentity != null) || (route != null),
+                                call.isConfidential(),
+                                call.getTargetHost(),
+                                call.getTargetPort(),
+                                route,
+                                getPermits(origin)));
+    }
+
+    /**
      * Returns the connection permits of an origin, shared by its pools.
      *
      * @param origin The origin.
@@ -803,8 +952,8 @@ public abstract class NettyClientHelper extends ClientHelper {
 
     /**
      * Acquires a connection permit of the origin of a pool. When they are all taken, an idle
-     * connection of another pool of the origin (opened with other proxy credentials) is closed to
-     * free one.
+     * connection of another pool of the origin (opened with other proxy credentials, or over
+     * another route) is closed to free one: an HTTP/1.1 one, or an HTTP/2 one without streams.
      *
      * @param pool The pool.
      * @param timeout The max time to wait, in milliseconds.
@@ -812,26 +961,91 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @throws InterruptedException If interrupted while waiting.
      */
     private boolean acquirePermit(OriginPool pool, long timeout) throws InterruptedException {
-        if (pool.permits.tryAcquire()) {
-            return true;
-        }
-
-        for (OriginPool other : pools.values()) {
-            if ((other != pool) && (other.permits == pool.permits)) {
-                Channel idle = other.idle.pollLast();
-                if (idle != null) {
-                    idle.close();
-                    break;
-                }
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout);
+        boolean closed = false;
+        while (!pool.permits.tryAcquire()) {
+            // A connection becomes idle once its exchange or its last stream ends: until one is
+            // closed, look again while waiting.
+            closed = closed || closeIdleOfOtherPool(pool);
+            long left = deadline - System.nanoTime();
+            if (left <= 0) {
+                return false;
+            }
+            long wait = closed ? left : Math.min(left, PERMIT_POLL_NANOS);
+            if (pool.permits.tryAcquire(wait, TimeUnit.NANOSECONDS)) {
+                return true;
             }
         }
-        return pool.permits.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+        return true;
     }
 
     /**
+     * Closes an idle connection of another pool of the origin of a pool.
+     *
+     * @param pool The pool.
+     * @return True if a connection was closed.
+     */
+    private boolean closeIdleOfOtherPool(OriginPool pool) {
+        for (OriginPool other : pools.values()) {
+            if ((other != pool) && (other.permits == pool.permits) && closeIdle(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Closes an idle connection of a pool, to free its permit: an HTTP/1.1 one not carrying an
+     * exchange, or its HTTP/2 one without streams.
+     *
+     * @param pool The pool.
+     * @return True if a connection was closed.
+     */
+    private static boolean closeIdle(OriginPool pool) {
+        Channel idle = pool.idle.pollLast();
+        if (idle == null) {
+            Channel http2 = pool.http2;
+            idle = (http2 != null && retireIdle(http2)) ? http2 : null;
+        }
+        if (idle == null) {
+            return false;
+        }
+        idle.close();
+        return true;
+    }
+
+    /**
+     * Returns the transport route to an origin, from the {@link NettyClientTransport} set in the
+     * {@value NettyClientTransport#ATTRIBUTE} attribute of the client context, or null to connect
+     * over TCP.
+     *
+     * @param host The host name of the origin.
+     * @param port The port of the origin.
+     * @return The route, or null.
+     */
+    private NettyClientTransport.Route getRoute(String host, int port) {
+        Object transport =
+                (getContext() == null)
+                        ? null
+                        : getContext().getAttributes().get(NettyClientTransport.ATTRIBUTE);
+        return (transport instanceof NettyClientTransport t) ? t.route(host, port) : null;
+    }
+
+    /**
+     * The key of the connection pool of an origin. Equal routes (same channel factory and resolver)
+     * share a pool, distinct ones never do.
+     *
+     * @param origin The origin.
+     * @param proxyIdentity The identity of the tunnel proxy credentials, or null.
+     * @param route The transport route, or null.
+     */
+    record PoolKey(String origin, String proxyIdentity, NettyClientTransport.Route route) {}
+
+    /**
      * Releases a connection of a pool, closed or not opened. A pool specific to proxy credentials
-     * is dropped once it has no connection left, so that such pools do not accumulate. A call
-     * holding it meanwhile still works, its connection is simply not reused by the next calls.
+     * or to a route is dropped once it has no connection left, so that such pools do not
+     * accumulate, for example when a transport returns a new route over time. A call holding it
+     * meanwhile still works, its connection is simply not reused by the next calls.
      *
      * @param pool The pool.
      * @param permit True if the connection held a permit.
@@ -840,13 +1054,47 @@ public abstract class NettyClientHelper extends ClientHelper {
         if (permit) {
             pool.permits.release();
         }
-        if ((pool.connections.decrementAndGet() == 0) && pool.transientPool) {
-            pools.remove(pool.key, pool);
+        if (!pool.transientPool) {
+            pool.connections.decrementAndGet();
+            return;
         }
+        // Under the lock of the key, so that no connection is reserved meanwhile.
+        pools.compute(
+                pool.key,
+                (k, current) ->
+                        ((pool.connections.decrementAndGet() == 0) && (current == pool))
+                                ? null
+                                : current);
+    }
+
+    /**
+     * Counts a connection about to be opened in a pool, unless the pool was dropped: a connection
+     * of a dropped pool could not be reused nor have its permit reclaimed.
+     *
+     * @param pool The pool.
+     * @return True if counted, false if the pool was dropped.
+     */
+    private boolean reserveConnection(OriginPool pool) {
+        if (!pool.transientPool) {
+            pool.connections.incrementAndGet();
+            return true;
+        }
+        // Under the lock of the key, so that the pool isn't dropped meanwhile.
+        boolean[] reserved = {false};
+        pools.computeIfPresent(
+                pool.key,
+                (k, current) -> {
+                    if (current == pool) {
+                        pool.connections.incrementAndGet();
+                        reserved[0] = true;
+                    }
+                    return current;
+                });
+        return reserved[0];
     }
 
     private void initConnection(
-            SocketChannel ch,
+            Channel ch,
             OriginPool pool,
             SslContext ssl,
             InetSocketAddress proxy,
@@ -918,7 +1166,7 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @param forwardProxy True for a cleartext connection to a forward proxy.
      */
     private void initProtocols(
-            SocketChannel ch,
+            Channel ch,
             OriginPool pool,
             SslContext ssl,
             Promise<String> ready,

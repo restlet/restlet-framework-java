@@ -1,0 +1,47 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *<p>
+ * The content of this file is subject to the terms of the Apache 2.0 open
+ * source license available at https://www.opensource.org/licenses/apache-2.0
+ *<p>
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+package org.restlet.ext.smithy.internal;
+
+import org.restlet.ext.smithy.SmithyServerBuilder;
+import software.amazon.smithy.java.server.ServerBuilder;
+import software.amazon.smithy.java.server.ServerProvider;
+
+/**
+ * Provider discovered by {@code Server.builder()} on the class path, under the name {@code
+ * restlet}. A named module can't declare it: the SDK server isn't in the module graph.
+ */
+public final class RestletServerProvider implements ServerProvider {
+    @Override
+    public String name() {
+        return "restlet";
+    }
+
+    @Override
+    public ServerBuilder<?> serverBuilder() {
+        try {
+            Class.forName(
+                    "software.amazon.smithy.java.server.core.HandlerAssembler",
+                    false,
+                    RestletServerProvider.class.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(
+                    "The Restlet Smithy server needs smithy-java's server-core on the class path",
+                    e);
+        }
+        return new SmithyServerBuilder();
+    }
+
+    @Override
+    public int priority() {
+        // The highest priority is picked first: the SDK's Netty server (0) stays the default when
+        // present, so that adding this extension for its client doesn't change an application's
+        // server. Name it "restlet" to pick it then.
+        return -1;
+    }
+}
