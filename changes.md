@@ -89,6 +89,12 @@ Changes log
         - STDIO connector construction fails fast without an explicit or uniquely registered
           supporting helper class. Applications with multiple STDIO protocol helpers must
           select one explicitly.
+        - `ServerResource` no longer evaluates the preconditions of a request (`If-Match`,
+          `If-None-Match`, ...) when the status set while retrieving the validators of the current
+          representation, by `get()` or `getInfo()`, is neither a success (2xx) nor 412: an error or
+          a redirection set by the resource now takes precedence, as required by RFC 9110 section
+          13.2.1, instead of being replaced by a 304 or a 412. Resources that set a non-success status
+          and still return a representation are the only ones affected. Issue #129.
     - Enhancements
         - Added the MCP extension using the official Java SDK (2.2.0-M2) on shared Restlet HTTP
           connectors and explicitly configured STDIO helpers, built on the SDK's stateless MCP
@@ -307,6 +313,13 @@ Changes log
           the match must end on a URI path segment boundary, so a route attached to "/mcp" matches
           "/mcp", "/mcp/tools" and "/mcp?x=1" but not "/mcpx". Useful for mounting several
           routers or applications under path prefixes on one connector.
+        - Added the `ServerResource.hasPreconditions()` and
+          `getPreconditionStatus(RepresentationInfo)` methods to add preconditions to the standard
+          ones: override both, calling `super` to keep evaluating the conditional headers of the
+          request. A request that only carries a custom precondition no longer skips the evaluation
+          when `hasPreconditions()` says so. The Javadoc of `doConditionalHandle()` now explains that
+          the validators of a conditional PUT, POST or DELETE come from `getInfo()`, which calls
+          `get()` by default. Issues #65 and #262.
         - Added client-side AWS Signature Version 4 authentication (`ChallengeScheme.HTTP_AWS_SIGV4`,
           `HttpAwsSigV4Helper` in the Crypto extension), for Amazon S3, the other AWS services and
           the S3-compatible object stores such as MinIO. The region, the service (`s3` by
