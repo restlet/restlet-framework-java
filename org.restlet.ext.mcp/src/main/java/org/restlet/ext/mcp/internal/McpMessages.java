@@ -9,11 +9,11 @@
 package org.restlet.ext.mcp.internal;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.TypeRef;
-import io.modelcontextprotocol.spec.McpSchema;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CodingErrorAction;
@@ -49,25 +49,6 @@ public final class McpMessages {
             throw new IOException("MCP encoded message exceeds " + limit + " bytes");
         }
         return bytes;
-    }
-
-    public static McpSchema.JSONRPCMessage decode(McpJsonMapper mapper, String json)
-            throws IOException {
-        Object decoded = mapper.readValue(json, new TypeRef<Object>() {});
-        if (!(decoded instanceof Map<?, ?> envelope)
-                || !"2.0".equals(envelope.get("jsonrpc"))
-                || !(envelope.get("method") instanceof String method)
-                || method.isBlank()
-                || envelope.containsKey("params")
-                        && envelope.get("params") != null
-                        && !(envelope.get("params") instanceof Map<?, ?>)
-                || envelope.containsKey("id")
-                        && !(envelope.get("id") instanceof String
-                                || envelope.get("id") instanceof Number)) {
-            throw new InvalidEnvelopeException("Invalid MCP request or notification envelope");
-        }
-
-        return McpSchema.deserializeJsonRpcMessage(mapper, json);
     }
 
     public static final class MessageLimitException extends IOException {
@@ -121,5 +102,45 @@ public final class McpMessages {
             throw new IOException("Truncated MCP STDIO frame");
         }
         return null;
+    }
+
+    /**
+     * A request id comparable across its JSON number forms, such as 1 and 1.0: a long when the
+     * number is an integer in its range, exactly, else the number itself, normalised.
+     *
+     * @param id The id.
+     * @return Its key.
+     */
+    public static Object idKey(Object id) {
+        if (!(id instanceof Number number)) {
+            return id;
+        }
+        BigDecimal exact = exact(number);
+        if (exact == null) {
+            return id; // NaN or infinite: compared as given.
+        }
+        try {
+            return exact.longValueExact();
+        } catch (ArithmeticException _) {
+            return exact.stripTrailingZeros();
+        }
+    }
+
+    /**
+     * The exact value of a number: a floating-point one by its binary value, not its shortest
+     * decimal form, which may round an integer such as 1000000000000000128.0.
+     *
+     * @return The value, or null for NaN or an infinity.
+     */
+    private static BigDecimal exact(Number number) {
+        return switch (number) {
+            case BigDecimal decimal -> decimal;
+            case BigInteger integer -> new BigDecimal(integer);
+            case Double _, Float _ ->
+                    Double.isFinite(number.doubleValue())
+                            ? new BigDecimal(number.doubleValue())
+                            : null;
+            default -> BigDecimal.valueOf(number.longValue());
+        };
     }
 }

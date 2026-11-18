@@ -60,7 +60,7 @@ class ChallengeSchemeTestCase {
             assertSame(constant, ChallengeScheme.valueOf(constant.getName()), field.getName());
             checked++;
         }
-        assertEquals(12, checked);
+        assertEquals(13, checked);
     }
 
     @Test

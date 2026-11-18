@@ -17,6 +17,7 @@ module org.restlet.ext.crypto {
     provides org.restlet.engine.security.AuthenticatorHelper with
             org.restlet.ext.crypto.internal.HttpAwsS3Helper,
             org.restlet.ext.crypto.internal.HttpAwsQueryHelper,
+            org.restlet.ext.crypto.internal.HttpAwsSigV4Helper,
             org.restlet.ext.crypto.internal.HttpDigestHelper,
             org.restlet.ext.crypto.internal.HttpAzureSharedKeyHelper,
             org.restlet.ext.crypto.internal.HttpAzureSharedKeyLiteHelper;
