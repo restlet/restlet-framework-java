@@ -1040,18 +1040,26 @@ public abstract class ServerResource extends Resource {
 			} catch (Throwable t) {
 				doCatch(t);
 			} finally {
-				if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
-					updateAllowedMethods();
-				} else if (Status.SUCCESS_OK.equals(getStatus())
-						&& (getResponseEntity() == null || !getResponseEntity().isAvailable())) {
-					getLogger().fine("A response with a 200 (Ok) status should have an entity. "
-							+ "Changing the status to 204 (No content).");
-					setStatus(Status.SUCCESS_NO_CONTENT);
-				}
+				finishHandling();
 			}
 		}
 
 		return result;
+	}
+
+	/**
+	 * Completes the handling of a call: updates the allowed methods after a 405
+	 * status, or turns an empty 200 status into a 204.
+	 */
+	private void finishHandling() {
+		if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
+			updateAllowedMethods();
+		} else if (Status.SUCCESS_OK.equals(getStatus())
+				&& (getResponseEntity() == null || !getResponseEntity().isAvailable())) {
+			getLogger().fine("A response with a 200 (Ok) status should have an entity. "
+					+ "Changing the status to 204 (No content).");
+			setStatus(Status.SUCCESS_NO_CONTENT);
+		}
 	}
 
 	/**
@@ -1781,10 +1789,9 @@ public abstract class ServerResource extends Resource {
 
 		if (annotations != null) {
 			for (AnnotationInfo annotationInfo : annotations) {
-				if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo) {
-					if (!getAllowedMethods().contains(methodAnnotationInfo.getRestletMethod())) {
-						getAllowedMethods().add(methodAnnotationInfo.getRestletMethod());
-					}
+				if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo
+						&& !getAllowedMethods().contains(methodAnnotationInfo.getRestletMethod())) {
+					getAllowedMethods().add(methodAnnotationInfo.getRestletMethod());
 				}
 			}
 		}
