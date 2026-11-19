@@ -6,6 +6,7 @@ Changes log
     - Upgraded Jetty library to version 12.1.14. Issue #1515.
     - Upgraded Jackson library to version 2.22.4.
     - Upgraded org.json library to version 20260814.
+    - Upgraded the build tools: Maven wrapper to Maven 3.9.16 (wrapper 3.3.4), maven-bundle-plugin to 6.2.0, maven-enforcer-plugin to 3.7.0, maven-surefire-plugin to 3.6.1 and jacoco-maven-plugin to 0.8.16. With bnd 7 (maven-bundle-plugin 6.x), the `Import-Package` header of the `org.restlet` bundle no longer lists the `java.*` packages nor the `org.restlet.*` packages it exports itself; the `Export-Package` headers are unchanged.
     - Deprecated the legacy RFC 2109/2965 cookie API (cookie version, comment and related constructors), to be removed in Restlet 3.0 in favor of RFC 6265.
     - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin; it has no effect while the allowed origins contain `*`. Issue #1611.
     - CorsService and CorsFilter now log a warning when `*` is allowed as origin together with credentials (any web site could then send credentialed requests), and their Javadoc references the Fetch standard instead of the W3C CORS draft. Issue #1611.
