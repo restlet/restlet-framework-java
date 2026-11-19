@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HeaderUtilsTestCase {
 
 	@Test
-	public void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
+	void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
 		// Given a retry_after header that contains a decimal value
 		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
 
@@ -58,7 +58,7 @@ public class HeaderUtilsTestCase {
 	}
 
 	@Test
-	public void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
+	void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
 		// Given a retry_after header that contains an alphabetical value
 		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
 
@@ -74,7 +74,7 @@ public class HeaderUtilsTestCase {
 	}
 
 	@Test
-	public void testExtracting() {
+	void testExtracting() {
 		ArrayList<Header> headers = new ArrayList<>();
 		String md5hash = "aaaaaaaaaaaaaaaa";
 		// encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
@@ -87,17 +87,17 @@ public class HeaderUtilsTestCase {
 		// extract Content-MD5 header with padded Base64 encoding, make sure it
 		// decodes to original hash
 		Representation rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
+		assertEquals(org.restlet.data.Digest.ALGORITHM_MD5,
+				rep.getDigest().getAlgorithm());
+		assertEquals(md5hash, new String(rep.getDigest().getValue()));
 
 		// extract header with UNpadded encoding, make sure it also decodes to
 		// original hash
 		header.setValue(encodedNoPadding);
 		rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
+		assertEquals(org.restlet.data.Digest.ALGORITHM_MD5,
+				rep.getDigest().getAlgorithm());
+		assertEquals(md5hash, new String(rep.getDigest().getValue()));
 	}
 
 	private static String contentRangeOfResponse(Response response) {

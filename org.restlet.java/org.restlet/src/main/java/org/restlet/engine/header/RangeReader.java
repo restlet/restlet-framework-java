@@ -132,15 +132,26 @@ public class RangeReader {
 				return null;
 			}
 
-			try {
-				return new Range(first, Math.addExact(last - first, 1));
-			} catch (ArithmeticException e) {
-				// Only an entity of more than Long.MAX_VALUE bytes could tell the difference with
-				// an open-ended range.
-				return new Range(first, Range.SIZE_MAX);
-			}
+			return newBoundedRange(first, last);
 		} catch (NumberFormatException e) {
 			return null;
+		}
+	}
+
+	/**
+	 * Creates the range going from the first to the last position, both included.
+	 *
+	 * @param first The first position.
+	 * @param last The last position, not lower than the first one.
+	 * @return The corresponding range.
+	 */
+	private static Range newBoundedRange(long first, long last) {
+		try {
+			return new Range(first, Math.addExact(last - first, 1));
+		} catch (ArithmeticException e) {
+			// Only an entity of more than Long.MAX_VALUE bytes could tell the difference with
+			// an open-ended range.
+			return new Range(first, Range.SIZE_MAX);
 		}
 	}
 

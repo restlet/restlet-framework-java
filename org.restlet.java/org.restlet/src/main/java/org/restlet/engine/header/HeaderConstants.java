@@ -207,4 +207,8 @@ public final class HeaderConstants {
 	public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 
 	public static final String ATTRIBUTE_HTTPS_SSL_SESSION_ID = "org.restlet.https.sslSessionId";
+
+	/** Private constructor to ensure that the class acts as a true utility class. */
+	private HeaderConstants() {
+	}
 }

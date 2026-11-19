@@ -306,7 +306,7 @@ public class HeaderUtils {
 			addHeader(HEADER_USER_AGENT, Engine.VERSION_HEADER, headers);
 		}
 
-		if (clientInfo.getExpectations().size() > 0) {
+		if (!clientInfo.getExpectations().isEmpty()) {
 			addHeader(HEADER_ACCEPT_ENCODING, PreferenceWriter.write(clientInfo.getAcceptedEncodings()), headers);
 		}
 

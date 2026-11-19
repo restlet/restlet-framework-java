@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RangeReaderTestCase {
 
     @Test
-    public void testUpdateRangeFirst9Bytes() {
+    void testUpdateRangeFirst9Bytes() {
         final String contentRangeHeaderValue = "bytes 1-9/10";
         final Representation representation = new StringRepresentation("0123456789", MediaType.TEXT_PLAIN);
 
@@ -42,7 +42,7 @@ public class RangeReaderTestCase {
     }
 
     @Test
-    public void testUpdateRange0To100Bytes() {
+    void testUpdateRange0To100Bytes() {
         final String contentRangeHeaderValue = "bytes 0-100/10";
         final Representation representation = new StringRepresentation("0123456789", MediaType.TEXT_PLAIN);
 
@@ -55,7 +55,7 @@ public class RangeReaderTestCase {
     }
 
     @Test
-    public void testUpdateRange1To9Bytes() {
+    void testUpdateRange1To9Bytes() {
         final String contentRangeHeaderValue = "bytes 1-9/*";
         final Representation representation = new StringRepresentation("0123456789", MediaType.TEXT_PLAIN);
 
