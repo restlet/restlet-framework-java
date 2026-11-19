@@ -224,7 +224,7 @@ public final class Method implements Comparable<Method> {
      * URI.
      * 
      * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">
      *      HTTP RFC - 9.6 PUT</a>
      */
     public static final Method PUT = new Method(
