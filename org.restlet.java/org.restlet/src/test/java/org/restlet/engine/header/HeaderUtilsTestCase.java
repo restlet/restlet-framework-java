@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HeaderUtilsTestCase {
 
 	@Test
-	public void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
+	void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
 		// Given a retry_after header that contains a decimal value
 		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
 
@@ -57,7 +58,7 @@ public class HeaderUtilsTestCase {
 	}
 
 	@Test
-	public void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
+	void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
 		// Given a retry_after header that contains an alphabetical value
 		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
 
@@ -73,7 +74,7 @@ public class HeaderUtilsTestCase {
 	}
 
 	@Test
-	public void testExtracting() {
+	void testExtracting() {
 		ArrayList<Header> headers = new ArrayList<>();
 		String md5hash = "aaaaaaaaaaaaaaaa";
 		// encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
@@ -86,16 +87,48 @@ public class HeaderUtilsTestCase {
 		// extract Content-MD5 header with padded Base64 encoding, make sure it
 		// decodes to original hash
 		Representation rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
+		assertEquals(org.restlet.data.Digest.ALGORITHM_MD5,
+				rep.getDigest().getAlgorithm());
+		assertEquals(md5hash, new String(rep.getDigest().getValue()));
 
 		// extract header with UNpadded encoding, make sure it also decodes to
 		// original hash
 		header.setValue(encodedNoPadding);
 		rep = HeaderUtils.extractEntityHeaders(headers, null);
-		assertEquals(rep.getDigest().getAlgorithm(),
-				org.restlet.data.Digest.ALGORITHM_MD5);
-		assertEquals(new String(rep.getDigest().getValue()), md5hash);
+		assertEquals(org.restlet.data.Digest.ALGORITHM_MD5,
+				rep.getDigest().getAlgorithm());
+		assertEquals(md5hash, new String(rep.getDigest().getValue()));
+	}
+
+	private static String contentRangeOfResponse(Response response) {
+		Series<Header> headers = new Series<>(Header.class);
+		HeaderUtils.addResponseHeaders(response, headers);
+		return headers.getFirstValue("Content-Range", true);
+	}
+
+	@Test
+	void addResponseHeaders_unsatisfiableRange_writesTheCompleteLengthInContentRange() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+		response.getAttributes().put(HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH, 1234L);
+
+		assertEquals("bytes */1234", contentRangeOfResponse(response));
+	}
+
+	@Test
+	void addResponseHeaders_unsatisfiableRangeWithoutLength_writesNoContentRange() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+
+		assertNull(contentRangeOfResponse(response));
+	}
+
+	@Test
+	void addResponseHeaders_completeLengthOnAnotherStatus_isIgnored() {
+		Response response = new Response(new Request());
+		response.setStatus(Status.SUCCESS_OK);
+		response.getAttributes().put(HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH, 1234L);
+
+		assertNull(contentRangeOfResponse(response));
 	}
 }
