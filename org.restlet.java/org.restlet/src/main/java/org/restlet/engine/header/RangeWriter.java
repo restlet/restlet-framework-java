@@ -85,6 +85,18 @@ public class RangeWriter extends HeaderWriter<Range> {
 	}
 
 	/**
+	 * Formats the Content-Range header value of a 416 (Range Not Satisfiable) response, the
+	 * "unsatisfied-range" form of RFC 9110 section 14.4.
+	 *
+	 * @param unit The range unit, usually "bytes".
+	 * @param completeLength The current length of the selected representation.
+	 * @return The formatted value, such as <code>bytes *&#47;1234</code>.
+	 */
+	public static String writeUnsatisfied(String unit, long completeLength) {
+		return unit + " */" + completeLength;
+	}
+
+	/**
 	 * Formats {@code ranges} as a Range header value
 	 * 
 	 * @param ranges List of ranges to format

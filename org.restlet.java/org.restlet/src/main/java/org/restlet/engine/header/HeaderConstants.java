@@ -204,7 +204,19 @@ public final class HeaderConstants {
 
 	public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
 
+	/**
+	 * Response attribute holding the complete length (a {@code Long}, in bytes) of the entity for
+	 * which a range request was not satisfiable. The headers of a 416 (Range Not Satisfiable)
+	 * response then carry <code>Content-Range: bytes *&#47;length</code> (RFC 9110 section 14.4).
+	 */
+	public static final String ATTRIBUTE_RANGE_COMPLETE_LENGTH =
+			"org.restlet.http.range.completeLength";
+
 	public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 
 	public static final String ATTRIBUTE_HTTPS_SSL_SESSION_ID = "org.restlet.https.sslSessionId";
+
+	/** Private constructor to ensure that the class acts as a true utility class. */
+	private HeaderConstants() {
+	}
 }
