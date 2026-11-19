@@ -131,19 +131,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     What is Cacheable</a>
      */
     public static CacheDirective noCache(List<String> fieldNames) {
-        StringBuilder sb = new StringBuilder();
-
-        if (fieldNames != null) {
-            for (int i = 0; i < fieldNames.size(); i++) {
-                sb.append("\"").append(fieldNames.get(i)).append("\"");
-
-                if (i < fieldNames.size() - 1) {
-                    sb.append(',');
-                }
-            }
-        }
-
-        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, sb.toString());
+        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, joinFieldNames(fieldNames));
     }
 
     /**
@@ -159,7 +147,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     What is Cacheable</a>
      */
     public static CacheDirective noCache(String fieldName) {
-        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, "\"" + fieldName + "\"");
+        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, fieldName);
     }
 
     /**
@@ -230,19 +218,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     What is Cacheable</a>
      */
     public static CacheDirective privateInfo(List<String> fieldNames) {
-        StringBuilder sb = new StringBuilder();
-
-        if (fieldNames != null) {
-            for (int i = 0; i < fieldNames.size(); i++) {
-                sb.append("\"").append(fieldNames.get(i)).append("\"");
-
-                if (i < fieldNames.size() - 1) {
-                    sb.append(',');
-                }
-            }
-        }
-
-        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, sb.toString());
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, joinFieldNames(fieldNames));
     }
 
     /**
@@ -257,7 +233,19 @@ public final class CacheDirective implements NamedValue<String> {
      *     What is Cacheable</a>
      */
     public static CacheDirective privateInfo(String fieldName) {
-        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, "\"" + fieldName + "\"");
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, fieldName);
+    }
+
+    /**
+     * Joins field names into the raw (unquoted) value of a "no-cache" or "private" directive. The
+     * quotes required by RFC 9111 section 5.2.2.4 are added when the header is written, never
+     * stored in the value.
+     *
+     * @param fieldNames The field names, may be null.
+     * @return The names separated by a comma and a space, or an empty string if there is none.
+     */
+    private static String joinFieldNames(List<String> fieldNames) {
+        return (fieldNames == null) ? "" : String.join(", ", fieldNames);
     }
 
     /**
