@@ -82,6 +82,12 @@ public abstract class ServerResource extends Resource {
 	/** Indicates if the identified resource exists. */
 	private volatile boolean existing;
 
+	/**
+	 * Indicates if the preconditions are ignored when the status set while
+	 * retrieving the validators is neither a success nor 412.
+	 */
+	private volatile boolean ignoringPreconditionsOnNonSuccess;
+
 	/** The display name. */
 	private volatile String name;
 
@@ -182,8 +188,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation delete(Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -198,18 +204,7 @@ public abstract class ServerResource extends Resource {
 	 * @return The description of available variants.
 	 */
 	protected Representation describeVariants() {
-		Representation result = null;
-
-		// The list of all variants is transmitted to the client
-		// final ReferenceList refs = new ReferenceList(variants.size());
-		// for (final Variant variant : variants) {
-		// if (variant.getIdentifier() != null) {
-		// refs.add(variant.getIdentifier());
-		// }
-		// }
-		//
-		// result = refs.getTextRepresentation();
-		return result;
+		return null;
 	}
 
 	/**
@@ -220,6 +215,7 @@ public abstract class ServerResource extends Resource {
 	 * 
 	 * @param throwable The caught error or exception.
 	 */
+	@Override
 	protected void doCatch(Throwable throwable) {
 		Level level = Level.INFO;
 		Status status = getStatusService().toStatus(throwable, this);
@@ -245,84 +241,157 @@ public abstract class ServerResource extends Resource {
 	 * Handles a call by first verifying the optional request conditions and
 	 * continue the processing if possible. Note that in order to evaluate those
 	 * conditions, {@link #getInfo()} or {@link #getInfo(Variant)} methods might be
-	 * invoked.
+	 * invoked, whatever the method of the call is: a conditional PUT, POST or
+	 * DELETE first retrieves the validators (tag and modification date) of the
+	 * current representation. As {@link #getInfo()} calls {@link #get()} by
+	 * default, override it to return a lighter {@link RepresentationInfo} when
+	 * building the representation is costly.<br>
+	 * <br>
+	 * RFC 9110 section 13.2.1 requires the conditions to be ignored if the status
+	 * set while retrieving the validators is neither a success (2xx) nor 412
+	 * (Precondition Failed), as errors and redirections take precedence over the
+	 * preconditions. This is only done if
+	 * {@link #isIgnoringPreconditionsOnNonSuccess()} is true, which is not the
+	 * default.<br>
+	 * <br>
+	 * To add a precondition, override {@link #hasPreconditions()} and
+	 * {@link #getPreconditionStatus(RepresentationInfo)} rather than this method.
 	 * 
 	 * @return The response entity.
 	 * @throws ResourceException
 	 */
 	protected Representation doConditionalHandle() throws ResourceException {
-		Representation result = null;
-
-		if (getConditions().hasSome()) {
-			RepresentationInfo resultInfo = null;
-
-			if (existing) {
-				if (isNegotiated()) {
-					Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
-
-					if (preferredVariant == null && getConnegService().isStrict()) {
-						doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-					} else {
-						resultInfo = doGetInfo(preferredVariant);
-					}
-				} else {
-					resultInfo = doGetInfo();
-				}
-
-				if (resultInfo == null) {
-					if ((getStatus() == null)
-							|| (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT.equals(getStatus()))) {
-						doError(Status.CLIENT_ERROR_NOT_FOUND);
-					} else {
-						// Keep the current status as the developer might
-						// prefer a special status like 'method not authorized'.
-					}
-				} else {
-					Status status = getConditions().getStatus(getMethod(), resultInfo);
-
-					if (status != null) {
-						if (status.isError()) {
-							doError(status);
-						} else {
-							setStatus(status);
-						}
-					}
-				}
-			} else {
-				Status status = getConditions().getStatus(getMethod(), resultInfo);
-
-				if (status != null) {
-					if (status.isError()) {
-						doError(status);
-					} else {
-						setStatus(status);
-					}
-				}
-			}
-
-			if ((Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod()))
-					&& resultInfo instanceof Representation) {
-				result = (Representation) resultInfo;
-			} else if ((getStatus() != null) && getStatus().isSuccess()) {
-				// Conditions were passed successfully, continue the normal
-				// processing.
-				if (isNegotiated()) {
-					// Reset the list of variants, as the method differs.
-					getVariants().clear();
-					result = doNegotiatedHandle();
-				} else {
-					result = doHandle();
-				}
-			}
-		} else {
-			if (isNegotiated()) {
-				result = doNegotiatedHandle();
-			} else {
-				result = doHandle();
-			}
+		if (!hasPreconditions()) {
+			return isNegotiated() ? doNegotiatedHandle() : doHandle();
 		}
 
-		return result;
+		RepresentationInfo resultInfo = null;
+
+		if (existing) {
+			resultInfo = retrieveValidators();
+		}
+
+		if (!existing || resultInfo != null) {
+			doConditionalHandle(resultInfo);
+		}
+
+		if ((Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod()))
+				&& resultInfo instanceof Representation representation) {
+			return representation;
+		}
+
+		if ((getStatus() != null) && getStatus().isSuccess()) {
+			// Conditions were passed successfully, continue the normal
+			// processing.
+			if (isNegotiated()) {
+				// Reset the list of variants, as the method differs.
+				getVariants().clear();
+				return doNegotiatedHandle();
+			}
+
+			return doHandle();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieves the validators of the current representation of an existing
+	 * resource, in order to evaluate the preconditions.
+	 * 
+	 * @return The current representation, or null if it could not be retrieved
+	 *         (the status is then set accordingly).
+	 */
+	private RepresentationInfo retrieveValidators() {
+		RepresentationInfo resultInfo = null;
+
+		if (isNegotiated()) {
+			Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
+
+			if (preferredVariant == null && getConnegService().isStrict()) {
+				doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+			} else {
+				resultInfo = doGetInfo(preferredVariant);
+			}
+		} else {
+			resultInfo = doGetInfo();
+		}
+
+		if (resultInfo == null && ((getStatus() == null)
+				|| (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT.equals(getStatus())))) {
+			doError(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+		// Otherwise keep the current status as the developer might prefer a
+		// special status like 'method not authorized'.
+
+		return resultInfo;
+	}
+
+	/**
+	 * Handles a call by first verifying the optional request conditions.
+	 * 
+	 * @param resultInfo The resource's representation, or null if the resource
+	 *                   does not exist.
+	 */
+	private void doConditionalHandle(final RepresentationInfo resultInfo) {
+		Status current = getStatus();
+
+		if (isIgnoringPreconditionsOnNonSuccess() && current != null && !current.isSuccess()
+				&& !Status.CLIENT_ERROR_PRECONDITION_FAILED.equals(current)) {
+			// RFC 9110 section 13.2.1: the preconditions are ignored when the
+			// response without them is not a success (or 412), such as an error or
+			// a redirection that the resource has already set.
+			return;
+		}
+
+		Status status = getPreconditionStatus(resultInfo);
+
+		if (status != null) {
+			if (status.isError()) {
+				doError(status);
+			} else {
+				setStatus(status);
+			}
+		}
+	}
+
+	/**
+	 * Indicates if the request carries preconditions to evaluate before handling
+	 * the call. If so, the validators of the current representation are retrieved
+	 * (see {@link #getInfo()}) and passed to
+	 * {@link #getPreconditionStatus(RepresentationInfo)}.<br>
+	 * <br>
+	 * By default, it tests the standard conditional headers of the request (see
+	 * {@link #getConditions()}). Override it, together with
+	 * {@link #getPreconditionStatus(RepresentationInfo)}, to evaluate other
+	 * preconditions.
+	 * 
+	 * @return True if there are preconditions to evaluate.
+	 */
+	protected boolean hasPreconditions() {
+		final Conditions conditions = getConditions();
+		return conditions != null && conditions.hasSome();
+	}
+
+	/**
+	 * Evaluates the preconditions of the request against the current
+	 * representation of the resource (RFC 9110 section 13.2). Only invoked if
+	 * {@link #hasPreconditions()} is true.<br>
+	 * <br>
+	 * By default, it evaluates the standard conditional headers of the request (see
+	 * {@link org.restlet.data.Conditions#getStatus(Method, RepresentationInfo)}).
+	 * To add a precondition, call this method from the override and evaluate the
+	 * extra one if the standard ones hold.
+	 * 
+	 * @param resultInfo The current representation of the resource, or null if the
+	 *                   resource does not exist.
+	 * @return Null if the preconditions hold, otherwise the status to answer, for
+	 *         example {@link Status#CLIENT_ERROR_PRECONDITION_FAILED} or
+	 *         {@link Status#REDIRECTION_NOT_MODIFIED}.
+	 */
+	protected Status getPreconditionStatus(RepresentationInfo resultInfo) {
+		final Conditions conditions = getConditions();
+		return conditions == null ? null : conditions.getStatus(getMethod(), resultInfo);
 	}
 
 	/**
@@ -371,10 +440,10 @@ public abstract class ServerResource extends Resource {
 		RepresentationInfo result = null;
 
 		if (variant != null) {
-			if (variant instanceof VariantInfo) {
-				result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
-			} else if (variant instanceof RepresentationInfo) {
-				result = (RepresentationInfo) variant;
+			if (variant instanceof VariantInfo variantInfo) {
+				result = doHandle(variantInfo.getAnnotationInfo(), variant);
+			} else if (variant instanceof RepresentationInfo representationInfo) {
+				result = representationInfo;
 			} else {
 				result = getInfo(variant);
 			}
@@ -484,8 +553,8 @@ public abstract class ServerResource extends Resource {
 		} catch (IllegalAccessException e) {
 			throw new ResourceException(e);
 		} catch (InvocationTargetException e) {
-			if (e.getTargetException() instanceof ResourceException) {
-				throw (ResourceException) e.getTargetException();
+			if (e.getTargetException() instanceof ResourceException resourceException) {
+				throw resourceException;
 			}
 
 			throw new ResourceException(e.getTargetException());
@@ -557,8 +626,8 @@ public abstract class ServerResource extends Resource {
 				result = patch(getRequestEntity(), variant);
 			} else if (isExisting()) {
 				if (method.equals(Method.GET)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = get(variant);
 					}
@@ -567,19 +636,19 @@ public abstract class ServerResource extends Resource {
 				} else if (method.equals(Method.DELETE)) {
 					result = delete(variant);
 				} else if (method.equals(Method.HEAD)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = head(variant);
 					}
 				} else if (method.equals(Method.OPTIONS)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = options(variant);
 					}
-				} else if (variant instanceof VariantInfo) {
-					result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+				} else if (variant instanceof VariantInfo variantInfo) {
+					result = doHandle(variantInfo.getAnnotationInfo(), variant);
 				} else {
 					doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 				}
@@ -681,8 +750,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation get(Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -874,11 +943,10 @@ public abstract class ServerResource extends Resource {
 		final List<Variant> result = new ArrayList<>();
 
 		for (AnnotationInfo annotationInfo : getAnnotations()) {
-			if (!(annotationInfo instanceof MethodAnnotationInfo)) {
+			if (!(annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo)) {
 				continue;
 			}
 
-			final MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
 			try {
 				final boolean methodAnnotationIsCompatible = methodAnnotationInfo.isCompatible(method, getQuery(), getRequestEntity(),
 						getMetadataService(), getConverterService());
@@ -972,18 +1040,26 @@ public abstract class ServerResource extends Resource {
 			} catch (Throwable t) {
 				doCatch(t);
 			} finally {
-				if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
-					updateAllowedMethods();
-				} else if (Status.SUCCESS_OK.equals(getStatus())
-						&& (getResponseEntity() == null || !getResponseEntity().isAvailable())) {
-					getLogger().fine("A response with a 200 (Ok) status should have an entity. "
-							+ "Changing the status to 204 (No content).");
-					setStatus(Status.SUCCESS_NO_CONTENT);
-				}
+				finishHandling();
 			}
 		}
 
 		return result;
+	}
+
+	/**
+	 * Completes the handling of a call: updates the allowed methods after a 405
+	 * status, or turns an empty 200 status into a 204.
+	 */
+	private void finishHandling() {
+		if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
+			updateAllowedMethods();
+		} else if (Status.SUCCESS_OK.equals(getStatus())
+				&& (getResponseEntity() == null || !getResponseEntity().isAvailable())) {
+			getLogger().fine("A response with a 200 (Ok) status should have an entity. "
+					+ "Changing the status to 204 (No content).");
+			setStatus(Status.SUCCESS_NO_CONTENT);
+		}
 	}
 
 	/**
@@ -1087,6 +1163,21 @@ public abstract class ServerResource extends Resource {
 	}
 
 	/**
+	 * Indicates if the preconditions of the request are ignored when the status set
+	 * while retrieving the validators of the current representation, by
+	 * {@link #get()} or {@link #getInfo()}, is neither a success (2xx) nor 412
+	 * (Precondition Failed). Errors and redirections set by the resource then take
+	 * precedence over a 304 or a 412 (RFC 9110 section 13.2.1). The default value
+	 * is false.
+	 * 
+	 * @return True if the preconditions are ignored after a non-success status.
+	 * @see #doConditionalHandle()
+	 */
+	public boolean isIgnoringPreconditionsOnNonSuccess() {
+		return ignoringPreconditionsOnNonSuccess;
+	}
+
+	/**
 	 * Indicates if the authenticated client user associated to the current request
 	 * is in the given role name.
 	 * 
@@ -1162,8 +1253,8 @@ public abstract class ServerResource extends Resource {
 		// Updates the list of allowed methods
 		updateAllowedMethods();
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1191,7 +1282,6 @@ public abstract class ServerResource extends Resource {
 			} else {
 				// Default implementation
 				return put(getConverterService().applyPatch(get(), entity));
-				// doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
 		} catch (IOException e) {
 			throw new ResourceException(e);
@@ -1214,12 +1304,11 @@ public abstract class ServerResource extends Resource {
 		Representation result = null;
 
 		try {
-			if (variant instanceof VariantInfo) {
-				result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+			if (variant instanceof VariantInfo variantInfo) {
+				result = doHandle(variantInfo.getAnnotationInfo(), variant);
 			} else {
 				// Default implementation
 				result = put(getConverterService().applyPatch(get(), entity), variant);
-				// doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
 		} catch (IOException e) {
 			throw new ResourceException(e);
@@ -1270,8 +1359,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1322,8 +1411,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation put(Representation representation, Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1541,6 +1630,19 @@ public abstract class ServerResource extends Resource {
 	}
 
 	/**
+	 * Indicates if the preconditions of the request are ignored when the status set
+	 * while retrieving the validators of the current representation is neither a
+	 * success (2xx) nor 412 (Precondition Failed). The default value is false.
+	 * 
+	 * @param ignoring True if the preconditions are ignored after a non-success
+	 *                 status.
+	 * @see #isIgnoringPreconditionsOnNonSuccess()
+	 */
+	public void setIgnoringPreconditionsOnNonSuccess(boolean ignoring) {
+		this.ignoringPreconditionsOnNonSuccess = ignoring;
+	}
+
+	/**
 	 * Sets the reference that the client should follow for redirections or resource
 	 * creations.
 	 * 
@@ -1687,12 +1789,9 @@ public abstract class ServerResource extends Resource {
 
 		if (annotations != null) {
 			for (AnnotationInfo annotationInfo : annotations) {
-				if (annotationInfo instanceof MethodAnnotationInfo) {
-					MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
-
-					if (!getAllowedMethods().contains(methodAnnotationInfo.getRestletMethod())) {
-						getAllowedMethods().add(methodAnnotationInfo.getRestletMethod());
-					}
+				if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo
+						&& !getAllowedMethods().contains(methodAnnotationInfo.getRestletMethod())) {
+					getAllowedMethods().add(methodAnnotationInfo.getRestletMethod());
 				}
 			}
 		}
