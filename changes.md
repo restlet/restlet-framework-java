@@ -12,6 +12,7 @@ Changes log
         - Added the constants of the HTTP statuses 308 (`Status.REDIRECTION_PERMANENT_STRICT`), 421, 422 (`CLIENT_ERROR_UNPROCESSABLE_CONTENT`), 426, 428, 431, 451 and 511 of RFC 6585, RFC 9110 and RFC 7725, with their reason phrase, description and URI. `Status.valueOf()` returned a status without any of them. Issue #850.
         - Added the `CacheDirective` factories `mustUnderstand()` (RFC 9111), `immutable()` (RFC 8246), `staleWhileRevalidate(int)` and `staleIfError(int)` (RFC 5861), with their `HeaderConstants.CACHE_*` names. The two numeric ones reject a negative number of seconds.
         - The Javadoc of `ServerResource.getPreconditionStatus()` shows how to require conditional writes by answering 428 (`Status.CLIENT_ERROR_PRECONDITION_REQUIRED`) to a write without precondition.
+        - Upgraded the build: Maven wrapper to 3.9.16 and the Maven plugins (compiler 3.16.0, surefire 3.6.1, javadoc 3.12.0, jar, resources, source, dependency, clean, install, release, enforcer, gpg, central-publishing). `maven-bundle-plugin` and `maven-site-plugin` are unchanged. The maven-enforcer-plugin now checks in every build that Maven 3.6.3 or later and a JDK 17 or later are used. Fixed the malformed `@see` tag of `Method.PUT`, which made the Javadoc tool crash (`IllegalStateException: ERRONEOUS`) and so the build with the release profiles.
     - Bugs fixed
         - Missing throw in JsonConverter.java. Issue #729.
         - Type mismatch on container access in MethodAnnotationInfo. Issue #1278.
