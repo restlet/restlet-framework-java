@@ -17,6 +17,16 @@ import org.restlet.representation.RepresentationInfo;
 
 /**
  * Set of conditions applying to a request. This is an equivalent to the HTTP conditional headers.
+ * <br>
+ * <br>
+ * The entity tags are compared as RFC 9110 section 13.1 requires: "If-Range" uses the strong
+ * comparison ({@link Tag#strongMatch(Tag)}, a weak tag never matches), "If-None-Match" uses the
+ * weak comparison ({@link Tag#weakMatch(Tag)}). "If-Match" still matches two weak tags with the
+ * same name, which the strong comparison of the RFC would not; it does in Restlet 3.0. Note that
+ * {@code new Tag(String)} creates a <b>weak</b> tag: use {@code new Tag(String, false)} for a
+ * resource that clients must be able to update with "If-Match" or to resume with "If-Range". The
+ * dates have a precision of one second, and an "If-Modified-Since" date later than the current time
+ * is ignored (RFC 2616 section 14.25, kept although RFC 9110 does not require it).
  *
  * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24" >If-Match</a>
  * @see <a href= "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25"
@@ -143,12 +153,16 @@ public final class Conditions {
         if (getRangeTag() != null) {
             boolean all = getRangeTag().equals(Tag.ALL);
 
-            // If a tag exists
-            if (tag != null && (all || getRangeTag().equals(tag))) {
+            // If a tag exists. RFC 9110 section 13.1.5: strong comparison, a weak tag never
+            // matches.
+            if (tag != null && (all || getRangeTag().strongMatch(tag))) {
                 result = Status.SUCCESS_OK;
             }
 
-        } else if (getRangeDate() != null && getRangeDate().equals(modificationDate)) {
+        } else if (getRangeDate() != null
+                && modificationDate != null
+                && DateUtils.equals(getRangeDate(), modificationDate)) {
+            // The dates of the headers have a precision of one second
             result = Status.SUCCESS_OK;
         }
 
@@ -235,15 +249,17 @@ public final class Conditions {
 
         final boolean isGetOrHeadMethod = Method.GET.equals(method) || Method.HEAD.equals(method);
         if (entityExists) {
-            if (tag == null) {
-                matched = isAll(getNoneMatch());
-            } else { // Check if the tag matches one of the representations already cached by the
-                // client
+            if (isAll(getNoneMatch())) {
+                // RFC 9110 section 13.1.2: "*" is false if any current representation exists
+                matched = true;
+            } else if (tag != null) {
+                // Check if the tag matches one of the representations already cached by the
+                // client. RFC 9110 section 13.1.2: weak comparison, whatever the method.
                 Tag noneMatchTag;
 
                 for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched && iter.hasNext(); ) {
                     noneMatchTag = iter.next();
-                    matched = noneMatchTag.equals(tag, isGetOrHeadMethod);
+                    matched = noneMatchTag.weakMatch(tag);
                 }
 
                 // The current representation matches one of those already
@@ -284,7 +300,9 @@ public final class Conditions {
 
                 for (Iterator<Tag> iter = getMatch().iterator(); !matched && iter.hasNext(); ) {
                     matchTag = iter.next();
-                    matched = matchTag.equals(tag, false);
+                    // RFC 9110 section 13.1.1 requires the strong comparison (a weak tag never
+                    // matches). Kept as in 2.7.0 for compatibility: same name and same weakness.
+                    matched = matchTag.equals(tag);
                 }
             } else {
                 matched = all;
@@ -308,8 +326,14 @@ public final class Conditions {
         return null;
     }
 
-    private boolean isAll(List<Tag> tags) {
-        return !tags.isEmpty() && Tag.ALL.equals(tags.getFirst());
+    private static boolean isAll(List<Tag> tags) {
+        for (Tag tag : tags) {
+            if (Tag.ALL.getName().equals(tag.getName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isNotModifiedSince(final Date modificationDate) {
