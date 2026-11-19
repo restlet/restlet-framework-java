@@ -105,7 +105,6 @@ public abstract class ServerResource extends Resource {
 		this.annotated = true;
 		this.conditional = true;
 		this.existing = true;
-		this.ignoringPreconditionsOnNonSuccess = false;
 		this.negotiated = true;
 		this.variants = null;
 	}
@@ -189,8 +188,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation delete(Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -205,18 +204,7 @@ public abstract class ServerResource extends Resource {
 	 * @return The description of available variants.
 	 */
 	protected Representation describeVariants() {
-		Representation result = null;
-
-		// The list of all variants is transmitted to the client
-		// final ReferenceList refs = new ReferenceList(variants.size());
-		// for (final Variant variant : variants) {
-		// if (variant.getIdentifier() != null) {
-		// refs.add(variant.getIdentifier());
-		// }
-		// }
-		//
-		// result = refs.getTextRepresentation();
-		return result;
+		return null;
 	}
 
 	/**
@@ -227,6 +215,7 @@ public abstract class ServerResource extends Resource {
 	 * 
 	 * @param throwable The caught error or exception.
 	 */
+	@Override
 	protected void doCatch(Throwable throwable) {
 		Level level = Level.INFO;
 		Status status = getStatusService().toStatus(throwable, this);
@@ -272,62 +261,70 @@ public abstract class ServerResource extends Resource {
 	 * @throws ResourceException
 	 */
 	protected Representation doConditionalHandle() throws ResourceException {
-		Representation result = null;
-
-		if (hasPreconditions()) {
-			RepresentationInfo resultInfo = null;
-
-			if (existing) {
-				if (isNegotiated()) {
-					Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
-
-					if (preferredVariant == null && getConnegService().isStrict()) {
-						doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-					} else {
-						resultInfo = doGetInfo(preferredVariant);
-					}
-				} else {
-					resultInfo = doGetInfo();
-				}
-
-				if (resultInfo == null) {
-					if ((getStatus() == null)
-							|| (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT.equals(getStatus()))) {
-						doError(Status.CLIENT_ERROR_NOT_FOUND);
-					} else {
-						// Keep the current status as the developer might
-						// prefer a special status like 'method not authorized'.
-					}
-				} else {
-					doConditionalHandle(resultInfo);
-				}
-			} else {
-				doConditionalHandle(resultInfo);
-			}
-
-			if ((Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod()))
-					&& resultInfo instanceof Representation) {
-				result = (Representation) resultInfo;
-			} else if ((getStatus() != null) && getStatus().isSuccess()) {
-				// Conditions were passed successfully, continue the normal
-				// processing.
-				if (isNegotiated()) {
-					// Reset the list of variants, as the method differs.
-					getVariants().clear();
-					result = doNegotiatedHandle();
-				} else {
-					result = doHandle();
-				}
-			}
-		} else {
-			if (isNegotiated()) {
-				result = doNegotiatedHandle();
-			} else {
-				result = doHandle();
-			}
+		if (!hasPreconditions()) {
+			return isNegotiated() ? doNegotiatedHandle() : doHandle();
 		}
 
-		return result;
+		RepresentationInfo resultInfo = null;
+
+		if (existing) {
+			resultInfo = retrieveValidators();
+		}
+
+		if (!existing || resultInfo != null) {
+			doConditionalHandle(resultInfo);
+		}
+
+		if ((Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod()))
+				&& resultInfo instanceof Representation representation) {
+			return representation;
+		}
+
+		if ((getStatus() != null) && getStatus().isSuccess()) {
+			// Conditions were passed successfully, continue the normal
+			// processing.
+			if (isNegotiated()) {
+				// Reset the list of variants, as the method differs.
+				getVariants().clear();
+				return doNegotiatedHandle();
+			}
+
+			return doHandle();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieves the validators of the current representation of an existing
+	 * resource, in order to evaluate the preconditions.
+	 * 
+	 * @return The current representation, or null if it could not be retrieved
+	 *         (the status is then set accordingly).
+	 */
+	private RepresentationInfo retrieveValidators() {
+		RepresentationInfo resultInfo = null;
+
+		if (isNegotiated()) {
+			Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
+
+			if (preferredVariant == null && getConnegService().isStrict()) {
+				doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+			} else {
+				resultInfo = doGetInfo(preferredVariant);
+			}
+		} else {
+			resultInfo = doGetInfo();
+		}
+
+		if (resultInfo == null && ((getStatus() == null)
+				|| (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT.equals(getStatus())))) {
+			doError(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+		// Otherwise keep the current status as the developer might prefer a
+		// special status like 'method not authorized'.
+
+		return resultInfo;
 	}
 
 	/**
@@ -372,7 +369,8 @@ public abstract class ServerResource extends Resource {
 	 * @return True if there are preconditions to evaluate.
 	 */
 	protected boolean hasPreconditions() {
-		return getConditions().hasSome();
+		final Conditions conditions = getConditions();
+		return conditions != null && conditions.hasSome();
 	}
 
 	/**
@@ -392,7 +390,8 @@ public abstract class ServerResource extends Resource {
 	 *         {@link Status#REDIRECTION_NOT_MODIFIED}.
 	 */
 	protected Status getPreconditionStatus(RepresentationInfo resultInfo) {
-		return getConditions().getStatus(getMethod(), resultInfo);
+		final Conditions conditions = getConditions();
+		return conditions == null ? null : conditions.getStatus(getMethod(), resultInfo);
 	}
 
 	/**
@@ -441,10 +440,10 @@ public abstract class ServerResource extends Resource {
 		RepresentationInfo result = null;
 
 		if (variant != null) {
-			if (variant instanceof VariantInfo) {
-				result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
-			} else if (variant instanceof RepresentationInfo) {
-				result = (RepresentationInfo) variant;
+			if (variant instanceof VariantInfo variantInfo) {
+				result = doHandle(variantInfo.getAnnotationInfo(), variant);
+			} else if (variant instanceof RepresentationInfo representationInfo) {
+				result = representationInfo;
 			} else {
 				result = getInfo(variant);
 			}
@@ -554,8 +553,8 @@ public abstract class ServerResource extends Resource {
 		} catch (IllegalAccessException e) {
 			throw new ResourceException(e);
 		} catch (InvocationTargetException e) {
-			if (e.getTargetException() instanceof ResourceException) {
-				throw (ResourceException) e.getTargetException();
+			if (e.getTargetException() instanceof ResourceException resourceException) {
+				throw resourceException;
 			}
 
 			throw new ResourceException(e.getTargetException());
@@ -627,8 +626,8 @@ public abstract class ServerResource extends Resource {
 				result = patch(getRequestEntity(), variant);
 			} else if (isExisting()) {
 				if (method.equals(Method.GET)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = get(variant);
 					}
@@ -637,19 +636,19 @@ public abstract class ServerResource extends Resource {
 				} else if (method.equals(Method.DELETE)) {
 					result = delete(variant);
 				} else if (method.equals(Method.HEAD)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = head(variant);
 					}
 				} else if (method.equals(Method.OPTIONS)) {
-					if (variant instanceof Representation) {
-						result = (Representation) variant;
+					if (variant instanceof Representation representation) {
+						result = representation;
 					} else {
 						result = options(variant);
 					}
-				} else if (variant instanceof VariantInfo) {
-					result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+				} else if (variant instanceof VariantInfo variantInfo) {
+					result = doHandle(variantInfo.getAnnotationInfo(), variant);
 				} else {
 					doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 				}
@@ -751,8 +750,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation get(Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -944,11 +943,10 @@ public abstract class ServerResource extends Resource {
 		final List<Variant> result = new ArrayList<>();
 
 		for (AnnotationInfo annotationInfo : getAnnotations()) {
-			if (!(annotationInfo instanceof MethodAnnotationInfo)) {
+			if (!(annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo)) {
 				continue;
 			}
 
-			final MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
 			try {
 				final boolean methodAnnotationIsCompatible = methodAnnotationInfo.isCompatible(method, getQuery(), getRequestEntity(),
 						getMetadataService(), getConverterService());
@@ -1247,8 +1245,8 @@ public abstract class ServerResource extends Resource {
 		// Updates the list of allowed methods
 		updateAllowedMethods();
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1276,7 +1274,6 @@ public abstract class ServerResource extends Resource {
 			} else {
 				// Default implementation
 				return put(getConverterService().applyPatch(get(), entity));
-				// doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
 		} catch (IOException e) {
 			throw new ResourceException(e);
@@ -1299,12 +1296,11 @@ public abstract class ServerResource extends Resource {
 		Representation result = null;
 
 		try {
-			if (variant instanceof VariantInfo) {
-				result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+			if (variant instanceof VariantInfo variantInfo) {
+				result = doHandle(variantInfo.getAnnotationInfo(), variant);
 			} else {
 				// Default implementation
 				result = put(getConverterService().applyPatch(get(), entity), variant);
-				// doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
 		} catch (IOException e) {
 			throw new ResourceException(e);
@@ -1355,8 +1351,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation post(Representation entity, Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1407,8 +1403,8 @@ public abstract class ServerResource extends Resource {
 	protected Representation put(Representation representation, Variant variant) throws ResourceException {
 		Representation result = null;
 
-		if (variant instanceof VariantInfo) {
-			result = doHandle(((VariantInfo) variant).getAnnotationInfo(), variant);
+		if (variant instanceof VariantInfo variantInfo) {
+			result = doHandle(variantInfo.getAnnotationInfo(), variant);
 		} else {
 			doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
@@ -1785,9 +1781,7 @@ public abstract class ServerResource extends Resource {
 
 		if (annotations != null) {
 			for (AnnotationInfo annotationInfo : annotations) {
-				if (annotationInfo instanceof MethodAnnotationInfo) {
-					MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
-
+				if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo) {
 					if (!getAllowedMethods().contains(methodAnnotationInfo.getRestletMethod())) {
 						getAllowedMethods().add(methodAnnotationInfo.getRestletMethod());
 					}
