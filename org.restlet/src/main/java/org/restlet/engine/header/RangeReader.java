@@ -131,15 +131,19 @@ public class RangeReader {
                 return null;
             }
 
-            try {
-                return new Range(first, Math.addExact(last - first, 1));
-            } catch (ArithmeticException e) {
-                // Only an entity of more than Long.MAX_VALUE bytes could tell the difference with
-                // an open-ended range.
-                return new Range(first, Range.SIZE_MAX);
-            }
+            return getRange(first, last);
         } catch (NumberFormatException e) {
             return null;
+        }
+    }
+
+    private static Range getRange(long first, long last) {
+        try {
+            return new Range(first, Math.addExact(last - first, 1));
+        } catch (ArithmeticException e) {
+            // Only an entity of more than Long.MAX_VALUE bytes could tell the difference with
+            // an open-ended range.
+            return new Range(first, Range.SIZE_MAX);
         }
     }
 

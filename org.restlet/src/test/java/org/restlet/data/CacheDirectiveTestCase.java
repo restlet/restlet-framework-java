@@ -67,16 +67,16 @@ class CacheDirectiveTestCase {
     }
 
     @Test
-    void noCache_withFieldName_quotesTheName() {
+    void noCache_withFieldName_storesTheRawName() {
         CacheDirective directive = CacheDirective.noCache("X-Custom");
         assertEquals("no-cache", directive.getName());
-        assertEquals("\"X-Custom\"", directive.getValue());
+        assertEquals("X-Custom", directive.getValue());
     }
 
     @Test
-    void noCache_withFieldNames_joinsWithComma() {
+    void noCache_withFieldNames_joinsWithCommaAndSpace() {
         CacheDirective directive = CacheDirective.noCache(Arrays.asList("A", "B"));
-        assertEquals("\"A\",\"B\"", directive.getValue());
+        assertEquals("A, B", directive.getValue());
     }
 
     @Test
@@ -112,16 +112,16 @@ class CacheDirectiveTestCase {
     }
 
     @Test
-    void privateInfo_withFieldName_quotesTheName() {
+    void privateInfo_withFieldName_storesTheRawName() {
         CacheDirective directive = CacheDirective.privateInfo("X-Custom");
         assertEquals("private", directive.getName());
-        assertEquals("\"X-Custom\"", directive.getValue());
+        assertEquals("X-Custom", directive.getValue());
     }
 
     @Test
-    void privateInfo_withFieldNames_joinsWithComma() {
+    void privateInfo_withFieldNames_joinsWithCommaAndSpace() {
         CacheDirective directive = CacheDirective.privateInfo(Arrays.asList("A", "B"));
-        assertEquals("\"A\",\"B\"", directive.getValue());
+        assertEquals("A, B", directive.getValue());
     }
 
     @Test
