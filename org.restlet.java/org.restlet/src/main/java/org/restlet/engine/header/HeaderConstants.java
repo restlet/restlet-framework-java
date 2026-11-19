@@ -50,6 +50,14 @@ public final class HeaderConstants {
 
 	public static final String CACHE_SHARED_MAX_AGE = "s-maxage";
 
+	public static final String CACHE_MUST_UNDERSTAND = "must-understand";
+
+	public static final String CACHE_IMMUTABLE = "immutable";
+
+	public static final String CACHE_STALE_WHILE_REVALIDATE = "stale-while-revalidate";
+
+	public static final String CACHE_STALE_IF_ERROR = "stale-if-error";
+
 	// ---------------------
 	// --- Header names ---
 	// ---------------------
