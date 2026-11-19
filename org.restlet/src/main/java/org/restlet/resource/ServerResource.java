@@ -22,6 +22,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
+import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
@@ -339,7 +340,8 @@ public abstract class ServerResource extends Resource {
      * @return True if there are preconditions to evaluate.
      */
     protected boolean hasPreconditions() {
-        return getConditions().hasSome();
+        Conditions conditions = getConditions();
+        return conditions != null && conditions.hasSome();
     }
 
     /**
@@ -377,7 +379,8 @@ public abstract class ServerResource extends Resource {
      *     Status#CLIENT_ERROR_PRECONDITION_FAILED} or {@link Status#REDIRECTION_NOT_MODIFIED}.
      */
     protected Status getPreconditionStatus(RepresentationInfo resultInfo) {
-        return getConditions().getStatus(getMethod(), resultInfo);
+        Conditions conditions = getConditions();
+        return conditions == null ? null : conditions.getStatus(getMethod(), resultInfo);
     }
 
     /**

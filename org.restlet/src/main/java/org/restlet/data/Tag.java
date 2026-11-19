@@ -97,19 +97,37 @@ public final class Tag {
         this.weak = weak;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Indicates if both tags are equal: same opaque tag and same weakness, consistently with {@link
+     * #hashCode()}. To compare the tags of a conditional request, use {@link #strongMatch(Tag)} or
+     * {@link #weakMatch(Tag)}.
+     *
+     * @param obj The object to compare to.
+     * @return True if both tags have the same name and the same weakness.
+     */
     @Override
     public boolean equals(final Object obj) {
-        return equals(obj, true);
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Tag that)) {
+            return false;
+        }
+        return Objects.equals(getName(), that.getName()) && isWeak() == that.isWeak();
     }
 
     /**
      * Indicates if both tags are equal.
      *
      * @param obj The object to compare to.
-     * @param checkWeakness The equality test takes care or not of the weakness.
+     * @param checkWeakness If true, both tags must have the same weakness, as for {@link
+     *     #equals(Object)}; if false, the weakness is ignored.
      * @return True if both tags are equal.
+     * @deprecated Since 2.7.1. The flag was inverted in 2.7.0 and the result depended on the
+     *     caller; use {@link #strongMatch(Tag)}, {@link #weakMatch(Tag)} or {@link
+     *     #equals(Object)}.
      */
+    @Deprecated(since = "2.7.1")
     public boolean equals(final Object obj, boolean checkWeakness) {
         if (obj == this) {
             return true;
@@ -118,7 +136,38 @@ public final class Tag {
             return false;
         }
         return Objects.equals(getName(), that.getName())
-                && (checkWeakness || isWeak() == that.isWeak());
+                && (!checkWeakness || isWeak() == that.isWeak());
+    }
+
+    /**
+     * Indicates if this tag matches another one with the strong comparison function: both tags must
+     * be strong and have the same opaque tag. It is the comparison required for "If-Match" and
+     * "If-Range".
+     *
+     * @param other The tag to compare to.
+     * @return True if both tags are strong and have the same name.
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9110#section-8.8.3.2">RFC 9110, section
+     *     8.8.3.2</a>
+     */
+    public boolean strongMatch(Tag other) {
+        return other != null
+                && !isWeak()
+                && !other.isWeak()
+                && Objects.equals(getName(), other.getName());
+    }
+
+    /**
+     * Indicates if this tag matches another one with the weak comparison function: both tags must
+     * have the same opaque tag, whether they are weak or strong. It is the comparison required for
+     * "If-None-Match".
+     *
+     * @param other The tag to compare to.
+     * @return True if both tags have the same name.
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9110#section-8.8.3.2">RFC 9110, section
+     *     8.8.3.2</a>
+     */
+    public boolean weakMatch(Tag other) {
+        return other != null && Objects.equals(getName(), other.getName());
     }
 
     /**
