@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-- 3.0 Milestone 2 (??-??-2026)
+- 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
         - Java 25 is now the minimum version (compiled with `--release 25`).
         - The HTTP/HTTPS server and client connectors of the core now rely on Netty 4.2 instead of
