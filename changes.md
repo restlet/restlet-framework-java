@@ -1,6 +1,10 @@
 Changes log
 ===========
 
+
+
+- 3.0 Milestone 3 (month-day-2026)
+
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
         - Java 25 is now the minimum version (compiled with `--release 25`).
@@ -452,8 +456,6 @@ Changes log
           `CacheDirectiveWriter` writes them as a single quoted-string
           (`no-cache="Set-Cookie, Authorization"`), as required by RFC 9111 section 5.2.2.4. Code
           reading `getValue()` of these directives no longer sees the quotes. Issue #745.
-        - The Netty client no longer fails a call when the pooled HTTP/2 connection it picked
-          closes while the stream is being opened: it now uses a new connection.
     - Misc
         - Fixed JDK HTTP client accessibility in core and WebSocket tests in Eclipse and VS Code,
           without adding a production module dependency.
