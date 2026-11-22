@@ -26,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -37,6 +38,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
 class MultipartStreamTestCase {
@@ -322,6 +324,13 @@ class MultipartStreamTestCase {
         MultipartStreamRepresentation generated = new MultipartStreamRepresentation(sink -> {});
         assertTrue(MediaType.MULTIPART_MIXED.equals(generated.getMediaType(), true));
         assertFalse(generated.getBoundary().isEmpty());
+    }
+
+    @BeforeEach
+    void setUpEach() {
+        // Other tests may leave an Engine registered without the connectors.
+        Engine.clearThreadLocalVariables();
+        Engine.register();
     }
 
     @Test
