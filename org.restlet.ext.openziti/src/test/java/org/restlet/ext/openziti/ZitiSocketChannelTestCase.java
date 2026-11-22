@@ -232,6 +232,11 @@ class ZitiSocketChannelTestCase {
         channel.config().setAutoRead(true);
         recorder.awaitText("firstsecond");
 
+        // The next read is started by the event loop after the bytes were fired: wait for it.
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (socket.reads.get() < 3 && System.nanoTime() < deadline) {
+            Thread.sleep(5);
+        }
         assertEquals(3, socket.reads.get(), "A read is started after each one");
     }
 
