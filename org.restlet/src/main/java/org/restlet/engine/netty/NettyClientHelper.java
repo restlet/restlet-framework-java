@@ -563,12 +563,11 @@ public abstract class NettyClientHelper extends ClientHelper {
      * @throws IOException If no connection could be established.
      */
     private Channel acquire(OriginPool pool, NettyClientCall call) throws IOException {
-        Channel http2 = pool.http2;
-        if (http2 != null && http2.isActive() && reserveStream(http2)) {
-            return openStream(http2, call);
+        Channel channel = openPooledStream(pool.http2, call);
+        if (channel != null) {
+            return channel;
         }
 
-        Channel channel;
         while ((channel = pool.idle.pollFirst()) != null) {
             if (channel.isActive()) {
                 Channel reused = channel;
@@ -585,9 +584,9 @@ public abstract class NettyClientHelper extends ClientHelper {
         } else {
             pool.connectLock.lock();
             try {
-                http2 = pool.http2;
-                if (http2 != null && http2.isActive() && reserveStream(http2)) {
-                    return openStream(http2, call);
+                channel = openPooledStream(pool.http2, call);
+                if (channel != null) {
+                    return channel;
                 }
                 channel = connect(pool, call.getTunnelProxyAuthorization());
                 if (channel != null
@@ -605,6 +604,31 @@ public abstract class NettyClientHelper extends ClientHelper {
             bindHttp1(channel, call);
         }
         return channel;
+    }
+
+    /**
+     * Opens a stream on a pooled HTTP/2 connection, if it is still usable.
+     *
+     * @param http2 The pooled HTTP/2 connection, possibly null.
+     * @param call The call that will use the stream.
+     * @return The stream, or null if the connection is gone, was retired, or closed while the
+     *     stream was opened: a new connection must then be used.
+     * @throws IOException If the stream could not be opened on a connection that is still active.
+     */
+    private Channel openPooledStream(Channel http2, NettyClientCall call) throws IOException {
+        if (http2 == null || !http2.isActive() || !reserveStream(http2)) {
+            return null;
+        }
+
+        try {
+            return openStream(http2, call);
+        } catch (IOException e) {
+            if (http2.isActive()) {
+                throw e;
+            }
+            getLogger().fine(() -> "The HTTP/2 connection closed while opening a stream: " + e);
+            return null;
+        }
     }
 
     /**
