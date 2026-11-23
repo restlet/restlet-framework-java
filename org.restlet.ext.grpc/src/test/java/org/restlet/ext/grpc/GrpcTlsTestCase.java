@@ -426,6 +426,19 @@ class GrpcTlsTestCase {
     }
 
     @Test
+    void clientRefusesPlaintextHostNamesTheResolverRefuses() throws Exception {
+        startClient(Protocol.HTTP, false);
+        adapter.setClient(client);
+        adapter.setPlaintext(true);
+        adapter.setTarget("my_service:50051");
+        assertThrows(IllegalArgumentException.class, adapter::start);
+        // Still configurable, as the target was refused before the channel was built.
+        adapter.setTarget("localhost:50051");
+        adapter.start();
+        assertTrue(adapter.isStarted());
+    }
+
+    @Test
     void clientCallsABracketedIpv6Target() throws Exception {
         try (var probe = new java.net.ServerSocket()) {
             probe.bind(new java.net.InetSocketAddress("::1", 0));

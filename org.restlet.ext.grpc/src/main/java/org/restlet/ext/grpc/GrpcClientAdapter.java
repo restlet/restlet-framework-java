@@ -19,12 +19,14 @@ import io.grpc.MethodDescriptor;
 import io.grpc.SecurityLevel;
 import io.grpc.internal.ManagedChannelImplBuilder;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -58,8 +60,9 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  */
 public final class GrpcClientAdapter implements AutoCloseable {
     /** An ASCII host name: labels of letters, digits, underscores and inner hyphens. */
-    private static final String HOST_NAME =
-            "[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?(\\.[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?)*";
+    private static final Pattern HOST_NAME =
+            Pattern.compile(
+                    "[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?(\\.[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?)*");
 
     private final Context context;
     private final List<ClientInterceptor> interceptors = new CopyOnWriteArrayList<>();
@@ -234,6 +237,12 @@ public final class GrpcClientAdapter implements AutoCloseable {
                             + " followRedirects=false");
         }
         HostAndPort hostPort = parse(target);
+        if (plaintext && URI.create("//" + hostPort).getHost() == null) {
+            // Refused by the SDK's DNS name resolver, which plaintext calls use.
+            throw new IllegalArgumentException(
+                    "Plaintext targets need a server-based host name, without underscore and with"
+                            + " a last label starting with a letter");
+        }
         configured = true;
         var factory =
                 new RestletTransportFactory(
@@ -327,7 +336,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                 && InetAddresses.isInetAddress(result.getHost())
                         // ASCII host name labels (RFC 1123, with underscores), without root dot,
                         // which also covers an IPv4 address.
-                        : result.getHost().matches(HOST_NAME))) {
+                        : HOST_NAME.matcher(result.getHost()).matches())) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
