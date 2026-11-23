@@ -28,6 +28,20 @@ public class GsonConverter extends ConverterHelper {
     /** Variant with media type application/json. */
     private static final VariantInfo VARIANT_JSON = new VariantInfo(MediaType.APPLICATION_JSON);
 
+    /** Matches the application/*+json media types, such as application/vnd.example+json. */
+    private static final VariantInfo VARIANT_ALL_JSON =
+            new VariantInfo(MediaType.APPLICATION_ALL_JSON);
+
+    /**
+     * Indicates if the given variant is JSON, including the application/*+json media types.
+     *
+     * @param variant The variant to test.
+     * @return True if the variant is compatible with JSON.
+     */
+    private static boolean isJson(Variant variant) {
+        return VARIANT_JSON.isCompatible(variant) || VARIANT_ALL_JSON.isCompatible(variant);
+    }
+
     /**
      * Creates the unmarshaling {@link GsonRepresentation}.
      *
@@ -55,7 +69,7 @@ public class GsonConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)) {
+        if (isJson(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, GsonRepresentation.class);
         }
@@ -87,7 +101,7 @@ public class GsonConverter extends ConverterHelper {
         } else {
             if (target == null) {
                 result = 0.5F;
-            } else if (VARIANT_JSON.isCompatible(target)) {
+            } else if (isJson(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -105,7 +119,7 @@ public class GsonConverter extends ConverterHelper {
             result = 1.0F;
         } else if ((target != null) && GsonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
-        } else if (VARIANT_JSON.isCompatible(source)) {
+        } else if (isJson(source)) {
             result = 0.8F;
         }
 
@@ -123,7 +137,7 @@ public class GsonConverter extends ConverterHelper {
 
         if (source instanceof GsonRepresentation<?> representation) {
             gsonSource = representation;
-        } else if (VARIANT_JSON.isCompatible(source)) {
+        } else if (isJson(source)) {
             gsonSource = create(source, target);
         }
 
@@ -150,7 +164,7 @@ public class GsonConverter extends ConverterHelper {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
 
-            if (VARIANT_JSON.isCompatible(target)) {
+            if (isJson(target)) {
                 result = create(source);
             }
         }

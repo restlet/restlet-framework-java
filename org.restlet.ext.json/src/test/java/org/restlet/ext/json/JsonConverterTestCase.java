@@ -237,4 +237,37 @@ class JsonConverterTestCase {
         new JsonConverter().updatePreferences(prefs, String.class);
         assertTrue(prefs.isEmpty());
     }
+
+    // #1185: application/*+json media types are JSON.
+
+    private static final MediaType VND_JSON = new MediaType("application/vnd.example+json");
+
+    @Test
+    void getObjectClasses_withJsonSuffixVariant_returnsThreeClasses() {
+        List<Class<?>> classes = new JsonConverter().getObjectClasses(new Variant(VND_JSON));
+        assertNotNull(classes);
+        assertEquals(3, classes.size());
+    }
+
+    @Test
+    void getObjectClasses_withXmlSuffixVariant_returnsNull() {
+        assertNull(
+                new JsonConverter()
+                        .getObjectClasses(
+                                new Variant(new MediaType("application/vnd.example+xml"))));
+    }
+
+    @Test
+    void score_forJsonSuffixTarget_returnsOne() {
+        assertEquals(
+                1.0f, new JsonConverter().score(new JSONObject(), new Variant(VND_JSON), null));
+    }
+
+    @Test
+    void scoreRepresentation_forJsonSuffixSource_returnsOne() {
+        assertEquals(
+                1.0f,
+                new JsonConverter()
+                        .score(new StringRepresentation("{}", VND_JSON), JSONObject.class, null));
+    }
 }
