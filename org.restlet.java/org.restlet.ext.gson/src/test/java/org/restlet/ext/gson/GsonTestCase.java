@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Neal Mi
  */
-public class GsonTestCase {
+class GsonTestCase {
 
     private static class User {
         private final boolean active;
@@ -87,21 +87,21 @@ public class GsonTestCase {
     private User user;
 
     @BeforeEach
-    public void setUpEach() throws Exception {
+    void setUpEach() {
         user = new User("hello", "secret", 1, true, new Date(), new Date());
         gsonConverter = new GsonConverter();
     }
 
     @Test
-    public final void testCreateMediaTypeT() {
+    final void testCreateMediaTypeT() {
         Representation rep = new GsonRepresentation<>(user);
 
         assertNotNull(rep);
-        assertEquals(rep.getMediaType(), MediaType.APPLICATION_JSON);
+        assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
     }
 
     @Test
-    public final void testCreateRepresentationClassOfT() {
+    final void testCreateRepresentationClassOfT() {
         Representation rep = new GsonRepresentation<>(user);
         Representation rep1 = new GsonRepresentation<>(rep, User.class);
 
@@ -110,21 +110,21 @@ public class GsonTestCase {
     }
 
     @Test
-    public final void testGsonRepresentationRead() throws IOException {
+    final void testGsonRepresentationRead() throws IOException {
         final String userAsJsonString = "{\"loginId\":\"hello\",\"password\":\"secret\",\"rate\":1,\"active\":true,\"createAt\":\"2012-05-20T15:41:01.489+08:00\",\"lastLogin\":\"2012-05-20T15:41:01.489+08:00\"}";
         Representation source = new StringRepresentation(userAsJsonString, MediaType.APPLICATION_JSON);
 
         GsonRepresentation<User> gsonRep = new GsonRepresentation<>(source, User.class);
-        User user = gsonRep.getObject();
+        User readUser = gsonRep.getObject();
 
-        assertNotNull(user);
-        assertEquals("hello", user.getLoginId());
-        assertEquals("secret", user.getPassword());
-        assertEquals(1, user.getRate());
-        assertTrue(user.isActive());
+        assertNotNull(readUser);
+        assertEquals("hello", readUser.getLoginId());
+        assertEquals("secret", readUser.getPassword());
+        assertEquals(1, readUser.getRate());
+        assertTrue(readUser.isActive());
         DateTime time = new DateTime("2012-05-20T15:41:01.489+08:00");
-        assertEquals(time.getMillis(), user.getCreateAt().getTime());
-        assertEquals(time.getMillis(), user.getLastLogin().getTime());
+        assertEquals(time.getMillis(), readUser.getCreateAt().getTime());
+        assertEquals(time.getMillis(), readUser.getLastLogin().getTime());
 
         GsonRepresentation<User> gsonRep1 = new GsonRepresentation<>(source, User.class);
         gsonRep1.getBuilder().setVersion(1.0);
@@ -139,7 +139,7 @@ public class GsonTestCase {
     }
 
     @Test
-    public final void testGsonRepresentationWrite() throws IOException {
+    final void testGsonRepresentationWrite() throws IOException {
         GsonRepresentation<User> source = new GsonRepresentation<>(user);
 
         assertEquals(User.class, source.getObjectClass());
@@ -158,7 +158,7 @@ public class GsonTestCase {
     }
 
     @Test
-    public final void testScoreObjectVariantResource() {
+    final void testScoreObjectVariantResource() {
         Variant v = new Variant(MediaType.APPLICATION_JSON);
         Representation source = new GsonRepresentation<>(user);
 
@@ -170,7 +170,7 @@ public class GsonTestCase {
     }
 
     @Test
-    public final void testScoreRepresentationClassOfTResource() {
+    final void testScoreRepresentationClassOfTResource() {
         Representation source = new GsonRepresentation<User>(user);
 
         float score = gsonConverter.score(source, User.class, null);
@@ -183,7 +183,7 @@ public class GsonTestCase {
     }
 
     @Test()
-    public final void testToObjectRepresentationClassOfTResource()
+    final void testToObjectRepresentationClassOfTResource()
             throws IOException {
         Representation source = new GsonRepresentation<>(user);
 
@@ -202,12 +202,12 @@ public class GsonTestCase {
     }
 
     @Test
-    public final void testToRepresentationObjectVariantResource()
+    final void testToRepresentationObjectVariantResource()
             throws IOException {
         Variant v = new Variant(MediaType.APPLICATION_JSON);
         Representation rep = gsonConverter.toRepresentation(user, v, null);
         assertNotNull(rep);
-        assertEquals(rep.getMediaType(), MediaType.APPLICATION_JSON);
+        assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
 
         Variant v1 = new Variant(MediaType.APPLICATION_XML);
         Representation rep1 = gsonConverter.toRepresentation(user, v1, null);
