@@ -40,9 +40,16 @@ class ExpectContinueTestCase {
 
     private static final int TIMEOUT_MS = 10_000;
 
+    /** The request line and headers, with the CRLF line endings required by HTTP. */
     private static final String HEAD =
-            "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: 5\r\n"
-                    + "Connection: close\r\n";
+            """
+            POST / HTTP/1.1
+            Host: localhost
+            Content-Type: text/plain
+            Content-Length: 5
+            Connection: close
+            """
+                    .replace("\n", "\r\n");
 
     private Server server;
 
