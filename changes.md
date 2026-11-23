@@ -2,6 +2,8 @@ Changes log
 ===========
 
 - 2.7.1 (??-??-2026)
+  - Bugs fixed
+    - The Jackson, Gson and JSON (org.json) converters now handle the `application/*+json` media types, such as `application/vnd.example+json`. They were ignored, so an incoming `+json` entity was not converted, and a `+json` response was left to another converter (such as JAXB) when it scored higher than the 0.5 given by Jackson. A custom converter that won for these media types may now lose to the JSON converters. Issue #1185.
   - Misc
     - Upgraded Jetty library to version 12.1.14. Issue #1515.
     - Upgraded Jackson library to version 2.22.4.

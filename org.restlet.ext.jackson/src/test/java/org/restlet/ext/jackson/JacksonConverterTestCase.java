@@ -189,4 +189,49 @@ class JacksonConverterTestCase {
             assertEquals(1.0f, preference.getQuality());
         }
     }
+
+    // #1185: application/*+json media types are JSON.
+
+    private static final MediaType VND_JSON = new MediaType("application/vnd.example+json");
+
+    @Test
+    void isCompatible_forJsonSuffixMediaType_returnsTrue() {
+        assertTrue(converter.isCompatible(new Variant(VND_JSON)));
+    }
+
+    @Test
+    void isCompatible_forXmlSuffixMediaType_returnsFalse() {
+        assertFalse(
+                converter.isCompatible(new Variant(new MediaType("application/vnd.example+xml"))));
+    }
+
+    @Test
+    void score_forJsonSuffixTarget_returnsPointEight() {
+        assertEquals(0.8f, converter.score("text", new Variant(VND_JSON), null));
+    }
+
+    @Test
+    void score_forJsonSuffixTarget_beatsAConverterScoringPointSeven() {
+        assertTrue(converter.score("text", new Variant(VND_JSON), null) > 0.7f);
+    }
+
+    @Test
+    void scoreRepresentation_forJsonSuffixSource_returnsPointEight() {
+        assertEquals(
+                0.8f,
+                converter.score(new StringRepresentation("text", VND_JSON), String.class, null));
+    }
+
+    @Test
+    void toObject_fromJsonSuffixRepresentation_returnsParsedObject() throws Exception {
+        StringRepresentation source = new StringRepresentation("\"text\"", VND_JSON);
+        assertEquals("text", converter.toObject(source, String.class, null));
+    }
+
+    @Test
+    void toRepresentation_forJsonSuffixTarget_keepsMediaType() {
+        Representation result = converter.toRepresentation("text", new Variant(VND_JSON), null);
+        assertTrue(result instanceof JacksonRepresentation<?>);
+        assertEquals(VND_JSON, result.getMediaType());
+    }
 }
