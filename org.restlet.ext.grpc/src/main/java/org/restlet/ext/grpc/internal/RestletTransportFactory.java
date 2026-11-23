@@ -74,6 +74,9 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             Duration timeout,
             boolean secure,
             SecurityLevel security) {
+        if (!secure && security != SecurityLevel.NONE) {
+            throw new IllegalArgumentException("A plaintext transport has no security");
+        }
         this.client = client;
         this.secure = secure;
         attributes =

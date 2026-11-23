@@ -420,9 +420,9 @@ class GrpcTlsTestCase {
     void clientAcceptsUnderscoresInTargetHosts() throws Exception {
         startClient(Protocol.HTTPS, false);
         adapter.setClient(client);
-        adapter.setTarget("my_service:50051");
+        adapter.setTarget("my_service.1internal:50051");
         adapter.start();
-        assertEquals("my_service:50051", adapter.getChannel().authority());
+        assertEquals("my_service.1internal:50051", adapter.getChannel().authority());
     }
 
     @Test

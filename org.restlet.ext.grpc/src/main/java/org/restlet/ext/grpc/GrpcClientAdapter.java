@@ -10,7 +10,6 @@ package org.restlet.ext.grpc;
 
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
-import com.google.common.net.InternetDomainName;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -58,6 +57,10 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
+    /** An ASCII host name: labels of letters, digits, underscores and inner hyphens. */
+    private static final String HOST_NAME =
+            "[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?(\\.[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?)*";
+
     private final Context context;
     private final List<ClientInterceptor> interceptors = new CopyOnWriteArrayList<>();
     private Client client;
@@ -221,7 +224,6 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         : null;
         if (netty == null
                 || !client.isStarted()
-                || client.getContext() == null
                 || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
                 || !"HTTP2".equals(netty.getHttpClientTransportMode())
                 || netty.isFollowRedirects()) {
@@ -323,10 +325,9 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         ? result.getHost().indexOf(':') >= 0
                                 && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
-                        // An ASCII domain name, without root dot, or an IPv4 address.
-                        : result.getHost().matches("[A-Za-z0-9._-]*[A-Za-z0-9]")
-                                && (InternetDomainName.isValid(result.getHost())
-                                        || InetAddresses.isInetAddress(result.getHost())))) {
+                        // ASCII host name labels (RFC 1123, with underscores), without root dot,
+                        // which also covers an IPv4 address.
+                        : result.getHost().matches(HOST_NAME))) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
