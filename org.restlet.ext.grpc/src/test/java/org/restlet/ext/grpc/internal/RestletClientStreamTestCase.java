@@ -57,6 +57,7 @@ class RestletClientStreamTestCase {
 
     @Test
     void plaintextTransportsHaveNoSecurity() {
+        var timeout = java.time.Duration.ofSeconds(1);
         org.junit.jupiter.api.Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () ->
@@ -65,7 +66,7 @@ class RestletClientStreamTestCase {
                                 1024,
                                 16384,
                                 1,
-                                java.time.Duration.ofSeconds(1),
+                                timeout,
                                 false,
                                 io.grpc.SecurityLevel.PRIVACY_AND_INTEGRITY));
     }

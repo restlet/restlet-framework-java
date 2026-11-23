@@ -388,10 +388,11 @@ class GrpcTlsTestCase {
         startClient(Protocol.HTTPS, true);
         // The test certificate is issued to localhost, not to its address.
         startAdapter("127.0.0.1:" + peer.getPort());
+        var channel = adapter.getChannel();
         StatusRuntimeException error =
                 assertThrows(
                         StatusRuntimeException.class,
-                        () -> call(adapter.getChannel(), CallOptions.DEFAULT, "ip"));
+                        () -> call(channel, CallOptions.DEFAULT, "ip"));
         assertEquals(Status.Code.UNAVAILABLE, error.getStatus().getCode());
     }
 
@@ -400,10 +401,11 @@ class GrpcTlsTestCase {
         startPeer(new Recorder());
         startClient(Protocol.HTTPS, false);
         startAdapter("localhost:" + peer.getPort());
+        var channel = adapter.getChannel();
         StatusRuntimeException error =
                 assertThrows(
                         StatusRuntimeException.class,
-                        () -> call(adapter.getChannel(), CallOptions.DEFAULT, "untrusted"));
+                        () -> call(channel, CallOptions.DEFAULT, "untrusted"));
         assertEquals(Status.Code.UNAVAILABLE, error.getStatus().getCode());
     }
 
