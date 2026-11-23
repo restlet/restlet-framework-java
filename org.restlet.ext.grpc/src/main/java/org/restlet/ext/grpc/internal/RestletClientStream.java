@@ -68,17 +68,9 @@ final class RestletClientStream extends AbstractClientStream {
     private final String target;
     private final String authority;
 
-    /** The headers of the request entity, which the metadata must not replace. */
+    /** The headers describing the gRPC body, which the metadata must not replace. */
     private static final Set<String> ENTITY_HEADERS =
-            Set.of(
-                    "content-type",
-                    "content-encoding",
-                    "content-language",
-                    "content-length",
-                    "content-location",
-                    "content-md5",
-                    "content-range",
-                    "content-disposition");
+            Set.of("content-type", "content-encoding", "content-length");
 
     /** The transport attributes, with the security level. */
     private final Attributes attributes;

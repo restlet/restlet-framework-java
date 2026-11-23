@@ -328,7 +328,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                 && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
                         // An ASCII domain name, without root dot, or an IPv4 address.
-                        : result.getHost().matches("[A-Za-z0-9.-]*[A-Za-z0-9]")
+                        : result.getHost().matches("[A-Za-z0-9._-]*[A-Za-z0-9]")
                                 && (InternetDomainName.isValid(result.getHost())
                                         || InetAddresses.isInetAddress(result.getHost())))) {
             throw new IllegalArgumentException(

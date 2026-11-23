@@ -166,9 +166,11 @@ public final class RestletTransportFactory implements ClientTransportFactory {
         private Transport(InetSocketAddress address, String authority) {
             this.authority = authority;
             if (secure) {
-                // The connector resolves the authority, and checks the certificate against its
-                // host.
-                origin = "https://" + authority;
+                // The unresolved target, which the connector resolves, checking the certificate
+                // against its host.
+                origin =
+                        "https://"
+                                + HostAndPort.fromParts(address.getHostString(), address.getPort());
             } else {
                 origin =
                         "http://"
