@@ -405,7 +405,6 @@ final class RestletClientStream extends AbstractClientStream {
     /** Returns the HTTP/2 request of the call, with the gRPC metadata as headers. */
     private Request newRequest() {
         Request call = new Request(Method.POST, target, requestEntity());
-        call.getHeaders().set("te", "trailers");
         byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
         // Sent as is, so that standard header names such as "authorization" are kept too, except
         // the ones that would change the routing (the authority, the proxy credentials) or the

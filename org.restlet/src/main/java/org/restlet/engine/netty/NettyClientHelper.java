@@ -1198,7 +1198,12 @@ public abstract class NettyClientHelper extends ClientHelper {
         ChannelPipeline p = ch.pipeline();
         final TransportMode mode = getTransportMode();
         if (ssl != null) {
-            SSLEngine engine = ssl.newEngine(ch.alloc(), pool.host, pool.port);
+            // An IPv6 literal without its brackets, so that it is checked as an IP address.
+            String peerHost =
+                    pool.host.startsWith("[") && pool.host.endsWith("]")
+                            ? pool.host.substring(1, pool.host.length() - 1)
+                            : pool.host;
+            SSLEngine engine = ssl.newEngine(ch.alloc(), peerHost, pool.port);
             if (isHostnameVerification()) {
                 SSLParameters parameters = engine.getSSLParameters();
                 parameters.setEndpointIdentificationAlgorithm("HTTPS");

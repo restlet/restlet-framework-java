@@ -37,7 +37,13 @@ class RestletClientStreamTestCase {
     void cancelledTimersDoNotStayQueued() {
         var factory =
                 new RestletTransportFactory(
-                        null, 1024, 16384, 1, java.time.Duration.ofSeconds(1), false);
+                        null,
+                        1024,
+                        16384,
+                        1,
+                        java.time.Duration.ofSeconds(1),
+                        false,
+                        io.grpc.SecurityLevel.NONE);
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
             for (int i = 0; i < 100; i++) {
