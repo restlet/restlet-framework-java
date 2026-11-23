@@ -23,7 +23,7 @@ Changes log
     - Bugs fixed
         - The gRPC client dropped the metadata having a standard HTTP header name, such as the
           "authorization" bearer token of call credentials: it is now sent as is, repeated values
-          included, except "host", "proxy-authorization" and the "content-" headers, which would
+          included, except "host", "proxy-authorization" and the entity headers, which would
           change the routing or the entity.
 
 - 3.0 Milestone 2 (11-22-2026)

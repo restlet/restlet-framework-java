@@ -247,6 +247,9 @@ class GrpcTlsTestCase {
         metadata.put(AUTHORIZATION, "Bearer two");
         metadata.put(cookie, "a=1");
         metadata.put(Metadata.Key.of("content-language", Metadata.ASCII_STRING_MARSHALLER), "fr");
+        Metadata.Key<String> digest =
+                Metadata.Key.of("content-digest", Metadata.ASCII_STRING_MARSHALLER);
+        metadata.put(digest, "sha-256=:abc=:");
         metadata.put(Metadata.Key.of("host", Metadata.ASCII_STRING_MARSHALLER), "other.example:1");
         metadata.put(
                 Metadata.Key.of("proxy-authorization", Metadata.ASCII_STRING_MARSHALLER),
@@ -262,6 +265,7 @@ class GrpcTlsTestCase {
                         observed.get().getAll(AUTHORIZATION)));
         assertEquals("a=1", observed.get().get(cookie));
         assertEquals("localhost:" + peer.getPort(), authority.get());
+        assertEquals("sha-256=:abc=:", observed.get().get(digest));
         assertEquals(
                 null,
                 observed.get()
@@ -301,7 +305,11 @@ class GrpcTlsTestCase {
                 "caf%C3%A9:443",
                 "[localhost]:443",
                 "[127.0.0.1]:443",
-                "[fe80::1%eth0]:443"
+                "[fe80::1%eth0]:443",
+                "foo;bar:443",
+                "a,b:443",
+                "..:443",
+                "-:443"
             })
     void clientRejectsInvalidTargets(String target) throws Exception {
         startClient(Protocol.HTTPS, false);

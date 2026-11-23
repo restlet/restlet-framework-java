@@ -42,6 +42,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import org.restlet.Client;
+import org.restlet.engine.netty.NettyClientHelper;
 
 /** Pinned grpc-java internal SPI. A logical transport is not a physical Netty connection. */
 public final class RestletTransportFactory implements ClientTransportFactory {
@@ -50,7 +51,6 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     private final int queueBytes;
     private final Duration shutdownTimeout;
     private final boolean secure;
-    private final Attributes attributes;
     private final Semaphore admission;
     private final Set<Transport> transports = new HashSet<>();
     private final ExecutorService io = Executors.newVirtualThreadPerTaskExecutor();
@@ -64,7 +64,6 @@ public final class RestletTransportFactory implements ClientTransportFactory {
      *
      * @param secure True for TLS, with the unresolved target address, which the client connector
      *     resolves; false for plaintext to resolved addresses.
-     * @param security The security level reported to the calls.
      */
     public RestletTransportFactory(
             Client client,
@@ -72,12 +71,9 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             int queueBytes,
             int maxCalls,
             Duration timeout,
-            boolean secure,
-            SecurityLevel security) {
+            boolean secure) {
         this.client = client;
         this.secure = secure;
-        attributes =
-                Attributes.newBuilder().set(GrpcAttributes.ATTR_SECURITY_LEVEL, security).build();
         this.maxBytes = maxBytes;
         this.queueBytes = queueBytes;
         admission = new Semaphore(maxCalls);
@@ -105,6 +101,21 @@ public final class RestletTransportFactory implements ClientTransportFactory {
         Transport transport = new Transport(inet, options.getAuthority());
         transports.add(transport);
         return transport;
+    }
+
+    /**
+     * Returns the transport attributes, with the security level of new calls. It is read from the
+     * connector each time, as its hostname verification applies to each new connection: without it,
+     * the peer is not authenticated.
+     */
+    private Attributes attributes() {
+        return Attributes.newBuilder()
+                .set(
+                        GrpcAttributes.ATTR_SECURITY_LEVEL,
+                        secure && ((NettyClientHelper) client.getHelper()).isHostnameVerification()
+                                ? SecurityLevel.PRIVACY_AND_INTEGRITY
+                                : SecurityLevel.NONE)
+                .build();
     }
 
     @Override
@@ -157,9 +168,6 @@ public final class RestletTransportFactory implements ClientTransportFactory {
         /** The origin of the request targets: the resolved peer, or the authority over TLS. */
         private final String origin;
 
-        /** The base reference of the requests, selecting their HTTP authority. */
-        private final String base;
-
         private final Set<RestletClientStream> streams = new HashSet<>();
         private final InternalLogId id = InternalLogId.allocate(Transport.class, "Restlet HTTP/2");
         private Listener listener;
@@ -168,15 +176,13 @@ public final class RestletTransportFactory implements ClientTransportFactory {
 
         private Transport(InetSocketAddress address, String authority) {
             this.authority = authority;
-            String scheme = secure ? "https://" : "http://";
-            base = scheme + authority;
             if (secure) {
                 // The connector resolves the authority, and checks the certificate against its
                 // host.
-                origin = base;
+                origin = "https://" + authority;
             } else {
                 origin =
-                        scheme
+                        "http://"
                                 // Without the zone of a link-local address, not valid in a URI.
                                 + HostAndPort.fromParts(
                                         InetAddresses.toAddrString(address.getAddress()),
@@ -234,9 +240,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                     new RestletClientStream(
                             client,
                             origin,
-                            base,
                             authority,
-                            attributes,
+                            attributes(),
                             method,
                             headers,
                             options,
@@ -313,7 +318,7 @@ public final class RestletTransportFactory implements ClientTransportFactory {
 
         @Override
         public Attributes getAttributes() {
-            return attributes;
+            return attributes();
         }
     }
 }

@@ -10,6 +10,7 @@ package org.restlet.ext.grpc;
 
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
+import com.google.common.net.InternetDomainName;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -222,11 +223,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                 client.getContext()
                                         .getParameters()
                                         .getFirstValue("httpClientTransportMode"))
-                || !"false"
-                        .equalsIgnoreCase(
-                                client.getContext()
-                                        .getParameters()
-                                        .getFirstValue("followRedirects", "true"))) {
+                || ((NettyClientHelper) client.getHelper()).isFollowRedirects()) {
             throw new IllegalStateException(
                     "Borrow a started "
                             + (plaintext ? "HTTP" : "HTTPS")
@@ -242,16 +239,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         maxQueuedBytes,
                         maxConcurrentCalls,
                         shutdownTimeout,
-                        !plaintext,
-                        plaintext
-                                ? SecurityLevel.NONE
-                                // Without hostname verification, the peer is not authenticated.
-                                : ((NettyClientHelper) client.getHelper()).isHostnameVerification()
-                                        ? SecurityLevel.PRIVACY_AND_INTEGRITY
-                                        : SecurityLevel.NONE);
+                        !plaintext);
         try {
             var builder =
                     (plaintext
+                                    // The target has a port, so the default one is never used.
                                     ? new ManagedChannelImplBuilder(
                                             "dns:///" + hostPort, () -> factory, () -> 80)
                                     : new ManagedChannelImplBuilder(
@@ -326,8 +318,9 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         ? result.getHost().indexOf(':') >= 0
                                 && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
-                        // A registered name or an IPv4 address, without percent-encoding.
-                        : result.getHost().matches("[A-Za-z0-9._~!$&'()*+,;=-]+"))) {
+                        // A domain name or an IPv4 address.
+                        : InternetDomainName.isValid(result.getHost())
+                                || InetAddresses.isInetAddress(result.getHost()))) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
