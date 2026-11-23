@@ -309,7 +309,9 @@ class GrpcTlsTestCase {
                 "foo;bar:443",
                 "a,b:443",
                 "..:443",
-                "-:443"
+                "-:443",
+                "b\u00fccher.example:443",
+                "example.com.:443"
             })
     void clientRejectsInvalidTargets(String target) throws Exception {
         startClient(Protocol.HTTPS, false);
@@ -399,8 +401,8 @@ class GrpcTlsTestCase {
         }
         Recorder recorder = new Recorder();
         startPeer(recorder);
-        // The test certificate is issued to localhost, not to the IPv6 loopback address.
-        startUnverifiedClient();
+        // The test certificate is issued to localhost and to the IPv6 loopback address.
+        startClient(Protocol.HTTPS, true);
         startAdapter("dns:///[::1]:" + peer.getPort());
         assertEquals("[::1]:" + peer.getPort(), adapter.getChannel().authority());
         assertEquals("ipv6", call(adapter.getChannel(), CallOptions.DEFAULT, "ipv6").getValue());

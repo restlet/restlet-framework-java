@@ -19,12 +19,17 @@ Changes log
           `GrpcServerAdapter` serves calls on an HTTPS listener negotiating HTTP/2 with ALPN. Both
           adapters report the transport security level, so call credentials requiring privacy and
           integrity can be used; the client reports no security when "hostnameVerification" is
-          off, since the peer is then not authenticated.
+          off, since the peer is then not authenticated. The client's TLS settings must not change
+          while the adapter is started, and plaintext calls must not go through an HTTP forward
+          proxy.
     - Bugs fixed
         - The gRPC client dropped the metadata having a standard HTTP header name, such as the
           "authorization" bearer token of call credentials: it is now sent as is, repeated values
           included, except "host", "proxy-authorization" and the entity headers, which would
           change the routing or the entity.
+        - The HTTPS client connector checked the certificate of an IPv6 literal host, such as
+          `https://[::1]:8443/`, against its bracketed form, so hostname verification always
+          failed: the address is now checked without brackets.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes

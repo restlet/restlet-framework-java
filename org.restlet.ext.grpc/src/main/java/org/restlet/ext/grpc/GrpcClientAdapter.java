@@ -49,11 +49,13 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * transport reports {@link SecurityLevel#PRIVACY_AND_INTEGRITY}, as call credentials require, or
  * {@link SecurityLevel#NONE} when the client's "hostnameVerification" is off, since the peer is
  * then not authenticated. A trust manager accepting any certificate is not detected: the client's
- * trust settings are the application's responsibility. TLS calls follow the client's proxy
- * settings: they are tunneled with CONNECT through its HTTPS proxy, if any. Plaintext calls to the
- * resolved addresses of the target must be explicitly enabled with {@link #setPlaintext(boolean)},
- * with a borrowed HTTP client. The borrowed client must be the core Netty connector, which sends
- * the metadata as is. Retry, keepalive and physical-connection controls are not implemented.
+ * trust settings are the application's responsibility, and must not change while the adapter is
+ * started. TLS calls follow the client's proxy settings: they are tunneled with CONNECT through its
+ * HTTPS proxy, if any. Plaintext calls to the resolved addresses of the target must be explicitly
+ * enabled with {@link #setPlaintext(boolean)}, with a borrowed HTTP client; they must not go
+ * through an HTTP forward proxy, to which the connector speaks HTTP/1.1. The borrowed client must
+ * be the core Netty connector, which sends the metadata as is. Retry, keepalive and
+ * physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
     private final Context context;
@@ -212,18 +214,21 @@ public final class GrpcClientAdapter implements AutoCloseable {
         }
         requireConfigurable();
         Objects.requireNonNull(target, "target");
-        if (client == null
+        // The core Netty connector, which sends the metadata as raw headers.
+        NettyClientHelper netty =
+                (client != null && client.getHelper() instanceof NettyClientHelper helper)
+                        ? helper
+                        : null;
+        if (netty == null
                 || !client.isStarted()
                 || client.getContext() == null
-                // Which sends the metadata as raw headers.
-                || !(client.getHelper() instanceof NettyClientHelper)
                 || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
                 || !"HTTP2"
                         .equals(
                                 client.getContext()
                                         .getParameters()
                                         .getFirstValue("httpClientTransportMode"))
-                || ((NettyClientHelper) client.getHelper()).isFollowRedirects()) {
+                || netty.isFollowRedirects()) {
             throw new IllegalStateException(
                     "Borrow a started "
                             + (plaintext ? "HTTP" : "HTTPS")
@@ -239,7 +244,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         maxQueuedBytes,
                         maxConcurrentCalls,
                         shutdownTimeout,
-                        !plaintext);
+                        !plaintext,
+                        // Without hostname verification, the peer is not authenticated.
+                        !plaintext && netty.isHostnameVerification()
+                                ? SecurityLevel.PRIVACY_AND_INTEGRITY
+                                : SecurityLevel.NONE);
         try {
             var builder =
                     (plaintext
@@ -318,9 +327,10 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         ? result.getHost().indexOf(':') >= 0
                                 && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
-                        // A domain name or an IPv4 address.
-                        : InternetDomainName.isValid(result.getHost())
-                                || InetAddresses.isInetAddress(result.getHost()))) {
+                        // An ASCII domain name, without root dot, or an IPv4 address.
+                        : result.getHost().matches("[A-Za-z0-9.-]*[A-Za-z0-9]")
+                                && (InternetDomainName.isValid(result.getHost())
+                                        || InetAddresses.isInetAddress(result.getHost())))) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
