@@ -791,7 +791,7 @@ class GrpcClientAdapterTestCase {
     }
 
     @Test
-    void validatesConfigurationAndRequiresExplicitPlaintext() {
+    void validatesConfigurationAndDefaultsToTls() {
         assertFalse(adapter.isStarted());
         assertFalse(adapter.isPlaintext());
         assertThrows(IllegalStateException.class, adapter::getChannel);

@@ -22,8 +22,6 @@ import io.grpc.internal.ClientStreamListener;
 import io.grpc.internal.StreamListener.MessageProducer;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -75,9 +73,9 @@ class RestletClientStreamTestCase {
     private static RestletClientStream stream(ExecutorService io, AtomicInteger released) {
         return new RestletClientStream(
                 new Client(Protocol.HTTP),
-                new InetSocketAddress(InetAddress.getLoopbackAddress(), 8080),
+                "http://127.0.0.1:8080",
+                "http://localhost:8080",
                 "localhost:8080",
-                false,
                 Attributes.EMPTY,
                 method(),
                 new Metadata(),

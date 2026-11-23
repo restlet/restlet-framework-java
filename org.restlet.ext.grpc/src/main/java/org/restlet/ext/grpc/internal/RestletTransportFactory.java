@@ -152,8 +152,14 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     }
 
     private final class Transport implements ConnectionClientTransport {
-        private final InetSocketAddress address;
         private final String authority;
+
+        /** The origin of the request targets: the resolved peer, or the authority over TLS. */
+        private final String origin;
+
+        /** The base reference of the requests, selecting their HTTP authority. */
+        private final String base;
+
         private final Set<RestletClientStream> streams = new HashSet<>();
         private final InternalLogId id = InternalLogId.allocate(Transport.class, "Restlet HTTP/2");
         private Listener listener;
@@ -161,8 +167,18 @@ public final class RestletTransportFactory implements ClientTransportFactory {
         private boolean terminated;
 
         private Transport(InetSocketAddress address, String authority) {
-            this.address = address;
             this.authority = authority;
+            String scheme = secure ? "https://" : "http://";
+            base = scheme + authority;
+            if (secure) {
+                // The connector resolves the authority, and checks the certificate against its
+                // host.
+                origin = base;
+            } else {
+                String ip = address.getAddress().getHostAddress();
+                origin =
+                        scheme + (ip.contains(":") ? "[" + ip + "]" : ip) + ":" + address.getPort();
+            }
         }
 
         @Override
@@ -214,9 +230,9 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             RestletClientStream stream =
                     new RestletClientStream(
                             client,
-                            address,
+                            origin,
+                            base,
                             authority,
-                            secure,
                             attributes,
                             method,
                             headers,

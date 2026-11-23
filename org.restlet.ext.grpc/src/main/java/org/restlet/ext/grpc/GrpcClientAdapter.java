@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.grpc;
 
+import com.google.common.net.HostAndPort;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -206,7 +207,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
         if (client == null
                 || !client.isStarted()
                 || client.getContext() == null
-                || (!plaintext && !client.getProtocols().contains(Protocol.HTTPS))
+                || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
                 || !"HTTP2"
                         .equals(
                                 client.getContext()
@@ -222,9 +223,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                             + (plaintext ? "HTTP" : "HTTPS")
                             + " client in HTTP2 mode with followRedirects=false");
         }
-        if (!target.matches("(dns:///)?[^/?#]+:\\d+")) {
-            throw new IllegalArgumentException("Expected host:port or dns:///host:port target");
-        }
+        HostAndPort hostPort = parse(target);
         configured = true;
         var factory =
                 new RestletTransportFactory(
@@ -238,7 +237,14 @@ public final class GrpcClientAdapter implements AutoCloseable {
             var builder =
                     (plaintext
                                     ? new ManagedChannelImplBuilder(target, () -> factory, () -> 80)
-                                    : secureBuilder(factory))
+                                    : new ManagedChannelImplBuilder(
+                                            // Resolved by the connector, so that the certificate
+                                            // is checked against the target's host.
+                                            InetSocketAddress.createUnresolved(
+                                                    hostPort.getHost(), hostPort.getPort()),
+                                            hostPort.toString(),
+                                            () -> factory,
+                                            () -> 443))
                             .disableRetry()
                             .disableServiceConfigLookUp()
                             .proxyDetector(address -> null)
@@ -283,25 +289,28 @@ public final class GrpcClientAdapter implements AutoCloseable {
     }
 
     /**
-     * Returns the builder of a TLS channel. Its only address is the unresolved target, which the
-     * client connector resolves, so that the certificate is checked against the target's host.
+     * Parses a {@code host:port} or {@code dns:///host:port} target, with a bracketed IPv6 host.
+     *
+     * @return The host and port of the target, which are also its authority.
      */
-    private ManagedChannelImplBuilder secureBuilder(RestletTransportFactory factory) {
+    private static HostAndPort parse(String target) {
         String authority = target.startsWith("dns:///") ? target.substring(7) : target;
-        int colon = authority.lastIndexOf(':');
-        String host = authority.substring(0, colon);
-        if (host.startsWith("[") && host.endsWith("]")) {
-            host = host.substring(1, host.length() - 1);
+        HostAndPort result;
+        try {
+            result = HostAndPort.fromString(authority);
+        } catch (IllegalArgumentException e) {
+            result = null;
         }
-        int port = Integer.parseInt(authority.substring(colon + 1));
-        if (port > 65535) {
-            throw new IllegalArgumentException("Expected a port between 0 and 65535");
+        if (result == null
+                || !result.hasPort()
+                || result.getPort() == 0
+                || result.getHost().isEmpty()
+                || !authority.matches("[^/?#@\\s]+")
+                || (result.getHost().contains(":") && !authority.startsWith("["))) {
+            throw new IllegalArgumentException(
+                    "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
-        return new ManagedChannelImplBuilder(
-                InetSocketAddress.createUnresolved(host, port),
-                authority,
-                () -> factory,
-                () -> 443);
+        return result;
     }
 
     public synchronized boolean isStarted() {
