@@ -59,10 +59,8 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
-    /** An ASCII host name: labels of letters, digits, underscores and inner hyphens. */
-    private static final Pattern HOST_NAME =
-            Pattern.compile(
-                    "[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?(\\.[A-Za-z0-9_]([A-Za-z0-9_-]*[A-Za-z0-9_])?)*");
+    /** An ASCII host name label: letters, digits, underscores and hyphens. */
+    private static final Pattern LABEL = Pattern.compile("[\\w-]+");
 
     private final Context context;
     private final List<ClientInterceptor> interceptors = new CopyOnWriteArrayList<>();
@@ -220,22 +218,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
         }
         requireConfigurable();
         Objects.requireNonNull(target, "target");
-        // The core Netty connector, which sends the metadata as raw headers.
-        NettyClientHelper netty =
-                (client != null && client.getHelper() instanceof NettyClientHelper helper)
-                        ? helper
-                        : null;
-        if (netty == null
-                || !client.isStarted()
-                || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
-                || !"HTTP2".equals(netty.getHttpClientTransportMode())
-                || netty.isFollowRedirects()) {
-            throw new IllegalStateException(
-                    "Borrow a started "
-                            + (plaintext ? "HTTP" : "HTTPS")
-                            + " client of the core Netty connector in HTTP2 mode with"
-                            + " followRedirects=false");
-        }
+        NettyClientHelper netty = borrowedHelper();
         HostAndPort hostPort = parse(target);
         if (plaintext && URI.create("//" + hostPort).getHost() == null) {
             // Refused by the SDK's DNS name resolver, which plaintext calls use.
@@ -258,18 +241,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                 : SecurityLevel.NONE);
         try {
             var builder =
-                    (plaintext
-                                    // The target has a port, so the default one is never used.
-                                    ? new ManagedChannelImplBuilder(
-                                            "dns:///" + hostPort, () -> factory, () -> 80)
-                                    : new ManagedChannelImplBuilder(
-                                            // Resolved by the connector, so that the certificate
-                                            // is checked against the target's host.
-                                            InetSocketAddress.createUnresolved(
-                                                    hostPort.getHost(), hostPort.getPort()),
-                                            hostPort.toString(),
-                                            () -> factory,
-                                            () -> 443))
+                    newBuilder(hostPort, factory)
                             .disableRetry()
                             .disableServiceConfigLookUp()
                             .proxyDetector(address -> null)
@@ -314,6 +286,58 @@ public final class GrpcClientAdapter implements AutoCloseable {
     }
 
     /**
+     * Returns the helper of the borrowed client, which must be a started client of the core Netty
+     * connector, as it sends the metadata as raw headers.
+     */
+    private NettyClientHelper borrowedHelper() {
+        NettyClientHelper netty =
+                (client != null && client.getHelper() instanceof NettyClientHelper helper)
+                        ? helper
+                        : null;
+        if (netty == null
+                || !client.isStarted()
+                || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
+                || !"HTTP2".equals(netty.getHttpClientTransportMode())
+                || netty.isFollowRedirects()) {
+            throw new IllegalStateException(
+                    "Borrow a started "
+                            + (plaintext ? "HTTP" : "HTTPS")
+                            + " client of the core Netty connector in HTTP2 mode with"
+                            + " followRedirects=false");
+        }
+        return netty;
+    }
+
+    private ManagedChannelImplBuilder newBuilder(
+            HostAndPort hostPort, RestletTransportFactory factory) {
+        if (plaintext) {
+            // The target has a port, so the default one is never used.
+            return new ManagedChannelImplBuilder("dns:///" + hostPort, () -> factory, () -> 80);
+        }
+        // Resolved by the connector, so that the certificate is checked against the target's host.
+        return new ManagedChannelImplBuilder(
+                InetSocketAddress.createUnresolved(hostPort.getHost(), hostPort.getPort()),
+                hostPort.toString(),
+                () -> factory,
+                () -> 443);
+    }
+
+    /**
+     * Returns whether a host is made of ASCII host name labels (RFC 1123, with underscores),
+     * without root dot, which also covers an IPv4 address.
+     */
+    private static boolean isHostName(String host) {
+        for (String label : host.split("\\.", -1)) {
+            if (!LABEL.matcher(label).matches()
+                    || label.charAt(0) == '-'
+                    || label.charAt(label.length() - 1) == '-') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Parses a {@code host:port} or {@code dns:///host:port} target, with a bracketed IPv6 host.
      *
      * @return The host and port of the target, which are also its authority.
@@ -323,7 +347,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
         HostAndPort result;
         try {
             result = HostAndPort.fromString(authority);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             result = null;
         }
         if (result == null
@@ -334,9 +358,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         ? result.getHost().indexOf(':') >= 0
                                 && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
-                        // ASCII host name labels (RFC 1123, with underscores), without root dot,
-                        // which also covers an IPv4 address.
-                        : HOST_NAME.matcher(result.getHost()).matches())) {
+                        : isHostName(result.getHost()))) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }
