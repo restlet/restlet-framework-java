@@ -206,7 +206,8 @@ public class Redirector extends Restlet {
 	/**
 	 * Returns the target reference to redirect to by automatically resolving URI
 	 * template variables found using the {@link Template} class using the request
-	 * and response as data models.
+	 * and response as data models. The dot segments of absolute and
+	 * absolute-path targets are removed (RFC 3986, section 5.2.4).
 	 * 
 	 * @param request  The request to handle.
 	 * @param response The response to update.
@@ -217,13 +218,25 @@ public class Redirector extends Restlet {
 		Template rt = new Template(this.targetTemplate);
 		rt.setLogger(getLogger());
 
-		// Return the formatted target URI
+		// Build the formatted target URI
+		Reference result;
 		if (new Reference(this.targetTemplate).isRelative()) {
 			// Be sure to keep the resource's base reference.
-			return new Reference(request.getResourceRef(), rt.format(request, response));
+			result = new Reference(request.getResourceRef(), rt.format(request,
+					response));
+		} else {
+			result = new Reference(rt.format(request, response));
 		}
 
-		return new Reference(rt.format(request, response));
+		// Remove the dot segments (RFC 3986, section 5.2.4), but only when it
+		// is lossless: a relative-path reference such as "../x" needs its base
+		// reference to be normalized, which is done when it is resolved.
+		String path = result.getPath();
+		if (!result.isRelative() || (path != null && path.startsWith("/"))) {
+			result.normalize();
+		}
+
+		return result;
 	}
 
 	/**
