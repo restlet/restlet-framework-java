@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
@@ -42,7 +42,7 @@ import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Reference;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -60,6 +60,14 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("null")
 final class RestletClientStream extends AbstractClientStream {
+    /**
+     * The metadata not sent as headers: set by the transport (the user agent), describing the gRPC
+     * body, or changing the routing (the authority, the proxy credentials). The connector already
+     * ignores the connection-specific ones, such as "te" or "content-length".
+     */
+    private static final Set<String> EXCLUDED_METADATA =
+            Set.of("user-agent", "content-type", "content-encoding", "host", "proxy-authorization");
+
     private static final MediaType GRPC = MediaType.valueOf("application/grpc");
 
     private final SerializingExecutor serial = new SerializingExecutor(Runnable::run);
@@ -67,6 +75,10 @@ final class RestletClientStream extends AbstractClientStream {
     private final Client client;
     private final String target;
     private final String authority;
+
+    /** The transport attributes, with the security level. */
+    private final Attributes attributes;
+
     private final int limit;
     private final int queueBytes;
     private final ExecutorService io;
@@ -111,8 +123,9 @@ final class RestletClientStream extends AbstractClientStream {
 
     RestletClientStream(
             Client client,
-            InetSocketAddress address,
+            String origin,
             String authority,
+            Attributes attributes,
             MethodDescriptor<?, ?> method,
             Metadata headers,
             CallOptions options,
@@ -123,8 +136,9 @@ final class RestletClientStream extends AbstractClientStream {
             Consumer<RestletClientStream> finished) {
         this(
                 client,
-                address,
+                origin,
                 authority,
+                attributes,
                 method,
                 headers,
                 options,
@@ -132,14 +146,15 @@ final class RestletClientStream extends AbstractClientStream {
                 queueBytes,
                 io,
                 finished,
-                StatsTraceContext.newClientContext(tracers, Attributes.EMPTY, headers),
+                StatsTraceContext.newClientContext(tracers, attributes, headers),
                 TransportTracer.getDefaultFactory().create());
     }
 
     private RestletClientStream(
             Client client,
-            InetSocketAddress address,
+            String origin,
             String authority,
+            Attributes attributes,
             MethodDescriptor<?, ?> method,
             Metadata headers,
             CallOptions options,
@@ -158,11 +173,8 @@ final class RestletClientStream extends AbstractClientStream {
                 false);
         this.client = client;
         this.authority = authority;
-        String ip = address.getAddress().getHostAddress();
-        if (ip.contains(":")) {
-            ip = "[" + ip + "]";
-        }
-        target = "http://" + ip + ":" + address.getPort() + "/" + method.getFullMethodName();
+        this.attributes = attributes;
+        target = origin + "/" + method.getFullMethodName();
         this.limit = limit;
         this.queueBytes = queueBytes;
         this.io = io;
@@ -179,7 +191,7 @@ final class RestletClientStream extends AbstractClientStream {
 
     @Override
     public Attributes getAttributes() {
-        return Attributes.EMPTY;
+        return attributes;
     }
 
     @Override
@@ -389,19 +401,21 @@ final class RestletClientStream extends AbstractClientStream {
     /** Returns the HTTP/2 request of the call, with the gRPC metadata as headers. */
     private Request newRequest() {
         Request call = new Request(Method.POST, target, requestEntity());
-        // Resource origin selects the resolved peer; base reference selects HTTP authority.
-        call.getResourceRef().setBaseRef(new Reference("http://" + authority));
-        call.getHeaders().set("te", "trailers");
         byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
+        // Sent as is, so that standard header names such as "authorization" are kept too, except
+        // the ones that would change the routing (the authority, the proxy credentials) or the
+        // entity.
+        Series<Header> raw = new Series<>(Header.class);
         for (int i = 0; i < metadata.length; i += 2) {
             String key = new String(metadata[i], StandardCharsets.US_ASCII);
-            if (!key.startsWith(":")
-                    && !"content-type".equals(key)
-                    && !"user-agent".equals(key)
-                    && !"te".equals(key)) {
-                call.getHeaders().add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
+            if (!key.startsWith(":") && !EXCLUDED_METADATA.contains(key)) {
+                raw.add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
             }
         }
+        // The target selects the peer (the resolved address, or the authority over TLS), and the
+        // host header the authority as is, with a default port too, like native clients send it.
+        raw.add("host", authority);
+        call.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
         call.getClientInfo().setAgent("restlet-grpc/1.85.1");
         return call;
     }

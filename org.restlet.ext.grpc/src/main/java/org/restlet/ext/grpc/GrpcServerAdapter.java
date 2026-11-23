@@ -33,13 +33,16 @@ import org.restlet.routing.Template;
  * <p>Supports unary, server-streaming, client-streaming and bidirectional methods, with finite
  * message, queue, concurrency and duration budgets. Request messages are read as the application
  * requests them, and responses are sent as they are produced, so a bidirectional call can exchange
- * messages both ways over one HTTP/2 stream. Does not implement TLS or physical connection
- * controls. The host application owns the HTTP listener and any supplied callback executor.
+ * messages both ways over one HTTP/2 stream. Does not implement physical connection controls. The
+ * host application owns the HTTP listener and any supplied callback executor.
  *
  * <p>Register services before {@link #start()}, attach them to a router with {@link #attachTo}, and
- * configure the host listener for plaintext HTTP/2. This adapter is single-use. Stopping it cancels
- * active calls, waits up to the shutdown timeout for SDK and owned callback termination, and shuts
- * down only its own executor and timer, not the listener or an executor supplied with {@link
+ * configure the host listener for HTTP/2: over TLS, an HTTPS listener negotiating it with ALPN
+ * ("http.transport.protocols" including HTTP2), whose calls report {@link
+ * io.grpc.SecurityLevel#PRIVACY_AND_INTEGRITY}; or a plaintext HTTP listener with prior knowledge
+ * ("http.transport.protocol" set to HTTP2). This adapter is single-use. Stopping it cancels active
+ * calls, waits up to the shutdown timeout for SDK and owned callback termination, and shuts down
+ * only its own executor and timer, not the listener or an executor supplied with {@link
  * #setExecutor}.
  */
 public final class GrpcServerAdapter extends Restlet {

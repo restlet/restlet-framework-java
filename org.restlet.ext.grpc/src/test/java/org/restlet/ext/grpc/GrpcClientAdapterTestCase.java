@@ -60,6 +60,8 @@ class GrpcClientAdapterTestCase {
             Metadata.Key.of("x-review", Metadata.ASCII_STRING_MARSHALLER);
     private static final Metadata.Key<byte[]> BINARY =
             Metadata.Key.of("grpc-status-details-bin", Metadata.BINARY_BYTE_MARSHALLER);
+    private static final Metadata.Key<String> AUTHORIZATION =
+            Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
     private final GrpcClientAdapter adapter = new GrpcClientAdapter();
     private Client client;
     private io.grpc.Server peer;
@@ -216,6 +218,7 @@ class GrpcClientAdapterTestCase {
         metadata.put(TEXT, "second");
         metadata.put(BINARY, new byte[] {1, 2, (byte) 255});
         metadata.put(BINARY, new byte[] {(byte) 254, 0});
+        metadata.put(AUTHORIZATION, "Bearer plain");
         var channel =
                 io.grpc.ClientInterceptors.intercept(
                         adapter.getChannel(),
@@ -229,6 +232,7 @@ class GrpcClientAdapterTestCase {
         assertEquals(
                 List.of("first", "second"),
                 com.google.common.collect.ImmutableList.copyOf(observed.get().getAll(TEXT)));
+        assertEquals("Bearer plain", observed.get().get(AUTHORIZATION));
         var binary = com.google.common.collect.ImmutableList.copyOf(observed.get().getAll(BINARY));
         assertEquals(2, binary.size());
         assertArrayEquals(new byte[] {1, 2, (byte) 255}, binary.get(0));
@@ -787,10 +791,11 @@ class GrpcClientAdapterTestCase {
     }
 
     @Test
-    void validatesConfigurationAndRequiresExplicitPlaintext() {
+    void validatesConfigurationAndDefaultsToTls() {
         assertFalse(adapter.isStarted());
+        assertFalse(adapter.isPlaintext());
         assertThrows(IllegalStateException.class, adapter::getChannel);
-        assertThrows(UnsupportedOperationException.class, adapter::start);
+        assertThrows(NullPointerException.class, adapter::start);
         assertThrows(IllegalArgumentException.class, () -> adapter.setMaxMessageBytes(0));
         assertThrows(IllegalArgumentException.class, () -> adapter.setMaxConcurrentCalls(0));
         assertThrows(

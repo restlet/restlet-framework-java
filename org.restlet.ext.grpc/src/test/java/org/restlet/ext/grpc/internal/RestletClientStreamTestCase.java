@@ -11,6 +11,7 @@ package org.restlet.ext.grpc.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import io.grpc.Attributes;
 import io.grpc.CallOptions;
 import io.grpc.ClientStreamTracer;
 import io.grpc.Deadline;
@@ -21,8 +22,6 @@ import io.grpc.internal.ClientStreamListener;
 import io.grpc.internal.StreamListener.MessageProducer;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -37,7 +36,14 @@ class RestletClientStreamTestCase {
     @Test
     void cancelledTimersDoNotStayQueued() {
         var factory =
-                new RestletTransportFactory(null, 1024, 16384, 1, java.time.Duration.ofSeconds(1));
+                new RestletTransportFactory(
+                        null,
+                        1024,
+                        16384,
+                        1,
+                        java.time.Duration.ofSeconds(1),
+                        false,
+                        io.grpc.SecurityLevel.NONE);
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
             for (int i = 0; i < 100; i++) {
@@ -47,6 +53,22 @@ class RestletClientStreamTestCase {
         } finally {
             factory.close();
         }
+    }
+
+    @Test
+    void plaintextTransportsHaveNoSecurity() {
+        var timeout = java.time.Duration.ofSeconds(1);
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new RestletTransportFactory(
+                                null,
+                                1024,
+                                16384,
+                                1,
+                                timeout,
+                                false,
+                                io.grpc.SecurityLevel.PRIVACY_AND_INTEGRITY));
     }
 
     private static MethodDescriptor<byte[], byte[]> method() {
@@ -73,8 +95,9 @@ class RestletClientStreamTestCase {
     private static RestletClientStream stream(ExecutorService io, AtomicInteger released) {
         return new RestletClientStream(
                 new Client(Protocol.HTTP),
-                new InetSocketAddress(InetAddress.getLoopbackAddress(), 8080),
+                "http://127.0.0.1:8080",
                 "localhost:8080",
+                Attributes.EMPTY,
                 method(),
                 new Metadata(),
                 CallOptions.DEFAULT,

@@ -282,7 +282,8 @@ final class Http3Support {
                                                 ? sslContext.newEngine(connection.alloc())
                                                 : sslContext.newEngine(
                                                         connection.alloc(),
-                                                        peer.getHostString(),
+                                                        NettyClientHelper.peerHost(
+                                                                peer.getHostString()),
                                                         peer.getPort());
                                     })
                             .build();

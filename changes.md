@@ -10,6 +10,33 @@ Changes log
           an incoming `+json` entity was not converted, and a `+json` response was left to another
           converter (such as JAXB) when it scored higher than the 0.5 given by Jackson. A custom
           converter that won for these media types may now lose to the JSON converters.
+    - Breaking changes
+        - `GrpcClientAdapter` now uses TLS unless `setPlaintext(true)` is set, instead of failing to
+          start with `UnsupportedOperationException`. TLS requires a borrowed HTTPS client, and
+          plaintext a borrowed HTTP client, both of the core Netty connector. Targets are
+          validated at start: a port between 1 and 65535 is required, IPv6 hosts must be
+          bracketed and without zone, other hosts must be ASCII host names, and user information
+          and percent-encoding are refused.
+    - Enhancements
+        - The gRPC extension supports TLS. `GrpcClientAdapter` sends calls through its borrowed
+          HTTPS client, which negotiates HTTP/2 with ALPN, resolves the target and checks the
+          server certificate against the target's host name, also sent with SNI. TLS settings
+          (trust store, "hostnameVerification", "sslContextFactory", ...) and HTTPS proxy are the
+          client's.
+          `GrpcServerAdapter` serves calls on an HTTPS listener negotiating HTTP/2 with ALPN. Both
+          adapters report the transport security level, so call credentials requiring privacy and
+          integrity can be used; the client reports no security when "hostnameVerification" is
+          off, since the peer is then not authenticated. The client's TLS settings must not change
+          while the adapter is started, and plaintext calls must not go through an HTTP forward
+          proxy.
+    - Bugs fixed
+        - The gRPC client dropped the metadata having a standard HTTP header name, such as the
+          "authorization" bearer token of call credentials: it is now sent as is, repeated values
+          included, except "host", "proxy-authorization", "content-type", "content-encoding" and
+          "content-length", which would change the routing or the description of the gRPC body.
+        - The HTTPS client connector checked the certificate of an IPv6 literal host, such as
+          `https://[::1]:8443/`, against its bracketed form, so hostname verification always
+          failed, over HTTP/1.1, HTTP/2 and HTTP/3: the address is now checked without brackets.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
