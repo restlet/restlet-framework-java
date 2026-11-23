@@ -67,7 +67,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>keyManagerAlgorithm</td>
  * <td>String</td>
- * <td>System property "ssl.KeyManagerFactory.algorithm" or "SunX509"</td>
+ * <td>System property "ssl.KeyManagerFactory.algorithm" or the JVM default algorithm</td>
  * <td>Certificate algorithm for the key manager.</td>
  * </tr>
  * <tr>
@@ -116,7 +116,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>trustManagerAlgorithm</td>
  * <td>String</td>
- * <td>System property "ssl.TrustManagerFactory.algorithm" or "SunX509"</td>
+ * <td>System property "ssl.TrustManagerFactory.algorithm" or the JVM default algorithm</td>
  * <td>Certificate algorithm for the trust manager.</td>
  * </tr>
  * <tr>
@@ -184,11 +184,11 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /** The whitespace-separated list of enabled SSL protocols. */
     private volatile String[] enabledProtocols = null;
 
-    private static final String SUN_X509 = "SunX509";
-
     /** The name of the KeyManager algorithm. */
     private volatile String keyManagerAlgorithm =
-            System.getProperty("ssl.KeyManagerFactory.algorithm", SUN_X509);
+            System.getProperty(
+                    "ssl.KeyManagerFactory.algorithm",
+                    javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
 
     /** The password for the key in the keystore (as a String). */
     private volatile char[] keyStoreKeyPassword =
@@ -240,7 +240,9 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /** The name of the TrustManager algorithm. */
     private volatile String trustManagerAlgorithm =
-            System.getProperty("ssl.TrustManagerFactory.algorithm", SUN_X509);
+            System.getProperty(
+                    "ssl.TrustManagerFactory.algorithm",
+                    javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
 
     /** The password for the trust store keystore. */
     private volatile char[] trustStorePassword =
@@ -638,7 +640,9 @@ public class DefaultSslContextFactory extends SslContextFactory {
                 helperParameters.getFirstValue(
                         "keyManagerAlgorithm",
                         true,
-                        System.getProperty("ssl.KeyManagerFactory.algorithm", SUN_X509)));
+                        System.getProperty(
+                                "ssl.KeyManagerFactory.algorithm",
+                                javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm())));
         setKeyStorePassword(
                 helperParameters.getFirstValue(
                         "keyStorePassword",
@@ -667,7 +671,9 @@ public class DefaultSslContextFactory extends SslContextFactory {
                 helperParameters.getFirstValue(
                         "trustManagerAlgorithm",
                         true,
-                        System.getProperty("ssl.TrustManagerFactory.algorithm", SUN_X509)));
+                        System.getProperty(
+                                "ssl.TrustManagerFactory.algorithm",
+                                javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm())));
         setTrustStorePassword(
                 helperParameters.getFirstValue(
                         "trustStorePassword",
@@ -769,8 +775,9 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /**
      * Sets the KeyManager algorithm. The default value is that of the
-     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or <i>"SunX509"</i> if the system
-     * property has not been set up.
+     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or the JVM default algorithm (see
+     * {@link javax.net.ssl.KeyManagerFactory#getDefaultAlgorithm()}) if the system property has not
+     * been set up.
      *
      * @param keyManagerAlgorithm The KeyManager algorithm.
      */
@@ -881,8 +888,11 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /**
      * Sets the TrustManager algorithm. The default value is that of the
-     * <i>ssl.TrustManagerFactory.algorithm</i> system property, or <i>"SunX509"</i> if the system
-     * property has not been set up.
+     * <i>ssl.TrustManagerFactory.algorithm</i> system property, or the JVM default algorithm (see
+     * {@link javax.net.ssl.TrustManagerFactory#getDefaultAlgorithm()}, <i>"PKIX"</i> unless the
+     * <i>ssl.TrustManagerFactory.algorithm</i> security property says otherwise) if the system
+     * property has not been set up. The <i>"SunX509"</i> algorithm is obsolete: it fails on a valid
+     * certificate chain that is not in order.
      *
      * @param trustManagerAlgorithm The TrustManager algorithm.
      */
