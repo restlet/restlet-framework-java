@@ -228,12 +228,14 @@ class GrpcTlsTestCase {
     @Test
     void clientSendsStandardNamedMetadataAsIs() throws Exception {
         AtomicReference<Metadata> observed = new AtomicReference<>();
+        AtomicReference<String> authority = new AtomicReference<>();
         startPeer(
                 new ServerInterceptor() {
                     @Override
                     public <Q, S> ServerCall.Listener<Q> interceptCall(
                             ServerCall<Q, S> call, Metadata headers, ServerCallHandler<Q, S> next) {
                         observed.set(headers);
+                        authority.set(call.getAuthority());
                         return next.startCall(call, headers);
                     }
                 });
@@ -244,6 +246,7 @@ class GrpcTlsTestCase {
         metadata.put(AUTHORIZATION, "api-key");
         metadata.put(AUTHORIZATION, "Bearer two");
         metadata.put(cookie, "a=1");
+        metadata.put(Metadata.Key.of("content-language", Metadata.ASCII_STRING_MARSHALLER), "fr");
         metadata.put(Metadata.Key.of("host", Metadata.ASCII_STRING_MARSHALLER), "other.example:1");
         metadata.put(
                 Metadata.Key.of("proxy-authorization", Metadata.ASCII_STRING_MARSHALLER),
@@ -258,6 +261,13 @@ class GrpcTlsTestCase {
                 com.google.common.collect.ImmutableList.copyOf(
                         observed.get().getAll(AUTHORIZATION)));
         assertEquals("a=1", observed.get().get(cookie));
+        assertEquals("localhost:" + peer.getPort(), authority.get());
+        assertEquals(
+                null,
+                observed.get()
+                        .get(
+                                Metadata.Key.of(
+                                        "content-language", Metadata.ASCII_STRING_MARSHALLER)));
         assertEquals(
                 null,
                 observed.get()
@@ -289,7 +299,9 @@ class GrpcTlsTestCase {
                 "local\\host:443",
                 "a[b:443",
                 "caf%C3%A9:443",
-                "[localhost]:443"
+                "[localhost]:443",
+                "[127.0.0.1]:443",
+                "[fe80::1%eth0]:443"
             })
     void clientRejectsInvalidTargets(String target) throws Exception {
         startClient(Protocol.HTTPS, false);
@@ -305,6 +317,39 @@ class GrpcTlsTestCase {
         adapter.setTarget("dns:///[::1]:8443");
         adapter.start();
         assertEquals("[::1]:8443", adapter.getChannel().authority());
+    }
+
+    @Test
+    void clientReportsIntegrityOnlyWithoutHostnameVerification() throws Exception {
+        startPeer(new Recorder());
+        Context context = new Context();
+        context.getParameters().set("httpClientTransportMode", "HTTP2");
+        context.getParameters().set("followRedirects", "false");
+        context.getParameters().set("hostnameVerification", "false");
+        context.getParameters().set("truststorePath", keystore().toString());
+        context.getParameters().set("truststorePassword", PASSWORD);
+        context.getParameters().set("trustStoreType", "PKCS12");
+        client = new Client(context, Protocol.HTTPS);
+        client.start();
+        startAdapter("localhost:" + peer.getPort());
+        AtomicReference<SecurityLevel> level = new AtomicReference<>();
+        CallCredentials recording =
+                new CallCredentials() {
+                    @Override
+                    public void applyRequestMetadata(
+                            RequestInfo info, Executor executor, MetadataApplier applier) {
+                        level.set(info.getSecurityLevel());
+                        applier.apply(new Metadata());
+                    }
+                };
+        assertEquals(
+                "unverified",
+                call(
+                                adapter.getChannel(),
+                                CallOptions.DEFAULT.withCallCredentials(recording),
+                                "unverified")
+                        .getValue());
+        assertEquals(SecurityLevel.INTEGRITY, level.get());
     }
 
     @Test
