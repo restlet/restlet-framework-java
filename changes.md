@@ -7,7 +7,7 @@ Changes log
     - Breaking changes
         - `GrpcClientAdapter` now uses TLS unless `setPlaintext(true)` is set, instead of failing to
           start with `UnsupportedOperationException`. TLS requires a borrowed HTTPS client, and
-          plaintext a borrowed HTTP client. Targets are validated at start: a port between 1 and
+          plaintext a borrowed HTTP client, both of the core Netty connector. Targets are validated at start: a port between 1 and
           65535 is required, IPv6 hosts must be bracketed and without zone, and user information
           and percent-encoding are refused.
     - Enhancements
@@ -29,7 +29,7 @@ Changes log
           "content-length", which would change the routing or the description of the gRPC body.
         - The HTTPS client connector checked the certificate of an IPv6 literal host, such as
           `https://[::1]:8443/`, against its bracketed form, so hostname verification always
-          failed: the address is now checked without brackets.
+          failed, over HTTP/1.1, HTTP/2 and HTTP/3: the address is now checked without brackets.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes

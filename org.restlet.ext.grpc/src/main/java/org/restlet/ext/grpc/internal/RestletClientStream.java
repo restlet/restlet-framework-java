@@ -60,6 +60,14 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("null")
 final class RestletClientStream extends AbstractClientStream {
+    /**
+     * The metadata not sent as headers: set by the transport (the user agent), describing the gRPC
+     * body, or changing the routing (the authority, the proxy credentials). The connector already
+     * ignores the connection-specific ones, such as "te" or "content-length".
+     */
+    private static final Set<String> EXCLUDED_METADATA =
+            Set.of("user-agent", "content-type", "content-encoding", "host", "proxy-authorization");
+
     private static final MediaType GRPC = MediaType.valueOf("application/grpc");
 
     private final SerializingExecutor serial = new SerializingExecutor(Runnable::run);
@@ -67,10 +75,6 @@ final class RestletClientStream extends AbstractClientStream {
     private final Client client;
     private final String target;
     private final String authority;
-
-    /** The headers describing the gRPC body, which the metadata must not replace. */
-    private static final Set<String> ENTITY_HEADERS =
-            Set.of("content-type", "content-encoding", "content-length");
 
     /** The transport attributes, with the security level. */
     private final Attributes attributes;
@@ -404,11 +408,7 @@ final class RestletClientStream extends AbstractClientStream {
         Series<Header> raw = new Series<>(Header.class);
         for (int i = 0; i < metadata.length; i += 2) {
             String key = new String(metadata[i], StandardCharsets.US_ASCII);
-            if (!key.startsWith(":")
-                    && !ENTITY_HEADERS.contains(key)
-                    && !"user-agent".equals(key)
-                    && !"host".equals(key)
-                    && !"proxy-authorization".equals(key)) {
+            if (!key.startsWith(":") && !EXCLUDED_METADATA.contains(key)) {
                 raw.add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
             }
         }
