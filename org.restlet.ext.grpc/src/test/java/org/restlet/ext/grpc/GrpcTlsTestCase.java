@@ -221,34 +221,71 @@ class GrpcTlsTestCase {
     }
 
     @Test
-    void clientRejectsRepeatedAuthorizationMetadata() throws Exception {
-        startPeer(new Recorder());
+    void clientSendsStandardNamedMetadataAsIs() throws Exception {
+        AtomicReference<Metadata> observed = new AtomicReference<>();
+        startPeer(
+                new ServerInterceptor() {
+                    @Override
+                    public <Q, S> ServerCall.Listener<Q> interceptCall(
+                            ServerCall<Q, S> call, Metadata headers, ServerCallHandler<Q, S> next) {
+                        observed.set(headers);
+                        return next.startCall(call, headers);
+                    }
+                });
         startClient(Protocol.HTTPS, true);
         startAdapter("localhost:" + peer.getPort());
+        Metadata.Key<String> cookie = Metadata.Key.of("cookie", Metadata.ASCII_STRING_MARSHALLER);
         Metadata metadata = new Metadata();
-        metadata.put(AUTHORIZATION, "Bearer one");
+        metadata.put(AUTHORIZATION, "api-key");
         metadata.put(AUTHORIZATION, "Bearer two");
+        metadata.put(cookie, "a=1");
         var intercepted =
                 io.grpc.ClientInterceptors.intercept(
                         adapter.getChannel(),
                         io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor(metadata));
-        StatusRuntimeException error =
-                assertThrows(
-                        StatusRuntimeException.class,
-                        () -> call(intercepted, CallOptions.DEFAULT, "twice"));
-        assertEquals(Status.Code.INTERNAL, error.getStatus().getCode());
-        Metadata bare = new Metadata();
-        bare.put(AUTHORIZATION, "token");
-        var unscheme =
-                io.grpc.ClientInterceptors.intercept(
-                        adapter.getChannel(),
-                        io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor(bare));
-        error =
-                assertThrows(
-                        StatusRuntimeException.class,
-                        () -> call(unscheme, CallOptions.DEFAULT, "bare"));
-        assertEquals(Status.Code.INTERNAL, error.getStatus().getCode());
-        assertEquals("ok", call(adapter.getChannel(), CallOptions.DEFAULT, "ok").getValue());
+        assertEquals("raw", call(intercepted, CallOptions.DEFAULT, "raw").getValue());
+        assertEquals(
+                java.util.List.of("api-key", "Bearer two"),
+                com.google.common.collect.ImmutableList.copyOf(
+                        observed.get().getAll(AUTHORIZATION)));
+        assertEquals("a=1", observed.get().get(cookie));
+    }
+
+    @Test
+    void clientRequiresAnHttpClientForPlaintext() throws Exception {
+        startClient(Protocol.HTTPS, false);
+        adapter.setClient(client);
+        adapter.setTarget("localhost:80");
+        adapter.setPlaintext(true);
+        IllegalStateException error = assertThrows(IllegalStateException.class, adapter::start);
+        assertTrue(error.getMessage().contains("HTTP client"), error.getMessage());
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(
+            strings = {
+                "localhost",
+                "localhost:0",
+                "localhost:65536",
+                "::1:8443",
+                "user@localhost:443",
+                "dns:///:443",
+                "localhost:443/path"
+            })
+    void clientRejectsInvalidTargets(String target) throws Exception {
+        startClient(Protocol.HTTPS, false);
+        adapter.setClient(client);
+        adapter.setTarget(target);
+        assertThrows(IllegalArgumentException.class, adapter::start);
+    }
+
+    @Test
+    void clientAcceptsABracketedIpv6Target() throws Exception {
+        startClient(Protocol.HTTPS, false);
+        adapter.setClient(client);
+        adapter.setTarget("dns:///[::1]:8443");
+        adapter.start();
+        assertEquals("[::1]:8443", adapter.getChannel().authority());
     }
 
     @Test
@@ -283,14 +320,6 @@ class GrpcTlsTestCase {
         adapter.setTarget("localhost:443");
         IllegalStateException error = assertThrows(IllegalStateException.class, adapter::start);
         assertTrue(error.getMessage().contains("HTTPS"), error.getMessage());
-    }
-
-    @Test
-    void clientRejectsAnInvalidPort() throws Exception {
-        startClient(Protocol.HTTPS, false);
-        adapter.setClient(client);
-        adapter.setTarget("[::1]:65536");
-        assertThrows(IllegalArgumentException.class, adapter::start);
     }
 
     /** Starts the server adapter on an HTTPS listener negotiating HTTP/2 with ALPN. */

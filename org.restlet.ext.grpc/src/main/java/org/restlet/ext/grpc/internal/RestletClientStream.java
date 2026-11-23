@@ -16,7 +16,6 @@ import io.grpc.InternalMetadata;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.internal.AbstractClientStream;
 import io.grpc.internal.Http2ClientStreamTransportState;
 import io.grpc.internal.ReadableBuffers;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -40,12 +38,11 @@ import java.util.function.Consumer;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -71,8 +68,8 @@ final class RestletClientStream extends AbstractClientStream {
     private final String target;
     private final String authority;
 
-    /** Whether the call is sent over TLS. */
-    private final boolean secure;
+    /** The base reference of the request, selecting its HTTP authority. */
+    private final String base;
 
     /** The transport attributes, with the security level. */
     private final Attributes attributes;
@@ -121,9 +118,9 @@ final class RestletClientStream extends AbstractClientStream {
 
     RestletClientStream(
             Client client,
-            InetSocketAddress address,
+            String origin,
+            String base,
             String authority,
-            boolean secure,
             Attributes attributes,
             MethodDescriptor<?, ?> method,
             Metadata headers,
@@ -135,9 +132,9 @@ final class RestletClientStream extends AbstractClientStream {
             Consumer<RestletClientStream> finished) {
         this(
                 client,
-                address,
+                origin,
+                base,
                 authority,
-                secure,
                 attributes,
                 method,
                 headers,
@@ -152,9 +149,9 @@ final class RestletClientStream extends AbstractClientStream {
 
     private RestletClientStream(
             Client client,
-            InetSocketAddress address,
+            String origin,
+            String base,
             String authority,
-            boolean secure,
             Attributes attributes,
             MethodDescriptor<?, ?> method,
             Metadata headers,
@@ -174,18 +171,9 @@ final class RestletClientStream extends AbstractClientStream {
                 false);
         this.client = client;
         this.authority = authority;
-        this.secure = secure;
         this.attributes = attributes;
-        if (secure) {
-            // The connector resolves the authority, and checks the certificate against its host.
-            target = "https://" + authority + "/" + method.getFullMethodName();
-        } else {
-            String ip = address.getAddress().getHostAddress();
-            if (ip.contains(":")) {
-                ip = "[" + ip + "]";
-            }
-            target = "http://" + ip + ":" + address.getPort() + "/" + method.getFullMethodName();
-        }
+        this.base = base;
+        target = origin + "/" + method.getFullMethodName();
         this.limit = limit;
         this.queueBytes = queueBytes;
         this.io = io;
@@ -399,8 +387,6 @@ final class RestletClientStream extends AbstractClientStream {
             if (!done) {
                 receive(response);
             }
-        } catch (StatusRuntimeException e) {
-            fail(e.getStatus());
         } catch (IOException | RuntimeException e) {
             fail(Status.UNAVAILABLE.withDescription("Restlet gRPC exchange failed").withCause(e));
         } finally {
@@ -415,43 +401,23 @@ final class RestletClientStream extends AbstractClientStream {
     private Request newRequest() {
         Request call = new Request(Method.POST, target, requestEntity());
         // Resource origin selects the resolved peer; base reference selects HTTP authority.
-        call.getResourceRef()
-                .setBaseRef(new Reference((secure ? "https://" : "http://") + authority));
+        call.getResourceRef().setBaseRef(new Reference(base));
         call.getHeaders().set("te", "trailers");
         byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
+        // Sent as is, so that standard header names such as "authorization" are kept too.
+        Series<Header> raw = new Series<>(Header.class);
         for (int i = 0; i < metadata.length; i += 2) {
             String key = new String(metadata[i], StandardCharsets.US_ASCII);
-            String value = new String(metadata[i + 1], StandardCharsets.US_ASCII);
-            if ("authorization".equals(key)) {
-                // A standard header, sent from the challenge response, e.g. call credentials'.
-                authorize(call, value);
-            } else if (!key.startsWith(":")
+            if (!key.startsWith(":")
                     && !"content-type".equals(key)
                     && !"user-agent".equals(key)
                     && !"te".equals(key)) {
-                call.getHeaders().add(key, value);
+                raw.add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
             }
         }
+        call.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
         call.getClientInfo().setAgent("restlet-grpc/1.85.1");
         return call;
-    }
-
-    /**
-     * Sets the "authorization" metadata, in the "scheme credentials" form, as the challenge
-     * response of the request, which the connector sends as the "Authorization" header.
-     */
-    private static void authorize(Request call, String value) {
-        int space = value.indexOf(' ');
-        if (call.getChallengeResponse() != null || space <= 0 || space == value.length() - 1) {
-            throw Status.INTERNAL
-                    .withDescription("Expected a single \"scheme credentials\" authorization")
-                    .asRuntimeException();
-        }
-        String scheme = value.substring(0, space);
-        ChallengeResponse response =
-                new ChallengeResponse(new ChallengeScheme("HTTP_" + scheme, scheme));
-        response.setRawValue(value.substring(space + 1));
-        call.setChallengeResponse(response);
     }
 
     /** Hands the response head, body and trailers to the SDK. */
