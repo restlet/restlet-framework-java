@@ -55,6 +55,21 @@ class RestletClientStreamTestCase {
         }
     }
 
+    @Test
+    void plaintextTransportsHaveNoSecurity() {
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new RestletTransportFactory(
+                                null,
+                                1024,
+                                16384,
+                                1,
+                                java.time.Duration.ofSeconds(1),
+                                false,
+                                io.grpc.SecurityLevel.PRIVACY_AND_INTEGRITY));
+    }
+
     private static MethodDescriptor<byte[], byte[]> method() {
         var marshaller =
                 new MethodDescriptor.Marshaller<byte[]>() {
