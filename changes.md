@@ -4,6 +4,21 @@ Changes log
 
 
 - 3.0 Milestone 3 (month-day-2026)
+    - Breaking changes
+        - `GrpcClientAdapter` now uses TLS unless `setPlaintext(true)` is set, instead of failing to
+          start with `UnsupportedOperationException`. TLS requires a borrowed HTTPS client.
+    - Enhancements
+        - The gRPC extension supports TLS. `GrpcClientAdapter` sends calls through its borrowed
+          HTTPS client, which negotiates HTTP/2 with ALPN, resolves the target and checks the
+          server certificate against the target's host name, also sent with SNI. TLS settings
+          (trust store, "hostnameVerification", "sslContextFactory", ...) are the client's.
+          `GrpcServerAdapter` serves calls on an HTTPS listener negotiating HTTP/2 with ALPN. Both
+          adapters report the transport security level, so call credentials requiring privacy and
+          integrity can be used.
+    - Bugs fixed
+        - The gRPC client dropped the "authorization" metadata, such as a bearer token set by call
+          credentials: it is now sent as the "Authorization" header. Repeated or malformed values
+          fail the call with `INTERNAL`.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes

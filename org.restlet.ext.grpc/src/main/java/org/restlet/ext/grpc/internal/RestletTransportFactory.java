@@ -19,11 +19,13 @@ import io.grpc.InternalChannelz;
 import io.grpc.InternalLogId;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import io.grpc.SecurityLevel;
 import io.grpc.Status;
 import io.grpc.internal.ClientStream;
 import io.grpc.internal.ClientTransportFactory;
 import io.grpc.internal.ConnectionClientTransport;
 import io.grpc.internal.FailingClientStream;
+import io.grpc.internal.GrpcAttributes;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.Duration;
@@ -45,6 +47,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     private final int maxBytes;
     private final int queueBytes;
     private final Duration shutdownTimeout;
+    private final boolean secure;
+    private final Attributes attributes;
     private final Semaphore admission;
     private final Set<Transport> transports = new HashSet<>();
     private final ExecutorService io = Executors.newVirtualThreadPerTaskExecutor();
@@ -53,9 +57,27 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                     1, Thread.ofPlatform().daemon().name("restlet-grpc-timer").factory());
     private boolean closed;
 
+    /**
+     * Constructor.
+     *
+     * @param secure True for TLS: the transports then take the unresolved target address, which the
+     *     client connector resolves; false for plaintext to resolved addresses.
+     */
     public RestletTransportFactory(
-            Client client, int maxBytes, int queueBytes, int maxCalls, Duration timeout) {
+            Client client,
+            int maxBytes,
+            int queueBytes,
+            int maxCalls,
+            Duration timeout,
+            boolean secure) {
         this.client = client;
+        this.secure = secure;
+        attributes =
+                Attributes.newBuilder()
+                        .set(
+                                GrpcAttributes.ATTR_SECURITY_LEVEL,
+                                secure ? SecurityLevel.PRIVACY_AND_INTEGRITY : SecurityLevel.NONE)
+                        .build();
         this.maxBytes = maxBytes;
         this.queueBytes = queueBytes;
         admission = new Semaphore(maxCalls);
@@ -71,10 +93,14 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             throw new IllegalStateException("gRPC transport factory is closed");
         }
         if (!(address instanceof InetSocketAddress inet)
-                || inet.isUnresolved()
+                || inet.isUnresolved() != secure
                 || options.getHttpConnectProxiedSocketAddress() != null) {
             throw new IllegalArgumentException(
-                    "Only resolved Internet addresses without proxy CONNECT are supported");
+                    secure
+                            ? "Only the unresolved target address without proxy CONNECT is"
+                                    + " supported over TLS"
+                            : "Only resolved Internet addresses without proxy CONNECT are"
+                                    + " supported");
         }
         Transport transport = new Transport(inet, options.getAuthority());
         transports.add(transport);
@@ -88,7 +114,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
 
     @Override
     public SwapChannelCredentialsResult swapChannelCredentials(ChannelCredentials credentials) {
-        throw new UnsupportedOperationException("Channel credentials/TLS are not supported in R3");
+        // TLS is configured on the borrowed client connector, not with SDK credentials.
+        throw new UnsupportedOperationException("Channel credentials are not supported");
     }
 
     @Override
@@ -189,6 +216,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                             client,
                             address,
                             authority,
+                            secure,
+                            attributes,
                             method,
                             headers,
                             options,
@@ -265,7 +294,7 @@ public final class RestletTransportFactory implements ClientTransportFactory {
 
         @Override
         public Attributes getAttributes() {
-            return Attributes.EMPTY;
+            return attributes;
         }
     }
 }
