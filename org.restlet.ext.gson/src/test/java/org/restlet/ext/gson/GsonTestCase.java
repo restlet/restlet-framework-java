@@ -372,4 +372,43 @@ class GsonTestCase {
 
         assertEquals(userAsJsonString, gsonRep.getText());
     }
+
+    // #1185: application/*+json media types are JSON.
+
+    private static final MediaType VND_JSON = new MediaType("application/vnd.example+json");
+
+    @Test
+    final void getObjectClasses_forJsonSuffixVariant_isNotNull() {
+        assertNotNull(gsonConverter.getObjectClasses(new Variant(VND_JSON)));
+    }
+
+    @Test
+    final void getObjectClasses_forXmlSuffixVariant_isNull() {
+        assertNull(
+                gsonConverter.getObjectClasses(
+                        new Variant(new MediaType("application/vnd.example+xml"))));
+    }
+
+    @Test
+    final void score_forJsonSuffixTarget_returnsPointEight() {
+        assertEquals(0.8f, gsonConverter.score(user, new Variant(VND_JSON), null));
+    }
+
+    @Test
+    final void scoreRepresentation_forJsonSuffixSource_returnsPointEight() {
+        assertEquals(
+                0.8f,
+                gsonConverter.score(new StringRepresentation("{}", VND_JSON), String.class, null));
+    }
+
+    @Test
+    final void toObject_fromJsonSuffixRepresentation_returnsParsedObject() throws IOException {
+        StringRepresentation source = new StringRepresentation("\"text\"", VND_JSON);
+        assertEquals("text", gsonConverter.toObject(source, String.class, null));
+    }
+
+    @Test
+    final void toRepresentation_forJsonSuffixTarget_isNotNull() {
+        assertNotNull(gsonConverter.toRepresentation(user, new Variant(VND_JSON), null));
+    }
 }
