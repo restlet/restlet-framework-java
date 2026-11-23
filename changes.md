@@ -4,6 +4,16 @@ Changes log
 
 
 - 3.0 Milestone 3 (month-day-2026)
+    - Breaking changes
+        - `DefaultSslContextFactory` now uses the JVM default algorithms for the trust manager
+          (`TrustManagerFactory.getDefaultAlgorithm()`, `PKIX`) and the key manager
+          (`KeyManagerFactory.getDefaultAlgorithm()`) instead of the obsolete `SunX509`, unless the
+          `ssl.TrustManagerFactory.algorithm` or `ssl.KeyManagerFactory.algorithm` system property,
+          the `trustManagerAlgorithm` or `keyManagerAlgorithm` parameter, or the setters say
+          otherwise (#1397). A valid certificate chain that is not in order is no longer rejected
+          with a "Certificate chaining error". The `PKIX` validation is the standard one, and
+          stricter than `SunX509` on unusual chains: set the trust manager algorithm to `SunX509`
+          to get the previous behavior.
     - Bugs fixed
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the
