@@ -7,8 +7,9 @@ Changes log
     - Breaking changes
         - `GrpcClientAdapter` now uses TLS unless `setPlaintext(true)` is set, instead of failing to
           start with `UnsupportedOperationException`. TLS requires a borrowed HTTPS client, and
-          plaintext a borrowed HTTP client, both of the core Netty connector. Targets are validated at start: a port between 1 and
-          65535 is required, IPv6 hosts must be bracketed and without zone, and user information
+          plaintext a borrowed HTTP client, both of the core Netty connector. Targets are
+          validated at start: a port between 1 and 65535 is required, IPv6 hosts must be
+          bracketed and without zone, other hosts must be ASCII host names, and user information
           and percent-encoding are refused.
     - Enhancements
         - The gRPC extension supports TLS. `GrpcClientAdapter` sends calls through its borrowed
