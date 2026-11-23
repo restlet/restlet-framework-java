@@ -414,12 +414,13 @@ final class RestletClientStream extends AbstractClientStream {
             if (!key.startsWith(":")
                     && !key.startsWith("content-")
                     && !"user-agent".equals(key)
-                    && !"te".equals(key)
                     && !"host".equals(key)
                     && !"proxy-authorization".equals(key)) {
                 raw.add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
             }
         }
+        // The authority as is, with a default port too, like native clients send it.
+        raw.add("host", authority);
         call.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
         call.getClientInfo().setAgent("restlet-grpc/1.85.1");
         return call;

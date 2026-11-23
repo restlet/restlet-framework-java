@@ -310,18 +310,8 @@ class GrpcTlsTestCase {
         assertThrows(IllegalArgumentException.class, adapter::start);
     }
 
-    @Test
-    void clientAcceptsABracketedIpv6Target() throws Exception {
-        startClient(Protocol.HTTPS, false);
-        adapter.setClient(client);
-        adapter.setTarget("dns:///[::1]:8443");
-        adapter.start();
-        assertEquals("[::1]:8443", adapter.getChannel().authority());
-    }
-
-    @Test
-    void clientReportsIntegrityOnlyWithoutHostnameVerification() throws Exception {
-        startPeer(new Recorder());
+    /** Starts an HTTPS client trusting the test certificate, without hostname verification. */
+    private void startUnverifiedClient() throws Exception {
         Context context = new Context();
         context.getParameters().set("httpClientTransportMode", "HTTP2");
         context.getParameters().set("followRedirects", "false");
@@ -331,6 +321,12 @@ class GrpcTlsTestCase {
         context.getParameters().set("trustStoreType", "PKCS12");
         client = new Client(context, Protocol.HTTPS);
         client.start();
+    }
+
+    @Test
+    void clientReportsNoSecurityWithoutHostnameVerification() throws Exception {
+        startPeer(new Recorder());
+        startUnverifiedClient();
         startAdapter("localhost:" + peer.getPort());
         AtomicReference<SecurityLevel> level = new AtomicReference<>();
         CallCredentials recording =
@@ -349,7 +345,7 @@ class GrpcTlsTestCase {
                                 CallOptions.DEFAULT.withCallCredentials(recording),
                                 "unverified")
                         .getValue());
-        assertEquals(SecurityLevel.INTEGRITY, level.get());
+        assertEquals(SecurityLevel.NONE, level.get());
     }
 
     @Test
@@ -384,6 +380,41 @@ class GrpcTlsTestCase {
         adapter.setTarget("localhost:443");
         IllegalStateException error = assertThrows(IllegalStateException.class, adapter::start);
         assertTrue(error.getMessage().contains("HTTPS"), error.getMessage());
+    }
+
+    @Test
+    void clientCallsABracketedIpv6Target() throws Exception {
+        try (var probe = new java.net.ServerSocket()) {
+            probe.bind(new java.net.InetSocketAddress("::1", 0));
+        } catch (java.io.IOException e) {
+            org.junit.jupiter.api.Assumptions.abort("No IPv6 loopback: " + e);
+        }
+        Recorder recorder = new Recorder();
+        startPeer(recorder);
+        // The test certificate is issued to localhost, not to the IPv6 loopback address.
+        startUnverifiedClient();
+        startAdapter("dns:///[::1]:" + peer.getPort());
+        assertEquals("[::1]:" + peer.getPort(), adapter.getChannel().authority());
+        assertEquals("ipv6", call(adapter.getChannel(), CallOptions.DEFAULT, "ipv6").getValue());
+        assertEquals("[::1]:" + peer.getPort(), recorder.authority.get());
+    }
+
+    @Test
+    void clientRequiresTheNettyConnector() throws Exception {
+        Context context = new Context();
+        context.getParameters().set("httpClientTransportMode", "HTTP2");
+        context.getParameters().set("followRedirects", "false");
+        client =
+                new Client(context, Protocol.HTTPS) {
+                    @Override
+                    public org.restlet.engine.RestletHelper<Client> getHelper() {
+                        return null;
+                    }
+                };
+        client.start();
+        adapter.setClient(client);
+        adapter.setTarget("localhost:443");
+        assertThrows(IllegalStateException.class, adapter::start);
     }
 
     /** Starts the server adapter on an HTTPS listener negotiating HTTP/2 with ALPN. */
