@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
+import org.restlet.engine.netty.NettyClientHelper;
 import org.restlet.ext.grpc.internal.RestletTransportFactory;
 
 /**
@@ -45,13 +46,13 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * client's. The client connector resolves the target and checks the server certificate against its
  * host name, which is also sent with SNI, so the SDK's name resolution is not used. The calls'
  * transport reports {@link SecurityLevel#PRIVACY_AND_INTEGRITY}, as call credentials require, or
- * only {@link SecurityLevel#INTEGRITY} when the client's "hostnameVerification" is false. A trust
- * manager accepting any certificate is not detected: the client's trust settings are the
- * application's responsibility. TLS calls follow the client's proxy settings: they are tunneled
- * with CONNECT through its HTTPS proxy, if any. Plaintext calls to the resolved addresses of the
- * target must be explicitly enabled with {@link #setPlaintext(boolean)}, with a borrowed HTTP
- * client. The borrowed client must be the core Netty connector, which sends the metadata as is.
- * Retry, keepalive and physical-connection controls are not implemented.
+ * {@link SecurityLevel#NONE} when the client's "hostnameVerification" is off, since the peer is
+ * then not authenticated. A trust manager accepting any certificate is not detected: the client's
+ * trust settings are the application's responsibility. TLS calls follow the client's proxy
+ * settings: they are tunneled with CONNECT through its HTTPS proxy, if any. Plaintext calls to the
+ * resolved addresses of the target must be explicitly enabled with {@link #setPlaintext(boolean)},
+ * with a borrowed HTTP client. The borrowed client must be the core Netty connector, which sends
+ * the metadata as is. Retry, keepalive and physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
     private final Context context;
@@ -213,6 +214,8 @@ public final class GrpcClientAdapter implements AutoCloseable {
         if (client == null
                 || !client.isStarted()
                 || client.getContext() == null
+                // Which sends the metadata as raw headers.
+                || !(client.getHelper() instanceof NettyClientHelper)
                 || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
                 || !"HTTP2"
                         .equals(
@@ -227,7 +230,8 @@ public final class GrpcClientAdapter implements AutoCloseable {
             throw new IllegalStateException(
                     "Borrow a started "
                             + (plaintext ? "HTTP" : "HTTPS")
-                            + " client in HTTP2 mode with followRedirects=false");
+                            + " client of the core Netty connector in HTTP2 mode with"
+                            + " followRedirects=false");
         }
         HostAndPort hostPort = parse(target);
         configured = true;
@@ -238,17 +242,13 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         maxQueuedBytes,
                         maxConcurrentCalls,
                         shutdownTimeout,
+                        !plaintext,
                         plaintext
                                 ? SecurityLevel.NONE
                                 // Without hostname verification, the peer is not authenticated.
-                                : "false"
-                                                .equalsIgnoreCase(
-                                                        client.getContext()
-                                                                .getParameters()
-                                                                .getFirstValue(
-                                                                        "hostnameVerification"))
-                                        ? SecurityLevel.INTEGRITY
-                                        : SecurityLevel.PRIVACY_AND_INTEGRITY);
+                                : ((NettyClientHelper) client.getHelper()).isHostnameVerification()
+                                        ? SecurityLevel.PRIVACY_AND_INTEGRITY
+                                        : SecurityLevel.NONE);
         try {
             var builder =
                     (plaintext
@@ -323,10 +323,9 @@ public final class GrpcClientAdapter implements AutoCloseable {
                 || result.getPort() == 0
                 || !(authority.startsWith("[")
                         // An IPv6 address, without zone.
-                        ? result.getHost().indexOf('%') < 0
+                        ? result.getHost().indexOf(':') >= 0
+                                && result.getHost().indexOf('%') < 0
                                 && InetAddresses.isInetAddress(result.getHost())
-                                && InetAddresses.forString(result.getHost())
-                                        instanceof java.net.Inet6Address
                         // A registered name or an IPv4 address, without percent-encoding.
                         : result.getHost().matches("[A-Za-z0-9._~!$&'()*+,;=-]+"))) {
             throw new IllegalArgumentException(

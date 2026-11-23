@@ -18,8 +18,8 @@ Changes log
           client's.
           `GrpcServerAdapter` serves calls on an HTTPS listener negotiating HTTP/2 with ALPN. Both
           adapters report the transport security level, so call credentials requiring privacy and
-          integrity can be used; the client reports only integrity when "hostnameVerification" is
-          false.
+          integrity can be used; the client reports no security when "hostnameVerification" is
+          off, since the peer is then not authenticated.
     - Bugs fixed
         - The gRPC client dropped the metadata having a standard HTTP header name, such as the
           "authorization" bearer token of call credentials: it is now sent as is, repeated values

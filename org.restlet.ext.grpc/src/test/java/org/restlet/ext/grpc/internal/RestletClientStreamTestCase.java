@@ -42,6 +42,7 @@ class RestletClientStreamTestCase {
                         16384,
                         1,
                         java.time.Duration.ofSeconds(1),
+                        false,
                         io.grpc.SecurityLevel.NONE);
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();

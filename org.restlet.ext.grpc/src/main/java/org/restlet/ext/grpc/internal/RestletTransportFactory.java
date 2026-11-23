@@ -62,8 +62,9 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     /**
      * Constructor.
      *
-     * @param security The security level of the calls: NONE for plaintext to resolved addresses;
-     *     otherwise TLS, with the unresolved target address, which the client connector resolves.
+     * @param secure True for TLS, with the unresolved target address, which the client connector
+     *     resolves; false for plaintext to resolved addresses.
+     * @param security The security level reported to the calls.
      */
     public RestletTransportFactory(
             Client client,
@@ -71,9 +72,10 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             int queueBytes,
             int maxCalls,
             Duration timeout,
+            boolean secure,
             SecurityLevel security) {
         this.client = client;
-        secure = security != SecurityLevel.NONE;
+        this.secure = secure;
         attributes =
                 Attributes.newBuilder().set(GrpcAttributes.ATTR_SECURITY_LEVEL, security).build();
         this.maxBytes = maxBytes;
