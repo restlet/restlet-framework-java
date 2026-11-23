@@ -37,13 +37,7 @@ class RestletClientStreamTestCase {
     void cancelledTimersDoNotStayQueued() {
         var factory =
                 new RestletTransportFactory(
-                        null,
-                        1024,
-                        16384,
-                        1,
-                        java.time.Duration.ofSeconds(1),
-                        false,
-                        io.grpc.SecurityLevel.NONE);
+                        null, 1024, 16384, 1, java.time.Duration.ofSeconds(1), false);
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
             for (int i = 0; i < 100; i++) {
@@ -80,7 +74,6 @@ class RestletClientStreamTestCase {
         return new RestletClientStream(
                 new Client(Protocol.HTTP),
                 "http://127.0.0.1:8080",
-                "http://localhost:8080",
                 "localhost:8080",
                 Attributes.EMPTY,
                 method(),

@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
@@ -41,7 +42,6 @@ import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Reference;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
@@ -68,8 +68,17 @@ final class RestletClientStream extends AbstractClientStream {
     private final String target;
     private final String authority;
 
-    /** The base reference of the request, selecting its HTTP authority. */
-    private final String base;
+    /** The headers of the request entity, which the metadata must not replace. */
+    private static final Set<String> ENTITY_HEADERS =
+            Set.of(
+                    "content-type",
+                    "content-encoding",
+                    "content-language",
+                    "content-length",
+                    "content-location",
+                    "content-md5",
+                    "content-range",
+                    "content-disposition");
 
     /** The transport attributes, with the security level. */
     private final Attributes attributes;
@@ -119,7 +128,6 @@ final class RestletClientStream extends AbstractClientStream {
     RestletClientStream(
             Client client,
             String origin,
-            String base,
             String authority,
             Attributes attributes,
             MethodDescriptor<?, ?> method,
@@ -133,7 +141,6 @@ final class RestletClientStream extends AbstractClientStream {
         this(
                 client,
                 origin,
-                base,
                 authority,
                 attributes,
                 method,
@@ -150,7 +157,6 @@ final class RestletClientStream extends AbstractClientStream {
     private RestletClientStream(
             Client client,
             String origin,
-            String base,
             String authority,
             Attributes attributes,
             MethodDescriptor<?, ?> method,
@@ -172,7 +178,6 @@ final class RestletClientStream extends AbstractClientStream {
         this.client = client;
         this.authority = authority;
         this.attributes = attributes;
-        this.base = base;
         target = origin + "/" + method.getFullMethodName();
         this.limit = limit;
         this.queueBytes = queueBytes;
@@ -400,26 +405,24 @@ final class RestletClientStream extends AbstractClientStream {
     /** Returns the HTTP/2 request of the call, with the gRPC metadata as headers. */
     private Request newRequest() {
         Request call = new Request(Method.POST, target, requestEntity());
-        // The target selects the peer (the resolved address, or the authority over TLS), and the
-        // base reference the HTTP authority.
-        call.getResourceRef().setBaseRef(new Reference(base));
         call.getHeaders().set("te", "trailers");
         byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
         // Sent as is, so that standard header names such as "authorization" are kept too, except
         // the ones that would change the routing (the authority, the proxy credentials) or the
-        // entity (its "content-" headers).
+        // entity.
         Series<Header> raw = new Series<>(Header.class);
         for (int i = 0; i < metadata.length; i += 2) {
             String key = new String(metadata[i], StandardCharsets.US_ASCII);
             if (!key.startsWith(":")
-                    && !key.startsWith("content-")
+                    && !ENTITY_HEADERS.contains(key)
                     && !"user-agent".equals(key)
                     && !"host".equals(key)
                     && !"proxy-authorization".equals(key)) {
                 raw.add(key, new String(metadata[i + 1], StandardCharsets.US_ASCII));
             }
         }
-        // The authority as is, with a default port too, like native clients send it.
+        // The target selects the peer (the resolved address, or the authority over TLS), and the
+        // host header the authority as is, with a default port too, like native clients send it.
         raw.add("host", authority);
         call.getAttributes().put(HeaderConstants.ATTRIBUTE_RAW_REQUEST_HEADERS, raw);
         call.getClientInfo().setAgent("restlet-grpc/1.85.1");
