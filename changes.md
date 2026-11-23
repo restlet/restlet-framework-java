@@ -3,6 +3,7 @@ Changes log
 
 - 2.6.2 (??-??-2026)
     - Bugs fixed
+        - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the URI of a server redirection are normalized. Relative-path targets such as `../x` are left untouched, as they need their base reference. A reverse proxy built on `http://backend/root/{rr}` now resolves a `..` found in the remaining part itself, which it did not before the request reached the backend. Issue #238.
         - The Jackson, Gson and JSON (org.json) converters now handle the `application/*+json` media types, such as `application/vnd.example+json`. They were ignored, so an incoming `+json` entity was not converted, and a `+json` response was left to another converter (such as JAXB) when it scored higher than the 0.5 given by Jackson. A custom converter that won for these media types may now lose to the JSON converters. Issue #1185.
     - Misc
         - Added an optional origin matcher to CORS (`CorsService`, `CorsFilter`, `setAllowedOriginMatcher(Predicate<String>)`) to accept origins that are not listed, for example any sub-domain. The response always contains the exact request origin; it has no effect while the allowed origins contain `*`. Issue #1611.
