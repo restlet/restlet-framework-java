@@ -25,8 +25,8 @@ Changes log
     - Bugs fixed
         - The gRPC client dropped the metadata having a standard HTTP header name, such as the
           "authorization" bearer token of call credentials: it is now sent as is, repeated values
-          included, except "host", "proxy-authorization" and the entity headers, which would
-          change the routing or the entity.
+          included, except "host", "proxy-authorization", "content-type", "content-encoding" and
+          "content-length", which would change the routing or the description of the gRPC body.
         - The HTTPS client connector checked the certificate of an IPv6 literal host, such as
           `https://[::1]:8443/`, against its bracketed form, so hostname verification always
           failed: the address is now checked without brackets.

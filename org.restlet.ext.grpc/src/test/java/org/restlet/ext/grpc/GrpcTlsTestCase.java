@@ -79,23 +79,40 @@ class GrpcTlsTestCase {
 
     @AfterEach
     void cleanup() throws Exception {
+        // Each resource is released even when releasing the previous one failed.
         try {
             adapter.stop();
-            if (channel != null) {
-                channel.shutdownNow();
-                assertTrue(channel.awaitTermination(30, TimeUnit.SECONDS));
-            }
-            serverAdapter.stop();
         } finally {
+            try {
+                if (channel != null) {
+                    channel.shutdownNow();
+                    assertTrue(channel.awaitTermination(30, TimeUnit.SECONDS));
+                }
+            } finally {
+                try {
+                    serverAdapter.stop();
+                } finally {
+                    stopTransports();
+                }
+            }
+        }
+    }
+
+    private void stopTransports() throws Exception {
+        try {
             if (client != null) {
                 client.stop();
             }
-            if (http != null) {
-                http.stop();
-            }
-            if (peer != null) {
-                peer.shutdownNow();
-                assertTrue(peer.awaitTermination(30, TimeUnit.SECONDS));
+        } finally {
+            try {
+                if (http != null) {
+                    http.stop();
+                }
+            } finally {
+                if (peer != null) {
+                    peer.shutdownNow();
+                    assertTrue(peer.awaitTermination(30, TimeUnit.SECONDS));
+                }
             }
         }
     }
@@ -247,6 +264,7 @@ class GrpcTlsTestCase {
         metadata.put(AUTHORIZATION, "Bearer two");
         metadata.put(cookie, "a=1");
         metadata.put(Metadata.Key.of("content-language", Metadata.ASCII_STRING_MARSHALLER), "fr");
+        metadata.put(Metadata.Key.of("content-encoding", Metadata.ASCII_STRING_MARSHALLER), "gzip");
         Metadata.Key<String> digest =
                 Metadata.Key.of("content-digest", Metadata.ASCII_STRING_MARSHALLER);
         metadata.put(digest, "sha-256=:abc=:");
@@ -267,11 +285,17 @@ class GrpcTlsTestCase {
         assertEquals("localhost:" + peer.getPort(), authority.get());
         assertEquals("sha-256=:abc=:", observed.get().get(digest));
         assertEquals(
-                null,
+                "fr",
                 observed.get()
                         .get(
                                 Metadata.Key.of(
                                         "content-language", Metadata.ASCII_STRING_MARSHALLER)));
+        assertEquals(
+                null,
+                observed.get()
+                        .get(
+                                Metadata.Key.of(
+                                        "content-encoding", Metadata.ASCII_STRING_MARSHALLER)));
         assertEquals(
                 null,
                 observed.get()
@@ -390,6 +414,15 @@ class GrpcTlsTestCase {
         adapter.setTarget("localhost:443");
         IllegalStateException error = assertThrows(IllegalStateException.class, adapter::start);
         assertTrue(error.getMessage().contains("HTTPS"), error.getMessage());
+    }
+
+    @Test
+    void clientAcceptsUnderscoresInTargetHosts() throws Exception {
+        startClient(Protocol.HTTPS, false);
+        adapter.setClient(client);
+        adapter.setTarget("my_service:50051");
+        adapter.start();
+        assertEquals("my_service:50051", adapter.getChannel().authority());
     }
 
     @Test
