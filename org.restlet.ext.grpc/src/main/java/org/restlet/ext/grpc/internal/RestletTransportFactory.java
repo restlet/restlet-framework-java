@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.grpc.internal;
 
+import com.google.common.net.HostAndPort;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.Attributes;
@@ -175,9 +176,10 @@ public final class RestletTransportFactory implements ClientTransportFactory {
                 // host.
                 origin = base;
             } else {
-                String ip = address.getAddress().getHostAddress();
                 origin =
-                        scheme + (ip.contains(":") ? "[" + ip + "]" : ip) + ":" + address.getPort();
+                        scheme
+                                + HostAndPort.fromParts(
+                                        address.getAddress().getHostAddress(), address.getPort());
             }
         }
 
