@@ -1198,12 +1198,7 @@ public abstract class NettyClientHelper extends ClientHelper {
         ChannelPipeline p = ch.pipeline();
         final TransportMode mode = getTransportMode();
         if (ssl != null) {
-            // An IPv6 literal without its brackets, so that it is checked as an IP address.
-            String peerHost =
-                    pool.host.startsWith("[") && pool.host.endsWith("]")
-                            ? pool.host.substring(1, pool.host.length() - 1)
-                            : pool.host;
-            SSLEngine engine = ssl.newEngine(ch.alloc(), peerHost, pool.port);
+            SSLEngine engine = ssl.newEngine(ch.alloc(), peerHost(pool.host), pool.port);
             if (isHostnameVerification()) {
                 SSLParameters parameters = engine.getSSLParameters();
                 parameters.setEndpointIdentificationAlgorithm("HTTPS");
@@ -1368,6 +1363,19 @@ public abstract class NettyClientHelper extends ClientHelper {
     }
 
     // ------------------------------------------------------------------ parameters
+
+    /**
+     * Returns the host given to a TLS engine: an IPv6 literal without its brackets, so that the
+     * certificate is checked against it as an IP address.
+     *
+     * @param host The host of the origin server, an IPv6 literal being bracketed.
+     * @return The host of the TLS peer.
+     */
+    static String peerHost(String host) {
+        return (host.startsWith("[") && host.endsWith("]"))
+                ? host.substring(1, host.length() - 1)
+                : host;
+    }
 
     /**
      * Returns the transport mode, validating the "httpClientTransportMode" parameter.

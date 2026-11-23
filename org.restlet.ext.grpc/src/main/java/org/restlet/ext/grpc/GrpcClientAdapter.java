@@ -223,11 +223,7 @@ public final class GrpcClientAdapter implements AutoCloseable {
                 || !client.isStarted()
                 || client.getContext() == null
                 || !client.getProtocols().contains(plaintext ? Protocol.HTTP : Protocol.HTTPS)
-                || !"HTTP2"
-                        .equals(
-                                client.getContext()
-                                        .getParameters()
-                                        .getFirstValue("httpClientTransportMode"))
+                || !"HTTP2".equals(netty.getHttpClientTransportMode())
                 || netty.isFollowRedirects()) {
             throw new IllegalStateException(
                     "Borrow a started "
