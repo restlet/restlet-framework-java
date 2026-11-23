@@ -406,12 +406,13 @@ final class RestletClientStream extends AbstractClientStream {
         call.getHeaders().set("te", "trailers");
         byte[][] metadata = TransportFrameUtil.toHttp2Headers(headers);
         // Sent as is, so that standard header names such as "authorization" are kept too, except
-        // the ones that would change the routing: the authority, or the proxy credentials.
+        // the ones that would change the routing (the authority, the proxy credentials) or the
+        // entity (its "content-" headers).
         Series<Header> raw = new Series<>(Header.class);
         for (int i = 0; i < metadata.length; i += 2) {
             String key = new String(metadata[i], StandardCharsets.US_ASCII);
             if (!key.startsWith(":")
-                    && !"content-type".equals(key)
+                    && !key.startsWith("content-")
                     && !"user-agent".equals(key)
                     && !"te".equals(key)
                     && !"host".equals(key)

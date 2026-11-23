@@ -9,6 +9,7 @@
 package org.restlet.ext.grpc.internal;
 
 import com.google.common.net.HostAndPort;
+import com.google.common.net.InetAddresses;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.Attributes;
@@ -61,8 +62,8 @@ public final class RestletTransportFactory implements ClientTransportFactory {
     /**
      * Constructor.
      *
-     * @param secure True for TLS: the transports then take the unresolved target address, which the
-     *     client connector resolves; false for plaintext to resolved addresses.
+     * @param security The security level of the calls: NONE for plaintext to resolved addresses;
+     *     otherwise TLS, with the unresolved target address, which the client connector resolves.
      */
     public RestletTransportFactory(
             Client client,
@@ -70,15 +71,11 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             int queueBytes,
             int maxCalls,
             Duration timeout,
-            boolean secure) {
+            SecurityLevel security) {
         this.client = client;
-        this.secure = secure;
+        secure = security != SecurityLevel.NONE;
         attributes =
-                Attributes.newBuilder()
-                        .set(
-                                GrpcAttributes.ATTR_SECURITY_LEVEL,
-                                secure ? SecurityLevel.PRIVACY_AND_INTEGRITY : SecurityLevel.NONE)
-                        .build();
+                Attributes.newBuilder().set(GrpcAttributes.ATTR_SECURITY_LEVEL, security).build();
         this.maxBytes = maxBytes;
         this.queueBytes = queueBytes;
         admission = new Semaphore(maxCalls);
@@ -178,8 +175,10 @@ public final class RestletTransportFactory implements ClientTransportFactory {
             } else {
                 origin =
                         scheme
+                                // Without the zone of a link-local address, not valid in a URI.
                                 + HostAndPort.fromParts(
-                                        address.getAddress().getHostAddress(), address.getPort());
+                                        InetAddresses.toAddrString(address.getAddress()),
+                                        address.getPort());
             }
         }
 
