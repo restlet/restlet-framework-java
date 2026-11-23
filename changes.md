@@ -4,6 +4,12 @@ Changes log
 
 
 - 3.0 Milestone 3 (month-day-2026)
+    - Bugs fixed
+        - The Jackson, Gson and JSON (org.json) converters now handle the `application/*+json`
+          media types, such as `application/vnd.example+json` (#1185). They were ignored, so
+          an incoming `+json` entity was not converted, and a `+json` response was left to another
+          converter (such as JAXB) when it scored higher than the 0.5 given by Jackson. A custom
+          converter that won for these media types may now lose to the JSON converters.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
