@@ -19,12 +19,14 @@ import io.grpc.InternalLogId;
 import io.grpc.InternalMetadata;
 import io.grpc.InternalStatus;
 import io.grpc.Metadata;
+import io.grpc.SecurityLevel;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.ServerStreamTracer;
 import io.grpc.Status;
 import io.grpc.internal.AbstractServerStream;
+import io.grpc.internal.GrpcAttributes;
 import io.grpc.internal.InternalServer;
 import io.grpc.internal.ReadableBuffers;
 import io.grpc.internal.SerializingExecutor;
@@ -435,9 +437,18 @@ public final class RestletServerHost implements InternalServer, AutoCloseable {
             }
         }
 
-        /** Returns the standard transport attributes: the peer and local socket addresses. */
+        /**
+         * Returns the standard transport attributes: the peer and local socket addresses, and the
+         * security level, which is privacy and integrity for requests received over TLS.
+         */
         private Attributes transportAttributes() {
-            Attributes.Builder result = Attributes.newBuilder();
+            Attributes.Builder result =
+                    Attributes.newBuilder()
+                            .set(
+                                    GrpcAttributes.ATTR_SECURITY_LEVEL,
+                                    request.isConfidential()
+                                            ? SecurityLevel.PRIVACY_AND_INTEGRITY
+                                            : SecurityLevel.NONE);
             SocketAddress remote =
                     address(
                             request.getClientInfo().getAddress(),

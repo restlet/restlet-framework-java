@@ -15,6 +15,7 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 import io.grpc.MethodDescriptor;
 import io.grpc.internal.ManagedChannelImplBuilder;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.restlet.ext.grpc.internal.RestletTransportFactory;
 
 /**
@@ -32,10 +34,17 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * HTTP/2 exchange whose request body is written while its response is read, so messages flow both
  * ways at once. Request messages are queued within {@link #setMaxQueuedBytes}, and the SDK's
  * readiness follows their writing; response messages are read as the application requests them,
- * within the same budget. This profile is plaintext only; applications must explicitly opt in with
- * {@link #setPlaintext(boolean)}. TLS/address separation, proxy CONNECT, retry, keepalive and
- * physical-connection controls are not implemented. No SDK network transport is selected. The host
- * starts and stops the borrowed connector.
+ * within the same budget. No SDK network transport is selected. The host starts and stops the
+ * borrowed connector.
+ *
+ * <p>Calls use TLS by default, through a borrowed HTTPS client: HTTP/2 is negotiated with ALPN, and
+ * the TLS settings (trust store, "hostnameVerification", "sslContextFactory", ...) are the
+ * client's. The client connector resolves the target and checks the server certificate against its
+ * host name, which is also sent with SNI, so the SDK's name resolution is not used. The calls'
+ * transport reports {@link io.grpc.SecurityLevel#PRIVACY_AND_INTEGRITY}, as call credentials
+ * require. Plaintext calls to the resolved addresses of the target must be explicitly enabled with
+ * {@link #setPlaintext(boolean)}, with a borrowed HTTP client. Proxy CONNECT, retry, keepalive and
+ * physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
     private final Context context;
@@ -84,6 +93,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
         return target;
     }
 
+    /**
+     * Sets whether calls are sent over plaintext HTTP/2 instead of TLS.
+     *
+     * @param value True for plaintext, false (the default) for TLS.
+     */
     public synchronized void setPlaintext(boolean value) {
         requireConfigurable();
         plaintext = value;
@@ -188,14 +202,11 @@ public final class GrpcClientAdapter implements AutoCloseable {
             return;
         }
         requireConfigurable();
-        if (!plaintext) {
-            throw new UnsupportedOperationException(
-                    "R3 supports only explicitly enabled plaintext; TLS is not implemented");
-        }
         Objects.requireNonNull(target, "target");
         if (client == null
                 || !client.isStarted()
                 || client.getContext() == null
+                || (!plaintext && !client.getProtocols().contains(Protocol.HTTPS))
                 || !"HTTP2"
                         .equals(
                                 client.getContext()
@@ -207,7 +218,9 @@ public final class GrpcClientAdapter implements AutoCloseable {
                                         .getParameters()
                                         .getFirstValue("followRedirects", "true"))) {
             throw new IllegalStateException(
-                    "Borrow a started HTTP2 client with followRedirects=false");
+                    "Borrow a started "
+                            + (plaintext ? "HTTP" : "HTTPS")
+                            + " client in HTTP2 mode with followRedirects=false");
         }
         if (!target.matches("(dns:///)?[^/?#]+:\\d+")) {
             throw new IllegalArgumentException("Expected host:port or dns:///host:port target");
@@ -219,10 +232,13 @@ public final class GrpcClientAdapter implements AutoCloseable {
                         maxMessageBytes,
                         maxQueuedBytes,
                         maxConcurrentCalls,
-                        shutdownTimeout);
+                        shutdownTimeout,
+                        !plaintext);
         try {
             var builder =
-                    new ManagedChannelImplBuilder(target, () -> factory, () -> 80)
+                    (plaintext
+                                    ? new ManagedChannelImplBuilder(target, () -> factory, () -> 80)
+                                    : secureBuilder(factory))
                             .disableRetry()
                             .disableServiceConfigLookUp()
                             .proxyDetector(address -> null)
@@ -264,6 +280,28 @@ public final class GrpcClientAdapter implements AutoCloseable {
             }
             throw e;
         }
+    }
+
+    /**
+     * Returns the builder of a TLS channel. Its only address is the unresolved target, which the
+     * client connector resolves, so that the certificate is checked against the target's host.
+     */
+    private ManagedChannelImplBuilder secureBuilder(RestletTransportFactory factory) {
+        String authority = target.startsWith("dns:///") ? target.substring(7) : target;
+        int colon = authority.lastIndexOf(':');
+        String host = authority.substring(0, colon);
+        if (host.startsWith("[") && host.endsWith("]")) {
+            host = host.substring(1, host.length() - 1);
+        }
+        int port = Integer.parseInt(authority.substring(colon + 1));
+        if (port > 65535) {
+            throw new IllegalArgumentException("Expected a port between 0 and 65535");
+        }
+        return new ManagedChannelImplBuilder(
+                InetSocketAddress.createUnresolved(host, port),
+                authority,
+                () -> factory,
+                () -> 443);
     }
 
     public synchronized boolean isStarted() {

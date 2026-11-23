@@ -11,6 +11,7 @@ package org.restlet.ext.grpc.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import io.grpc.Attributes;
 import io.grpc.CallOptions;
 import io.grpc.ClientStreamTracer;
 import io.grpc.Deadline;
@@ -37,7 +38,8 @@ class RestletClientStreamTestCase {
     @Test
     void cancelledTimersDoNotStayQueued() {
         var factory =
-                new RestletTransportFactory(null, 1024, 16384, 1, java.time.Duration.ofSeconds(1));
+                new RestletTransportFactory(
+                        null, 1024, 16384, 1, java.time.Duration.ofSeconds(1), false);
         try {
             var timer = (ScheduledThreadPoolExecutor) factory.getScheduledExecutorService();
             for (int i = 0; i < 100; i++) {
@@ -75,6 +77,8 @@ class RestletClientStreamTestCase {
                 new Client(Protocol.HTTP),
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 8080),
                 "localhost:8080",
+                false,
+                Attributes.EMPTY,
                 method(),
                 new Metadata(),
                 CallOptions.DEFAULT,
