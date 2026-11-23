@@ -36,11 +36,32 @@ public class JsonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
+    /**
+     * Variant with media type application/*+json, such as
+     * application/vnd.example+json.
+     */
+    private static final VariantInfo VARIANT_ALL_JSON = new VariantInfo(
+            MediaType.APPLICATION_ALL_JSON);
+
+    /**
+     * Indicates if the given media type is JSON, including the
+     * application/*+json media types.
+     * 
+     * @param mediaType
+     *            The media type to test.
+     * @return True if the media type is compatible with JSON.
+     */
+    private static boolean isJson(MediaType mediaType) {
+        return MediaType.APPLICATION_JSON.isCompatible(mediaType)
+                || MediaType.APPLICATION_ALL_JSON.isCompatible(mediaType);
+    }
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)) {
+        if (VARIANT_JSON.isCompatible(source)
+                || VARIANT_ALL_JSON.isCompatible(source)) {
             result = addObjectClass(result, JSONArray.class);
             result = addObjectClass(result, JSONObject.class);
             result = addObjectClass(result, JSONTokener.class);
@@ -72,8 +93,7 @@ public class JsonConverter extends ConverterHelper {
                 || (source instanceof JSONTokener)) {
             if (target == null) {
                 result = 0.5F;
-            } else if (MediaType.APPLICATION_JSON.isCompatible(target
-                    .getMediaType())) {
+            } else if (isJson(target.getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;
@@ -92,22 +112,19 @@ public class JsonConverter extends ConverterHelper {
             if (JsonRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
             } else if (JSONArray.class.isAssignableFrom(target)) {
-                if (MediaType.APPLICATION_JSON.isCompatible(source
-                        .getMediaType())) {
+                if (isJson(source.getMediaType())) {
                     result = 1.0F;
                 } else {
                     result = 0.5F;
                 }
             } else if (JSONObject.class.isAssignableFrom(target)) {
-                if (MediaType.APPLICATION_JSON.isCompatible(source
-                        .getMediaType())) {
+                if (isJson(source.getMediaType())) {
                     result = 1.0F;
                 } else {
                     result = 0.5F;
                 }
             } else if (JSONTokener.class.isAssignableFrom(target)) {
-                if (MediaType.APPLICATION_JSON.isCompatible(source
-                        .getMediaType())) {
+                if (isJson(source.getMediaType())) {
                     result = 1.0F;
                 } else {
                     result = 0.5F;
