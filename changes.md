@@ -13,13 +13,15 @@ Changes log
         - The gRPC extension supports TLS. `GrpcClientAdapter` sends calls through its borrowed
           HTTPS client, which negotiates HTTP/2 with ALPN, resolves the target and checks the
           server certificate against the target's host name, also sent with SNI. TLS settings
-          (trust store, "hostnameVerification", "sslContextFactory", ...) are the client's.
+          (trust store, "hostnameVerification", "sslContextFactory", ...) and HTTPS proxy are the
+          client's.
           `GrpcServerAdapter` serves calls on an HTTPS listener negotiating HTTP/2 with ALPN. Both
           adapters report the transport security level, so call credentials requiring privacy and
           integrity can be used.
     - Bugs fixed
         - The gRPC client dropped the metadata having a standard HTTP header name, such as the
-          "authorization" bearer token of call credentials: all metadata is now sent as is.
+          "authorization" bearer token of call credentials: it is now sent as is, repeated values
+          included, except "host" and "proxy-authorization", which would change the routing.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes

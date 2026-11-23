@@ -9,6 +9,7 @@
 package org.restlet.ext.grpc;
 
 import com.google.common.net.HostAndPort;
+import com.google.common.net.InetAddresses;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -43,8 +44,10 @@ import org.restlet.ext.grpc.internal.RestletTransportFactory;
  * client's. The client connector resolves the target and checks the server certificate against its
  * host name, which is also sent with SNI, so the SDK's name resolution is not used. The calls'
  * transport reports {@link io.grpc.SecurityLevel#PRIVACY_AND_INTEGRITY}, as call credentials
- * require. Plaintext calls to the resolved addresses of the target must be explicitly enabled with
- * {@link #setPlaintext(boolean)}, with a borrowed HTTP client. Proxy CONNECT, retry, keepalive and
+ * require. TLS calls follow the client's proxy settings: they are tunneled with CONNECT through its
+ * HTTPS proxy, if any. Plaintext calls to the resolved addresses of the target must be explicitly
+ * enabled with {@link #setPlaintext(boolean)}, with a borrowed HTTP client. The borrowed client
+ * must be the core Netty connector, which sends the metadata as is. Retry, keepalive and
  * physical-connection controls are not implemented.
  */
 public final class GrpcClientAdapter implements AutoCloseable {
@@ -304,9 +307,10 @@ public final class GrpcClientAdapter implements AutoCloseable {
         if (result == null
                 || !result.hasPort()
                 || result.getPort() == 0
-                || result.getHost().isEmpty()
-                || !authority.matches("[^/?#@\\s]+")
-                || (result.getHost().contains(":") && !authority.startsWith("["))) {
+                || !(authority.startsWith("[")
+                        ? InetAddresses.isInetAddress(result.getHost())
+                        // A registered name or an IPv4 address, without percent-encoding.
+                        : result.getHost().matches("[A-Za-z0-9._~!$&'()*+,;=-]+"))) {
             throw new IllegalArgumentException(
                     "Expected a host:port or dns:///host:port target, with a bracketed IPv6 host");
         }

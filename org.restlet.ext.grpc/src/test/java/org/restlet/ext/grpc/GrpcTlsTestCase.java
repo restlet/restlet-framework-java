@@ -100,17 +100,22 @@ class GrpcTlsTestCase {
         }
     }
 
+    private Path keystore;
+
+    /** Returns the test key store, copied once to a file for the connectors. */
     private Path keystore() throws Exception {
-        Path result = tempDir.resolve("dummy.p12");
-        try (InputStream in = getClass().getResourceAsStream("dummy.p12")) {
-            Files.copy(in, result, REPLACE_EXISTING);
+        if (keystore == null) {
+            keystore = tempDir.resolve("dummy.p12");
+            try (InputStream in = getClass().getResourceAsStream("dummy.p12")) {
+                Files.copy(in, keystore, REPLACE_EXISTING);
+            }
         }
-        return result;
+        return keystore;
     }
 
     private KeyStore loadKeystore() throws Exception {
         KeyStore result = KeyStore.getInstance("PKCS12");
-        try (InputStream in = Files.newInputStream(keystore())) {
+        try (InputStream in = getClass().getResourceAsStream("dummy.p12")) {
             result.load(in, PASSWORD.toCharArray());
         }
         return result;
@@ -239,6 +244,10 @@ class GrpcTlsTestCase {
         metadata.put(AUTHORIZATION, "api-key");
         metadata.put(AUTHORIZATION, "Bearer two");
         metadata.put(cookie, "a=1");
+        metadata.put(Metadata.Key.of("host", Metadata.ASCII_STRING_MARSHALLER), "other.example:1");
+        metadata.put(
+                Metadata.Key.of("proxy-authorization", Metadata.ASCII_STRING_MARSHALLER),
+                "Basic c2VjcmV0");
         var intercepted =
                 io.grpc.ClientInterceptors.intercept(
                         adapter.getChannel(),
@@ -249,6 +258,12 @@ class GrpcTlsTestCase {
                 com.google.common.collect.ImmutableList.copyOf(
                         observed.get().getAll(AUTHORIZATION)));
         assertEquals("a=1", observed.get().get(cookie));
+        assertEquals(
+                null,
+                observed.get()
+                        .get(
+                                Metadata.Key.of(
+                                        "proxy-authorization", Metadata.ASCII_STRING_MARSHALLER)));
     }
 
     @Test
@@ -270,7 +285,11 @@ class GrpcTlsTestCase {
                 "::1:8443",
                 "user@localhost:443",
                 "dns:///:443",
-                "localhost:443/path"
+                "localhost:443/path",
+                "local\\host:443",
+                "a[b:443",
+                "caf%C3%A9:443",
+                "[localhost]:443"
             })
     void clientRejectsInvalidTargets(String target) throws Exception {
         startClient(Protocol.HTTPS, false);
