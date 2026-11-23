@@ -41,6 +41,13 @@ public class JacksonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
+    /**
+     * Variant with media type application/*+json, such as
+     * application/vnd.example+json.
+     */
+    private static final VariantInfo VARIANT_ALL_JSON = new VariantInfo(
+            MediaType.APPLICATION_ALL_JSON);
+
     /** Variant with media type application/x-json-smile. */
     private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
             MediaType.APPLICATION_JSON_SMILE);
@@ -129,6 +136,7 @@ public class JacksonConverter extends ConverterHelper {
     protected boolean isCompatible(Variant variant) {
         return (variant != null)
                 && (VARIANT_JSON.isCompatible(variant)
+                        || VARIANT_ALL_JSON.isCompatible(variant)
                         || VARIANT_JSON_SMILE.isCompatible(variant)
                         || (VARIANT_APPLICATION_XML.isCompatible(variant))
                         || (VARIANT_TEXT_XML.isCompatible(variant))
