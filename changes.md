@@ -5,6 +5,12 @@ Changes log
 
 - 3.0 Milestone 3 (month-day-2026)
     - Bugs fixed
+        - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
+          URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the
+          URI of a server redirection are normalized (#238). Relative-path targets such as
+          `../x` are left untouched, as they need their base reference. A reverse proxy built on
+          `http://backend/root/{rr}` now resolves a `..` found in the remaining part itself, which
+          it did not before the request reached the backend.
         - The Jackson, Gson and JSON (org.json) converters now handle the `application/*+json`
           media types, such as `application/vnd.example+json` (#1185). They were ignored, so
           an incoming `+json` entity was not converted, and a `+json` response was left to another
