@@ -9,6 +9,7 @@
 
 package org.restlet.data;
 
+import org.restlet.Response;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.RepresentationInfo;
 
@@ -68,6 +69,93 @@ public final class Conditions {
 
 	/** The "if-unmodified-since" condition */
 	private volatile Date unmodifiedSince;
+
+	/**
+	 * Returns the conditions of a request that creates a resource only if it does not exist yet:
+	 * "If-None-Match: *" (RFC 9110 section 13.1.2). If the resource exists, the server answers 412
+	 * (Precondition Failed).
+	 *
+	 * @return The conditions of a create-only request.
+	 * @see org.restlet.resource.ClientResource#put(org.restlet.representation.Representation,
+	 *     Conditions)
+	 */
+	public static Conditions ifAbsent() {
+		Conditions result = new Conditions();
+		result.getNoneMatch().add(Tag.ALL);
+		return result;
+	}
+
+	/**
+	 * Returns the conditions of a request that must only be applied if the resource is still in the
+	 * state that was read, from the response to the GET. A strong entity tag is sent in an
+	 * "If-Match" condition. Otherwise the modification date is sent in an "If-Unmodified-Since"
+	 * condition, but only if it can be deduced to be strong: the date of the response must be at
+	 * least one second after the modification date (RFC 9110 section 8.8.2.2), otherwise two
+	 * updates within the same second could not be told apart.<br>
+	 * <br>
+	 * Note that {@code new Tag(String)} creates a weak tag, which never matches an "If-Match"
+	 * condition.
+	 *
+	 * @param read The response to the request that read the resource, with its entity.
+	 * @return The conditions of a request guarded against concurrent updates.
+	 * @throws IllegalArgumentException If the response has no entity, or no validator that can be
+	 *     used reliably (no strong tag and no strong date).
+	 * @see org.restlet.resource.ClientResource#put(org.restlet.representation.Representation,
+	 *     Conditions)
+	 */
+	public static Conditions unchangedSince(Response read) {
+		RepresentationInfo entity = (read == null) ? null : read.getEntity();
+
+		if (entity == null) {
+			throw new IllegalArgumentException(
+					"The response to the read request has no entity: no validator is available");
+		}
+
+		Tag tag = entity.getTag();
+		Conditions result = new Conditions();
+
+		if (tag != null && !tag.isWeak()) {
+			result.getMatch().add(tag);
+			return result;
+		}
+
+		Date modified = entity.getModificationDate();
+		Date responseDate = read.getDate();
+
+		if (modified != null
+				&& responseDate != null
+				&& responseDate.getTime() - modified.getTime() >= 1000) {
+			result.setUnmodifiedSince(modified);
+			return result;
+		}
+
+		throw new IllegalArgumentException(
+				"The resource has no strong entity tag and no modification date that can be"
+						+ " deduced to be strong (the response date must be at least one second"
+						+ " after the modification date): a conditional write cannot be"
+						+ " guaranteed");
+	}
+
+	/**
+	 * Returns the conditions of a request that must only be applied if the resource still has the
+	 * given strong entity tag ("If-Match").
+	 *
+	 * @param entity The representation that was read, with its entity tag.
+	 * @return The conditions of a request guarded against concurrent updates.
+	 * @throws IllegalArgumentException If the representation has no strong entity tag.
+	 */
+	public static Conditions unchangedSince(RepresentationInfo entity) {
+		Tag tag = (entity == null) ? null : entity.getTag();
+
+		if (tag == null || tag.isWeak()) {
+			throw new IllegalArgumentException(
+					"A strong entity tag is required for an \"If-Match\" condition");
+		}
+
+		Conditions result = new Conditions();
+		result.getMatch().add(tag);
+		return result;
+	}
 
 	/**
 	 * Constructor.
