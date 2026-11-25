@@ -14,6 +14,15 @@ Changes log
           with a "Certificate chaining error". The `PKIX` validation is the standard one, and
           stricter than `SunX509` on unusual chains: set the trust manager algorithm to `SunX509`
           to get the previous behavior.
+    - Enhancements
+        - Conditional writes on the client side (#100). `ClientResource` gets per-call overloads
+          `put`, `patch` and `delete` taking `Conditions`; they apply to that call only and are
+          never retried. `Conditions.unchangedSince(Response)` builds an "If-Match" condition from
+          the strong entity tag that was read, or an "If-Unmodified-Since" condition if the
+          modification date can be deduced to be strong (the response date is at least one second
+          after it, RFC 9110 section 8.8.2.2), and refuses to build an unconditional write
+          otherwise. `Conditions.ifAbsent()` builds "If-None-Match: *" to create a resource only if
+          it does not exist. A failed condition is reported as a 412 `ResourceException`.
     - Bugs fixed
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the

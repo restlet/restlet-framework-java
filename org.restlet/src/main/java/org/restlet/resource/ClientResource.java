@@ -54,6 +54,10 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends Resource {
 
+    /** Request attribute marking a write sent with its own conditions: it is never retried. */
+    private static final String CONDITIONAL_WRITE_ATTRIBUTE =
+            ClientResource.class.getName() + ".conditionalWrite";
+
     /**
      * Creates a client resource that proxy calls to the given Java interface into Restlet method
      * calls. It basically creates a new instance of {@link ClientResource} and invokes the {@link
@@ -989,6 +993,7 @@ public class ClientResource extends Resource {
         if (isRetryOnError()
                 && response.getStatus().isRecoverableError()
                 && request.getMethod().isIdempotent()
+                && !request.getAttributes().containsKey(CONDITIONAL_WRITE_ATTRIBUTE)
                 && (retryAttempt < getRetryAttempts())
                 && ((request.getEntity() == null) || request.getEntity().isAvailable())) {
             retry(request, response, references, retryAttempt, next);
@@ -1411,6 +1416,112 @@ public class ClientResource extends Resource {
      */
     public Representation put(Representation entity) throws ResourceException {
         return handle(Method.PUT, entity);
+    }
+
+    /**
+     * Puts a representation under the given conditions, for this call only. Use {@link
+     * Conditions#unchangedSince(Response)} to update a resource only if it did not change since it
+     * was read, or {@link Conditions#ifAbsent()} to create it only if it does not exist. The given
+     * conditions replace the ones of the prototype request for this call, which is left untouched.
+     * A failed condition is reported as a resource exception with the status 412 (Precondition
+     * Failed); the call is never retried automatically, as the server may have applied the first
+     * attempt already.
+     *
+     * @param entity The request entity to store.
+     * @param conditions The conditions of this call.
+     * @return The optional result entity.
+     * @throws ResourceException
+     */
+    public Representation put(Representation entity, Conditions conditions)
+            throws ResourceException {
+        return handleConditional(Method.PUT, entity, conditions);
+    }
+
+    /**
+     * Puts an object entity under the given conditions, for this call only.
+     *
+     * @param entity The object entity to put.
+     * @param conditions The conditions of this call.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see #put(Representation, Conditions)
+     */
+    public Representation put(Object entity, Conditions conditions) throws ResourceException {
+        try {
+            return put(toRepresentation(entity), conditions);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Patches a resource under the given conditions, for this call only. RFC 5789 recommends a
+     * strong "If-Match" condition, see {@link Conditions#unchangedSince(Response)}.
+     *
+     * @param entity The request entity containing the patch.
+     * @param conditions The conditions of this call.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see #put(Representation, Conditions)
+     */
+    public Representation patch(Representation entity, Conditions conditions)
+            throws ResourceException {
+        return handleConditional(Method.PATCH, entity, conditions);
+    }
+
+    /**
+     * Patches a resource with an object entity under the given conditions, for this call only.
+     *
+     * @param entity The object entity containing the patch.
+     * @param conditions The conditions of this call.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see #put(Representation, Conditions)
+     */
+    public Representation patch(Object entity, Conditions conditions) throws ResourceException {
+        try {
+            return patch(toRepresentation(entity), conditions);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Deletes the target resource under the given conditions, for this call only.
+     *
+     * @param conditions The conditions of this call.
+     * @return The optional response entity.
+     * @throws ResourceException
+     * @see #put(Representation, Conditions)
+     */
+    public Representation delete(Conditions conditions) throws ResourceException {
+        return handleConditional(Method.DELETE, null, conditions);
+    }
+
+    /**
+     * Handles a call with its own conditions: the request is cloned from the prototype, then gets
+     * the given conditions in place of the prototype's ones.
+     *
+     * @param method The request method to use.
+     * @param entity The request entity to set, if any.
+     * @param conditions The conditions of this call.
+     * @return The optional response entity.
+     */
+    private Representation handleConditional(
+            Method method, Representation entity, Conditions conditions) {
+        if (conditions == null) {
+            throw new IllegalArgumentException("The conditions must not be null");
+        }
+
+        Request request = createRequest();
+        request.setMethod(method);
+        request.setEntity(entity);
+        request.setClientInfo(getClientInfo());
+        request.setConditions(conditions);
+        request.getAttributes().put(CONDITIONAL_WRITE_ATTRIBUTE, Boolean.TRUE);
+
+        Response response = handleOutbound(request);
+        return handleInbound(response);
     }
 
     /**
