@@ -95,21 +95,6 @@ public final class McpClientAdapter implements AutoCloseable {
         stream = null;
     }
 
-    /**
-     * Sets the JSON mapper of the {@link McpProtocol#MODERN_VERSION} client's messages, so that
-     * they share the application's settings. The SDK's default, Jackson 3 based, otherwise.
-     *
-     * @param value The mapper.
-     */
-    public synchronized void setJsonMapper(McpJsonMapper value) {
-        requireConfigurable();
-        jsonMapper = Objects.requireNonNull(value, "jsonMapper");
-    }
-
-    public synchronized McpJsonMapper getJsonMapper() {
-        return jsonMapper;
-    }
-
     /** Owns this stream transport's lifecycle; underlying borrowed streams remain borrowed. */
     public McpClientAdapter(org.restlet.util.StreamTransport stream) {
         this.stream = Objects.requireNonNull(stream, "stream");
@@ -217,6 +202,21 @@ public final class McpClientAdapter implements AutoCloseable {
 
     public synchronized McpSchema.ClientCapabilities getModernCapabilities() {
         return modernCapabilities;
+    }
+
+    /**
+     * Sets the JSON mapper of the {@link McpProtocol#MODERN_VERSION} client's messages, so that
+     * they share the application's settings. The SDK's default, Jackson 3 based, otherwise.
+     *
+     * @param value The mapper.
+     */
+    public synchronized void setJsonMapper(McpJsonMapper value) {
+        requireConfigurable();
+        jsonMapper = Objects.requireNonNull(value, "jsonMapper");
+    }
+
+    public synchronized McpJsonMapper getJsonMapper() {
+        return jsonMapper;
     }
 
     /**
