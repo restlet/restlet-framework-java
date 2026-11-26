@@ -236,8 +236,10 @@ public final class McpServerAdapter extends Restlet {
      * pending, a later change replacing an equal one or a notification of the same {@link
      * McpNotification#key() key} in place; past {@value
      * org.restlet.ext.mcp.internal.McpCoalescingFeed#MAX_PENDING} pending, its oldest is dropped.
-     * Broadcasting a notification whose field isn't one of {@link #getSubscriptions()}, or whose
-     * scope doesn't match the field's, throws an {@link IllegalArgumentException}. Experimental.
+     * Broadcasting a notification whose field isn't one of {@link #getSubscriptions()}, whose scope
+     * doesn't match the field's, or whose params the {@link #getJsonMapper() JSON mapper} can't
+     * convert, throws an {@link IllegalArgumentException}. A notification larger than {@link
+     * #getMaxMessageBytes()} is skipped on the streams, with a warning. Experimental.
      *
      * @return The change broadcaster, usable at any time.
      */
