@@ -408,15 +408,26 @@ public final class McpModernExchange {
                     if (each instanceof JsonRpc.JSONRPCResponse response) {
                         last = response;
                     } else {
+                        SubscriptionsAcknowledgedParams ack =
+                                gate != null
+                                                && each
+                                                        instanceof
+                                                        JsonRpc.JSONRPCNotification notification
+                                                && notification.params()
+                                                        instanceof
+                                                        SubscriptionsAcknowledgedParams params
+                                        ? params
+                                        : null;
                         byte[] event;
                         try {
                             event = McpMessages.encode(mapper, each, maxMessageBytes);
                         } catch (IOException e) {
-                            if (gate == null) {
+                            // Without its acknowledgment, a listen stream can't go on.
+                            if (gate == null || ack != null) {
                                 throw e;
                             }
-                            // One notification too large doesn't end a listen stream; its slot
-                            // in flight is freed as if written.
+                            // One change too large doesn't end a listen stream; its slot in
+                            // flight is freed as if written.
                             LOGGER.log(
                                     Level.WARNING,
                                     "Skipping an MCP notification a listen stream can't send",
@@ -424,10 +435,7 @@ public final class McpModernExchange {
                             gate.written();
                             continue;
                         }
-                        if (gate != null
-                                && each instanceof JsonRpc.JSONRPCNotification notification
-                                && notification.params()
-                                        instanceof SubscriptionsAcknowledgedParams ack) {
+                        if (ack != null) {
                             gate.acknowledged(ack.notifications());
                         }
                         events.put(event);

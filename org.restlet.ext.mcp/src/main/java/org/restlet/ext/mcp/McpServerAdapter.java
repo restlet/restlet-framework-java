@@ -84,7 +84,7 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpCallScope> callScopes = new CopyOnWriteArrayList<>();
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private McpTaskStore taskStore;
-    private final McpCoalescingFeed changes = new McpCoalescingFeed(this::checkPublishable);
+    private final McpCoalescingFeed changes = new McpCoalescingFeed(this::publishable);
     private final List<McpSubscription> subscriptions = new CopyOnWriteArrayList<>();
     private SubscriptionRestriction subscriptionRestriction;
     private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
@@ -248,17 +248,22 @@ public final class McpServerAdapter extends Restlet {
     }
 
     /**
-     * Refuses a notification no subscription honours, with a scope its field doesn't have, or with
-     * params the JSON mapper can't convert: the SDK would drop it silently, after the feed counted
-     * it in flight.
+     * The change to broadcast: a notification with its params converted by the JSON mapper once, at
+     * broadcast, so that the SDK converting them again per stream can't fail and silently drop it
+     * after the feed counted it in flight, and the streams get the state as published. Refuses a
+     * notification no subscription honours, with a scope its field doesn't have, or with params the
+     * mapper can't convert.
      */
-    private void checkPublishable(ServerChange change) {
+    private ServerChange publishable(ServerChange change) {
         if (!(change instanceof McpNotification notification)) {
-            return;
+            return change;
         }
+        checkSubscription(notification);
+        Map<String, Object> params;
         try {
-            runningMapper.convertValue(
-                    notification.params(), new TypeRef<Map<String, Object>>() {});
+            params =
+                    runningMapper.convertValue(
+                            notification.params(), new TypeRef<Map<String, Object>>() {});
         } catch (RuntimeException e) {
             throw new IllegalArgumentException(
                     "The params of the MCP notification "
@@ -266,6 +271,16 @@ public final class McpServerAdapter extends Restlet {
                             + " can't be converted to JSON",
                     e);
         }
+        return new McpNotification(
+                notification.method(),
+                params,
+                notification.field(),
+                notification.scope(),
+                notification.key());
+    }
+
+    /** Refuses a notification no subscription honours, or with a scope its field doesn't have. */
+    private void checkSubscription(McpNotification notification) {
         McpSubscription subscription =
                 subscriptions.stream()
                         .filter(each -> each.field().equals(notification.field()))
