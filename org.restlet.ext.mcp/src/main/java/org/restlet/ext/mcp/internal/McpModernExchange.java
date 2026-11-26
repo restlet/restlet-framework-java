@@ -37,6 +37,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -68,6 +70,7 @@ import reactor.core.publisher.Mono;
  * a slow client holds back the SDK, and leaving the stream early cancels the SDK's.
  */
 public final class McpModernExchange {
+    private static final Logger LOGGER = Logger.getLogger(McpModernExchange.class.getName());
 
     /** Runs the adapter's interceptors around a terminal step. */
     @FunctionalInterface
@@ -405,7 +408,22 @@ public final class McpModernExchange {
                     if (each instanceof JsonRpc.JSONRPCResponse response) {
                         last = response;
                     } else {
-                        byte[] event = McpMessages.encode(mapper, each, maxMessageBytes);
+                        byte[] event;
+                        try {
+                            event = McpMessages.encode(mapper, each, maxMessageBytes);
+                        } catch (IOException e) {
+                            if (gate == null) {
+                                throw e;
+                            }
+                            // One notification too large doesn't end a listen stream; its slot
+                            // in flight is freed as if written.
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Skipping an MCP notification a listen stream can't send",
+                                    e);
+                            gate.written();
+                            continue;
+                        }
                         if (gate != null
                                 && each instanceof JsonRpc.JSONRPCNotification notification
                                 && notification.params()
