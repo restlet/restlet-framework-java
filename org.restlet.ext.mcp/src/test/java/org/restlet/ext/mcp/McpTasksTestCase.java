@@ -290,19 +290,35 @@ class McpTasksTestCase {
     /** Waiting for a task through thousands of polls grows neither the stack nor the chain. */
     @Test
     void theClientAwaitsThroughManyPolls() throws Exception {
-        store.workingPolls.set(3000);
         McpModernClient modern = start(null);
+
+        long few = depthAfter(modern, 5);
+        long many = depthAfter(modern, 300);
+
+        // A recursive wait adds about two frames per poll, some 600 here.
+        assertTrue(many - few < 50, "stack depth grew from " + few + " to " + many);
+        assertEquals(0, store.workingPolls.get());
+    }
+
+    /** The stack depth at which the result of a wait through {@code polls} polls arrives. */
+    private long depthAfter(McpModernClient modern, int polls) {
+        store.workingPolls.set(polls);
         McpTaskResult task =
                 assertInstanceOf(
                         McpTaskResult.class,
                         modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
                                 .block(WAIT));
-
-        CallToolOutcome done = modern.awaitTask(task, 0).block(Duration.ofMinutes(2));
-        assertEquals(
-                "done",
-                firstText(MAPPER.convertValue(done, new TypeRef<Map<String, Object>>() {})));
-        assertEquals(0, store.workingPolls.get());
+        return modern.awaitTask(task, 0)
+                .map(
+                        done -> {
+                            assertEquals(
+                                    "done",
+                                    firstText(
+                                            MAPPER.convertValue(
+                                                    done, new TypeRef<Map<String, Object>>() {})));
+                            return StackWalker.getInstance().walk(frames -> frames.count());
+                        })
+                .block(Duration.ofMinutes(1));
     }
 
     /**
