@@ -45,6 +45,12 @@ Changes log
           `McpAeadRequestStateCodec` seals it with AES-256-GCM, so the client can't read it, with a
           configurable TTL. `McpRequestBinding` gives a codec what to bind the state to: the user,
           the arguments digest, and an extension method's name param.
+        - Blocking MCP handlers (#1702). `McpBlocking` turns the SDK's sync tools, resources and
+          prompts, and blocking extension methods, into `McpServerAdapter` registrations that run
+          on the virtual thread serving their request, never on a shared pool, with Restlet's
+          current request and response set. `McpServerAdapter.getCallScopes()` binds application
+          context around them (`ScopedValue`s, `ThreadLocal`s, MDC, tracing), the first scope
+          outermost. `McpRequestContext.transportResponse()` gives the transport response.
     - Bugs fixed
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
