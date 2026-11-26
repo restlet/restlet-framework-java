@@ -116,12 +116,27 @@ public final class McpBindings {
             string(out, text);
         } else if (value instanceof Number number) {
             // 1, 1.0 and 1e0 are one JSON number.
-            out.append(
-                    new java.math.BigDecimal(number.toString())
-                            .stripTrailingZeros()
-                            .toPlainString());
+            out.append(canonical(number));
         } else {
             out.append(value);
+        }
+    }
+
+    /**
+     * A number's canonical form: 1, 1.0 and 1e0 are one JSON number. A number beyond a double, such
+     * as 1e400 read as infinity, keeps its own form rather than failing the request.
+     */
+    private static String canonical(Number number) {
+        if (number instanceof Double || number instanceof Float) {
+            double value = number.doubleValue();
+            if (Double.isNaN(value) || Double.isInfinite(value)) {
+                return number.toString();
+            }
+        }
+        try {
+            return new java.math.BigDecimal(number.toString()).stripTrailingZeros().toPlainString();
+        } catch (NumberFormatException e) {
+            return number.toString();
         }
     }
 
