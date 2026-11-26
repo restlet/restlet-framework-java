@@ -132,12 +132,15 @@ class McpRequestStateCodecTestCase {
         assertEquals("approved:s1", firstText(answer(second, Map.of("amount", 10), state)));
         assertEquals(-32602, code(second.handle(retry(Map.of("amount", 99), state))));
         assertEquals(-32602, code(other.handle(retry(Map.of("amount", 10), state))));
-        char last = state.charAt(state.length() - 1);
-        String tampered = state.substring(0, state.length() - 1) + (last == 'A' ? 'B' : 'A');
+        byte[] bytes = Base64.getUrlDecoder().decode(state);
+        // A byte of the ciphertext, not a base64 character whose unused bits may change nothing.
+        bytes[bytes.length / 2] ^= 0x01;
+        String tampered = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         assertEquals(-32602, code(second.handle(retry(Map.of("amount", 10), tampered))));
         assertEquals(-32602, code(second.handle(retry(Map.of("amount", 10), "not-base64!"))));
 
-        now.set(now.get().plus(Duration.ofMinutes(11)));
+        // Past the configured minute, within the default ten.
+        now.set(now.get().plus(Duration.ofMinutes(2)));
         assertEquals(-32602, code(second.handle(retry(Map.of("amount", 10), state))));
     }
 
@@ -242,6 +245,22 @@ class McpRequestStateCodecTestCase {
                                         org.restlet.ext.mcp.internal.McpBindings
                                                 .ARGUMENTS_DIGEST_KEY,
                                         "b"))));
+    }
+
+    /** A number beyond a double, read as infinity, still reaches the tool. */
+    @Test
+    void aHugeNumberStillReachesTheTool() throws Exception {
+        assertNotNull(
+                org.restlet.ext.mcp.internal.McpBindings.digest(
+                        Map.of("a", Double.POSITIVE_INFINITY, "b", Double.NaN)));
+        McpServerAdapter adapter = adapter(null);
+        adapter.start();
+
+        Request request = call(Map.of("amount", 10), null);
+        String body = request.getEntity().getText().replace("\"amount\":10", "\"amount\":1e400");
+        assertTrue(body.contains("1e400"), body);
+        request.setEntity(new StringRepresentation(body, MediaType.APPLICATION_JSON));
+        assertEquals("input_required", result(adapter.handle(request)).get("resultType"));
     }
 
     /** The AEAD builder checks its settings. */
