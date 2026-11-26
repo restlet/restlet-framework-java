@@ -128,22 +128,28 @@ public final class McpBlocking {
         }
         McpSyncResponse.Body<? extends O> body =
                 ((McpSyncResponse.Streaming<? extends O>) response).body();
+        // On a thread of its own: the worker forwards the stream's events while the body runs.
         return McpAsyncResponse.streaming(
-                notifier ->
-                        blocking(
-                                ctx,
-                                () ->
-                                        McpCallScopes.call(
-                                                ctx, () -> body.run(new Notifier(notifier)))));
+                notifier -> {
+                    Callable<O> run = () -> body.run(new Notifier(notifier));
+                    return Mono.fromCallable(() -> McpCallScopes.call(ctx, run))
+                            .subscribeOn(VIRTUAL);
+                });
     }
 
     /**
-     * Runs a blocking call: on the calling thread when the request may block it, as the adapter's
-     * virtual worker threads do, else on a virtual thread of its own.
+     * Runs a blocking call: on the calling thread when the request may block it and that thread is
+     * virtual, as the adapter's workers are, else on a virtual thread of its own, such as when an
+     * interceptor resumed on a Reactor thread.
      */
     private static <T> Mono<T> blocking(McpRequestContext ctx, Callable<T> call) {
-        Mono<T> mono = Mono.fromCallable(call);
-        return ctx.isBlocking() ? mono : mono.subscribeOn(VIRTUAL);
+        return Mono.defer(
+                () -> {
+                    Mono<T> mono = Mono.fromCallable(call);
+                    return ctx.isBlocking() && Thread.currentThread().isVirtual()
+                            ? mono
+                            : mono.subscribeOn(VIRTUAL);
+                });
     }
 
     /** The SDK's sync notifier on its async one, whose sends complete once queued. */

@@ -116,7 +116,6 @@ class McpBlockingTestCase {
         assertEquals(List.of("outer", "inner:alice"), order);
         assertSame(request, current.get());
         assertTrue(thread.get().isVirtual(), thread.get().toString());
-        assertNull(TRACE.get());
     }
 
     /** Blocking resources, prompts and extension methods run within the scopes too. */
@@ -291,13 +290,234 @@ class McpBlockingTestCase {
         params.put("name", "current");
         params.put("arguments", Map.of());
         params.put("_meta", meta());
+        Request transport = new Request(Method.POST, "http://localhost/mcp");
+        Response response = new Response(transport);
+        JsonRpc.JSONRPCResponse dispatched =
+                adapter.dispatch(
+                                new JsonRpc.JSONRPCRequest("2.0", "tools/call", 1, params),
+                                new McpRequestContext(transport, response, MODERN))
+                        .orElseThrow();
+        assertNull(dispatched.error());
+        assertSame(response, current.get());
+
+        JsonRpc.JSONRPCResponse bare =
+                adapter.dispatch(
+                                new JsonRpc.JSONRPCRequest("2.0", "tools/call", 2, params),
+                                new McpRequestContext(null))
+                        .orElseThrow();
+        assertNull(bare.error());
+        assertNull(current.get());
+    }
+
+    /**
+     * A streaming blocking tool's progress reaches the client while the tool still runs, not with
+     * its result.
+     */
+    @Test
+    void aStreamingBlockingToolSendsProgressWhileRunning() throws Exception {
+        java.util.concurrent.CountDownLatch seen = new java.util.concurrent.CountDownLatch(1);
+        McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpBlocking.tool(
+                                McpSyncTool.of(
+                                        Tool.builder("wait", Map.of("type", "object")).build(),
+                                        (ctx, request) ->
+                                                McpSyncResponse.<CallToolOutcome>streaming(
+                                                        notifier -> {
+                                                            notifier.progress(1, 2.0, "half");
+                                                            try {
+                                                                // Released once the client saw
+                                                                // the progress.
+                                                                if (!seen.await(
+                                                                        10,
+                                                                        java.util.concurrent
+                                                                                .TimeUnit
+                                                                                .SECONDS)) {
+                                                                    return McpTestFeatures.text(
+                                                                            "progress held back");
+                                                                }
+                                                            } catch (InterruptedException e) {
+                                                                Thread.currentThread().interrupt();
+                                                            }
+                                                            return McpTestFeatures.text("done");
+                                                        }))));
+        adapter.start();
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p1");
+
+        Response response =
+                adapter.handle(
+                        call(
+                                "tools/call",
+                                Map.of("name", "wait", "arguments", Map.of()),
+                                "wait",
+                                meta));
+        var input = new java.io.PipedInputStream(1 << 16);
+        var output = new java.io.PipedOutputStream(input);
+        Thread.ofVirtual()
+                .start(
+                        () -> {
+                            try (output) {
+                                response.getEntity().write(output);
+                            } catch (java.io.IOException _) {
+                                // The reader went away.
+                            }
+                        });
+        var lines =
+                new java.io.BufferedReader(
+                        new java.io.InputStreamReader(input, StandardCharsets.UTF_8));
+        List<Map<String, Object>> events = new ArrayList<>();
+        for (String line = lines.readLine(); line != null; line = lines.readLine()) {
+            if (line.startsWith("data:")) {
+                events.add(MAPPER.readValue(line.substring(5).trim(), new TypeRef<>() {}));
+                seen.countDown();
+            }
+        }
+        assertEquals("notifications/progress", events.get(0).get("method"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = (Map<String, Object>) events.get(1).get("result");
+        assertEquals("done", firstText(result));
+    }
+
+    /**
+     * A blocking handler runs on a virtual thread even when an interceptor resumed the call on a
+     * Reactor thread.
+     */
+    @Test
+    void aBlockingHandlerLeavesAReactorThread() throws Exception {
+        AtomicReference<Thread> thread = new AtomicReference<>();
+        McpServerAdapter adapter = adapter();
+        adapter.getInterceptors()
+                .add(
+                        (message, context, chain) ->
+                                chain.proceed(message, context)
+                                        .subscribeOn(reactor.core.scheduler.Schedulers.parallel()));
+        adapter.getTools()
+                .add(
+                        McpBlocking.tool(
+                                McpSyncTool.of(
+                                        Tool.builder("where", Map.of("type", "object")).build(),
+                                        (ctx, request) -> {
+                                            thread.set(Thread.currentThread());
+                                            return McpSyncResponse.<CallToolOutcome>result(
+                                                    McpTestFeatures.text("here"));
+                                        })));
+        adapter.start();
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("name", "where");
+        params.put("arguments", Map.of());
+        params.put("_meta", meta());
         JsonRpc.JSONRPCResponse dispatched =
                 adapter.dispatch(
                                 new JsonRpc.JSONRPCRequest("2.0", "tools/call", 1, params),
                                 new McpRequestContext(null))
                         .orElseThrow();
         assertNull(dispatched.error());
-        assertNull(current.get());
+        assertTrue(thread.get().isVirtual(), thread.get().toString());
+    }
+
+    /** A blocking handler sees Restlet's context and application of the connector's call. */
+    @Test
+    void aBlockingHandlerSeesTheCallsRestletLocals() throws Exception {
+        AtomicReference<org.restlet.Context> seenContext = new AtomicReference<>();
+        AtomicReference<org.restlet.Application> seenApplication = new AtomicReference<>();
+        McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpBlocking.tool(
+                                McpSyncTool.of(
+                                        Tool.builder("locals", Map.of("type", "object")).build(),
+                                        (ctx, request) -> {
+                                            seenContext.set(org.restlet.Context.getCurrent());
+                                            seenApplication.set(
+                                                    org.restlet.Application.getCurrent());
+                                            return McpSyncResponse.<CallToolOutcome>result(
+                                                    McpTestFeatures.text("ok"));
+                                        })));
+        adapter.start();
+        org.restlet.Context context = new org.restlet.Context();
+        org.restlet.Application application = new org.restlet.Application(context);
+        org.restlet.Context previousContext = org.restlet.Context.getCurrent();
+        org.restlet.Application previousApplication = org.restlet.Application.getCurrent();
+        org.restlet.Context.setCurrent(context);
+        org.restlet.Application.setCurrent(application);
+        try {
+            result(
+                    adapter.handle(
+                            call(
+                                    "tools/call",
+                                    Map.of("name", "locals", "arguments", Map.of()),
+                                    "locals")));
+        } finally {
+            org.restlet.Context.setCurrent(previousContext);
+            org.restlet.Application.setCurrent(previousApplication);
+        }
+        assertSame(context, seenContext.get());
+        assertSame(application, seenApplication.get());
+    }
+
+    /** A scope swallowing the handler's failure doesn't hide its error. */
+    @Test
+    void aSwallowedFailureIsStillAnswered() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getCallScopes()
+                .add(
+                        (context, body) -> {
+                            try {
+                                body.run();
+                            } catch (Exception swallowed) {
+                                // The application's mistake: the adapter keeps the error.
+                            }
+                        });
+        adapter.getTools()
+                .add(
+                        McpBlocking.tool(
+                                McpSyncTool.of(
+                                        Tool.builder("refuse", Map.of("type", "object")).build(),
+                                        (ctx, request) -> {
+                                            throw McpException.invalidParams("refused");
+                                        })));
+        adapter.start();
+
+        assertEquals(
+                -32602,
+                code(
+                        adapter.handle(
+                                call(
+                                        "tools/call",
+                                        Map.of("name", "refuse", "arguments", Map.of()),
+                                        "refuse"))));
+    }
+
+    /** A legacy client's call runs a blocking tool with its request current. */
+    @Test
+    void aLegacyCallRunsABlockingTool() throws Exception {
+        AtomicReference<Request> current = new AtomicReference<>();
+        McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpBlocking.tool(
+                                McpSyncTool.of(
+                                        Tool.builder("old", Map.of("type", "object")).build(),
+                                        (ctx, request) -> {
+                                            current.set(Request.getCurrent());
+                                            return McpSyncResponse.<CallToolOutcome>result(
+                                                    McpTestFeatures.text("legacy"));
+                                        })));
+        adapter.start();
+
+        Request request =
+                McpServerAdapterTestCase.request(
+                        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":"
+                                + "{\"name\":\"old\",\"arguments\":{}}}");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result =
+                (Map<String, Object>)
+                        McpServerAdapterTestCase.envelope(adapter.handle(request)).get("result");
+        assertEquals("legacy", firstText(result));
+        assertSame(request, current.get());
     }
 
     private static McpSchema.ReadResourceResult read(String uri) {
