@@ -47,10 +47,14 @@ Changes log
           the arguments digest, and an extension method's name param.
         - Blocking MCP handlers (#1702). `McpBlocking` turns the SDK's sync tools, resources and
           prompts, and blocking extension methods, into `McpServerAdapter` registrations that run
-          on the virtual thread serving their request, never on a shared pool, with Restlet's
-          current request and response set. `McpServerAdapter.getCallScopes()` binds application
-          context around them (`ScopedValue`s, `ThreadLocal`s, MDC, tracing), the first scope
-          outermost. `McpRequestContext.transportResponse()` gives the transport response.
+          on a virtual thread, never on a shared pool: the one serving their request, or their own
+          for a streaming body or a call an interceptor moved off a virtual thread. Restlet's
+          thread-local variables of the connector's call are set around them (current request and
+          response, context, application, virtual host), through the new
+          `McpRequestContext.withRestletLocals`, and `McpServerAdapter.getCallScopes()` binds
+          application context around them (`ScopedValue`s, `ThreadLocal`s, MDC, tracing), the
+          first scope outermost. `McpRequestContext.transportResponse()` gives the transport
+          response.
     - Bugs fixed
         - The default MCP `requestState` codec binds the state to the call's arguments too, so a
           state sealed for a `tools/call` can't be replayed with other arguments (#1701).
