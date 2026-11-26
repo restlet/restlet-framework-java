@@ -39,9 +39,11 @@ public final class McpJsonResult implements McpSchema.Result {
     }
 
     /**
-     * Creates a result of a given type, such as {@code task} for the Tasks extension.
+     * Creates a result of a given type, such as {@code task} for the Tasks extension. An {@code
+     * input_required} result must be an {@link McpSchema.InputRequiredResult} instead, whose
+     * questions are checked against the client's capabilities and whose state is sealed.
      *
-     * @param resultType The result type.
+     * @param resultType The result type, not {@code input_required}.
      * @param fields The fields, without {@code resultType}; copied.
      * @return The result.
      */
@@ -50,6 +52,11 @@ public final class McpJsonResult implements McpSchema.Result {
         Objects.requireNonNull(fields, "fields");
         if (resultType.isBlank()) {
             throw new IllegalArgumentException("resultType must not be blank");
+        }
+        if (McpSchema.ResultType.INPUT_REQUIRED.equals(resultType)) {
+            // The SDK checks and seals only results implementing InputRequired.
+            throw new IllegalArgumentException(
+                    "An input_required result is an McpSchema.InputRequiredResult");
         }
         if (fields.containsKey("resultType")) {
             throw new IllegalArgumentException("resultType is given apart from the fields");

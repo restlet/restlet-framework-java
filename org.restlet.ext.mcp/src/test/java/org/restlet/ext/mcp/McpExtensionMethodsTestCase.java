@@ -200,6 +200,61 @@ class McpExtensionMethodsTestCase {
         assertEquals("s1", answered.get("confirmed"));
     }
 
+    /**
+     * The sealed state of a method declaring a name param is bound to that param's value: it opens
+     * on a retry for the same value, not for another, over HTTP and through dispatch.
+     */
+    @Test
+    void aSealedStateIsBoundToTheNameParamValue() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getMethods().add(confirm().withNameParam("taskId").withInputRequired(true));
+        adapter.start();
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.CLIENT_CAPABILITIES, Map.of("elicitation", Map.of("form", Map.of())));
+
+        Map<String, Object> asked =
+                result(
+                        adapter.handle(
+                                modern(
+                                        "com.example/confirm",
+                                        Map.of("taskId", "t-1"),
+                                        "t-1",
+                                        meta)));
+        String state = (String) asked.get("requestState");
+        assertNotNull(state, asked.toString());
+
+        Map<String, Object> same = retry("t-1", state);
+        assertEquals(
+                "s1",
+                result(adapter.handle(modern("com.example/confirm", same, "t-1", meta)))
+                        .get("confirmed"));
+
+        Map<String, Object> other = retry("t-2", state);
+        Response refused = adapter.handle(modern("com.example/confirm", other, "t-2", meta));
+        assertEquals(-32602, code(refused), body(refused));
+
+        Map<String, Object> dispatched = new LinkedHashMap<>(other);
+        dispatched.put("_meta", meta);
+        JsonRpc.JSONRPCResponse response =
+                adapter.dispatch(
+                                new JsonRpc.JSONRPCRequest(
+                                        "2.0", "com.example/confirm", 2, dispatched),
+                                new McpRequestContext(null))
+                        .orElseThrow();
+        assertNotNull(response.error(), String.valueOf(response.result()));
+        assertEquals(-32602, response.error().code());
+    }
+
+    private static Map<String, Object> retry(String taskId, String state) {
+        Map<String, Object> retry = new LinkedHashMap<>();
+        retry.put("taskId", taskId);
+        retry.put("requestState", state);
+        retry.put(
+                "inputResponses",
+                Map.of("confirm", Map.of("action", "accept", "content", Map.of())));
+        return retry;
+    }
+
     /** A method not declared input-required can't answer input_required. */
     @Test
     void aMethodNotInputRequiredCannotAnswerInputRequired() throws Exception {
@@ -285,6 +340,9 @@ class McpExtensionMethodsTestCase {
                 IllegalArgumentException.class,
                 () -> McpJsonResult.complete(Map.of("resultType", "task")));
         assertThrows(IllegalArgumentException.class, () -> McpJsonResult.of(" ", Map.of()));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> McpJsonResult.of("input_required", Map.of("requestState", "s1")));
 
         McpJsonResult task = McpJsonResult.of("task", Map.of("_meta", Map.of("k", "v")));
         assertEquals("task", task.resultType());

@@ -27,7 +27,8 @@ Changes log
           (#1698). `getMethods()` registers `McpMethod` handlers, such as `skills/list` or
           `tasks/get`, served to 2026-07-28 clients through the same interceptors, `_meta` checks,
           sealed `requestState` and error mapping as the methods MCP defines; a method may declare
-          the params field its `Mcp-Name` header mirrors, and whether it answers `input_required`.
+          the params field its `Mcp-Name` header mirrors, which also binds its sealed state to that
+          field's value, and whether it answers `input_required`.
           `getExtensions()` advertises extensions under `capabilities.extensions` in
           `server/discover`. `McpJsonResult` writes a result from JSON fields. Legacy clients get
           -32601 for these methods.

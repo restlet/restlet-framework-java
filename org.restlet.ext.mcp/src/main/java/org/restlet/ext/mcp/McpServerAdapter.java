@@ -106,6 +106,7 @@ public final class McpServerAdapter extends Restlet {
     private volatile boolean accepting;
     private volatile Sinks.One<Boolean> stopping;
     private volatile List<McpInterceptor> runningInterceptors = List.of();
+    private volatile Map<String, String> runningNameParams = Map.of();
     private volatile Set<String> runningOrigins = Set.of();
     private boolean configured;
 
@@ -319,6 +320,7 @@ public final class McpServerAdapter extends Restlet {
         // Built first: it rejects duplicate tool names before anything needs releasing.
         List<McpMethod> runningMethods = List.copyOf(methods);
         var modern = modernServer(runningMethods);
+        runningNameParams = McpExtensionFeatures.nameParams(runningMethods);
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
         stopping = Sinks.one();
@@ -331,7 +333,7 @@ public final class McpServerAdapter extends Restlet {
                         listeners,
                         requestTimeout,
                         maxMessageBytes,
-                        McpExtensionFeatures.nameParams(runningMethods),
+                        runningNameParams,
                         (message, context, terminal) -> invoke(0, message, context, terminal),
                         () -> stopping.asMono());
         legacyEdge = McpLegacyEdge.server(MAPPER, this::call, maxMessageBytes, requestTimeout);
@@ -371,12 +373,24 @@ public final class McpServerAdapter extends Restlet {
     }
 
     /**
-     * The authenticated user of a request, binding its {@code input_required} state, or null.
+     * The identity binding the {@code input_required} state of a request: its authenticated user,
+     * and for an extension method declaring a name param, that param's value.
+     *
+     * @param transport The SDK transport context.
+     * @return The identity, or null.
+     */
+    private static String principal(McpTransportContext transport) {
+        return McpExtensionFeatures.bind(
+                user(transport), transport.get(McpExtensionFeatures.BOUND_NAME_KEY));
+    }
+
+    /**
+     * The authenticated user of a request.
      *
      * @param transport The SDK transport context.
      * @return The user identifier, else the first principal name, or null.
      */
-    private static String principal(McpTransportContext transport) {
+    private static String user(McpTransportContext transport) {
         if (!(transport.get(McpProtocol.CONTEXT_KEY) instanceof McpRequestContext context)) {
             return null;
         }
@@ -514,7 +528,10 @@ public final class McpServerAdapter extends Restlet {
                                 McpParamHeaders.NOT_MIRRORED));
         if (message instanceof JsonRpc.JSONRPCRequest request) {
             return modernServer
-                    .handleBlocking(sdkContext, request)
+                    .handleBlocking(
+                            sdkContext.putAll(
+                                    McpExtensionFeatures.boundName(request, runningNameParams)),
+                            request)
                     .flatMap(
                             reply ->
                                     switch (reply) {

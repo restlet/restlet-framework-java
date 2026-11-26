@@ -97,6 +97,50 @@ public final class McpExtensionFeatures {
         return Map.copyOf(params);
     }
 
+    /**
+     * The SDK transport context key of the value an extension method's name param has in a request.
+     * The sealed {@code requestState} is bound to it: the SDK binds the primitive name of the
+     * methods MCP defines only.
+     */
+    public static final String BOUND_NAME_KEY = "org.restlet.ext.mcp.boundName";
+
+    /**
+     * The SDK transport context entries binding a request's sealed state to the value of its
+     * method's name param, if it is an extension method that declares one.
+     *
+     * @param request The request.
+     * @param nameParams The params field each extension method's {@code Mcp-Name} mirrors.
+     * @return The entries, empty when nothing is bound.
+     */
+    public static Map<String, Object> boundName(
+            io.modelcontextprotocol.modern.JsonRpc.JSONRPCRequest request,
+            Map<String, String> nameParams) {
+        String param = nameParams.get(request.method());
+        if (param != null
+                && request.params() instanceof Map<?, ?> params
+                && params.get(param) instanceof String value) {
+            return Map.of(BOUND_NAME_KEY, value);
+        }
+        return Map.of();
+    }
+
+    /**
+     * The identity a sealed state is bound to: the principal, and the name param value when one is
+     * bound. A state sealed for one value then fails to open for another. Without a bound value,
+     * the principal alone, as before.
+     *
+     * @param principal The principal, or null.
+     * @param boundName The bound value, or null.
+     * @return The identity, or null.
+     */
+    public static String bind(String principal, Object boundName) {
+        if (!(boundName instanceof String name)) {
+            return principal;
+        }
+        // Length-prefixed and led by a NUL, so no principal alone or other pair collides with it.
+        return "\0" + name.length() + ":" + name + (principal == null ? "" : principal);
+    }
+
     /** One extension method. */
     private record MethodFeature(McpMethod method) implements McpFeature {
         @Override
