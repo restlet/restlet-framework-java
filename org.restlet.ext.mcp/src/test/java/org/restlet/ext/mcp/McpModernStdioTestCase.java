@@ -144,6 +144,7 @@ class McpModernStdioTestCase {
                                                                                 params.get(
                                                                                         "key"))))))
                                 .withNameParam("key"));
+        adapter.getSubscriptions().add(McpSubscription.of("com.example/jobs"));
         adapter.setMaxListenStreams(LISTENS);
         adapter.start();
         Engine.getInstance().getRegisteredServers().add(prototype);
@@ -261,6 +262,27 @@ class McpModernStdioTestCase {
         assertEquals("echo:beside", firstText(result(read())));
         adapter.getChanges().broadcast(new ServerChange.ToolsListChanged());
         assertEquals(McpSchema.METHOD_NOTIFICATION_TOOLS_LIST_CHANGED, read().get("method"));
+    }
+
+    /** An application notification reaches a listen stream on stdio. */
+    @Test
+    void aListenStreamCarriesApplicationNotifications() throws Exception {
+        send(
+                request(
+                        10,
+                        McpSchema.METHOD_SUBSCRIPTIONS_LISTEN,
+                        Map.of("notifications", Map.of("com.example/jobs", true)),
+                        meta()));
+        Map<String, Object> ack = read();
+        assertEquals(McpSchema.METHOD_NOTIFICATION_SUBSCRIPTIONS_ACKNOWLEDGED, ack.get("method"));
+
+        adapter.getChanges()
+                .broadcast(
+                        McpNotification.of(
+                                "notifications/jobs", Map.of("id", "j-1"), "com.example/jobs"));
+        Map<String, Object> notification = read();
+        assertEquals("notifications/jobs", notification.get("method"));
+        assertEquals("j-1", ((Map<?, ?>) notification.get("params")).get("id"));
     }
 
     /** A request naming the cancellation method is answered, and cancels nothing. */

@@ -17,10 +17,10 @@ import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
 import io.modelcontextprotocol.modern.server.McpHeaders;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
 import io.modelcontextprotocol.modern.server.RequestStateCodec;
+import io.modelcontextprotocol.modern.server.SubscriptionRestriction;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.modern.server.feature.McpChangeBroadcaster;
-import io.modelcontextprotocol.modern.server.feature.McpChangeFeed;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -44,6 +44,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.ext.mcp.internal.McpBindings;
 import org.restlet.ext.mcp.internal.McpCallScopes;
+import org.restlet.ext.mcp.internal.McpCoalescingFeed;
 import org.restlet.ext.mcp.internal.McpExtensionFeatures;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
@@ -81,7 +82,9 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpCallScope> callScopes = new CopyOnWriteArrayList<>();
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private McpTaskStore taskStore;
-    private final McpChangeFeed changes = new McpChangeFeed();
+    private final McpCoalescingFeed changes = new McpCoalescingFeed();
+    private final List<McpSubscription> subscriptions = new CopyOnWriteArrayList<>();
+    private SubscriptionRestriction subscriptionRestriction;
     private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
     private volatile McpJsonMapper runningMapper = jsonMapper;
     private byte[] requestStateKey;
@@ -225,13 +228,43 @@ public final class McpServerAdapter extends Restlet {
 
     /**
      * Publishes changes to the MCP {@link McpProtocol#MODERN_VERSION} clients listening through
-     * {@code subscriptions/listen}: tools, prompts and resources list changes, and resource
-     * updates. A change nobody listens to is dropped. Experimental.
+     * {@code subscriptions/listen}: tools, prompts and resources list changes, resource updates,
+     * and the application's {@link McpNotification}s on the fields of {@link #getSubscriptions()}.
+     * A change nobody listens to is dropped. A stream too slow keeps its pending changes, the
+     * latest one per {@link McpNotification#key() key}, up to {@value
+     * org.restlet.ext.mcp.internal.McpCoalescingFeed#MAX_PENDING}. Experimental.
      *
      * @return The change broadcaster, usable at any time.
      */
     public McpChangeBroadcaster getChanges() {
         return changes;
+    }
+
+    /**
+     * The subscription fields the application honours on {@code subscriptions/listen}, besides the
+     * tools, prompts and resources changes, such as a Tasks extension's: the fields its {@link
+     * McpNotification}s are sent on. A field MCP defines, or one honoured twice, is refused at
+     * start. Experimental.
+     *
+     * @return The subscriptions, modifiable until the adapter starts.
+     */
+    public List<McpSubscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    /**
+     * Sets what each caller may receive on {@code subscriptions/listen}, of what the adapter
+     * honours: the SDK narrows the honoured subscriptions to it. Experimental.
+     *
+     * @param value The restriction, or null for none.
+     */
+    public synchronized void setSubscriptionRestriction(SubscriptionRestriction value) {
+        requireConfigurable();
+        subscriptionRestriction = value;
+    }
+
+    public synchronized SubscriptionRestriction getSubscriptionRestriction() {
+        return subscriptionRestriction;
     }
 
     public synchronized int getMaxListenStreams() {
@@ -438,7 +471,11 @@ public final class McpServerAdapter extends Restlet {
                                                 List.copyOf(toolFilters),
                                                 taskStore != null)))
                         .features(McpExtensionFeatures.of(runningMethods, runningExtensions))
+                        .features(McpExtensionFeatures.subscriptions(List.copyOf(subscriptions)))
                         .subscriptions(changes);
+        if (subscriptionRestriction != null) {
+            builder.restrictSubscriptions(subscriptionRestriction);
+        }
         if (requestStateCodec != null) {
             return builder.requestStateCodec(requestStateCodec).build();
         }
