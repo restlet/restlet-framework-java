@@ -80,6 +80,7 @@ public final class McpClientAdapter implements AutoCloseable {
     private McpSchema.ClientCapabilities modernCapabilities = McpSchema.ClientCapabilities.NONE;
     private McpInputHandler inputHandler;
     private int maxInputRounds = DEFAULT_MAX_INPUT_ROUNDS;
+    private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
     private boolean legacySessions;
     private String legacySessionId;
     private McpModernClient modern;
@@ -92,6 +93,21 @@ public final class McpClientAdapter implements AutoCloseable {
         this.client = Objects.requireNonNull(client, "client");
         this.target = Objects.requireNonNull(target, "target");
         stream = null;
+    }
+
+    /**
+     * Sets the JSON mapper of the {@link McpProtocol#MODERN_VERSION} client's messages, so that
+     * they share the application's settings. The SDK's default, Jackson 3 based, otherwise.
+     *
+     * @param value The mapper.
+     */
+    public synchronized void setJsonMapper(McpJsonMapper value) {
+        requireConfigurable();
+        jsonMapper = Objects.requireNonNull(value, "jsonMapper");
+    }
+
+    public synchronized McpJsonMapper getJsonMapper() {
+        return jsonMapper;
     }
 
     /** Owns this stream transport's lifecycle; underlying borrowed streams remain borrowed. */
@@ -480,7 +496,7 @@ public final class McpClientAdapter implements AutoCloseable {
             throw new IllegalStateException(
                     "Borrowed MCP client must be started with followRedirects=false");
         }
-        McpJsonMapper mapper = McpJsonDefaults.getMapper();
+        McpJsonMapper mapper = jsonMapper;
         return new McpModernClient(
                 new McpModernHttpTransport(
                         client,

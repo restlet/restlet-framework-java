@@ -22,10 +22,10 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Objects;
-import java.util.Optional;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Seals the {@code requestState} of {@code input_required} results with AES-256-GCM, for {@link
@@ -91,11 +91,11 @@ public final class McpAeadRequestStateCodec implements RequestStateCodec {
     }
 
     @Override
-    public Optional<String> open(McpRequestContext ctx, String sealed) {
+    public @Nullable String open(McpRequestContext ctx, String sealed) {
         try {
             byte[] in = Base64.getUrlDecoder().decode(sealed);
             if (in.length < 1 + NONCE_BYTES || in[0] != VERSION) {
-                return Optional.empty();
+                return null;
             }
             byte[] nonce = java.util.Arrays.copyOfRange(in, 1, 1 + NONCE_BYTES);
             byte[] plain =
@@ -109,13 +109,13 @@ public final class McpAeadRequestStateCodec implements RequestStateCodec {
                         || !MessageDigest.isEqual(
                                 binding.getBytes(StandardCharsets.UTF_8),
                                 binding(ctx).getBytes(StandardCharsets.UTF_8))) {
-                    return Optional.empty();
+                    return null;
                 }
-                return Optional.of(state);
+                return state;
             }
         } catch (IllegalArgumentException | IOException | GeneralSecurityException e) {
             // Malformed, tampered with or sealed with another key: it doesn't open.
-            return Optional.empty();
+            return null;
         }
     }
 

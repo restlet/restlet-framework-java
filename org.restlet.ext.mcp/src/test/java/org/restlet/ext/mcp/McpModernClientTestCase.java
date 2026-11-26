@@ -195,7 +195,11 @@ class McpModernClientTestCase {
         CountDownLatch completed = new CountDownLatch(1);
         List<Throwable> errors = new CopyOnWriteArrayList<>();
         Disposable listening =
-                modern.listen(new McpSchema.SubscriptionFilter(true, null, null, null))
+                modern.listen(
+                                McpSchema.SubscriptionFilter.of(
+                                        Map.of(
+                                                McpSchema.SubscriptionFilter.TOOLS_LIST_CHANGED,
+                                                true)))
                         .doOnComplete(completed::countDown)
                         .subscribe(changes::add, errors::add);
         try {

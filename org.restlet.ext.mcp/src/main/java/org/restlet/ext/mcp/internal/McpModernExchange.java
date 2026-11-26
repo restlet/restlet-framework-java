@@ -13,7 +13,7 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema.ErrorCodes;
 import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
-import io.modelcontextprotocol.modern.server.McpParamHeaders;
+import io.modelcontextprotocol.modern.server.McpHeaders;
 import io.modelcontextprotocol.modern.server.McpServer;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
 import io.modelcontextprotocol.modern.server.transport.McpHeaderDecoder;
@@ -365,10 +365,10 @@ public final class McpModernExchange {
                 sdkContext =
                         sdkContext.putAll(
                                 Map.of(
-                                        McpParamHeaders.TRANSPORT_CONTEXT_KEY,
+                                        McpHeaders.TRANSPORT_CONTEXT_KEY,
                                         stdio
-                                                ? McpParamHeaders.NOT_MIRRORED
-                                                : McpHeaderDecoder.paramHeaders(headers())));
+                                                ? McpHeaders.NOT_MIRRORED
+                                                : McpHeaderDecoder.headers(headers())));
             }
             McpTransportResponse reply =
                     listen

@@ -98,6 +98,15 @@ Changes log
         - The HTTPS client connector checked the certificate of an IPv6 literal host, such as
           `https://[::1]:8443/`, against its bracketed form, so hostname verification always
           failed, over HTTP/1.1, HTTP/2 and HTTP/3: the address is now checked without brackets.
+    - Misc
+        - Upgraded the MCP Java SDK to version 2.2.0, the release Spring AI 2.1.0 uses (#1705).
+          The SDK's modern API changed since 2.2.0-M2: `RequestStateCodec.open` returns a nullable
+          string instead of an `Optional` (so does `McpAeadRequestStateCodec.open`), parameter
+          headers moved to `McpHeaders`, and `SubscriptionFilter` became an open set of fields.
+        - The MCP extension uses Jackson 3, as `org.restlet.ext.jackson` does, through the SDK's
+          `mcp-json-jackson3` module: Jackson 2 is no longer one of its dependencies (#1705).
+          `McpServerAdapter.setJsonMapper` and `McpClientAdapter.setJsonMapper` let the
+          application supply the mapper of the MCP messages.
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
