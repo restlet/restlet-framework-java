@@ -32,6 +32,14 @@ Changes log
           `getExtensions()` advertises extensions under `capabilities.extensions` in
           `server/discover`. `McpJsonResult` writes a result from JSON fields. Legacy clients get
           -32601 for these methods.
+        - MCP Tasks extension (`io.modelcontextprotocol/tasks`) on server and client (#1699).
+          `McpServerAdapter.setTaskStore(McpTaskStore)` serves `tasks/get`, `tasks/update` and
+          `tasks/cancel` on the application's tasks, scoped to the principal that created them
+          (`McpRequestContext.principal()`), and advertises the extension. A tool returns an
+          `McpTaskResult` to run a call as a task, only to clients declaring the extension
+          (`McpTaskResult.isDeclared`). `McpModernClient.callTool` returns that task, and
+          `awaitTask` polls it to its result, answering its questions through the input handler;
+          `getTask`, `updateTask` and `cancelTask` drive it directly.
     - Bugs fixed
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the

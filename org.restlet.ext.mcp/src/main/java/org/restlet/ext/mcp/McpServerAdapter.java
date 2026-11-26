@@ -48,6 +48,7 @@ import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpModernExchange;
 import org.restlet.ext.mcp.internal.McpModernFeatures;
+import org.restlet.ext.mcp.internal.McpTaskMethods;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
 import reactor.core.publisher.Mono;
@@ -88,6 +89,7 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpInterceptor> interceptors = new CopyOnWriteArrayList<>();
     private final List<McpMethod> methods = new CopyOnWriteArrayList<>();
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
+    private McpTaskStore taskStore;
     private final McpChangeFeed changes = new McpChangeFeed();
     private byte[] requestStateKey;
     private int maxListenStreams = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
@@ -196,6 +198,24 @@ public final class McpServerAdapter extends Restlet {
      */
     public Map<String, Map<String, Object>> getExtensions() {
         return extensions;
+    }
+
+    /**
+     * Serves the MCP Tasks extension on the application's tasks: {@code tasks/get}, {@code
+     * tasks/update} and {@code tasks/cancel}, their {@code Mcp-Name} header being the {@code
+     * taskId}, and {@link McpTask#EXTENSION_ID} advertised unless {@link #getExtensions()} already
+     * gives its settings. Tools then may answer an {@link McpTaskResult} to the clients declaring
+     * the extension. Experimental.
+     *
+     * @param value The tasks, or null to serve none.
+     */
+    public synchronized void setTaskStore(McpTaskStore value) {
+        requireConfigurable();
+        taskStore = value;
+    }
+
+    public synchronized McpTaskStore getTaskStore() {
+        return taskStore;
     }
 
     /**
@@ -318,8 +338,14 @@ public final class McpServerAdapter extends Restlet {
         }
         requireConfigurable();
         // Built first: it rejects duplicate tool names before anything needs releasing.
-        List<McpMethod> runningMethods = List.copyOf(methods);
-        var modern = modernServer(runningMethods);
+        List<McpMethod> runningMethods = new java.util.ArrayList<>(methods);
+        Map<String, Map<String, Object>> runningExtensions = new java.util.HashMap<>(extensions);
+        if (taskStore != null) {
+            runningMethods.addAll(McpTaskMethods.of(taskStore));
+            runningExtensions.putIfAbsent(McpTask.EXTENSION_ID, Map.of());
+        }
+        runningMethods = List.copyOf(runningMethods);
+        var modern = modernServer(runningMethods, Map.copyOf(runningExtensions));
         runningNameParams = McpExtensionFeatures.nameParams(runningMethods);
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
@@ -346,7 +372,7 @@ public final class McpServerAdapter extends Restlet {
 
     /** Builds the SDK's modern server from the registrations. */
     private io.modelcontextprotocol.modern.server.McpServer modernServer(
-            List<McpMethod> runningMethods) {
+            List<McpMethod> runningMethods, Map<String, Map<String, Object>> runningExtensions) {
         var builder =
                 io.modelcontextprotocol.modern.server.McpServer.builder()
                         .serverInfo(serverInfo)
@@ -359,8 +385,9 @@ public final class McpServerAdapter extends Restlet {
                                                 List.copyOf(resources),
                                                 List.copyOf(resourceTemplates),
                                                 List.copyOf(prompts),
-                                                List.copyOf(toolFilters))))
-                        .features(McpExtensionFeatures.of(runningMethods, Map.copyOf(extensions)))
+                                                List.copyOf(toolFilters),
+                                                taskStore != null)))
+                        .features(McpExtensionFeatures.of(runningMethods, runningExtensions))
                         .subscriptions(changes);
         var codec =
                 HmacRequestStateCodec.builder()
@@ -391,20 +418,9 @@ public final class McpServerAdapter extends Restlet {
      * @return The user identifier, else the first principal name, or null.
      */
     private static String user(McpTransportContext transport) {
-        if (!(transport.get(McpProtocol.CONTEXT_KEY) instanceof McpRequestContext context)) {
-            return null;
-        }
-        return context.transportRequest()
-                .map(Request::getClientInfo)
-                .map(
-                        info ->
-                                info.getUser() != null
-                                        ? info.getUser().getIdentifier()
-                                        : info.getPrincipals().stream()
-                                                .map(java.security.Principal::getName)
-                                                .findFirst()
-                                                .orElse(null))
-                .orElse(null);
+        return transport.get(McpProtocol.CONTEXT_KEY) instanceof McpRequestContext context
+                ? context.principal().orElse(null)
+                : null;
     }
 
     @Override

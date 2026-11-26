@@ -8,7 +8,9 @@
  */
 package org.restlet.ext.mcp.internal;
 
+import io.modelcontextprotocol.modern.McpException;
 import io.modelcontextprotocol.modern.McpSchema;
+import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.McpFeature;
 import io.modelcontextprotocol.modern.server.McpRequestContext;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
@@ -32,6 +34,7 @@ import java.util.Map;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpResource;
 import org.restlet.ext.mcp.McpResourceTemplate;
+import org.restlet.ext.mcp.McpTaskResult;
 import org.restlet.ext.mcp.McpToolFilter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,6 +45,8 @@ import reactor.core.publisher.Mono;
  * or URI template may only be registered once.
  */
 public final class McpModernFeatures {
+    private static final java.util.logging.Logger LOGGER =
+            java.util.logging.Logger.getLogger(McpModernFeatures.class.getName());
 
     private McpModernFeatures() {}
 
@@ -59,7 +64,8 @@ public final class McpModernFeatures {
             List<McpResource> resources,
             List<McpResourceTemplate> resourceTemplates,
             List<McpAsyncPrompt> prompts,
-            List<McpToolFilter> toolFilters) {}
+            List<McpToolFilter> toolFilters,
+            boolean tasks) {}
 
     /**
      * Builds the features for registrations, one per kind present.
@@ -82,6 +88,63 @@ public final class McpModernFeatures {
         return features;
     }
 
+    /**
+     * A tool whose task results only reach the clients declaring the Tasks extension, and only when
+     * the adapter serves {@code tasks/*}: anything else is a bug, answered with an internal error.
+     */
+    private static McpAsyncTool guarded(McpAsyncTool tool, boolean tasks) {
+        return McpAsyncTool.of(
+                tool.definition(),
+                tool.requiredCapabilities(),
+                (ctx, request) ->
+                        tool.handler()
+                                .call(ctx, request)
+                                .map(
+                                        response ->
+                                                response
+                                                                instanceof
+                                                                McpAsyncResponse.Result<
+                                                                                McpSchema
+                                                                                        .CallToolOutcome>
+                                                                        result
+                                                        ? McpAsyncResponse.result(
+                                                                checked(
+                                                                        ctx,
+                                                                        result.result(),
+                                                                        tasks))
+                                                        : McpAsyncResponse.streaming(
+                                                                notifier ->
+                                                                        ((McpAsyncResponse
+                                                                                                        .Streaming<
+                                                                                                McpSchema
+                                                                                                        .CallToolOutcome>)
+                                                                                        response)
+                                                                                .body()
+                                                                                .run(notifier)
+                                                                                .map(
+                                                                                        outcome ->
+                                                                                                checked(
+                                                                                                        ctx,
+                                                                                                        outcome,
+                                                                                                        tasks)))));
+    }
+
+    /** The outcome, unless it is a task result the request may not get. */
+    private static McpSchema.CallToolOutcome checked(
+            McpRequestContext ctx, McpSchema.CallToolOutcome outcome, boolean tasks) {
+        if (outcome instanceof McpTaskResult && !(tasks && McpTaskResult.isDeclared(ctx))) {
+            LOGGER.warning(
+                    "Tool "
+                            + ctx.primitiveName()
+                            + " returned a task "
+                            + (tasks
+                                    ? "to a client that did not declare the Tasks extension"
+                                    : "without a task store to serve tasks/*"));
+            throw new McpException(McpSchema.ErrorCodes.INTERNAL_ERROR, "Internal error");
+        }
+        return outcome;
+    }
+
     /** The adapter's context of a request, or null when the transport gave none. */
     private static org.restlet.ext.mcp.McpRequestContext context(McpRequestContext ctx) {
         return ctx.transportContext().get(McpProtocol.CONTEXT_KEY)
@@ -97,7 +160,8 @@ public final class McpModernFeatures {
 
         private Tools(Registrations registrations) {
             this.filters = List.copyOf(registrations.toolFilters());
-            for (McpAsyncTool tool : registrations.tools()) {
+            for (McpAsyncTool registered : registrations.tools()) {
+                McpAsyncTool tool = guarded(registered, registrations.tasks());
                 if (byName.putIfAbsent(tool.definition().name(), tool) != null) {
                     throw new IllegalArgumentException(
                             "Duplicate MCP tool name: " + tool.definition().name());
