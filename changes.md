@@ -40,9 +40,16 @@ Changes log
           (`McpTaskResult.isDeclared`). `McpModernClient.callTool` returns that task, and
           `awaitTask` polls it to its result, answering its questions through the input handler;
           `getTask`, `updateTask` and `cancelTask` drive it directly.
+        - The sealed `requestState` of MCP `input_required` results can be sealed by the
+          application's codec, `McpServerAdapter.setRequestStateCodec(RequestStateCodec)` (#1701).
+          `McpAeadRequestStateCodec` seals it with AES-256-GCM, so the client can't read it, with a
+          configurable TTL. `McpRequestBinding` gives a codec what to bind the state to: the user,
+          the arguments digest, and an extension method's name param.
     - Bugs fixed
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
+        - The default MCP `requestState` codec binds the state to the call's arguments too, so a
+          state sealed for a `tools/call` can't be replayed with other arguments (#1701).
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the
           URI of a server redirection are normalized (#238). Relative-path targets such as
