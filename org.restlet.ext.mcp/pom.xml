@@ -12,12 +12,19 @@
     <description>Official MCP SDK on shared Restlet HTTP and explicit STDIO transports.</description>
     <dependencyManagement>
         <dependencies>
+            <!-- The SDK's Jackson 3 module and its schema validator: one Jackson 3, Restlet's -->
             <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
+                <groupId>tools.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.21.1</version>
+                <version>${lib-jackson3-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- mcp-core asks for 1.0.0, reactor-core for 1.0.1 -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -34,18 +41,13 @@
         </dependency>
         <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>
-            <artifactId>mcp-json-jackson2</artifactId>
+            <artifactId>mcp-json-jackson3</artifactId>
             <version>${lib-mcp-version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.21.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>2.21.1</version>
+            <version>${lib-jackson3-version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

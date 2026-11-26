@@ -39,7 +39,6 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
@@ -192,10 +191,8 @@ class McpRequestStateCodecTestCase {
                     }
 
                     @Override
-                    public Optional<String> open(McpRequestContext ctx, String sealed) {
-                        return sealed.startsWith("sealed-")
-                                ? Optional.of(sealed.substring(7))
-                                : Optional.empty();
+                    public String open(McpRequestContext ctx, String sealed) {
+                        return sealed.startsWith("sealed-") ? sealed.substring(7) : null;
                     }
                 };
         McpServerAdapter adapter = adapter(codec);

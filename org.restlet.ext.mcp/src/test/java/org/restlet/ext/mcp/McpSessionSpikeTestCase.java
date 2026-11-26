@@ -52,6 +52,8 @@ import reactor.core.publisher.Mono;
  * response streams and listening streams, against the SDK's own {@link
  * HttpClientStreamableHttpTransport}. Test-only: no production API is implied.
  */
+// The 2025-11-25 session spike exercises roots, deprecated by MCP 2026-07-28 and the SDK 2.2.
+@SuppressWarnings("deprecation")
 class McpSessionSpikeTestCase {
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
     private static final McpJsonMapper MAPPER = McpJsonDefaults.getMapper();
