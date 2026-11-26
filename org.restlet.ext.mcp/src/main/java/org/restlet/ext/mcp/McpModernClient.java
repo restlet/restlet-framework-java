@@ -16,6 +16,7 @@ import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.ToolParamHeaderAnnotations;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,15 @@ public final class McpModernClient {
     private static final TypeRef<Map<String, Object>> MAP = new TypeRef<>() {};
     private static final String META = "_meta";
     private static final String REQUEST = "request";
+    private static final String TASK_ID = "taskId";
+
+    /** The shortest wait between two polls of a task, in milliseconds. */
+    public static final long MIN_POLL_MS = 100;
+
+    /** The longest wait between two polls of a task, in milliseconds. */
+    public static final long MAX_POLL_MS = 30_000;
+
+    private static final long DEFAULT_POLL_MS = 1_000;
 
     private final McpModernHttpTransport transport;
     private final McpJsonMapper mapper;
@@ -113,11 +123,14 @@ public final class McpModernClient {
 
     /**
      * Calls a tool. An {@code input_required} result is answered by the input handler, and the call
-     * retried, within the round limit; without a handler, or past the limit, it is returned.
+     * retried, within the round limit; without a handler, or past the limit, it is returned. When
+     * the client capabilities declare the Tasks extension ({@link McpTask#EXTENSION_ID}), the
+     * server may run the call as a task: an {@link McpTaskResult} is returned then, for {@link
+     * #awaitTask} or the caller's own polling.
      *
      * @param request The call.
      * @param progress Receives the progress notifications of the call, or null for none.
-     * @return The tool's result, or an {@code input_required} result.
+     * @return The tool's result, an {@code input_required} result or a task.
      */
     public Mono<McpSchema.CallToolOutcome> callTool(
             McpSchema.CallToolRequest request, Consumer<McpSchema.ProgressParams> progress) {
@@ -145,6 +158,118 @@ public final class McpModernClient {
                                             McpSchema.CallToolOutcome.class),
                             0);
                 });
+    }
+
+    /**
+     * Gets the state of a task, with {@code tasks/get}.
+     *
+     * @param taskId The task identifier.
+     * @return The state.
+     */
+    public Mono<McpTask> getTask(String taskId) {
+        Objects.requireNonNull(taskId, TASK_ID);
+        return result("tasks/get", taskParams(taskId), taskId, Map.of(), null)
+                .map(McpTask::fromFields);
+    }
+
+    /**
+     * Answers the questions a task waits on, with {@code tasks/update}.
+     *
+     * @param taskId The task identifier.
+     * @param inputResponses The answers, keyed as the task's {@code inputRequests}.
+     * @return Completes once the server took them.
+     */
+    public Mono<Void> updateTask(String taskId, Map<String, Object> inputResponses) {
+        Objects.requireNonNull(taskId, TASK_ID);
+        Objects.requireNonNull(inputResponses, "inputResponses");
+        Map<String, Object> params = taskParams(taskId);
+        params.put("inputResponses", inputResponses);
+        return result("tasks/update", params, taskId, Map.of(), null).then();
+    }
+
+    /**
+     * Asks a task to stop, with {@code tasks/cancel}. Cancellation is cooperative.
+     *
+     * @param taskId The task identifier.
+     * @return Completes once the server took the request.
+     */
+    public Mono<Void> cancelTask(String taskId) {
+        Objects.requireNonNull(taskId, TASK_ID);
+        return result("tasks/cancel", taskParams(taskId), taskId, Map.of(), null).then();
+    }
+
+    /**
+     * Waits for a task to end, polling {@code tasks/get} at its {@code pollIntervalMs}, bounded to
+     * between {@value #MIN_POLL_MS} ms and {@value #MAX_POLL_MS} ms, one second by default. The
+     * questions of an {@code input_required} task go to the input handler, and its answers to
+     * {@code tasks/update}, within the round limit; without a handler, or past the limit, the task
+     * is returned as it is. Cancelling the returned {@code Mono} stops the polling, not the task:
+     * see {@link #cancelTask}.
+     *
+     * @param task The task, as {@code tools/call} answered it.
+     * @return The tool's result once completed, or the task still waiting on input. A failed task
+     *     fails with an {@link McpException} carrying its error; a cancelled one with an internal
+     *     error.
+     */
+    public Mono<McpSchema.CallToolOutcome> awaitTask(McpTaskResult task) {
+        Objects.requireNonNull(task, "task");
+        return await(task.task(), 0);
+    }
+
+    private Mono<McpSchema.CallToolOutcome> await(McpTask task, int round) {
+        return switch (task.status()) {
+            case COMPLETED ->
+                    Mono.just(mapper.convertValue(task.result(), McpSchema.CallToolResult.class));
+            case FAILED ->
+                    Mono.error(
+                            new McpException(
+                                    mapper.convertValue(
+                                            task.error(),
+                                            JsonRpc.JSONRPCResponse.JSONRPCError.class)));
+            case CANCELLED ->
+                    Mono.error(
+                            new McpException(
+                                    McpSchema.ErrorCodes.INTERNAL_ERROR,
+                                    "MCP task cancelled: " + task.taskId()));
+            case INPUT_REQUIRED -> answer(task, round);
+            case WORKING -> poll(task).flatMap(next -> await(next, round));
+        };
+    }
+
+    /** Answers a waiting task's questions through the input handler, then waits again. */
+    private Mono<McpSchema.CallToolOutcome> answer(McpTask task, int round) {
+        if (inputHandler == null || round >= maxInputRounds) {
+            return Mono.just(new McpTaskResult(task));
+        }
+        Map<String, Object> asked = new LinkedHashMap<>();
+        asked.put("resultType", McpSchema.ResultType.INPUT_REQUIRED);
+        asked.put("inputRequests", task.inputRequests());
+        return inputHandler
+                .respond(mapper.convertValue(asked, McpSchema.InputRequiredResult.class))
+                .map(Optional::of)
+                .defaultIfEmpty(Optional.empty())
+                .flatMap(
+                        answers ->
+                                answers.isEmpty()
+                                        ? Mono.just(new McpTaskResult(task))
+                                        : updateTask(task.taskId(), answers.get())
+                                                .then(poll(task))
+                                                .flatMap(next -> await(next, round + 1)));
+    }
+
+    /** The task's next state, after its poll interval. */
+    private Mono<McpTask> poll(McpTask task) {
+        long interval =
+                task.pollIntervalMs() == null
+                        ? DEFAULT_POLL_MS
+                        : Math.clamp(task.pollIntervalMs(), MIN_POLL_MS, MAX_POLL_MS);
+        return Mono.delay(Duration.ofMillis(interval)).then(getTask(task.taskId()));
+    }
+
+    private static Map<String, Object> taskParams(String taskId) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(TASK_ID, taskId);
+        return params;
     }
 
     /**
@@ -321,7 +446,13 @@ public final class McpModernClient {
                                                         result.get("resultType"))
                                                 ? mapper.convertValue(
                                                         result, McpSchema.InputRequiredResult.class)
-                                                : mapper.convertValue(result, complete)));
+                                                : McpTaskResult.RESULT_TYPE.equals(
+                                                                        result.get("resultType"))
+                                                                && type.isAssignableFrom(
+                                                                        McpTaskResult.class)
+                                                        ? new McpTaskResult(
+                                                                McpTask.fromFields(result))
+                                                        : mapper.convertValue(result, complete)));
     }
 
     private <R> Mono<R> page(String method, String cursor, Class<R> type) {

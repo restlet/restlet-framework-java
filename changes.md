@@ -32,6 +32,14 @@ Changes log
           `getExtensions()` advertises extensions under `capabilities.extensions` in
           `server/discover`. `McpJsonResult` writes a result from JSON fields. Legacy clients get
           -32601 for these methods.
+        - MCP Tasks extension (`io.modelcontextprotocol/tasks`) on server and client (#1699).
+          `McpServerAdapter.setTaskStore(McpTaskStore)` serves `tasks/get`, `tasks/update` and
+          `tasks/cancel` on the application's tasks, scoped to the principal that created them
+          (`McpRequestContext.principal()`), and advertises the extension. A tool returns an
+          `McpTaskResult` to run a call as a task, only to clients declaring the extension
+          (`McpTaskResult.isDeclared`). `McpModernClient.callTool` returns that task, and
+          `awaitTask` polls it to its result, answering its questions through the input handler;
+          `getTask`, `updateTask` and `cancelTask` drive it directly.
     - Bugs fixed
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
