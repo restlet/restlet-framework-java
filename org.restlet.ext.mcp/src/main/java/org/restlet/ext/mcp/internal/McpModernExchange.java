@@ -351,7 +351,8 @@ public final class McpModernExchange {
             if (!(next instanceof JsonRpc.JSONRPCRequest rpc)) {
                 throw new IOException("An MCP request must stay one");
             }
-            McpTransportContext sdkContext = transport(forwarded);
+            McpTransportContext sdkContext =
+                    transport(forwarded).putAll(McpExtensionFeatures.boundName(rpc, nameParams));
             if (io.modelcontextprotocol.modern.McpSchema.METHOD_TOOLS_CALL.equals(rpc.method())) {
                 // The tools feature validates x-mcp-header arguments against these.
                 sdkContext =
