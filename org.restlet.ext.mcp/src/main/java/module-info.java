@@ -13,10 +13,11 @@ module org.restlet.ext.mcp {
     requires transitive reactor.core;
     requires transitive org.reactivestreams;
     requires org.slf4j;
-    requires io.modelcontextprotocol.sdk.mcp.json.jackson2;
+    requires io.modelcontextprotocol.sdk.mcp.json.jackson3;
     requires com.networknt.schema;
-    requires com.fasterxml.jackson.databind;
-    requires com.fasterxml.jackson.datatype.jdk8;
+    requires tools.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
+    requires transitive static org.jspecify;
 
     exports org.restlet.ext.mcp;
 }
