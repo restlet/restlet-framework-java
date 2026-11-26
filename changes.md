@@ -11,6 +11,9 @@ Changes log
           `InputRequest` is a sealed interface without `params()`, `RequestStateCodec.open`
           returns a nullable string instead of an `Optional`, parameter headers moved to
           `McpHeaders`, and completions and resource templates have their own handler types.
+        - `McpResourceTemplate` gains a third component, its optional completion handler (#1705).
+          Its two-argument constructor is kept, but a record pattern written for two components no
+          longer compiles, and `equals`, `hashCode` and `toString` include the handler.
         - The MCP extension depends on Jackson 3, as `org.restlet.ext.jackson` does, through the
           SDK's `mcp-json-jackson3` module, instead of Jackson 2 (#1705). An application that got
           Jackson 2 through it must now declare it.
