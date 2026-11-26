@@ -43,6 +43,7 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
+import org.restlet.ext.mcp.internal.McpStreamGate;
 import reactor.core.publisher.Mono;
 
 /**
@@ -264,7 +265,10 @@ class McpModernStdioTestCase {
         assertEquals(McpSchema.METHOD_NOTIFICATION_TOOLS_LIST_CHANGED, read().get("method"));
     }
 
-    /** An application notification reaches a listen stream on stdio. */
+    /**
+     * Application notifications reach a listen stream on stdio, beyond the changes a stream may
+     * have in flight: each written frame frees its slot.
+     */
     @Test
     void aListenStreamCarriesApplicationNotifications() throws Exception {
         send(
@@ -276,13 +280,20 @@ class McpModernStdioTestCase {
         Map<String, Object> ack = read();
         assertEquals(McpSchema.METHOD_NOTIFICATION_SUBSCRIPTIONS_ACKNOWLEDGED, ack.get("method"));
 
-        adapter.getChanges()
-                .broadcast(
-                        McpNotification.of(
-                                "notifications/jobs", Map.of("id", "j-1"), "com.example/jobs"));
-        Map<String, Object> notification = read();
-        assertEquals("notifications/jobs", notification.get("method"));
-        assertEquals("j-1", ((Map<?, ?>) notification.get("params")).get("id"));
+        int count = McpStreamGate.MAX_IN_FLIGHT * 3;
+        for (int i = 0; i < count; i++) {
+            adapter.getChanges()
+                    .broadcast(
+                            McpNotification.of(
+                                    "notifications/jobs",
+                                    Map.of("id", "j-" + i),
+                                    "com.example/jobs"));
+        }
+        for (int i = 0; i < count; i++) {
+            Map<String, Object> notification = read();
+            assertEquals("notifications/jobs", notification.get("method"));
+            assertEquals("j-" + i, ((Map<?, ?>) notification.get("params")).get("id"));
+        }
     }
 
     /** A request naming the cancellation method is answered, and cancels nothing. */

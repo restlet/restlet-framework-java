@@ -33,7 +33,8 @@ import reactor.core.publisher.FluxSink;
  * subscriber asks for. A pending change is replaced in place by a later one of the same coalescing
  * identity: an {@link McpNotification} with the same method, field, scope and {@link
  * McpNotification#key() key}, or another change equal to it, such as a list change. Past {@link
- * #MAX_PENDING}, the oldest pending change is dropped. Internal to the MCP extension.
+ * #MAX_PENDING}, the oldest pending change is dropped, logged as a warning once per stream.
+ * Internal to the MCP extension.
  */
 public final class McpCoalescingFeed implements McpChangePublisher, McpChangeBroadcaster {
     private static final Logger LOGGER = Logger.getLogger(McpCoalescingFeed.class.getName());
@@ -107,6 +108,9 @@ public final class McpCoalescingFeed implements McpChangePublisher, McpChangeBro
         private final Map<Object, ServerChange> pending = new LinkedHashMap<>();
         private final AtomicInteger draining = new AtomicInteger();
 
+        /** Whether a drop was logged as a warning yet; the next ones are logged finely. */
+        private boolean warned;
+
         private Stream(FluxSink<ServerChange> sink, McpStreamGate gate) {
             this.sink = sink;
             this.gate = gate;
@@ -123,9 +127,10 @@ public final class McpCoalescingFeed implements McpChangePublisher, McpChangeBro
                     if (pending.size() >= MAX_PENDING) {
                         Iterator<ServerChange> oldest = pending.values().iterator();
                         LOGGER.log(
-                                Level.WARNING,
+                                warned ? Level.FINE : Level.WARNING,
                                 "Dropping the oldest MCP change for a stream too slow: {0}",
                                 oldest.next().method());
+                        warned = true;
                         oldest.remove();
                     }
                     pending.put(key, change);

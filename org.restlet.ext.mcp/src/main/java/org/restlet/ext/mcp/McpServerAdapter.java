@@ -11,6 +11,7 @@ package org.restlet.ext.mcp;
 import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
@@ -244,10 +245,24 @@ public final class McpServerAdapter extends Restlet {
         return changes;
     }
 
-    /** Refuses a notification no subscription honours, or with a scope its field doesn't have. */
+    /**
+     * Refuses a notification no subscription honours, with a scope its field doesn't have, or with
+     * params the JSON mapper can't convert: the SDK would drop it silently, after the feed counted
+     * it in flight.
+     */
     private void checkPublishable(ServerChange change) {
         if (!(change instanceof McpNotification notification)) {
             return;
+        }
+        try {
+            runningMapper.convertValue(
+                    notification.params(), new TypeRef<Map<String, Object>>() {});
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException(
+                    "The params of the MCP notification "
+                            + notification.method()
+                            + " can't be converted to JSON",
+                    e);
         }
         McpSubscription subscription =
                 subscriptions.stream()

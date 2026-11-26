@@ -130,6 +130,48 @@ class McpListenNotificationsTestCase {
     }
 
     /**
+     * Params the mapper can't convert are refused when broadcast, since the SDK would drop the
+     * notification silently; a notification too large for the stream is skipped, and the stream
+     * goes on, past the changes it may have in flight.
+     */
+    @Test
+    void unsendableNotificationsDontStallAStream() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getSubscriptions().add(McpSubscription.of(JOBS));
+        adapter.setMaxMessageBytes(4096);
+        adapter.start();
+
+        var changes = adapter.getChanges();
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        changes.broadcast(
+                                McpNotification.of("n/x", Map.of("bad", new Broken()), JOBS)));
+
+        EventStreamReader reader = listen(adapter, Map.of(JOBS, true), null);
+        honoured(next(reader));
+        String large = "x".repeat(8192);
+        for (int i = 0; i < McpStreamGate.MAX_IN_FLIGHT * 2; i++) {
+            changes.broadcast(McpNotification.of("n/large", Map.of("padding", large), JOBS));
+        }
+        changes.broadcast(McpNotification.of("n/small", Map.of("id", "j-1"), JOBS));
+        Map<String, Object> next = next(reader);
+        assertEquals("n/small", next.get("method"));
+    }
+
+    /** A bean Jackson can't serialise. */
+    public static final class Broken {
+        /**
+         * Fails.
+         *
+         * @return Nothing.
+         */
+        public String getValue() {
+            throw new IllegalStateException("broken");
+        }
+    }
+
+    /**
      * A stream whose client reads slowly gets the latest state of a task in place of those it could
      * not write yet, instead of every state queued.
      */
