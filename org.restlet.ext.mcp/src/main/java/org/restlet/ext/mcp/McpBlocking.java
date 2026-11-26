@@ -31,11 +31,14 @@ import reactor.core.scheduler.Schedulers;
 
 /**
  * Turns blocking handlers, the SDK's sync tools, resources and prompts, and blocking extension
- * methods, into the registrations of an {@link McpServerAdapter}. A blocking handler runs on the
- * virtual thread serving its request, never on a shared pool, with Restlet's current request and
- * response set and the adapter's {@link McpServerAdapter#getCallScopes() call scopes} around it, so
- * it may block on I/O and read thread-bound context. Experimental: the SDK's modern API is a
- * preview.
+ * methods, into the registrations of an {@link McpServerAdapter}. A blocking handler runs on a
+ * virtual thread, never on a shared pool: the one serving its request, or one of its own for a
+ * streaming body (so its progress is sent while it runs) and for a call an interceptor moved off a
+ * virtual thread. Restlet's thread-local variables of the connector's call are set around it
+ * (current request and response, context, application and virtual host; see {@link
+ * McpRequestContext#withRestletLocals}), and the adapter's {@link McpServerAdapter#getCallScopes()
+ * call scopes} too, so it may block on I/O and read thread-bound context. Experimental: the SDK's
+ * modern API is a preview.
  */
 public final class McpBlocking {
 
