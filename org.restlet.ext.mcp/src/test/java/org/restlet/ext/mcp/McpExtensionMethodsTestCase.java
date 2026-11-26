@@ -11,6 +11,7 @@ package org.restlet.ext.mcp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -232,6 +233,17 @@ class McpExtensionMethodsTestCase {
         Map<String, Object> other = retry("t-2", state);
         Response refused = adapter.handle(modern("com.example/confirm", other, "t-2", meta));
         assertEquals(-32602, code(refused), body(refused));
+
+        Map<String, Object> dispatchedSame = new LinkedHashMap<>(same);
+        dispatchedSame.put("_meta", meta);
+        JsonRpc.JSONRPCResponse opened =
+                adapter.dispatch(
+                                new JsonRpc.JSONRPCRequest(
+                                        "2.0", "com.example/confirm", 3, dispatchedSame),
+                                new McpRequestContext(null))
+                        .orElseThrow();
+        assertNull(opened.error(), String.valueOf(opened.error()));
+        assertEquals("s1", ((Map<?, ?>) opened.result()).get("confirmed"));
 
         Map<String, Object> dispatched = new LinkedHashMap<>(other);
         dispatched.put("_meta", meta);
