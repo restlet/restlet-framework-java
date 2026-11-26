@@ -14,9 +14,11 @@ import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.McpRequestContext;
 import io.modelcontextprotocol.modern.server.McpSyncNotifier;
 import io.modelcontextprotocol.modern.server.McpSyncResponse;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncCompletionHandler;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
+import io.modelcontextprotocol.modern.server.feature.McpSyncCompletionHandler;
 import io.modelcontextprotocol.modern.server.feature.McpSyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpSyncResource;
 import io.modelcontextprotocol.modern.server.feature.McpSyncTool;
@@ -98,10 +100,27 @@ public final class McpBlocking {
      */
     public static McpAsyncPrompt prompt(McpSyncPrompt prompt) {
         Objects.requireNonNull(prompt, "prompt");
-        return McpAsyncPrompt.of(
-                prompt.definition(),
-                prompt.requiredCapabilities(),
-                (ctx, request) -> respond(ctx, () -> prompt.handler().get(ctx, request)));
+        McpAsyncPrompt adapted =
+                McpAsyncPrompt.of(
+                        prompt.definition(),
+                        prompt.requiredCapabilities(),
+                        (ctx, request) -> respond(ctx, () -> prompt.handler().get(ctx, request)));
+        return prompt.completionHandler() == null
+                ? adapted
+                : adapted.withCompletionHandler(completion(prompt.completionHandler()));
+    }
+
+    /**
+     * A completion handler that blocks, for a resource template ({@link
+     * McpResourceTemplate#withCompletionHandler}).
+     *
+     * @param handler The SDK's sync completion handler.
+     * @return The completion handler to register.
+     */
+    public static McpAsyncCompletionHandler completion(McpSyncCompletionHandler handler) {
+        Objects.requireNonNull(handler, "handler");
+        return (ctx, request) ->
+                blocking(ctx, () -> McpCallScopes.call(ctx, () -> handler.complete(ctx, request)));
     }
 
     /**

@@ -5,6 +5,15 @@ Changes log
 
 - 3.0 Milestone 3 (month-day-2026)
     - Breaking changes
+        - The MCP extension moves from the MCP Java SDK 2.2.0-M2 to 2.2.0, the release Spring AI
+          2.1.0 uses (#1705). The SDK types in its public API changed with it: `SubscriptionFilter`
+          is an open set of fields (`SubscriptionFilter.of(...)` replaces its constructor),
+          `InputRequest` is a sealed interface without `params()`, `RequestStateCodec.open`
+          returns a nullable string instead of an `Optional`, parameter headers moved to
+          `McpHeaders`, and completions and resource templates have their own handler types.
+        - The MCP extension depends on Jackson 3, as `org.restlet.ext.jackson` does, through the
+          SDK's `mcp-json-jackson3` module, instead of Jackson 2 (#1705). An application that got
+          Jackson 2 through it must now declare it.
         - `DefaultSslContextFactory` now uses the JVM default algorithms for the trust manager
           (`TrustManagerFactory.getDefaultAlgorithm()`, `PKIX`) and the key manager
           (`KeyManagerFactory.getDefaultAlgorithm()`) instead of the obsolete `SunX509`, unless the
@@ -15,6 +24,14 @@ Changes log
           stricter than `SunX509` on unusual chains: set the trust manager algorithm to `SunX509`
           to get the previous behavior.
     - Enhancements
+        - `McpServerAdapter.setJsonMapper` and `McpClientAdapter.setJsonMapper` (for the
+          2026-07-28 client) let the application supply the JSON mapper of the MCP messages, the
+          SDK's Jackson 3 one by default (#1705).
+        - MCP prompts and resource templates can complete their arguments for
+          `completion/complete` (#1705): a prompt's completion handler
+          (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and
+          `McpResourceTemplate.withCompletionHandler` are served, and `McpBlocking.completion`
+          adapts a blocking one.
         - Conditional writes on the client side (#100). `ClientResource` gets per-call overloads
           `put`, `patch` and `delete` taking `Conditions`; they apply to that call only and are
           never retried. `Conditions.unchangedSince(Response)` builds an "If-Match" condition from
@@ -58,6 +75,9 @@ Changes log
     - Bugs fixed
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
+        - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
+          refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
+          being checked on its first value only (#1705).
         - The default MCP `requestState` codec binds the state to the call's arguments too, so a
           state sealed for a `tools/call` can't be replayed with other arguments (#1701).
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
@@ -99,14 +119,7 @@ Changes log
           `https://[::1]:8443/`, against its bracketed form, so hostname verification always
           failed, over HTTP/1.1, HTTP/2 and HTTP/3: the address is now checked without brackets.
     - Misc
-        - Upgraded the MCP Java SDK to version 2.2.0, the release Spring AI 2.1.0 uses (#1705).
-          The SDK's modern API changed since 2.2.0-M2: `RequestStateCodec.open` returns a nullable
-          string instead of an `Optional` (so does `McpAeadRequestStateCodec.open`), parameter
-          headers moved to `McpHeaders`, and `SubscriptionFilter` became an open set of fields.
-        - The MCP extension uses Jackson 3, as `org.restlet.ext.jackson` does, through the SDK's
-          `mcp-json-jackson3` module: Jackson 2 is no longer one of its dependencies (#1705).
-          `McpServerAdapter.setJsonMapper` and `McpClientAdapter.setJsonMapper` let the
-          application supply the mapper of the MCP messages.
+        - Upgraded the MCP Java SDK library to version 2.2.0 (#1705).
 
 - 3.0 Milestone 2 (11-22-2026)
     - Breaking changes
