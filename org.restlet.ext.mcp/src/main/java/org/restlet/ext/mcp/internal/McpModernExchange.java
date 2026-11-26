@@ -13,6 +13,7 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema.ErrorCodes;
 import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
+import io.modelcontextprotocol.modern.McpSchema.SubscriptionsAcknowledgedParams;
 import io.modelcontextprotocol.modern.server.McpHeaders;
 import io.modelcontextprotocol.modern.server.McpServer;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
@@ -240,6 +241,9 @@ public final class McpModernExchange {
         private final BlockingQueue<byte[]> events = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
         private volatile boolean finished;
 
+        /** What a listen stream tells the change feed: its subscriptions, and its backlog. */
+        private final McpStreamGate gate;
+
         /** The id of the request, once read; answers a stream cut short. */
         private volatile Object requestId;
 
@@ -253,6 +257,7 @@ public final class McpModernExchange {
             this.request = request;
             this.context = context;
             this.listen = listen;
+            this.gate = listen ? new McpStreamGate() : null;
             this.stdio = Boolean.TRUE.equals(request.getAttributes().get(STDIO_ATTRIBUTE));
         }
 
@@ -386,13 +391,28 @@ public final class McpModernExchange {
             head.complete(new Reply(Status.SUCCESS_OK, null, true));
             JsonRpc.JSONRPCResponse last = null;
             // Closing the stream cancels the SDK's, should the loop end early.
-            try (Stream<JsonRpc.JSONRPCMessage> messages = streaming.messages().toStream()) {
+            try (Stream<JsonRpc.JSONRPCMessage> messages =
+                    streaming
+                            .messages()
+                            .contextWrite(
+                                    reactor ->
+                                            gate == null
+                                                    ? reactor
+                                                    : reactor.put(McpStreamGate.KEY, gate))
+                            .toStream()) {
                 for (Iterator<JsonRpc.JSONRPCMessage> it = messages.iterator(); it.hasNext(); ) {
                     JsonRpc.JSONRPCMessage each = it.next();
                     if (each instanceof JsonRpc.JSONRPCResponse response) {
                         last = response;
                     } else {
-                        events.put(McpMessages.encode(mapper, each, maxMessageBytes));
+                        byte[] event = McpMessages.encode(mapper, each, maxMessageBytes);
+                        if (gate != null
+                                && each instanceof JsonRpc.JSONRPCNotification notification
+                                && notification.params()
+                                        instanceof SubscriptionsAcknowledgedParams ack) {
+                            gate.acknowledged(ack.notifications());
+                        }
+                        events.put(event);
                     }
                 }
             }
@@ -521,6 +541,13 @@ public final class McpModernExchange {
             finished = true;
         }
 
+        /** Records that an event was written to the client. */
+        private void written() {
+            if (gate != null) {
+                gate.written();
+            }
+        }
+
         /**
          * Takes the next streamed message, or {@link #END} once the worker finished and nothing is
          * left.
@@ -606,6 +633,7 @@ public final class McpModernExchange {
                                                                         event,
                                                                         StandardCharsets.UTF_8))
                                                         .build());
+                                        exchange.written();
                                     }
                                 } catch (InterruptedException _) {
                                     Thread.currentThread().interrupt();

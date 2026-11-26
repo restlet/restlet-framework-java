@@ -21,6 +21,7 @@ import io.modelcontextprotocol.modern.server.SubscriptionRestriction;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.modern.server.feature.McpChangeBroadcaster;
+import io.modelcontextprotocol.modern.server.feature.ServerChange;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -82,7 +83,7 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpCallScope> callScopes = new CopyOnWriteArrayList<>();
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private McpTaskStore taskStore;
-    private final McpCoalescingFeed changes = new McpCoalescingFeed();
+    private final McpCoalescingFeed changes = new McpCoalescingFeed(this::checkPublishable);
     private final List<McpSubscription> subscriptions = new CopyOnWriteArrayList<>();
     private SubscriptionRestriction subscriptionRestriction;
     private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
@@ -230,14 +231,43 @@ public final class McpServerAdapter extends Restlet {
      * Publishes changes to the MCP {@link McpProtocol#MODERN_VERSION} clients listening through
      * {@code subscriptions/listen}: tools, prompts and resources list changes, resource updates,
      * and the application's {@link McpNotification}s on the fields of {@link #getSubscriptions()}.
-     * A change nobody listens to is dropped. A stream too slow keeps its pending changes, the
-     * latest one per {@link McpNotification#key() key}, up to {@value
-     * org.restlet.ext.mcp.internal.McpCoalescingFeed#MAX_PENDING}. Experimental.
+     * A change nobody listens to is dropped. A stream too slow to write its changes keeps them
+     * pending, a later change replacing an equal one or a notification of the same {@link
+     * McpNotification#key() key} in place; past {@value
+     * org.restlet.ext.mcp.internal.McpCoalescingFeed#MAX_PENDING} pending, its oldest is dropped.
+     * Broadcasting a notification whose field isn't one of {@link #getSubscriptions()}, or whose
+     * scope doesn't match the field's, throws an {@link IllegalArgumentException}. Experimental.
      *
      * @return The change broadcaster, usable at any time.
      */
     public McpChangeBroadcaster getChanges() {
         return changes;
+    }
+
+    /** Refuses a notification no subscription honours, or with a scope its field doesn't have. */
+    private void checkPublishable(ServerChange change) {
+        if (!(change instanceof McpNotification notification)) {
+            return;
+        }
+        McpSubscription subscription =
+                subscriptions.stream()
+                        .filter(each -> each.field().equals(notification.field()))
+                        .findFirst()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "No MCP subscription has the field "
+                                                        + notification.field()));
+        if (subscription.scoped() != (notification.scope() != null)) {
+            throw new IllegalArgumentException(
+                    subscription.scoped()
+                            ? "The MCP subscription field "
+                                    + notification.field()
+                                    + " is scoped: its notifications must be scoped"
+                            : "The MCP subscription field "
+                                    + notification.field()
+                                    + " isn't scoped: its notifications must not be");
+        }
     }
 
     /**

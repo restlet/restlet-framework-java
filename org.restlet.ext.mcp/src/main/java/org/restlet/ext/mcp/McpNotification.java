@@ -28,7 +28,8 @@ import java.util.Objects;
  * pending. Experimental.
  *
  * @param method The JSON-RPC method of the notification.
- * @param params The params of the notification, without {@code _meta}, which the stream adds.
+ * @param params The params of the notification; the stream adds its subscription id to their {@code
+ *     _meta}.
  * @param field The subscription field a stream must have asked for.
  * @param scope The value the field must have been honoured with, or null for any.
  * @param key The coalescing key, or null to never replace a pending notification.
