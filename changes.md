@@ -33,6 +33,8 @@ Changes log
           `server/discover`. `McpJsonResult` writes a result from JSON fields. Legacy clients get
           -32601 for these methods.
     - Bugs fixed
+        - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
+          section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the
           URI of a server redirection are normalized (#238). Relative-path targets such as

@@ -16,12 +16,15 @@ import static org.restlet.data.Digest.ALGORITHM_MD5;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
 class HeaderUtilsTestCase {
@@ -113,5 +116,55 @@ class HeaderUtilsTestCase {
         response.getAttributes().put(HeaderConstants.ATTRIBUTE_RANGE_COMPLETE_LENGTH, 1234L);
 
         assertNull(contentRangeOfResponse(response));
+    }
+
+    private static Series<Header> notModifiedHeaders(Representation entity) {
+        Series<Header> headers = new Series<>(Header.class);
+        HeaderUtils.addNotModifiedEntityHeaders(entity, headers);
+        return headers;
+    }
+
+    @Test
+    void addNotModifiedEntityHeaders_writesTagLocationAndExpires() {
+        StringRepresentation entity = new StringRepresentation("x");
+        entity.setTag(new Tag("v1", false));
+        entity.setLocationRef("http://example.com/loc");
+        entity.setExpirationDate(new Date(1_800_000_000_000L));
+
+        Series<Header> headers = notModifiedHeaders(entity);
+
+        assertEquals("\"v1\"", headers.getFirstValue(HeaderConstants.HEADER_ETAG));
+        assertEquals(
+                "http://example.com/loc",
+                headers.getFirstValue(HeaderConstants.HEADER_CONTENT_LOCATION));
+        assertEquals(
+                "Fri, 15 Jan 2027 08:00:00 GMT",
+                headers.getFirstValue(HeaderConstants.HEADER_EXPIRES));
+    }
+
+    @Test
+    void addNotModifiedEntityHeaders_withoutExpirationDate_writesNoExpires() {
+        StringRepresentation entity = new StringRepresentation("x");
+        entity.setTag(new Tag("v1", false));
+
+        assertNull(notModifiedHeaders(entity).getFirstValue(HeaderConstants.HEADER_EXPIRES));
+    }
+
+    @Test
+    void addNotModifiedEntityHeaders_doesNotWriteOtherEntityHeaders() {
+        StringRepresentation entity = new StringRepresentation("x");
+        entity.setTag(new Tag("v1", false));
+        entity.setExpirationDate(new Date(1_800_000_000_000L));
+        entity.setModificationDate(new Date(1_700_000_000_000L));
+
+        Series<Header> headers = notModifiedHeaders(entity);
+
+        assertNull(headers.getFirstValue(HeaderConstants.HEADER_LAST_MODIFIED));
+        assertNull(headers.getFirstValue(HeaderConstants.HEADER_CONTENT_TYPE));
+    }
+
+    @Test
+    void addNotModifiedEntityHeaders_withoutEntity_writesNothing() {
+        assertEquals(0, notModifiedHeaders(null).size());
     }
 }
