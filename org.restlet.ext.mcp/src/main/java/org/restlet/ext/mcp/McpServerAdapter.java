@@ -18,6 +18,7 @@ import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
 import io.modelcontextprotocol.modern.server.McpParamHeaders;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
+import io.modelcontextprotocol.modern.server.RequestStateCodec;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.modern.server.feature.McpChangeBroadcaster;
@@ -43,6 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.PreferenceReader;
+import org.restlet.ext.mcp.internal.McpBindings;
 import org.restlet.ext.mcp.internal.McpExtensionFeatures;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
@@ -92,6 +94,7 @@ public final class McpServerAdapter extends Restlet {
     private McpTaskStore taskStore;
     private final McpChangeFeed changes = new McpChangeFeed();
     private byte[] requestStateKey;
+    private RequestStateCodec requestStateCodec;
     private int maxListenStreams = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
     private final Set<String> allowedOrigins = ConcurrentHashMap.newKeySet();
     private McpSchema.Implementation serverInfo =
@@ -250,10 +253,13 @@ public final class McpServerAdapter extends Restlet {
     }
 
     /**
-     * Sets the key sealing the {@code requestState} of {@code input_required} results, at least 32
-     * bytes. Without it, each adapter generates its own random key, so a retry must reach the
-     * instance that answered; instances behind a load balancer need the same key. The state is also
-     * bound to the authenticated user of the request, so another user can't replay it.
+     * Sets the key of the default codec sealing the {@code requestState} of {@code input_required}
+     * results, at least 32 bytes. Without it, each adapter generates its own random key, so a retry
+     * must reach the instance that answered; instances behind a load balancer need the same key.
+     * The default codec signs the state with HMAC-SHA256, without encrypting it, and binds it to
+     * the request's {@link McpRequestBinding#identity identity}: its authenticated user, its
+     * arguments and its extension method's name param, so it can't be replayed by another user or
+     * for other arguments. It can't be set with {@link #setRequestStateCodec}.
      *
      * @param value The key, copied.
      */
@@ -262,7 +268,30 @@ public final class McpServerAdapter extends Restlet {
         if (value == null || value.length < 32) {
             throw new IllegalArgumentException("requestStateKey must have at least 32 bytes");
         }
+        if (requestStateCodec != null) {
+            throw new IllegalStateException("A requestState codec is set: its key is its own");
+        }
         requestStateKey = value.clone();
+    }
+
+    /**
+     * Sets the codec sealing the {@code requestState} of {@code input_required} results instead of
+     * the default HMAC one, such as an {@link McpAeadRequestStateCodec} that also keeps the state
+     * confidential. A codec binds the state with {@link McpRequestBinding}, and the SDK context's
+     * method and primitive name. It can't be set with {@link #setRequestStateKey}. Experimental.
+     *
+     * @param value The codec, or null for the default.
+     */
+    public synchronized void setRequestStateCodec(RequestStateCodec value) {
+        requireConfigurable();
+        if (value != null && requestStateKey != null) {
+            throw new IllegalStateException("A requestState key is set for the default codec");
+        }
+        requestStateCodec = value;
+    }
+
+    public synchronized RequestStateCodec getRequestStateCodec() {
+        return requestStateCodec;
     }
 
     /** Allowed exact Origin header values. Requests with any other Origin are forbidden. */
@@ -389,38 +418,17 @@ public final class McpServerAdapter extends Restlet {
                                                 taskStore != null)))
                         .features(McpExtensionFeatures.of(runningMethods, runningExtensions))
                         .subscriptions(changes);
+        if (requestStateCodec != null) {
+            return builder.requestStateCodec(requestStateCodec).build();
+        }
         var codec =
                 HmacRequestStateCodec.builder()
-                        .principalExtractor(McpServerAdapter::principal)
+                        .principalExtractor(McpRequestBinding::identity)
                         .jsonMapper(MAPPER);
         if (requestStateKey != null) {
             codec.key(requestStateKey);
         }
         return builder.requestStateCodec(codec.build()).build();
-    }
-
-    /**
-     * The identity binding the {@code input_required} state of a request: its authenticated user,
-     * and for an extension method declaring a name param, that param's value.
-     *
-     * @param transport The SDK transport context.
-     * @return The identity, or null.
-     */
-    private static String principal(McpTransportContext transport) {
-        return McpExtensionFeatures.bind(
-                user(transport), transport.get(McpExtensionFeatures.BOUND_NAME_KEY));
-    }
-
-    /**
-     * The authenticated user of a request.
-     *
-     * @param transport The SDK transport context.
-     * @return The user identifier, else the first principal name, or null.
-     */
-    private static String user(McpTransportContext transport) {
-        return transport.get(McpProtocol.CONTEXT_KEY) instanceof McpRequestContext context
-                ? context.principal().orElse(null)
-                : null;
     }
 
     @Override
@@ -545,9 +553,7 @@ public final class McpServerAdapter extends Restlet {
         if (message instanceof JsonRpc.JSONRPCRequest request) {
             return modernServer
                     .handleBlocking(
-                            sdkContext.putAll(
-                                    McpExtensionFeatures.boundName(request, runningNameParams)),
-                            request)
+                            sdkContext.putAll(McpBindings.of(request, runningNameParams)), request)
                     .flatMap(
                             reply ->
                                     switch (reply) {
