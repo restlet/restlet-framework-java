@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.restlet.ext.mcp.McpMethod;
+import org.restlet.ext.mcp.McpProtocol;
+import org.restlet.ext.mcp.McpSubscription;
 import reactor.core.publisher.Mono;
 
 /**
@@ -95,6 +97,77 @@ public final class McpExtensionFeatures {
             }
         }
         return Map.copyOf(params);
+    }
+
+    /** The subscription fields MCP itself defines, which an application may not honour. */
+    private static final Set<String> CORE_FIELDS =
+            Set.of(
+                    McpSchema.SubscriptionFilter.TOOLS_LIST_CHANGED,
+                    McpSchema.SubscriptionFilter.PROMPTS_LIST_CHANGED,
+                    McpSchema.SubscriptionFilter.RESOURCES_LIST_CHANGED,
+                    McpSchema.SubscriptionFilter.RESOURCE_SUBSCRIPTIONS);
+
+    /**
+     * The feature honouring the application's subscription fields on {@code subscriptions/listen},
+     * or none.
+     *
+     * @param subscriptions The application's subscriptions.
+     * @return The feature, or empty.
+     * @throws IllegalArgumentException If a field is honoured twice or is one MCP defines.
+     */
+    public static List<McpFeature> subscriptions(List<McpSubscription> subscriptions) {
+        if (subscriptions.isEmpty()) {
+            return List.of();
+        }
+        Map<String, McpSubscription> byField = new LinkedHashMap<>();
+        for (McpSubscription subscription : subscriptions) {
+            if (CORE_FIELDS.contains(subscription.field())) {
+                throw new IllegalArgumentException(
+                        "MCP defines the subscription field " + subscription.field());
+            }
+            if (byField.putIfAbsent(subscription.field(), subscription) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate MCP subscription field: " + subscription.field());
+            }
+        }
+        return List.of(new SubscriptionsFeature(Map.copyOf(byField)));
+    }
+
+    /** Honours the application's subscription fields, serving no method. */
+    private record SubscriptionsFeature(Map<String, McpSubscription> byField)
+            implements McpFeature {
+        @Override
+        public Set<String> methods() {
+            return Set.of();
+        }
+
+        @Override
+        public Mono<? extends McpAsyncResponse<? extends McpSchema.Result>> handle(
+                McpRequestContext ctx, Object params) {
+            return Mono.error(new IllegalStateException("Serves no method"));
+        }
+
+        @Override
+        public McpSchema.SubscriptionFilter honouredSubscriptions(
+                McpRequestContext ctx, McpSchema.SubscriptionFilter requested) {
+            org.restlet.ext.mcp.McpRequestContext context =
+                    ctx.transportContext().get(McpProtocol.CONTEXT_KEY)
+                                    instanceof org.restlet.ext.mcp.McpRequestContext restlet
+                            ? restlet
+                            : new org.restlet.ext.mcp.McpRequestContext(null);
+            Map<String, Object> honoured = new LinkedHashMap<>();
+            byField.forEach(
+                    (field, subscription) -> {
+                        Object asked = requested.get(field);
+                        if (asked != null && !Boolean.FALSE.equals(asked)) {
+                            Object value = subscription.honour().honour(context, asked);
+                            if (value != null) {
+                                honoured.put(field, value);
+                            }
+                        }
+                    });
+            return McpSchema.SubscriptionFilter.of(honoured);
+        }
     }
 
     /** One extension method. */
