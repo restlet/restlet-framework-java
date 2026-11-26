@@ -19,6 +19,9 @@ public final class McpRequestContext {
     private final Request request;
     private final Response response;
     private final String protocolVersion;
+    private final org.restlet.Application application = org.restlet.Application.getCurrent();
+    private final org.restlet.Context context = org.restlet.Context.getCurrent();
+    private final Integer virtualHost = org.restlet.routing.VirtualHost.getCurrent();
     private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
     /**
@@ -55,6 +58,35 @@ public final class McpRequestContext {
         this.request = request;
         this.response = response;
         this.protocolVersion = java.util.Objects.requireNonNull(protocolVersion, "protocolVersion");
+    }
+
+    /**
+     * Calls code with Restlet's thread-local variables as they were where this context was created,
+     * the connector's call: the current response, context, application and virtual host, restoring
+     * the caller's afterwards. Blocking handlers run this way.
+     *
+     * @param call The code.
+     * @param <T> Its result.
+     * @return Its result.
+     * @throws Exception If the code fails.
+     */
+    public <T> T withRestletLocals(java.util.concurrent.Callable<T> call) throws Exception {
+        Response previousResponse = Response.getCurrent();
+        org.restlet.Context previousContext = org.restlet.Context.getCurrent();
+        Integer previousHost = org.restlet.routing.VirtualHost.getCurrent();
+        org.restlet.Application previousApplication = org.restlet.Application.getCurrent();
+        Response.setCurrent(response);
+        org.restlet.Context.setCurrent(context);
+        org.restlet.routing.VirtualHost.setCurrent(virtualHost);
+        org.restlet.Application.setCurrent(application);
+        try {
+            return call.call();
+        } finally {
+            Response.setCurrent(previousResponse);
+            org.restlet.Context.setCurrent(previousContext);
+            org.restlet.routing.VirtualHost.setCurrent(previousHost);
+            org.restlet.Application.setCurrent(previousApplication);
+        }
     }
 
     public Optional<Request> transportRequest() {
