@@ -195,7 +195,10 @@ public class HeaderUtils {
 
 	/**
 	 * Adds the entity headers based on the {@link Representation} to the
-	 * {@link Series} when a 304 (Not Modified) status is returned.
+	 * {@link Series} when a 304 (Not Modified) status is returned: the entity tag,
+	 * the content location and the expiration date, which RFC 9110 section 15.4.5
+	 * requires when a 200 would have carried them. The other entity headers are not
+	 * sent.
 	 * 
 	 * @param entity  The source entity {@link Representation}.
 	 * @param headers The target headers {@link Series}.
@@ -208,6 +211,10 @@ public class HeaderUtils {
 
 			if (entity.getLocationRef() != null) {
 				addHeader(HEADER_CONTENT_LOCATION, entity.getLocationRef().getTargetRef().toString(), headers);
+			}
+
+			if (entity.getExpirationDate() != null) {
+				addHeader(HEADER_EXPIRES, DateWriter.write(entity.getExpirationDate()), headers);
 			}
 		}
 	}
