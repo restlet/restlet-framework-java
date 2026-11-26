@@ -8,15 +8,13 @@
  */
 package org.restlet.ext.mcp;
 
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.server.HmacRequestStateCodec;
-import io.modelcontextprotocol.modern.server.McpParamHeaders;
+import io.modelcontextprotocol.modern.server.McpHeaders;
 import io.modelcontextprotocol.modern.server.McpTransportResponse;
 import io.modelcontextprotocol.modern.server.RequestStateCodec;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
@@ -70,19 +68,8 @@ import reactor.core.publisher.Sinks;
  * {@code logging/setLevel} is not found. A result requiring input fails for a legacy client.
  */
 public final class McpServerAdapter extends Restlet {
-    private static final McpJsonMapper MAPPER = initMapper();
-
     /** How long stopping waits for listen streams to end with their result. */
     private static final Duration LISTEN_DRAIN = Duration.ofSeconds(2);
-
-    private static McpJsonMapper initMapper() {
-        McpJsonMapper mapper = McpJsonDefaults.getMapper();
-        if (mapper instanceof JacksonMcpJsonMapper jacksonMapper) {
-            return new JacksonMcpJsonMapper(
-                    jacksonMapper.getObjectMapper().copy().registerModule(new Jdk8Module()));
-        }
-        return mapper;
-    }
 
     private final List<McpAsyncTool> tools = new CopyOnWriteArrayList<>();
     private final List<McpResource> resources = new CopyOnWriteArrayList<>();
@@ -95,6 +82,8 @@ public final class McpServerAdapter extends Restlet {
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private McpTaskStore taskStore;
     private final McpChangeFeed changes = new McpChangeFeed();
+    private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
+    private volatile McpJsonMapper runningMapper = jsonMapper;
     private byte[] requestStateKey;
     private RequestStateCodec requestStateCodec;
     private int maxListenStreams = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
@@ -312,6 +301,22 @@ public final class McpServerAdapter extends Restlet {
         return allowedOrigins;
     }
 
+    /**
+     * Sets the JSON mapper of the MCP messages, so that they share the application's settings, for
+     * example a Jackson 3 {@code JsonMapper} wrapped in the SDK's {@code JacksonMcpJsonMapper}. The
+     * SDK's default, Jackson 3 based, otherwise.
+     *
+     * @param value The mapper.
+     */
+    public synchronized void setJsonMapper(McpJsonMapper value) {
+        requireConfigurable();
+        jsonMapper = Objects.requireNonNull(value, "jsonMapper");
+    }
+
+    public synchronized McpJsonMapper getJsonMapper() {
+        return jsonMapper;
+    }
+
     public synchronized void setServerInfo(McpSchema.Implementation value) {
         requireConfigurable();
         serverInfo = Objects.requireNonNull(value, "serverInfo");
@@ -393,11 +398,12 @@ public final class McpServerAdapter extends Restlet {
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
         stopping = Sinks.one();
+        runningMapper = jsonMapper;
         modernServer = modern;
         modernExchange =
                 new McpModernExchange(
                         modernServer,
-                        MAPPER,
+                        jsonMapper,
                         workers,
                         listeners,
                         requestTimeout,
@@ -406,7 +412,7 @@ public final class McpServerAdapter extends Restlet {
                         runningScopes,
                         (message, context, terminal) -> invoke(0, message, context, terminal),
                         () -> stopping.asMono());
-        legacyEdge = McpLegacyEdge.server(MAPPER, this::call, maxMessageBytes, requestTimeout);
+        legacyEdge = McpLegacyEdge.server(jsonMapper, this::call, maxMessageBytes, requestTimeout);
         runningInterceptors = List.copyOf(interceptors);
         runningOrigins = Set.copyOf(allowedOrigins);
         configured = true;
@@ -421,7 +427,7 @@ public final class McpServerAdapter extends Restlet {
                 io.modelcontextprotocol.modern.server.McpServer.builder()
                         .serverInfo(serverInfo)
                         .instructions(instructions)
-                        .jsonMapper(MAPPER)
+                        .jsonMapper(jsonMapper)
                         .features(
                                 McpModernFeatures.of(
                                         new McpModernFeatures.Registrations(
@@ -439,7 +445,7 @@ public final class McpServerAdapter extends Restlet {
         var codec =
                 HmacRequestStateCodec.builder()
                         .principalExtractor(McpRequestBinding::identity)
-                        .jsonMapper(MAPPER);
+                        .jsonMapper(jsonMapper);
         if (requestStateKey != null) {
             codec.key(requestStateKey);
         }
@@ -563,8 +569,8 @@ public final class McpServerAdapter extends Restlet {
                         Map.of(
                                 McpProtocol.CONTEXT_KEY,
                                 context,
-                                McpParamHeaders.TRANSPORT_CONTEXT_KEY,
-                                McpParamHeaders.NOT_MIRRORED));
+                                McpHeaders.TRANSPORT_CONTEXT_KEY,
+                                McpHeaders.NOT_MIRRORED));
         if (message instanceof JsonRpc.JSONRPCRequest request) {
             return modernServer
                     .handleBlocking(
@@ -721,7 +727,7 @@ public final class McpServerAdapter extends Restlet {
 
     private void write(Response response, Object message) {
         try {
-            byte[] bytes = McpMessages.encode(MAPPER, message, maxMessageBytes);
+            byte[] bytes = McpMessages.encode(runningMapper, message, maxMessageBytes);
             response.setEntity(new ByteArrayRepresentation(bytes, MediaType.APPLICATION_JSON));
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Unable to encode MCP response", e);
