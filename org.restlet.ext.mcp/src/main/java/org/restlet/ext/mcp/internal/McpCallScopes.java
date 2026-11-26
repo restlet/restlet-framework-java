@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import org.restlet.Response;
 import org.restlet.ext.mcp.McpCallScope;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpRequestContext;
@@ -61,13 +60,7 @@ public final class McpCallScopes {
                 ctx.transportContext().get(SCOPES_KEY) instanceof List<?> list
                         ? (List<McpCallScope>) list
                         : List.of();
-        Response previous = Response.getCurrent();
-        context.transportResponse().ifPresent(Response::setCurrent);
-        try {
-            return run(scopes, 0, context, call);
-        } finally {
-            Response.setCurrent(previous);
-        }
+        return context.withRestletLocals(() -> run(scopes, 0, context, call));
     }
 
     private static <T> T run(
@@ -77,6 +70,7 @@ public final class McpCallScopes {
             return call.call();
         }
         AtomicReference<T> result = new AtomicReference<>();
+        AtomicReference<Exception> failure = new AtomicReference<>();
         AtomicBoolean ran = new AtomicBoolean();
         scopes.get(index)
                 .run(
@@ -86,10 +80,19 @@ public final class McpCallScopes {
                                 throw new IllegalStateException(
                                         "An MCP call scope ran the handler twice");
                             }
-                            result.set(run(scopes, index + 1, context, call));
+                            try {
+                                result.set(run(scopes, index + 1, context, call));
+                            } catch (Exception e) {
+                                failure.set(e);
+                                throw e;
+                            }
                         });
         if (!ran.get()) {
             throw new IllegalStateException("An MCP call scope didn't run the handler");
+        }
+        if (failure.get() != null) {
+            // A scope that swallowed the handler's failure must not turn it into no result.
+            throw failure.get();
         }
         return result.get();
     }
