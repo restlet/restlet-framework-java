@@ -408,6 +408,9 @@ public final class McpModernExchange {
             if (method == null) {
                 return "Missing required header: Mcp-Method";
             }
+            if (count("Mcp-Method") > 1) {
+                return "Mcp-Method header has more than one value";
+            }
             if (!method.equals(rpc.method())) {
                 return "Mcp-Method header does not match request method";
             }
@@ -428,6 +431,9 @@ public final class McpModernExchange {
                 if (name == null) {
                     return "Missing required header: Mcp-Name";
                 }
+                if (count("Mcp-Name") > 1) {
+                    return "Mcp-Name header has more than one value";
+                }
                 String decoded = McpHeaderDecoder.decodeValue(name);
                 if (decoded == null) {
                     return "Mcp-Name header has a malformed value";
@@ -441,6 +447,11 @@ public final class McpModernExchange {
 
         private String header(String name) {
             return request.getHeaders().getFirstValue(name, true);
+        }
+
+        /** How many times a header was sent, one per line. */
+        private int count(String name) {
+            return request.getHeaders().getValuesArray(name, true).length;
         }
 
         /** The request headers, as the SDK's header decoder reads them. */

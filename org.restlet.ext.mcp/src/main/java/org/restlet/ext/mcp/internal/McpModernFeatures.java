@@ -13,10 +13,12 @@ import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.McpFeature;
 import io.modelcontextprotocol.modern.server.McpRequestContext;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncCompletionHandler;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPromptRepository;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResourceRepository;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncResourceTemplate;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncToolRepository;
 import io.modelcontextprotocol.modern.server.feature.PromptsFeature;
@@ -196,7 +198,8 @@ public final class McpModernFeatures {
     private record Template(
             McpSchema.ResourceTemplate definition,
             DefaultMcpUriTemplateManager matcher,
-            McpAsyncResource resource) {}
+            McpAsyncResource resource,
+            McpAsyncCompletionHandler completionHandler) {}
 
     /**
      * The resources: exact URIs first, then templates, in registration order. Subscriptions are
@@ -212,7 +215,7 @@ public final class McpModernFeatures {
                 add(resource.definition(), resource.resource());
             }
             for (McpResourceTemplate template : registrations.resourceTemplates()) {
-                add(template.definition(), template.resource());
+                add(template.definition(), template.resource(), template.completionHandler());
             }
         }
 
@@ -224,7 +227,10 @@ public final class McpModernFeatures {
             listed.add(definition);
         }
 
-        private void add(McpSchema.ResourceTemplate definition, McpAsyncResource resource) {
+        private void add(
+                McpSchema.ResourceTemplate definition,
+                McpAsyncResource resource,
+                McpAsyncCompletionHandler completionHandler) {
             for (Template template : templates) {
                 if (template.definition().uriTemplate().equals(definition.uriTemplate())) {
                     throw new IllegalArgumentException(
@@ -235,12 +241,34 @@ public final class McpModernFeatures {
                     new Template(
                             definition,
                             new DefaultMcpUriTemplateManager(definition.uriTemplate()),
-                            resource));
+                            resource,
+                            completionHandler));
         }
 
         @Override
         public Mono<ResourcesPage> list(McpRequestContext ctx, String cursor) {
             return Mono.just(ResourcesPage.of(List.copyOf(listed)));
+        }
+
+        @Override
+        public boolean supportsCompletion() {
+            return templates.stream().anyMatch(template -> template.completionHandler() != null);
+        }
+
+        @Override
+        public Mono<McpAsyncResourceTemplate> findTemplate(
+                McpRequestContext ctx, String uriTemplate) {
+            for (Template template : templates) {
+                if (template.definition().uriTemplate().equals(uriTemplate)) {
+                    McpAsyncResourceTemplate found =
+                            McpAsyncResourceTemplate.of(template.definition());
+                    return Mono.just(
+                            template.completionHandler() == null
+                                    ? found
+                                    : found.withCompletionHandler(template.completionHandler()));
+                }
+            }
+            return Mono.empty();
         }
 
         @Override
@@ -292,6 +320,11 @@ public final class McpModernFeatures {
             return Mono.just(
                     PromptsPage.of(
                             byName.values().stream().map(McpAsyncPrompt::definition).toList()));
+        }
+
+        @Override
+        public boolean supportsCompletion() {
+            return byName.values().stream().anyMatch(prompt -> prompt.completionHandler() != null);
         }
 
         @Override
