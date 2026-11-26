@@ -36,9 +36,9 @@ import reactor.core.scheduler.Schedulers;
  * streaming body (so its progress is sent while it runs) and for a call an interceptor moved off a
  * virtual thread. Restlet's thread-local variables of the connector's call are set around it
  * (current request and response, context, application and virtual host; see {@link
- * McpRequestContext#withRestletLocals}), and the adapter's {@link McpServerAdapter#getCallScopes()
- * call scopes} too, so it may block on I/O and read thread-bound context. Experimental: the SDK's
- * modern API is a preview.
+ * org.restlet.ext.mcp.McpRequestContext#withRestletLocals}), and the adapter's {@link
+ * McpServerAdapter#getCallScopes() call scopes} too, so it may block on I/O and read thread-bound
+ * context. Experimental: the SDK's modern API is a preview.
  */
 public final class McpBlocking {
 
