@@ -16,7 +16,6 @@ import org.restlet.ext.mcp.McpJsonResult;
 import org.restlet.ext.mcp.McpMethod;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpRequestContext;
-import org.restlet.ext.mcp.McpTask;
 import org.restlet.ext.mcp.McpTaskStore;
 import reactor.core.publisher.Mono;
 
@@ -101,15 +100,5 @@ public final class McpTaskMethods {
 
     private static McpException notFound() {
         return McpException.invalidParams("Task not found");
-    }
-
-    /**
-     * Whether the extensions advertise Tasks already, with the application's own settings.
-     *
-     * @param extensions The advertised extensions.
-     * @return True when {@link McpTask#EXTENSION_ID} is among them.
-     */
-    public static boolean advertised(Map<String, ?> extensions) {
-        return extensions.containsKey(McpTask.EXTENSION_ID);
     }
 }

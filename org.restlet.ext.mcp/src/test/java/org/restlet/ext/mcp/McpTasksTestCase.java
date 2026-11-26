@@ -70,16 +70,20 @@ class McpTasksTestCase {
     void cleanup() throws Exception {
         if (client != null) {
             client.stop();
+            client = null;
         }
         if (connector != null) {
             connector.stop();
+            connector = null;
         }
         if (server != null) {
             server.stop();
+            server = null;
         }
         for (McpServerAdapter adapter : adapters) {
             adapter.stop();
         }
+        adapters.clear();
     }
 
     /** A tool answers a task to a client declaring the extension, which discover advertises. */
@@ -283,6 +287,114 @@ class McpTasksTestCase {
         assertEquals(Map.of("confirm", Map.of("action", "accept")), store.answers.get("t-1"));
     }
 
+    /** Waiting for a task through thousands of polls grows neither the stack nor the chain. */
+    @Test
+    void theClientAwaitsThroughManyPolls() throws Exception {
+        store.workingPolls.set(3000);
+        McpModernClient modern = start(null);
+        McpTaskResult task =
+                assertInstanceOf(
+                        McpTaskResult.class,
+                        modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                                .block(WAIT));
+
+        CallToolOutcome done = modern.awaitTask(task, 0).block(Duration.ofMinutes(2));
+        assertEquals(
+                "done",
+                firstText(MAPPER.convertValue(done, new TypeRef<Map<String, Object>>() {})));
+        assertEquals(0, store.workingPolls.get());
+    }
+
+    /**
+     * A task waiting on input is handed back without a handler, when the handler gives no answers,
+     * and past the round limit.
+     */
+    @Test
+    void theClientHandsBackATaskWaitingOnInput() throws Exception {
+        store.askFirst = true;
+        McpModernClient bare = start(null);
+        McpTaskResult first =
+                assertInstanceOf(
+                        McpTaskResult.class,
+                        bare.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                                .block(WAIT));
+        McpTaskResult waiting =
+                assertInstanceOf(McpTaskResult.class, bare.awaitTask(first).block(WAIT));
+        assertEquals(McpTask.Status.INPUT_REQUIRED, waiting.task().status());
+        cleanup();
+
+        McpModernClient silent = start(required -> Mono.empty());
+        McpTaskResult second =
+                assertInstanceOf(
+                        McpTaskResult.class,
+                        silent.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                                .block(WAIT));
+        assertEquals(
+                McpTask.Status.INPUT_REQUIRED,
+                assertInstanceOf(McpTaskResult.class, silent.awaitTask(second).block(WAIT))
+                        .task()
+                        .status());
+        cleanup();
+
+        store.askAlways = true;
+        List<String> rounds = new CopyOnWriteArrayList<>();
+        McpModernClient limited =
+                start(
+                        required -> {
+                            rounds.add("asked");
+                            return Mono.just(Map.of("confirm", Map.of("action", "accept")));
+                        },
+                        client -> client.setMaxInputRounds(2));
+        McpTaskResult third =
+                assertInstanceOf(
+                        McpTaskResult.class,
+                        limited.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                                .block(WAIT));
+        assertEquals(
+                McpTask.Status.INPUT_REQUIRED,
+                assertInstanceOf(McpTaskResult.class, limited.awaitTask(third).block(WAIT))
+                        .task()
+                        .status());
+        assertEquals(2, rounds.size());
+    }
+
+    /** The guard also covers a task streamed as the result of a streaming tool. */
+    @Test
+    void theGuardCoversStreamedTasks() throws Exception {
+        McpServerAdapter adapter = new McpServerAdapter();
+        adapters.add(adapter);
+        adapter.getTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("streamed", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<CallToolOutcome>streaming(
+                                                        notifier ->
+                                                                Mono.just(
+                                                                        new McpTaskResult(
+                                                                                McpTask.working(
+                                                                                        "t-1",
+                                                                                        CREATED,
+                                                                                        null,
+                                                                                        null)))))));
+        adapter.setTaskStore(store);
+        adapter.start();
+
+        Response response =
+                adapter.handle(
+                        modern(
+                                "tools/call",
+                                Map.of("name", "streamed", "arguments", Map.of()),
+                                "streamed",
+                                meta(false)));
+        var bytes = new ByteArrayOutputStream();
+        response.getEntity().write(bytes);
+        String body = bytes.toString(StandardCharsets.UTF_8);
+        assertTrue(body.contains("-32603"), body);
+        assertFalse(body.contains("\"taskId\""), body);
+    }
+
     /** The client's task methods, and a failed or cancelled task ending the wait with an error. */
     @Test
     void theClientReportsFailedAndCancelledTasks() throws Exception {
@@ -369,6 +481,9 @@ class McpTasksTestCase {
         private final Map<String, Map<String, Object>> answers = new ConcurrentHashMap<>();
         private final List<String> cancelled = new CopyOnWriteArrayList<>();
         private volatile boolean askFirst;
+        private volatile boolean askAlways;
+        private final java.util.concurrent.atomic.AtomicInteger workingPolls =
+                new java.util.concurrent.atomic.AtomicInteger();
 
         McpTask create(McpRequestContext context) {
             String id = "t-" + (tasks.size() + 1);
@@ -399,9 +514,24 @@ class McpTasksTestCase {
                 return Mono.empty();
             }
             McpTask task = tasks.get(taskId);
+            if (workingPolls.get() > 0 && task.status() == McpTask.Status.WORKING) {
+                return Mono.just(
+                        workingPolls.decrementAndGet() > 0
+                                ? new McpTask(
+                                        taskId,
+                                        McpTask.Status.WORKING,
+                                        CREATED,
+                                        CREATED,
+                                        null,
+                                        0L,
+                                        null,
+                                        null,
+                                        null)
+                                : state(taskId, McpTask.Status.COMPLETED, null, done(), null));
+            }
             if (askFirst && task.status() == McpTask.Status.WORKING) {
                 return Mono.just(
-                        answers.containsKey(taskId)
+                        answers.containsKey(taskId) && !askAlways
                                 ? state(taskId, McpTask.Status.COMPLETED, null, done(), null)
                                 : state(
                                         taskId,
@@ -506,6 +636,12 @@ class McpTasksTestCase {
     }
 
     private McpModernClient start(McpInputHandler inputHandler) throws Exception {
+        return start(inputHandler, ignored -> {});
+    }
+
+    private McpModernClient start(
+            McpInputHandler inputHandler, java.util.function.Consumer<McpClientAdapter> configure)
+            throws Exception {
         McpServerAdapter adapter = adapter();
         adapter.start();
         server = new Server(new Context(), Protocol.HTTP, 0, adapter);
@@ -526,6 +662,7 @@ class McpTasksTestCase {
                         .extensions(Map.of(McpTask.EXTENSION_ID, Map.of()))
                         .build());
         client.setInputHandler(inputHandler);
+        configure.accept(client);
         client.start();
         return client.getModernClient();
     }
