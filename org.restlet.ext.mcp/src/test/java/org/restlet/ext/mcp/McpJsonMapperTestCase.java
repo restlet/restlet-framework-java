@@ -27,29 +27,38 @@ import tools.jackson.databind.json.JsonMapper;
 class McpJsonMapperTestCase {
 
     /** The SDK's Jackson 3 mapper, counting its conversions. */
-    private record Counting(AtomicInteger conversions) implements McpJsonMapper {
+    private record Counting(AtomicInteger conversions, AtomicInteger reads, AtomicInteger writes)
+            implements McpJsonMapper {
+        Counting(AtomicInteger conversions) {
+            this(conversions, new AtomicInteger(), new AtomicInteger());
+        }
+
         private static final McpJsonMapper DELEGATE =
                 new JacksonMcpJsonMapper(JsonMapper.builder().build());
 
         @Override
         public <T> T readValue(String content, Class<T> type) throws java.io.IOException {
+            reads.incrementAndGet();
             return DELEGATE.readValue(content, type);
         }
 
         @Override
         public <T> T readValue(byte[] content, Class<T> type) throws java.io.IOException {
+            reads.incrementAndGet();
             return DELEGATE.readValue(content, type);
         }
 
         @Override
         public <T> T readValue(String content, io.modelcontextprotocol.json.TypeRef<T> type)
                 throws java.io.IOException {
+            reads.incrementAndGet();
             return DELEGATE.readValue(content, type);
         }
 
         @Override
         public <T> T readValue(byte[] content, io.modelcontextprotocol.json.TypeRef<T> type)
                 throws java.io.IOException {
+            reads.incrementAndGet();
             return DELEGATE.readValue(content, type);
         }
 
@@ -67,11 +76,13 @@ class McpJsonMapperTestCase {
 
         @Override
         public String writeValueAsString(Object value) throws java.io.IOException {
+            writes.incrementAndGet();
             return DELEGATE.writeValueAsString(value);
         }
 
         @Override
         public byte[] writeValueAsBytes(Object value) throws java.io.IOException {
+            writes.incrementAndGet();
             return DELEGATE.writeValueAsBytes(value);
         }
     }
@@ -113,6 +124,30 @@ class McpJsonMapperTestCase {
                             .orElseThrow();
             assertEquals(null, discovered.error());
             assertTrue(conversions.get() > 0, "the application's mapper must be used");
+            Counting http = (Counting) counting;
+            int reads = http.reads().get();
+            int writes = http.writes().get();
+            org.restlet.Request request =
+                    new org.restlet.Request(
+                            org.restlet.data.Method.POST,
+                            "http://localhost/mcp",
+                            new org.restlet.representation.StringRepresentation(
+                                    "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"server/discover\","
+                                            + "\"params\":{\"_meta\":{\""
+                                            + MetaKeys.PROTOCOL_VERSION
+                                            + "\":\""
+                                            + McpProtocol.MODERN_VERSION
+                                            + "\",\""
+                                            + MetaKeys.CLIENT_CAPABILITIES
+                                            + "\":{}}}}",
+                                    org.restlet.data.MediaType.APPLICATION_JSON));
+            request.getHeaders().set(McpProtocol.VERSION_HEADER, McpProtocol.MODERN_VERSION);
+            request.getHeaders().set("Accept", "application/json, text/event-stream");
+            request.getHeaders().set("Mcp-Method", "server/discover");
+            org.restlet.Response response = adapter.handle(request);
+            assertEquals(200, response.getStatus().getCode());
+            assertTrue(http.reads().get() > reads, "the request must be read by it");
+            assertTrue(http.writes().get() > writes, "the response must be written by it");
         } finally {
             adapter.stop();
         }
