@@ -45,6 +45,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.ext.mcp.internal.McpBindings;
+import org.restlet.ext.mcp.internal.McpCallScopes;
 import org.restlet.ext.mcp.internal.McpExtensionFeatures;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
@@ -90,6 +91,7 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpToolFilter> toolFilters = new CopyOnWriteArrayList<>();
     private final List<McpInterceptor> interceptors = new CopyOnWriteArrayList<>();
     private final List<McpMethod> methods = new CopyOnWriteArrayList<>();
+    private final List<McpCallScope> callScopes = new CopyOnWriteArrayList<>();
     private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private McpTaskStore taskStore;
     private final McpChangeFeed changes = new McpChangeFeed();
@@ -112,6 +114,7 @@ public final class McpServerAdapter extends Restlet {
     private volatile Sinks.One<Boolean> stopping;
     private volatile List<McpInterceptor> runningInterceptors = List.of();
     private volatile Map<String, String> runningNameParams = Map.of();
+    private volatile List<McpCallScope> runningScopes = List.of();
     private volatile Set<String> runningOrigins = Set.of();
     private boolean configured;
 
@@ -189,6 +192,16 @@ public final class McpServerAdapter extends Restlet {
      */
     public List<McpMethod> getMethods() {
         return methods;
+    }
+
+    /**
+     * The scopes binding application context around each blocking handler, the first outermost; see
+     * {@link McpBlocking}. Experimental.
+     *
+     * @return The scopes, modifiable until the adapter starts.
+     */
+    public List<McpCallScope> getCallScopes() {
+        return callScopes;
     }
 
     /**
@@ -376,6 +389,7 @@ public final class McpServerAdapter extends Restlet {
         runningMethods = List.copyOf(runningMethods);
         var modern = modernServer(runningMethods, Map.copyOf(runningExtensions));
         runningNameParams = McpExtensionFeatures.nameParams(runningMethods);
+        runningScopes = List.copyOf(callScopes);
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
         stopping = Sinks.one();
@@ -389,6 +403,7 @@ public final class McpServerAdapter extends Restlet {
                         requestTimeout,
                         maxMessageBytes,
                         runningNameParams,
+                        runningScopes,
                         (message, context, terminal) -> invoke(0, message, context, terminal),
                         () -> stopping.asMono());
         legacyEdge = McpLegacyEdge.server(MAPPER, this::call, maxMessageBytes, requestTimeout);
@@ -553,7 +568,10 @@ public final class McpServerAdapter extends Restlet {
         if (message instanceof JsonRpc.JSONRPCRequest request) {
             return modernServer
                     .handleBlocking(
-                            sdkContext.putAll(McpBindings.of(request, runningNameParams)), request)
+                            sdkContext
+                                    .putAll(McpBindings.of(request, runningNameParams))
+                                    .putAll(McpCallScopes.of(runningScopes)),
+                            request)
                     .flatMap(
                             reply ->
                                     switch (reply) {
@@ -612,7 +630,8 @@ public final class McpServerAdapter extends Restlet {
             return;
         }
         var context =
-                new McpRequestContext(request, version == null ? McpProtocol.VERSION : version);
+                new McpRequestContext(
+                        request, response, version == null ? McpProtocol.VERSION : version);
         // The id of the request once decoded, for a failure past the edge to answer.
         var decoded = new AtomicReference<>();
         McpLegacyEdge.Reply reply;

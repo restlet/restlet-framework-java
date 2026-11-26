@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.restlet.Request;
+import org.restlet.Response;
 
 /** MCP-only transport metadata, also available in native SDK callbacks under CONTEXT_KEY. */
 public final class McpRequestContext {
     private final Request request;
+    private final Response response;
     private final String protocolVersion;
     private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
@@ -38,12 +40,34 @@ public final class McpRequestContext {
      *     McpProtocol#MODERN_VERSION}.
      */
     public McpRequestContext(Request request, String protocolVersion) {
+        this(request, null, protocolVersion);
+    }
+
+    /**
+     * Creates the context of a request using a given MCP revision, with its transport response.
+     *
+     * @param request The transport request, or null.
+     * @param response The transport response, or null.
+     * @param protocolVersion The MCP revision of the request, such as {@link
+     *     McpProtocol#MODERN_VERSION}.
+     */
+    public McpRequestContext(Request request, Response response, String protocolVersion) {
         this.request = request;
+        this.response = response;
         this.protocolVersion = java.util.Objects.requireNonNull(protocolVersion, "protocolVersion");
     }
 
     public Optional<Request> transportRequest() {
         return Optional.ofNullable(request);
+    }
+
+    /**
+     * The transport response, Restlet's current response while a blocking handler runs.
+     *
+     * @return The response, or empty without transport, as for {@link McpServerAdapter#dispatch}.
+     */
+    public Optional<Response> transportResponse() {
+        return Optional.ofNullable(response);
     }
 
     public String protocolVersion() {

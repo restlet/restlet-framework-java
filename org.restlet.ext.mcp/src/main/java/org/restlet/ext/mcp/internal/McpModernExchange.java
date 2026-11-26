@@ -43,6 +43,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.ServerSentEvent;
 import org.restlet.data.Status;
+import org.restlet.ext.mcp.McpCallScope;
 import org.restlet.ext.mcp.McpInterceptor;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpRequestContext;
@@ -115,6 +116,7 @@ public final class McpModernExchange {
     private final Duration timeout;
     private final int maxMessageBytes;
     private final Map<String, String> nameParams;
+    private final List<McpCallScope> scopes;
     private final Interceptors interceptors;
     private final Supplier<Mono<Boolean>> stopping;
 
@@ -128,6 +130,7 @@ public final class McpModernExchange {
      * @param timeout The request timeout.
      * @param maxMessageBytes The largest request or response message.
      * @param nameParams The params field the {@code Mcp-Name} header mirrors, by extension method.
+     * @param scopes The call scopes around blocking handlers, first outermost.
      * @param interceptors The adapter's interceptor chain.
      * @param stopping Emits when the adapter stops.
      */
@@ -139,6 +142,7 @@ public final class McpModernExchange {
             Duration timeout,
             int maxMessageBytes,
             Map<String, String> nameParams,
+            List<McpCallScope> scopes,
             Interceptors interceptors,
             Supplier<Mono<Boolean>> stopping) {
         this.sdk = sdk;
@@ -148,6 +152,7 @@ public final class McpModernExchange {
         this.timeout = timeout;
         this.maxMessageBytes = maxMessageBytes;
         this.nameParams = Map.copyOf(nameParams);
+        this.scopes = List.copyOf(scopes);
         this.interceptors = interceptors;
         this.stopping = stopping;
     }
@@ -165,7 +170,7 @@ public final class McpModernExchange {
         var exchange =
                 new Exchange(
                         request,
-                        new McpRequestContext(request, McpProtocol.MODERN_VERSION),
+                        new McpRequestContext(request, response, McpProtocol.MODERN_VERSION),
                         listen);
         Mono<Void> stopped =
                 stopping.get()
@@ -352,7 +357,9 @@ public final class McpModernExchange {
                 throw new IOException("An MCP request must stay one");
             }
             McpTransportContext sdkContext =
-                    transport(forwarded).putAll(McpBindings.of(rpc, nameParams));
+                    transport(forwarded)
+                            .putAll(McpBindings.of(rpc, nameParams))
+                            .putAll(McpCallScopes.of(scopes));
             if (io.modelcontextprotocol.modern.McpSchema.METHOD_TOOLS_CALL.equals(rpc.method())) {
                 // The tools feature validates x-mcp-header arguments against these.
                 sdkContext =
