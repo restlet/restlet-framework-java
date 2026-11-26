@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.ext.mcp.McpNotification;
@@ -44,28 +44,27 @@ public final class McpCoalescingFeed implements McpChangePublisher, McpChangeBro
 
     private final Set<Stream> streams = ConcurrentHashMap.newKeySet();
 
-    private final Consumer<ServerChange> check;
+    private final UnaryOperator<ServerChange> prepare;
 
-    /** Creates a feed broadcasting any change. */
+    /** Creates a feed broadcasting any change as it is. */
     public McpCoalescingFeed() {
-        this(change -> {});
+        this(UnaryOperator.identity());
     }
 
     /**
-     * Creates a feed checking each change before broadcasting it.
+     * Creates a feed preparing each change before broadcasting it.
      *
-     * @param check Throws if a change must not be broadcast.
+     * @param prepare Returns the change to broadcast, or throws if it must not be.
      */
-    public McpCoalescingFeed(Consumer<ServerChange> check) {
-        this.check = Objects.requireNonNull(check, "check");
+    public McpCoalescingFeed(UnaryOperator<ServerChange> prepare) {
+        this.prepare = Objects.requireNonNull(prepare, "prepare");
     }
 
     @Override
     public void broadcast(ServerChange change) {
-        Objects.requireNonNull(change, "change");
-        check.accept(change);
+        ServerChange prepared = prepare.apply(Objects.requireNonNull(change, "change"));
         for (Stream stream : streams) {
-            stream.offer(change);
+            stream.offer(prepared);
         }
     }
 

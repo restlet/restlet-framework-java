@@ -159,6 +159,54 @@ class McpListenNotificationsTestCase {
         assertEquals("n/small", next.get("method"));
     }
 
+    /**
+     * A notification is sent with its params as converted at broadcast: params that could not be
+     * converted later, such as a detached entity's, still reach the stream, past the changes it may
+     * have in flight.
+     */
+    @Test
+    void paramsAreConvertedOnceWhenBroadcast() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getSubscriptions().add(McpSubscription.of(JOBS));
+        adapter.start();
+
+        EventStreamReader reader = listen(adapter, Map.of(JOBS, true), null);
+        honoured(next(reader));
+        int count = McpStreamGate.MAX_IN_FLIGHT * 2;
+        for (int i = 0; i < count; i++) {
+            adapter.getChanges()
+                    .broadcast(
+                            McpNotification.of(
+                                    "n/once", Map.of("entity", new Once("v" + i)), JOBS));
+        }
+        for (int i = 0; i < count; i++) {
+            Map<?, ?> params = (Map<?, ?>) next(reader).get("params");
+            assertEquals(Map.of("value", "v" + i), params.get("entity"));
+        }
+    }
+
+    /**
+     * A listen stream whose acknowledgment is too large to send fails, instead of staying open
+     * without ever sending a notification.
+     */
+    @Test
+    void anAcknowledgmentTooLargeEndsTheStream() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getSubscriptions()
+                .add(new McpSubscription(JOBS, (context, requested) -> "x".repeat(1024), false));
+        adapter.setMaxMessageBytes(512);
+        adapter.start();
+
+        EventStreamReader reader = listen(adapter, Map.of(JOBS, true), null);
+        try {
+            Map<String, Object> next = next(reader);
+            assertTrue(next.containsKey("error"), next.toString());
+        } catch (java.util.concurrent.ExecutionException e) {
+            // The stream ended: as good as an error, unlike a stream left open.
+            assertTrue(e.getCause() instanceof IllegalStateException, e.toString());
+        }
+    }
+
     /** A bean Jackson can't serialise. */
     public static final class Broken {
         /**
@@ -168,6 +216,29 @@ class McpListenNotificationsTestCase {
          */
         public String getValue() {
             throw new IllegalStateException("broken");
+        }
+    }
+
+    /** A bean that can be serialised once only, like an entity detached afterwards. */
+    public static final class Once {
+        private final String value;
+        private boolean read;
+
+        Once(String value) {
+            this.value = value;
+        }
+
+        /**
+         * The value, once.
+         *
+         * @return The value.
+         */
+        public synchronized String getValue() {
+            if (read) {
+                throw new IllegalStateException("detached");
+            }
+            read = true;
+            return value;
         }
     }
 
