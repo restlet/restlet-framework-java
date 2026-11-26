@@ -131,6 +131,19 @@ class McpModernStdioTestCase {
                                                                                         .doOnCancel(
                                                                                                 cancelled
                                                                                                         ::countDown))))));
+        adapter.getMethods()
+                .add(
+                        McpMethod.of(
+                                        "com.example/lookup",
+                                        (ctx, params) ->
+                                                Mono.just(
+                                                        McpAsyncResponse.result(
+                                                                McpJsonResult.complete(
+                                                                        Map.of(
+                                                                                "found",
+                                                                                params.get(
+                                                                                        "key"))))))
+                                .withNameParam("key"));
         adapter.setMaxListenStreams(LISTENS);
         adapter.start();
         Engine.getInstance().getRegisteredServers().add(prototype);
@@ -175,6 +188,17 @@ class McpModernStdioTestCase {
         Map<String, Object> reply = read();
         assertEquals(2, ((Number) reply.get("id")).intValue());
         assertEquals("echo:line", firstText(result(reply)));
+    }
+
+    /** An extension method is answered on stdio, where no Mcp-Name header is expected. */
+    @Test
+    void anExtensionMethodIsAnswered() throws Exception {
+        send(request(3, "com.example/lookup", Map.of("key", "k1"), meta()));
+        Map<String, Object> reply = read();
+        assertEquals(3, ((Number) reply.get("id")).intValue());
+        Map<String, Object> result = result(reply);
+        assertEquals("k1", result.get("found"));
+        assertEquals("complete", result.get("resultType"));
     }
 
     /** A streamed call writes its progress, then its result, as separate lines. */

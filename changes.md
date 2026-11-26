@@ -23,6 +23,14 @@ Changes log
           after it, RFC 9110 section 8.8.2.2), and refuses to build an unconditional write
           otherwise. `Conditions.ifAbsent()` builds "If-None-Match: *" to create a resource only if
           it does not exist. A failed condition is reported as a 412 `ResourceException`.
+        - MCP extensions can add their methods and advertise themselves on `McpServerAdapter`
+          (#1698). `getMethods()` registers `McpMethod` handlers, such as `skills/list` or
+          `tasks/get`, served to 2026-07-28 clients through the same interceptors, `_meta` checks,
+          sealed `requestState` and error mapping as the methods MCP defines; a method may declare
+          the params field its `Mcp-Name` header mirrors, and whether it answers `input_required`.
+          `getExtensions()` advertises extensions under `capabilities.extensions` in
+          `server/discover`. `McpJsonResult` writes a result from JSON fields. Legacy clients get
+          -32601 for these methods.
     - Bugs fixed
         - `Redirector.getTargetRef()` now removes the dot segments (`.` and `..`) of the target
           URI (RFC 3986, section 5.2.4), so the `Location` header of a client redirection and the
