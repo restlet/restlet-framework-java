@@ -53,4 +53,24 @@ public final class McpRequestContext {
     public Map<String, Object> attributes() {
         return attributes;
     }
+
+    /**
+     * The authenticated user of the request: the identifier of its {@code ClientInfo} user, else
+     * the name of its first principal. It binds the sealed {@code requestState} of {@code
+     * input_required} results, and owns the tasks a {@code tools/call} creates.
+     *
+     * @return The principal, or empty for an unauthenticated request or one without transport.
+     */
+    public Optional<String> principal() {
+        return transportRequest()
+                .map(Request::getClientInfo)
+                .map(
+                        info ->
+                                info.getUser() != null
+                                        ? info.getUser().getIdentifier()
+                                        : info.getPrincipals().stream()
+                                                .map(java.security.Principal::getName)
+                                                .findFirst()
+                                                .orElse(null));
+    }
 }
