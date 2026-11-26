@@ -43,6 +43,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.PreferenceReader;
+import org.restlet.ext.mcp.internal.McpExtensionFeatures;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpModernExchange;
@@ -85,6 +86,8 @@ public final class McpServerAdapter extends Restlet {
     private final List<McpAsyncPrompt> prompts = new CopyOnWriteArrayList<>();
     private final List<McpToolFilter> toolFilters = new CopyOnWriteArrayList<>();
     private final List<McpInterceptor> interceptors = new CopyOnWriteArrayList<>();
+    private final List<McpMethod> methods = new CopyOnWriteArrayList<>();
+    private final Map<String, Map<String, Object>> extensions = new ConcurrentHashMap<>();
     private final McpChangeFeed changes = new McpChangeFeed();
     private byte[] requestStateKey;
     private int maxListenStreams = McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
@@ -169,6 +172,29 @@ public final class McpServerAdapter extends Restlet {
      */
     public List<McpInterceptor> getInterceptors() {
         return interceptors;
+    }
+
+    /**
+     * The JSON-RPC methods MCP extensions add, such as {@code skills/list} or {@code tasks/get},
+     * served to {@code 2026-07-28} clients only. A method MCP itself defines can't be registered,
+     * nor can a method be registered twice. Experimental.
+     *
+     * @return The methods, modifiable until the adapter starts.
+     */
+    public List<McpMethod> getMethods() {
+        return methods;
+    }
+
+    /**
+     * The extensions advertised under {@code capabilities.extensions} in {@code server/discover},
+     * with their settings, by id such as {@code io.modelcontextprotocol/skills}. Registering a
+     * method doesn't advertise its extension, and an extension such as MCP Apps adds no method.
+     * Experimental.
+     *
+     * @return The extensions, modifiable until the adapter starts.
+     */
+    public Map<String, Map<String, Object>> getExtensions() {
+        return extensions;
     }
 
     /**
@@ -291,7 +317,8 @@ public final class McpServerAdapter extends Restlet {
         }
         requireConfigurable();
         // Built first: it rejects duplicate tool names before anything needs releasing.
-        var modern = modernServer();
+        List<McpMethod> runningMethods = List.copyOf(methods);
+        var modern = modernServer(runningMethods);
         workers = new McpWorkers(maxConcurrentCalls, requestTimeout);
         listeners = new McpWorkers(maxListenStreams, null, requestTimeout);
         stopping = Sinks.one();
@@ -304,6 +331,7 @@ public final class McpServerAdapter extends Restlet {
                         listeners,
                         requestTimeout,
                         maxMessageBytes,
+                        McpExtensionFeatures.nameParams(runningMethods),
                         (message, context, terminal) -> invoke(0, message, context, terminal),
                         () -> stopping.asMono());
         legacyEdge = McpLegacyEdge.server(MAPPER, this::call, maxMessageBytes, requestTimeout);
@@ -315,7 +343,8 @@ public final class McpServerAdapter extends Restlet {
     }
 
     /** Builds the SDK's modern server from the registrations. */
-    private io.modelcontextprotocol.modern.server.McpServer modernServer() {
+    private io.modelcontextprotocol.modern.server.McpServer modernServer(
+            List<McpMethod> runningMethods) {
         var builder =
                 io.modelcontextprotocol.modern.server.McpServer.builder()
                         .serverInfo(serverInfo)
@@ -329,6 +358,7 @@ public final class McpServerAdapter extends Restlet {
                                                 List.copyOf(resourceTemplates),
                                                 List.copyOf(prompts),
                                                 List.copyOf(toolFilters))))
+                        .features(McpExtensionFeatures.of(runningMethods, Map.copyOf(extensions)))
                         .subscriptions(changes);
         var codec =
                 HmacRequestStateCodec.builder()

@@ -114,6 +114,7 @@ public final class McpModernExchange {
     private final McpWorkers listeners;
     private final Duration timeout;
     private final int maxMessageBytes;
+    private final Map<String, String> nameParams;
     private final Interceptors interceptors;
     private final Supplier<Mono<Boolean>> stopping;
 
@@ -126,6 +127,7 @@ public final class McpModernExchange {
      * @param listeners The workers of {@code subscriptions/listen} streams, without time limit.
      * @param timeout The request timeout.
      * @param maxMessageBytes The largest request or response message.
+     * @param nameParams The params field the {@code Mcp-Name} header mirrors, by extension method.
      * @param interceptors The adapter's interceptor chain.
      * @param stopping Emits when the adapter stops.
      */
@@ -136,6 +138,7 @@ public final class McpModernExchange {
             McpWorkers listeners,
             Duration timeout,
             int maxMessageBytes,
+            Map<String, String> nameParams,
             Interceptors interceptors,
             Supplier<Mono<Boolean>> stopping) {
         this.sdk = sdk;
@@ -144,6 +147,7 @@ public final class McpModernExchange {
         this.listeners = listeners;
         this.timeout = timeout;
         this.maxMessageBytes = maxMessageBytes;
+        this.nameParams = Map.copyOf(nameParams);
         this.interceptors = interceptors;
         this.stopping = stopping;
     }
@@ -409,7 +413,7 @@ public final class McpModernExchange {
                     switch (rpc.method()) {
                         case "tools/call", "prompts/get" -> "name";
                         case "resources/read" -> "uri";
-                        default -> null;
+                        default -> nameParams.get(rpc.method());
                     };
             if (key != null && params.get(key) instanceof String expected) {
                 String name = header("Mcp-Name");
