@@ -213,10 +213,52 @@ public final class McpModernClient {
      */
     public Mono<McpSchema.CallToolOutcome> awaitTask(McpTaskResult task) {
         Objects.requireNonNull(task, "task");
-        return await(task.task(), 0);
+        return awaitTask(task, MIN_POLL_MS);
     }
 
-    private Mono<McpSchema.CallToolOutcome> await(McpTask task, int round) {
+    /**
+     * Waits for a task, polling no more often than {@code minPollMs}: one loop step per poll, so a
+     * long task grows neither the stack nor the chain.
+     */
+    Mono<McpSchema.CallToolOutcome> awaitTask(McpTaskResult task, long minPollMs) {
+        return Mono.just(new Step(task.task(), 0, false))
+                .expand(step -> next(step, minPollMs))
+                .last()
+                .flatMap(this::outcome);
+    }
+
+    /** A state of a task being waited for, and whether the wait stops at it. */
+    private record Step(McpTask task, int round, boolean stop) {}
+
+    /** The step after this one, or none once the task ended or the wait stops. */
+    private Mono<Step> next(Step step, long minPollMs) {
+        McpTask task = step.task();
+        if (step.stop() || task.status().isTerminal()) {
+            return Mono.empty();
+        }
+        if (task.status() == McpTask.Status.WORKING) {
+            return poll(task, minPollMs).map(next -> new Step(next, step.round(), false));
+        }
+        if (inputHandler == null || step.round() >= maxInputRounds) {
+            return Mono.empty();
+        }
+        Map<String, Object> asked = new LinkedHashMap<>();
+        asked.put("resultType", McpSchema.ResultType.INPUT_REQUIRED);
+        asked.put("inputRequests", task.inputRequests());
+        return inputHandler
+                .respond(mapper.convertValue(asked, McpSchema.InputRequiredResult.class))
+                .flatMap(
+                        answers ->
+                                updateTask(task.taskId(), answers)
+                                        .then(poll(task, minPollMs))
+                                        .map(next -> new Step(next, step.round() + 1, false)))
+                // No answers: the task is handed back as it waits.
+                .defaultIfEmpty(new Step(task, step.round(), true));
+    }
+
+    /** What the wait ends with at its last step. */
+    private Mono<McpSchema.CallToolOutcome> outcome(Step step) {
+        McpTask task = step.task();
         return switch (task.status()) {
             case COMPLETED ->
                     Mono.just(mapper.convertValue(task.result(), McpSchema.CallToolResult.class));
@@ -231,38 +273,16 @@ public final class McpModernClient {
                             new McpException(
                                     McpSchema.ErrorCodes.INTERNAL_ERROR,
                                     "MCP task cancelled: " + task.taskId()));
-            case INPUT_REQUIRED -> answer(task, round);
-            case WORKING -> poll(task).flatMap(next -> await(next, round));
+            case WORKING, INPUT_REQUIRED -> Mono.just(new McpTaskResult(task));
         };
     }
 
-    /** Answers a waiting task's questions through the input handler, then waits again. */
-    private Mono<McpSchema.CallToolOutcome> answer(McpTask task, int round) {
-        if (inputHandler == null || round >= maxInputRounds) {
-            return Mono.just(new McpTaskResult(task));
-        }
-        Map<String, Object> asked = new LinkedHashMap<>();
-        asked.put("resultType", McpSchema.ResultType.INPUT_REQUIRED);
-        asked.put("inputRequests", task.inputRequests());
-        return inputHandler
-                .respond(mapper.convertValue(asked, McpSchema.InputRequiredResult.class))
-                .map(Optional::of)
-                .defaultIfEmpty(Optional.empty())
-                .flatMap(
-                        answers ->
-                                answers.isEmpty()
-                                        ? Mono.just(new McpTaskResult(task))
-                                        : updateTask(task.taskId(), answers.get())
-                                                .then(poll(task))
-                                                .flatMap(next -> await(next, round + 1)));
-    }
-
     /** The task's next state, after its poll interval. */
-    private Mono<McpTask> poll(McpTask task) {
+    private Mono<McpTask> poll(McpTask task, long minPollMs) {
         long interval =
                 task.pollIntervalMs() == null
                         ? DEFAULT_POLL_MS
-                        : Math.clamp(task.pollIntervalMs(), MIN_POLL_MS, MAX_POLL_MS);
+                        : Math.clamp(task.pollIntervalMs(), minPollMs, MAX_POLL_MS);
         return Mono.delay(Duration.ofMillis(interval)).then(getTask(task.taskId()));
     }
 
