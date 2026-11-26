@@ -36,8 +36,9 @@ Changes log
           honours (`McpSubscription`), as asked for or scoped to the listening principal, and an
           `McpNotification` broadcast through `getChanges()` reaches the streams that asked for its
           field, or only those of its scope. `setSubscriptionRestriction` narrows what each caller
-          receives. A stream too slow no longer loses changes: it keeps them, the latest one per
-          coalescing key (such as a task's state), up to 1024.
+          receives. A stream too slow to write its changes keeps them pending instead of
+          queueing them without bound: a later one replaces a pending one of the same coalescing
+          key (such as a task's state) in place, and past 1024 pending the oldest is dropped.
         - MCP prompts and resource templates can complete their arguments for
           `completion/complete` (#1705): a prompt's completion handler
           (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and

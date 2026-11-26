@@ -19,12 +19,18 @@ import java.util.Objects;
  * McpServerAdapter#getSubscriptions()}, beyond the tools, prompts and resources changes the adapter
  * honours itself: the field its {@link McpNotification}s are sent on. When a client asks for the
  * field, the honour function decides the value the stream is acknowledged with, or refuses the
- * field. Experimental.
+ * field.
+ *
+ * <p>A scoped field's notifications must each be {@link McpNotification#scopedTo scoped}, and an
+ * unscoped field's must not be: the adapter refuses to publish them otherwise, since an unscoped
+ * notification would reach every stream of a scoped field, and a scoped one on an unscoped field
+ * every stream asking for its scope. Experimental.
  *
  * @param field The subscription field, such as {@code io.modelcontextprotocol/tasks}.
- * @param honour Decides the honoured value.
+ * @param honour Decides the honoured value: for a scoped field, the stream's scope.
+ * @param scoped Whether the field's notifications are scoped.
  */
-public record McpSubscription(String field, Honour honour) {
+public record McpSubscription(String field, Honour honour, boolean scoped) {
 
     /** Decides whether, and with which value, a stream's request for the field is honoured. */
     @FunctionalInterface
@@ -44,6 +50,7 @@ public record McpSubscription(String field, Honour honour) {
      *
      * @param field The subscription field.
      * @param honour Decides the honoured value.
+     * @param scoped Whether the field's notifications are scoped.
      */
     public McpSubscription {
         Objects.requireNonNull(field, "field");
@@ -60,36 +67,39 @@ public record McpSubscription(String field, Honour honour) {
      * @return The subscription.
      */
     public static McpSubscription of(String field) {
-        return new McpSubscription(field, (context, requested) -> requested);
+        return new McpSubscription(field, (context, requested) -> requested, false);
     }
 
     /**
      * A field honoured with the scope of the listening principal, for notifications only that
      * principal's streams may receive: publish them {@link McpNotification#scopedTo scoped to}
-     * {@link #principalScope(String)} of their principal. The scope is a digest, so the
-     * acknowledgment doesn't carry the principal in clear.
+     * {@link #principalScope(String)} of their principal. The field is refused to a stream without
+     * principal. The scope is a digest, so the acknowledgment doesn't carry the principal in clear;
+     * a client can't ask for another principal's scope, since the adapter decides it.
      *
      * @param field The subscription field.
      * @return The subscription.
      */
     public static McpSubscription scopedToPrincipal(String field) {
         return new McpSubscription(
-                field, (context, requested) -> principalScope(context.principal().orElse(null)));
+                field,
+                (context, requested) ->
+                        context.principal().map(McpSubscription::principalScope).orElse(null),
+                true);
     }
 
     /**
      * The scope of a principal's streams, see {@link #scopedToPrincipal(String)}.
      *
-     * @param principal The principal, or null for unauthenticated streams.
+     * @param principal The principal.
      * @return The scope: a SHA-256 digest, in hex.
      */
     public static String principalScope(String principal) {
+        Objects.requireNonNull(principal, "principal");
         try {
             byte[] digest =
                     MessageDigest.getInstance("SHA-256")
-                            .digest(
-                                    (principal == null ? "\0" : "p:" + principal)
-                                            .getBytes(StandardCharsets.UTF_8));
+                            .digest(("p:" + principal).getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is unavailable", e);
