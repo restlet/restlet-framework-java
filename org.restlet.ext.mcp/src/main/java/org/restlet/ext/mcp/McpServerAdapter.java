@@ -25,6 +25,7 @@ import io.modelcontextprotocol.modern.server.feature.McpChangeBroadcaster;
 import io.modelcontextprotocol.modern.server.feature.ServerChange;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -96,6 +97,7 @@ public final class McpServerAdapter extends Restlet {
     private McpSchema.Implementation serverInfo =
             McpSchema.Implementation.builder("restlet", "3.0").build();
     private String instructions;
+    private final Map<String, McpCacheHint> cacheHints = new HashMap<>();
     private int maxMessageBytes = McpProtocol.DEFAULT_MAX_MESSAGE_BYTES;
     private int maxConcurrentCalls = McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
     private Duration requestTimeout = Duration.ofSeconds(30);
@@ -430,6 +432,44 @@ public final class McpServerAdapter extends Restlet {
         return instructions;
     }
 
+    /**
+     * Sets how long {@code 2026-07-28} clients may reuse the results of a method, and whether a
+     * shared cache may keep them: {@code server/discover} or a listing, as {@link
+     * McpCacheHint#METHODS} names them. Without a hint, they must not reuse it. {@code tools/list}
+     * stays {@link McpSchema.CacheScope#PRIVATE private} while {@link #getToolFilters() tool
+     * filters} apply, since what it lists then depends on the request; a public hint for another
+     * listing is only right when no {@link #getInterceptors() interceptor} changes it per request.
+     * A {@code resources/read} result carries the hint its handler builds it with, through {@link
+     * McpSchema.ReadResourceResult.Builder#ttlMs(long)} and {@link
+     * McpSchema.ReadResourceResult.Builder#cacheScope(McpSchema.CacheScope)}, none by default. A
+     * result answering a retry after {@code input_required} is never reused. Experimental.
+     *
+     * @param method The method.
+     * @param value The hint, or null for none.
+     * @throws IllegalArgumentException If the method isn't one of {@link McpCacheHint#METHODS}.
+     */
+    public synchronized void setCacheHint(String method, McpCacheHint value) {
+        requireConfigurable();
+        if (method == null || !McpCacheHint.METHODS.contains(method)) {
+            throw new IllegalArgumentException("No cache hint for MCP method: " + method);
+        }
+        if (value == null) {
+            cacheHints.remove(method);
+        } else {
+            cacheHints.put(method, value);
+        }
+    }
+
+    /**
+     * The hint set for the results of a method.
+     *
+     * @param method The method.
+     * @return The hint, or null if none was set.
+     */
+    public synchronized McpCacheHint getCacheHint(String method) {
+        return cacheHints.get(method);
+    }
+
     public synchronized int getMaxMessageBytes() {
         return maxMessageBytes;
     }
@@ -531,13 +571,16 @@ public final class McpServerAdapter extends Restlet {
                                                 List.copyOf(resourceTemplates),
                                                 List.copyOf(prompts),
                                                 List.copyOf(toolFilters),
-                                                taskStore != null)))
+                                                taskStore != null,
+                                                Map.copyOf(cacheHints))))
                         .features(McpExtensionFeatures.of(runningMethods, runningExtensions))
                         .features(McpExtensionFeatures.subscriptions(List.copyOf(subscriptions)))
                         .subscriptions(changes);
         if (subscriptionRestriction != null) {
             builder.restrictSubscriptions(subscriptionRestriction);
         }
+        McpCacheHint discover = cacheHints.getOrDefault("server/discover", McpCacheHint.NONE);
+        builder.discoverCache(discover.ttlMs(), discover.scope());
         if (requestStateCodec != null) {
             return builder.requestStateCodec(requestStateCodec).build();
         }

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.restlet.ext.mcp.McpCacheHint;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpResource;
 import org.restlet.ext.mcp.McpResourceTemplate;
@@ -60,6 +61,8 @@ public final class McpModernFeatures {
      * @param resourceTemplates The resource templates.
      * @param prompts The prompts.
      * @param toolFilters The tool list filters.
+     * @param tasks Whether the adapter serves {@code tasks/*}.
+     * @param cacheHints The cache hints of the listings, by method.
      */
     public record Registrations(
             List<McpAsyncTool> tools,
@@ -67,7 +70,14 @@ public final class McpModernFeatures {
             List<McpResourceTemplate> resourceTemplates,
             List<McpAsyncPrompt> prompts,
             List<McpToolFilter> toolFilters,
-            boolean tasks) {}
+            boolean tasks,
+            Map<String, McpCacheHint> cacheHints) {
+
+        /** The hint of a listing, none by default. */
+        private McpCacheHint hint(String method) {
+            return cacheHints.getOrDefault(method, McpCacheHint.NONE);
+        }
+    }
 
     /**
      * Builds the features for registrations, one per kind present.
@@ -159,9 +169,16 @@ public final class McpModernFeatures {
     private static final class Tools implements McpAsyncToolRepository {
         private final Map<String, McpAsyncTool> byName = new LinkedHashMap<>();
         private final List<McpToolFilter> filters;
+        private final McpCacheHint hint;
 
         private Tools(Registrations registrations) {
             this.filters = List.copyOf(registrations.toolFilters());
+            McpCacheHint listed = registrations.hint("tools/list");
+            // Filtered, the list depends on the request.
+            this.hint =
+                    filters.isEmpty()
+                            ? listed
+                            : new McpCacheHint(listed.ttlMs(), McpSchema.CacheScope.PRIVATE);
             for (McpAsyncTool registered : registrations.tools()) {
                 McpAsyncTool tool = guarded(registered, registrations.tasks());
                 if (byName.putIfAbsent(tool.definition().name(), tool) != null) {
@@ -185,7 +202,7 @@ public final class McpModernFeatures {
                                                                     .defaultIfEmpty(Boolean.FALSE))
                                             .all(Boolean::booleanValue))
                     .collectList()
-                    .map(ToolsPage::of);
+                    .map(tools -> new ToolsPage(tools, null, hint.ttlMs(), hint.scope()));
         }
 
         @Override
@@ -209,8 +226,12 @@ public final class McpModernFeatures {
         private final List<McpSchema.Resource> listed = new ArrayList<>();
         private final Map<String, McpAsyncResource> byUri = new LinkedHashMap<>();
         private final List<Template> templates = new ArrayList<>();
+        private final McpCacheHint listHint;
+        private final McpCacheHint templatesHint;
 
         private Resources(Registrations registrations) {
+            this.listHint = registrations.hint("resources/list");
+            this.templatesHint = registrations.hint("resources/templates/list");
             for (McpResource resource : registrations.resources()) {
                 add(resource.definition(), resource.resource());
             }
@@ -247,7 +268,9 @@ public final class McpModernFeatures {
 
         @Override
         public Mono<ResourcesPage> list(McpRequestContext ctx, String cursor) {
-            return Mono.just(ResourcesPage.of(List.copyOf(listed)));
+            return Mono.just(
+                    new ResourcesPage(
+                            List.copyOf(listed), null, listHint.ttlMs(), listHint.scope()));
         }
 
         @Override
@@ -274,8 +297,11 @@ public final class McpModernFeatures {
         @Override
         public Mono<ResourceTemplatesPage> listTemplates(McpRequestContext ctx, String cursor) {
             return Mono.just(
-                    ResourceTemplatesPage.of(
-                            templates.stream().map(Template::definition).toList()));
+                    new ResourceTemplatesPage(
+                            templates.stream().map(Template::definition).toList(),
+                            null,
+                            templatesHint.ttlMs(),
+                            templatesHint.scope()));
         }
 
         @Override
@@ -301,8 +327,10 @@ public final class McpModernFeatures {
     /** The prompts, indexed by name. */
     private static final class Prompts implements McpAsyncPromptRepository {
         private final Map<String, McpAsyncPrompt> byName = new LinkedHashMap<>();
+        private final McpCacheHint hint;
 
         private Prompts(Registrations registrations) {
+            this.hint = registrations.hint("prompts/list");
             for (McpAsyncPrompt prompt : registrations.prompts()) {
                 add(prompt);
             }
@@ -318,8 +346,11 @@ public final class McpModernFeatures {
         @Override
         public Mono<PromptsPage> list(McpRequestContext ctx, String cursor) {
             return Mono.just(
-                    PromptsPage.of(
-                            byName.values().stream().map(McpAsyncPrompt::definition).toList()));
+                    new PromptsPage(
+                            byName.values().stream().map(McpAsyncPrompt::definition).toList(),
+                            null,
+                            hint.ttlMs(),
+                            hint.scope()));
         }
 
         @Override
