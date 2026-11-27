@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,7 +124,7 @@ public final class StdioServerHelper extends ServerHelper {
     /** The pending slots of 2026-07-28 requests, which bound their workers and output. */
     private Semaphore pending;
 
-    private Thread reader;
+    private volatile Thread reader;
     private volatile boolean closed;
 
     /** Whether the connector was stopped, after which failures are expected. */
@@ -213,9 +215,19 @@ public final class StdioServerHelper extends ServerHelper {
                     .subscribe(
                             ignored -> {},
                             error -> {
-                                if (!closed) {
-                                    // Over the call limit, too slow or too large: answered.
+                                if (closed) {
+                                    return;
+                                }
+                                // Over the call limit, too slow or too large: answered. Refused
+                                // at admission, on the reader, which waits for the output as for
+                                // any answer; else on a thread of its own, not a shared timer's
+                                // or a worker's, as the output may be held by a slow write.
+                                if (Thread.currentThread() == reader) {
                                     refuse(request, answered, id, error);
+                                } else {
+                                    Thread.ofVirtual()
+                                            .name("restlet-mcp-stdio-refusal")
+                                            .start(() -> refuse(request, answered, id, error));
                                 }
                             });
         }
@@ -513,13 +525,44 @@ public final class StdioServerHelper extends ServerHelper {
     private void emit(Request request, byte[] frame, boolean last) throws IOException {
         synchronized (output) {
             if (request == null) {
-                McpMessages.writeFrame(stream, frame);
+                writeFrame(frame);
             } else if (!isCancelled(request) && !isAnswered(request)) {
-                McpMessages.writeFrame(stream, frame);
+                writeFrame(frame);
                 if (last) {
                     request.getAttributes().put(ANSWERED_ATTRIBUTE, Boolean.TRUE);
                 }
             }
+        }
+    }
+
+    /**
+     * Writes a frame whole, held by the output lock. The write runs on a thread of its own, which
+     * the caller waits for without being interruptible: a worker cut short by its timeout is
+     * interrupted, and an interruptible channel would close half-way through its frame.
+     */
+    private void writeFrame(byte[] frame) throws IOException {
+        CompletableFuture<Void> written = new CompletableFuture<>();
+        Thread.ofVirtual()
+                .name("restlet-mcp-stdio-writer")
+                .start(
+                        () -> {
+                            try {
+                                McpMessages.writeFrame(stream, frame);
+                                written.complete(null);
+                            } catch (Throwable e) {
+                                written.completeExceptionally(e);
+                            }
+                        });
+        try {
+            written.join();
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof IOException cause) {
+                throw cause;
+            }
+            if (e.getCause() instanceof RuntimeException cause) {
+                throw cause;
+            }
+            throw new IOException("MCP STDIO frame not written", e.getCause());
         }
     }
 
@@ -574,7 +617,7 @@ public final class StdioServerHelper extends ServerHelper {
                 // A worker cut short may still be answering: its answer is dropped.
                 request.getAttributes().put(CANCELLED_ATTRIBUTE, Boolean.TRUE);
                 if (answered) {
-                    McpMessages.writeFrame(stream, frame);
+                    writeFrame(frame);
                 }
             }
         } catch (IOException | RuntimeException e) {

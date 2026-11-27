@@ -61,6 +61,10 @@ class McpStdioLimitsTestCase {
     private final StdioServerHelper prototype = new StdioServerHelper(null);
     private final List<AutoCloseable> closing = new ArrayList<>();
     private final BlockingQueue<String> lines = new LinkedBlockingQueue<>();
+
+    /** Opened for the client to read the server's output; closed, it stops reading. */
+    private volatile CountDownLatch reading = new CountDownLatch(0);
+
     private OutputStream toServer;
 
     @AfterEach
@@ -312,6 +316,66 @@ class McpStdioLimitsTestCase {
         assertTrue(next.containsKey("result"), next.toString());
     }
 
+    /**
+     * Requests timing out while a client that stopped reading holds the output are answered once it
+     * reads again, without holding the shared timer threads meanwhile.
+     */
+    @Test
+    void timeoutsWhileTheOutputIsHeldLeaveTheTimersFree() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        Context context = new Context();
+        context.getParameters().add("requestTimeout", "2000");
+        context.getParameters().add("maxMessageBytes", String.valueOf(4 * 1024 * 1024));
+        // Serializing the large answer is warmed up, for it to be written well within its timeout.
+        MAPPER.writeValueAsString(Map.of("result", Map.of("pad", "x".repeat(2_000_000))));
+        reading = new CountDownLatch(1);
+        Blocking blocking = new Blocking(release);
+        start(blocking, context);
+
+        // A large answer, which the client doesn't read: its write holds the output.
+        sendRaw(legacy(1, "big"));
+        TimeUnit.MILLISECONDS.sleep(700);
+        int timers = Runtime.getRuntime().availableProcessors();
+        int slow = timers + 2;
+        for (int i = 0; i < slow; i++) {
+            sendRaw(legacy(10 + i, "slow"));
+        }
+        // Past their timeouts, while the large answer still holds the output: with the timers
+        // held by refusals waiting for the output, some would never fire.
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+        while (blocking.interrupted.get() < slow && System.nanoTime() < deadline) {
+            TimeUnit.MILLISECONDS.sleep(20);
+        }
+        assertEquals(slow, blocking.interrupted.get(), "slow handlers cut short by their timeout");
+
+        CountDownLatch ran = new CountDownLatch(timers);
+        for (int i = 0; i < timers; i++) {
+            reactor.core.scheduler.Schedulers.parallel().schedule(ran::countDown);
+        }
+        boolean free = ran.await(3, TimeUnit.SECONDS);
+        release.countDown();
+        reading.countDown();
+        assertTrue(free, "the shared timer threads are held by refusals waiting for the output");
+
+        // Each request answered once, in any order: the large one, by its result or by an error
+        // if it timed out before it was written, and the slow ones by an error.
+        java.util.Set<Integer> refused = new java.util.HashSet<>();
+        boolean bigAnswered = false;
+        for (int i = 0; i <= slow; i++) {
+            Map<String, Object> reply = read();
+            int id = ((Number) reply.get("id")).intValue();
+            if (id == 1) {
+                assertTrue(!bigAnswered, "answered twice");
+                bigAnswered = true;
+            } else {
+                assertEquals(-32603, code(reply));
+                assertTrue(refused.add(id), "answered twice: " + id);
+            }
+        }
+        assertTrue(bigAnswered);
+        assertEquals(slow, refused.size(), refused.toString());
+    }
+
     /** The limits are set in one place: an adapter's can't be given as parameters too. */
     @Test
     void anAdaptersLimitsAreNotParameters() throws Exception {
@@ -378,13 +442,17 @@ class McpStdioLimitsTestCase {
                 .start(
                         () -> {
                             try {
+                                reading.await();
                                 for (String line = fromServer.readLine();
                                         line != null;
                                         line = fromServer.readLine()) {
                                     lines.add(line);
+                                    reading.await();
                                 }
                             } catch (IOException _) {
                                 // The server output ended.
+                            } catch (InterruptedException _) {
+                                Thread.currentThread().interrupt();
                             }
                         });
         if (!Engine.getInstance().getRegisteredServers().contains(prototype)) {
@@ -439,6 +507,10 @@ class McpStdioLimitsTestCase {
     private static final class Blocking extends Restlet {
         private final CountDownLatch release;
 
+        /** The handlers their timeout interrupted. */
+        private final java.util.concurrent.atomic.AtomicInteger interrupted =
+                new java.util.concurrent.atomic.AtomicInteger();
+
         private Blocking(CountDownLatch release) {
             this.release = release;
         }
@@ -457,13 +529,17 @@ class McpStdioLimitsTestCase {
                 Map<String, Object> reply = new LinkedHashMap<>();
                 reply.put("jsonrpc", "2.0");
                 reply.put("id", message.get("id"));
-                reply.put("result", Map.of());
+                boolean big =
+                        message.get("params") instanceof Map<?, ?> params
+                                && "big".equals(params.get("name"));
+                reply.put("result", big ? Map.of("pad", "x".repeat(2_000_000)) : Map.of());
                 response.setEntity(
                         new StringRepresentation(
                                 MAPPER.writeValueAsString(reply), MediaType.APPLICATION_JSON));
             } catch (IOException e) {
                 throw new java.io.UncheckedIOException(e);
             } catch (InterruptedException e) {
+                interrupted.incrementAndGet();
                 Thread.currentThread().interrupt();
             }
         }
