@@ -103,12 +103,13 @@ Changes log
           such as a newer, older or malformed version, is answered with
           `UnsupportedProtocolVersionError` (-32022) listing the versions served, so that a client
           can pick one and retry, instead of a bare HTTP 400 without a body (#1704).
-        - Every MCP `UnsupportedProtocolVersionError` (-32022) of an `McpServerAdapter` lists both
-          versions it serves, 2026-07-28 and 2025-11-25. The modern server's own answers, to an
-          `initialize` sent with the 2026-07-28 header or to an unsupported `_meta` version, listed
-          2026-07-28 only, and named them in their message, now "Unsupported protocol version" as
-          for the adapter's own answers. The `requested` version they echo is cut to 64 characters,
-          so that a long version no longer turns the answer into an HTTP 500 (#1723).
+        - Every MCP `UnsupportedProtocolVersionError` (-32022) an `McpServerAdapter` answers over
+          HTTP lists both versions it serves there, 2026-07-28 and 2025-11-25. The modern server's
+          answer to an `initialize` sent with the 2026-07-28 header listed 2026-07-28 only, and named
+          it in its message, now "Unsupported protocol version" as for the adapter's own answers.
+          The `requested` version echoed over HTTP is cut to 64 characters, so that a long version
+          no longer turns the answer into an HTTP 500 (#1723). `dispatch`, which serves 2026-07-28
+          only, still lists that version alone.
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).

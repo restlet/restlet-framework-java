@@ -626,7 +626,9 @@ public final class McpServerAdapter extends Restlet {
     /**
      * Dispatches a {@code 2026-07-28} message through the interceptors to the SDK's modern server,
      * within the call limit and the request timeout, keeping only the final response. A request
-     * needs the {@code _meta} the revision requires. Notifications return Optional.empty.
+     * needs the {@code _meta} the revision requires; another {@code _meta} version is answered with
+     * {@code UnsupportedProtocolVersionError} (-32022) listing {@code 2026-07-28} only, since
+     * {@code 2025-11-25} is served over HTTP alone. Notifications return Optional.empty.
      *
      * @param message The message.
      * @param context The request context.
@@ -728,9 +730,10 @@ public final class McpServerAdapter extends Restlet {
                                     switch (reply) {
                                         case McpTransportResponse.Result result ->
                                                 Mono.just(result.response());
+                                        // Without HTTP, only 2026-07-28 is served: the SDK's
+                                        // -32022 says so as it is.
                                         case McpTransportResponse.Error failure ->
-                                                // An unsupported version lists the edge's too.
-                                                Mono.just(McpVersions.served(failure.response()));
+                                                Mono.just(failure.response());
                                         case McpTransportResponse.Streaming streaming ->
                                                 streaming
                                                         .messages()
