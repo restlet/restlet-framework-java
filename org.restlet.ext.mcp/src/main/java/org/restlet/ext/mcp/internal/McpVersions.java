@@ -14,8 +14,9 @@ import java.util.List;
 import org.restlet.ext.mcp.McpProtocol;
 
 /**
- * The protocol versions an adapter's endpoint serves, as every {@code
- * UnsupportedProtocolVersionError} (-32022) it answers lists them, whichever check failed.
+ * The protocol versions an adapter's HTTP endpoint serves, as every {@code
+ * UnsupportedProtocolVersionError} (-32022) it answers lists them, whichever check failed. Through
+ * {@code dispatch}, without HTTP, only the modern version is served, as the SDK's answer says.
  */
 public final class McpVersions {
 
@@ -45,9 +46,10 @@ public final class McpVersions {
     public static final String MESSAGE = "Unsupported protocol version";
 
     /**
-     * A response of the SDK's modern server with the versions of the whole endpoint: the SDK knows
-     * only the modern one, so its -32022 answers would leave out the legacy edge's. Its message,
-     * which names the versions and echoes the requested one in full, becomes {@link #MESSAGE}.
+     * A response of the SDK's modern server, answered over HTTP, with the versions of the whole
+     * endpoint: the SDK knows only the modern one, so its -32022 answers would leave out the legacy
+     * edge's. Its message becomes {@link #MESSAGE}: for a headered {@code initialize}, the SDK's
+     * names the versions and echoes the requested one in full.
      *
      * @param response The SDK's response.
      * @return The response, with {@link #SERVED} when it is an unsupported version error.

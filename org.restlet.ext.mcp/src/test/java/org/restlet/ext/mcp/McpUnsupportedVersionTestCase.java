@@ -152,28 +152,38 @@ class McpUnsupportedVersionTestCase {
         assertUnsupported(adapter.handle(lengthy), 5, version.substring(0, 64));
     }
 
-    /** Without headers, an unsupported _meta version gets the same list, through dispatch. */
+    /**
+     * Through dispatch, without HTTP, only 2026-07-28 is served: another _meta version, 2025-11-25
+     * included, is told so, which a retry with 2026-07-28 then satisfies.
+     */
     @Test
-    void anUnsupportedMetaVersionIsToldTheSupportedOnes() {
+    void dispatchListsTheModernVersionOnly() {
+        for (String version : List.of("2027-03-15", McpProtocol.VERSION)) {
+            JsonRpc.JSONRPCResponse answer = dispatchList(version);
+            assertEquals(McpProtocol.UNSUPPORTED_PROTOCOL_VERSION, answer.error().code(), version);
+            assertEquals("Unsupported protocol version", answer.error().message(), version);
+            McpSchema.UnsupportedProtocolVersionData data =
+                    assertInstanceOf(
+                            McpSchema.UnsupportedProtocolVersionData.class, answer.error().data());
+            assertEquals(List.of(McpProtocol.MODERN_VERSION), data.supported(), version);
+            assertEquals(version, data.requested());
+        }
+        assertNull(dispatchList(McpProtocol.MODERN_VERSION).error());
+    }
+
+    private JsonRpc.JSONRPCResponse dispatchList(String version) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put(
                 "_meta",
                 Map.of(
                         McpSchema.MetaKeys.PROTOCOL_VERSION,
-                        "2027-03-15",
+                        version,
                         McpSchema.MetaKeys.CLIENT_CAPABILITIES,
                         Map.of()));
-        JsonRpc.JSONRPCResponse answer =
-                adapter.dispatch(
-                                new JsonRpc.JSONRPCRequest("2.0", "tools/list", 9, params),
-                                new McpRequestContext(null))
-                        .orElseThrow();
-        assertEquals(McpProtocol.UNSUPPORTED_PROTOCOL_VERSION, answer.error().code());
-        McpSchema.UnsupportedProtocolVersionData data =
-                assertInstanceOf(
-                        McpSchema.UnsupportedProtocolVersionData.class, answer.error().data());
-        assertEquals(List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION), data.supported());
-        assertEquals("2027-03-15", data.requested());
+        return adapter.dispatch(
+                        new JsonRpc.JSONRPCRequest("2.0", "tools/list", 9, params),
+                        new McpRequestContext(null))
+                .orElseThrow();
     }
 
     /** A long version is echoed cut, so that the answer stays within the message limit. */
