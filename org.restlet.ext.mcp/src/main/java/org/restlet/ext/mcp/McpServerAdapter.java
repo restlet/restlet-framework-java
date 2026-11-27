@@ -760,7 +760,9 @@ public final class McpServerAdapter extends Restlet {
         String version = request.getHeaders().getFirstValue(McpProtocol.VERSION_HEADER, true);
         // A 2026-07-28 request goes to the modern server; it ignores a stale Mcp-Session-Id.
         boolean modern = McpProtocol.MODERN_VERSION.equals(version);
-        Status rejected = headerRejection(request, version, modern);
+        // Neither era's: answered with the versions served, for the client to pick one.
+        boolean unsupported = version != null && !modern && !McpProtocol.VERSION.equals(version);
+        Status rejected = headerRejection(request, modern || unsupported);
         if (rejected == null && !acceptsJsonAndEventStream(request)) {
             rejected = Status.CLIENT_ERROR_NOT_ACCEPTABLE;
         }
@@ -790,11 +792,13 @@ public final class McpServerAdapter extends Restlet {
                                     context,
                                     () ->
                                             Optional.of(
-                                                    legacyEdge.exchange(
-                                                            request,
-                                                            version,
-                                                            context,
-                                                            decoded::set)),
+                                                    unsupported
+                                                            ? unsupportedVersion(request, version)
+                                                            : legacyEdge.exchange(
+                                                                    request,
+                                                                    version,
+                                                                    context,
+                                                                    decoded::set)),
                                     () -> request.getEntity().release())
                             .orElseThrow(() -> new IllegalStateException("MCP exchange ended"));
         } catch (RuntimeException e) {
@@ -812,11 +816,12 @@ public final class McpServerAdapter extends Restlet {
 
     /**
      * Checks the headers: one Origin and one version at most, an allowed Origin, and for a
-     * 2025-11-25 request a supported version and no session.
+     * 2025-11-25 request no session.
      *
+     * @param sessionless Whether the request is not a 2025-11-25 one, so a session doesn't matter.
      * @return The status refusing the request, or null.
      */
-    private Status headerRejection(Request request, String version, boolean modern) {
+    private Status headerRejection(Request request, boolean sessionless) {
         if (request.getHeaders().getValuesArray("Origin", true).length > 1
                 || request.getHeaders().getValuesArray(McpProtocol.VERSION_HEADER, true).length
                         > 1) {
@@ -826,12 +831,56 @@ public final class McpServerAdapter extends Restlet {
         if (origin != null && !runningOrigins.contains(origin)) {
             return Status.CLIENT_ERROR_FORBIDDEN;
         }
-        if (!modern
-                && (version != null && !McpProtocol.VERSION.equals(version)
-                        || request.getHeaders().getFirstValue("Mcp-Session-Id", true) != null)) {
+        if (!sessionless
+                && request.getHeaders().getFirstValue(McpProtocol.SESSION_HEADER, true) != null) {
             return Status.CLIENT_ERROR_BAD_REQUEST;
         }
         return null;
+    }
+
+    /**
+     * Answers a request whose {@code MCP-Protocol-Version} the adapter doesn't serve, newer, older
+     * or malformed: {@code UnsupportedProtocolVersionError} (-32022) with the versions it serves
+     * and the one requested, as a 2026-07-28 server answers an unsupported version, under the
+     * request's id when its body has one.
+     */
+    private McpLegacyEdge.Reply unsupportedVersion(Request request, String version) {
+        Object id = null;
+        try (var input = request.getEntity().getStream()) {
+            Map<String, Object> envelope =
+                    runningMapper.readValue(
+                            McpMessages.utf8(McpMessages.read(input, maxMessageBytes)),
+                            new TypeRef<Map<String, Object>>() {});
+            if (envelope != null
+                    && (envelope.get("id") instanceof String
+                            || envelope.get("id") instanceof Number)) {
+                id = envelope.get("id");
+            }
+        } catch (McpMessages.MessageLimitException e) {
+            return new McpLegacyEdge.Reply(Status.CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE, null);
+        } catch (IOException | RuntimeException e) {
+            // Not a JSON-RPC object: still answered, without an id.
+            getLogger().log(Level.FINE, "Unreadable MCP request of an unsupported version", e);
+        }
+        Map<String, Object> reply =
+                McpMessages.error(
+                        id,
+                        McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
+                        "Unsupported protocol version");
+        reply.put(
+                "error",
+                Map.of(
+                        "code",
+                        McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
+                        "message",
+                        "Unsupported protocol version",
+                        "data",
+                        Map.of(
+                                "supported",
+                                List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION),
+                                "requested",
+                                version)));
+        return new McpLegacyEdge.Reply(Status.CLIENT_ERROR_BAD_REQUEST, reply);
     }
 
     /** Whether the request accepts both JSON and an event stream, as MCP requires. */
