@@ -124,6 +124,12 @@ public final class StdioServerHelper extends ServerHelper {
     /** The pending slots of 2026-07-28 requests, which bound their workers and output. */
     private Semaphore pending;
 
+    /**
+     * The pending slots of 2025-11-25 requests, running or waiting to be refused, as many as the
+     * call limit.
+     */
+    private Semaphore legacyPending;
+
     private volatile Thread reader;
     private volatile boolean closed;
 
@@ -154,6 +160,7 @@ public final class StdioServerHelper extends ServerHelper {
         stream.start();
         workers = new McpWorkers(limits.maxConcurrentCalls(), limits.requestTimeout());
         modernWorkers = new McpWorkers(Integer.MAX_VALUE, null, Duration.ofSeconds(30));
+        legacyPending = new Semaphore(limits.maxConcurrentCalls());
         pending =
                 new Semaphore(
                         (int)
@@ -209,28 +216,56 @@ public final class StdioServerHelper extends ServerHelper {
         if (modern) {
             submitModern(request, envelope, method);
         } else {
-            boolean answered = envelope.containsKey("id");
-            Object id = validId(envelope.get("id"));
-            workers.submit(() -> dispatch(request, null), request::abort)
-                    .subscribe(
-                            ignored -> {},
-                            error -> {
-                                if (closed) {
-                                    return;
-                                }
-                                // Over the call limit, too slow or too large: answered. Refused
-                                // at admission, on the reader, which waits for the output as for
-                                // any answer; else on a thread of its own, not a shared timer's
-                                // or a worker's, as the output may be held by a slow write.
-                                if (Thread.currentThread() == reader) {
-                                    refuse(request, answered, id, error);
-                                } else {
-                                    Thread.ofVirtual()
-                                            .name("restlet-mcp-stdio-refusal")
-                                            .start(() -> refuse(request, answered, id, error));
-                                }
-                            });
+            submitLegacy(request, envelope);
         }
+    }
+
+    /**
+     * Hands a 2025-11-25 request to a worker if one of the pending slots is free, else refuses it
+     * on the reader, which waits for the output as for any answer: a client that stops reading
+     * stops being read. A slot is held until the request ends or its refusal is written, so the
+     * requests cut short while the output is held, and waiting to be refused, are bounded too.
+     */
+    private void submitLegacy(Request request, Map<?, ?> envelope) {
+        boolean answered = envelope.containsKey("id");
+        Object id = validId(envelope.get("id"));
+        if (!legacyPending.tryAcquire()) {
+            refuse(request, answered, id, new IOException("Too many pending MCP STDIO requests"));
+            return;
+        }
+        AtomicBoolean held = new AtomicBoolean(true);
+        Runnable done =
+                () -> {
+                    if (held.compareAndSet(true, false)) {
+                        legacyPending.release();
+                    }
+                };
+        workers.submit(() -> dispatch(request, null), request::abort)
+                .subscribe(
+                        null,
+                        error -> {
+                            if (closed) {
+                                done.run();
+                                return;
+                            }
+                            // Over the call limit, too slow or too large: answered. Refused at
+                            // admission, on the reader; else on a thread of its own, not a shared
+                            // timer's or a worker's, as the output may be held by a slow write.
+                            Runnable refusal =
+                                    () -> {
+                                        try {
+                                            refuse(request, answered, id, error);
+                                        } finally {
+                                            done.run();
+                                        }
+                                    };
+                            if (Thread.currentThread() == reader) {
+                                refusal.run();
+                            } else {
+                                Thread.ofVirtual().name("restlet-mcp-stdio-refusal").start(refusal);
+                            }
+                        },
+                        done);
     }
 
     /** A frame read, or the first bytes of one over the size limit, the rest skipped. */

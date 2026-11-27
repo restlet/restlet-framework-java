@@ -376,6 +376,47 @@ class McpStdioLimitsTestCase {
         assertEquals(slow, refused.size(), refused.toString());
     }
 
+    /**
+     * While a client that stopped reading holds the output, the requests cut short and waiting to
+     * be refused are bounded by the call limit: the reader stops taking requests, and each is
+     * answered once the client reads again.
+     */
+    @Test
+    void requestsWaitingToBeRefusedAreBounded() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        Context context = new Context();
+        context.getParameters().add("maxConcurrentCalls", "2");
+        context.getParameters().add("requestTimeout", "600");
+        context.getParameters().add("maxMessageBytes", String.valueOf(4 * 1024 * 1024));
+        MAPPER.writeValueAsString(Map.of("result", Map.of("pad", "x".repeat(2_000_000))));
+        reading = new CountDownLatch(1);
+        Blocking blocking = new Blocking(release);
+        start(blocking, context);
+
+        sendRaw(legacy(1, "big"));
+        TimeUnit.MILLISECONDS.sleep(300);
+        // Each one after the previous one timed out, freeing its worker but not its pending slot.
+        int slow = 5;
+        for (int i = 0; i < slow; i++) {
+            sendRaw(legacy(10 + i, "slow"));
+            TimeUnit.MILLISECONDS.sleep(900);
+        }
+        int entered = blocking.entered.get();
+        release.countDown();
+        reading.countDown();
+        assertEquals(1, blocking.interrupted.get(), "slow requests cut short while held");
+        assertEquals(2, entered, "requests taken while the output is held");
+
+        java.util.Set<Integer> answered = new java.util.HashSet<>();
+        for (int i = 0; i <= slow; i++) {
+            Map<String, Object> reply = read();
+            assertTrue(
+                    answered.add(((Number) reply.get("id")).intValue()),
+                    "answered twice: " + reply.get("id"));
+        }
+        assertEquals(slow + 1, answered.size(), answered.toString());
+    }
+
     /** The limits are set in one place: an adapter's can't be given as parameters too. */
     @Test
     void anAdaptersLimitsAreNotParameters() throws Exception {
@@ -507,6 +548,10 @@ class McpStdioLimitsTestCase {
     private static final class Blocking extends Restlet {
         private final CountDownLatch release;
 
+        /** The handlers entered. */
+        private final java.util.concurrent.atomic.AtomicInteger entered =
+                new java.util.concurrent.atomic.AtomicInteger();
+
         /** The handlers their timeout interrupted. */
         private final java.util.concurrent.atomic.AtomicInteger interrupted =
                 new java.util.concurrent.atomic.AtomicInteger();
@@ -517,6 +562,7 @@ class McpStdioLimitsTestCase {
 
         @Override
         public void handle(Request request, Response response) {
+            entered.incrementAndGet();
             try {
                 Map<String, Object> message =
                         MAPPER.readValue(
