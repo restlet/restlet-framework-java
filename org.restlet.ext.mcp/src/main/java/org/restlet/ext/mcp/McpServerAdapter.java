@@ -54,6 +54,7 @@ import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpModernExchange;
 import org.restlet.ext.mcp.internal.McpModernFeatures;
 import org.restlet.ext.mcp.internal.McpTaskMethods;
+import org.restlet.ext.mcp.internal.McpVersions;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
 import reactor.core.publisher.Mono;
@@ -728,7 +729,8 @@ public final class McpServerAdapter extends Restlet {
                                         case McpTransportResponse.Result result ->
                                                 Mono.just(result.response());
                                         case McpTransportResponse.Error failure ->
-                                                Mono.just(failure.response());
+                                                // An unsupported version lists the edge's too.
+                                                Mono.just(McpVersions.served(failure.response()));
                                         case McpTransportResponse.Streaming streaming ->
                                                 streaming
                                                         .messages()
@@ -878,9 +880,9 @@ public final class McpServerAdapter extends Restlet {
                         "data",
                         Map.of(
                                 "supported",
-                                List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION),
+                                McpVersions.SERVED,
                                 "requested",
-                                version)));
+                                McpVersions.requested(version))));
         return new McpLegacyEdge.Reply(Status.CLIENT_ERROR_BAD_REQUEST, reply);
     }
 
