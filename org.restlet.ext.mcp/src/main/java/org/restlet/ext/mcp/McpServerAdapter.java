@@ -437,9 +437,10 @@ public final class McpServerAdapter extends Restlet {
      * shared cache may keep them: {@code server/discover} or a listing, as {@link
      * McpCacheHint#METHODS} names them. Without a hint, they must not reuse it. {@code tools/list}
      * stays {@link McpSchema.CacheScope#PRIVATE private} while {@link #getToolFilters() tool
-     * filters} apply, since what it lists then depends on the request; a public hint for another
-     * listing is only right when no {@link #getInterceptors() interceptor} changes it per request.
-     * A {@code resources/read} result carries the hint its handler builds it with, through {@link
+     * filters} apply, since what it lists then depends on the request. A public hint on any of
+     * these methods, {@code server/discover} included, is only right when no {@link
+     * #getInterceptors() interceptor} changes the result per request. A {@code resources/read}
+     * result carries the hint its handler builds it with, through {@link
      * McpSchema.ReadResourceResult.Builder#ttlMs(long)} and {@link
      * McpSchema.ReadResourceResult.Builder#cacheScope(McpSchema.CacheScope)}, none by default. A
      * result answering a retry after {@code input_required} is never reused. Experimental.
