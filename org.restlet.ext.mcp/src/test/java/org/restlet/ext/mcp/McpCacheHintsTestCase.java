@@ -199,6 +199,8 @@ class McpCacheHintsTestCase {
         assertEquals(hinted.hashCode(), plain.withCacheHint(hint).hashCode());
         // The same fields without the hint's retry rule make another result.
         assertNotEquals(hinted, McpJsonResult.unchecked("complete", hinted.fields()));
+        assertNotEquals(
+                hinted.toString(), McpJsonResult.unchecked("complete", hinted.fields()).toString());
 
         assertThrows(IllegalStateException.class, () -> hinted.withCacheHint(hint));
         assertThrows(NullPointerException.class, () -> plain.withCacheHint(null));

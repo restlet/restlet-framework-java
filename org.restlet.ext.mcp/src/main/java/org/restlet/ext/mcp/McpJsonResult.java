@@ -36,6 +36,8 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
      * @param fields The fields, without {@code resultType}, {@code ttlMs} or {@code cacheScope};
      *     copied.
      * @return The result.
+     * @throws IllegalArgumentException If the fields hold {@code resultType}, {@code ttlMs} or
+     *     {@code cacheScope}.
      * @see #withCacheHint(McpCacheHint)
      */
     public static McpJsonResult complete(Map<String, ?> fields) {
@@ -186,6 +188,12 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
         @Override
         public McpJsonResult withCacheHint(McpCacheHint hint) {
             throw new IllegalStateException("This result already has a cache hint");
+        }
+
+        @Override
+        public String toString() {
+            // Told apart from an unhinted result with the same fields, as equals does.
+            return "McpJsonResult(cacheable)" + fields();
         }
     }
 }
