@@ -93,6 +93,10 @@ Changes log
     - Bugs fixed
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
+        - An MCP request whose `MCP-Protocol-Version` header is neither 2026-07-28 nor 2025-11-25,
+          such as a newer, older or malformed version, is answered with
+          `UnsupportedProtocolVersionError` (-32022) listing the versions served, so that a client
+          can pick one and retry, instead of a bare HTTP 400 without a body (#1704).
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).
