@@ -94,9 +94,9 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
 
     /**
      * This {@code complete} result with a cache hint: its {@code ttlMs} and {@code cacheScope}
-     * follow its fields. As for the results of {@code server/discover} and the listings, a client
-     * doesn't reuse the answer to a retry after {@code input_required}: there the hint becomes
-     * {@link McpCacheHint#NONE}.
+     * follow its fields. As for a hinted {@code resources/read} result, a client doesn't reuse the
+     * answer to a retry after {@code input_required}: there the hint becomes {@link
+     * McpCacheHint#NONE}.
      *
      * @param hint The hint.
      * @return The result with the hint.
