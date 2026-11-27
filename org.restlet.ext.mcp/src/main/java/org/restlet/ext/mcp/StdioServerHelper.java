@@ -683,7 +683,7 @@ public final class StdioServerHelper extends ServerHelper {
         public void write(int b) throws IOException {
             if (b == '\n') {
                 endLine();
-            } else if (line.size() > maxMessageBytes + EVENT_LINE_OVERHEAD) {
+            } else if (line.size() > (long) maxMessageBytes + EVENT_LINE_OVERHEAD) {
                 throw new IOException("MCP streamed message exceeds the message size");
             } else {
                 line.write(b);
@@ -728,7 +728,7 @@ public final class StdioServerHelper extends ServerHelper {
         private void addData(String value) throws IOException {
             byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             int separator = hasData ? 1 : 0;
-            if (data.size() + separator + bytes.length > maxMessageBytes) {
+            if ((long) data.size() + separator + bytes.length > maxMessageBytes) {
                 throw new IOException("MCP streamed message exceeds the message size");
             }
             if (hasData) {

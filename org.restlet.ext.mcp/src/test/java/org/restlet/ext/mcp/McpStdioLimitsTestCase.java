@@ -234,20 +234,59 @@ class McpStdioLimitsTestCase {
         assertEquals(1, ((Number) timedOut.get("id")).intValue(), timedOut.toString());
         assertTrue(timedOut.containsKey("error"), timedOut.toString());
 
-        send(call(3, "free"));
-        assertEquals("echo:free", firstText(read()));
+        // The timed-out call frees its slot just after its error: retried until it is free.
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Map<String, Object> free;
+        int id = 3;
+        do {
+            send(call(id, "free"));
+            free = read();
+            assertEquals(id++, ((Number) free.get("id")).intValue(), free.toString());
+            if (free.containsKey("error")) {
+                TimeUnit.MILLISECONDS.sleep(20);
+            }
+        } while (free.containsKey("error") && System.nanoTime() < deadline);
+        assertEquals("echo:free", firstText(free));
     }
 
     /** Limits as large as allowed don't overflow the pending requests' bound. */
     @Test
     void theLargestLimitsAreAllowed() throws Exception {
         McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("streamed", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<CallToolOutcome>streaming(
+                                                        notifier ->
+                                                                notifier.progress(1, 2.0, "half")
+                                                                        .then(
+                                                                                Mono.just(
+                                                                                        McpTestFeatures
+                                                                                                .text(
+                                                                                                        "streamed")))))));
         adapter.setMaxConcurrentCalls(Integer.MAX_VALUE);
         adapter.setMaxListenStreams(Integer.MAX_VALUE);
+        adapter.setMaxMessageBytes(Integer.MAX_VALUE - 1);
         start(adapter, new Context());
 
         send(call(1, "large"));
         assertEquals("echo:large", firstText(read()));
+
+        // Streamed: its progress, then its result, each a line within the limit.
+        Map<String, Object> message = named(2, "streamed");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> meta =
+                (Map<String, Object>) ((Map<String, Object>) message.get("params")).get("_meta");
+        meta.put(MetaKeys.PROGRESS_TOKEN, "p2");
+        send(message);
+        Map<String, Object> progress = read();
+        assertEquals("notifications/progress", progress.get("method"), progress.toString());
+        Map<String, Object> result = read();
+        assertEquals(2, ((Number) result.get("id")).intValue(), result.toString());
+        assertEquals("streamed", firstText(result));
     }
 
     /**
