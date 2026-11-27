@@ -137,6 +137,19 @@ class McpUnsupportedVersionTestCase {
                         McpProtocol.MODERN_VERSION);
         request.getHeaders().set("Mcp-Method", "initialize");
         assertUnsupported(adapter.handle(request), 4, McpProtocol.VERSION);
+
+        // A long protocolVersion fits the request but, echoed in full, not the answer.
+        String version = "2025-" + "x".repeat(850);
+        Request lengthy =
+                request(
+                        "{\"jsonrpc\":\"2.0\",\"id\":5,\"method\":\"initialize\",\"params\":"
+                                + "{\"protocolVersion\":\""
+                                + version
+                                + "\",\"capabilities\":{},"
+                                + "\"clientInfo\":{\"name\":\"c\",\"version\":\"1\"}}}",
+                        McpProtocol.MODERN_VERSION);
+        lengthy.getHeaders().set("Mcp-Method", "initialize");
+        assertUnsupported(adapter.handle(lengthy), 5, version.substring(0, 64));
     }
 
     /** Without headers, an unsupported _meta version gets the same list, through dispatch. */
@@ -236,5 +249,6 @@ class McpUnsupportedVersionTestCase {
         assertEquals(
                 List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION), data.get("supported"));
         assertEquals(requested, data.get("requested"));
+        assertEquals("Unsupported protocol version", error.get("message"));
     }
 }

@@ -106,8 +106,9 @@ Changes log
         - Every MCP `UnsupportedProtocolVersionError` (-32022) of an `McpServerAdapter` lists both
           versions it serves, 2026-07-28 and 2025-11-25. The modern server's own answers, to an
           `initialize` sent with the 2026-07-28 header or to an unsupported `_meta` version, listed
-          2026-07-28 only. The `requested` version it echoes is cut to 64 characters, so that a long
-          header no longer turns the answer into an HTTP 500 (#1723).
+          2026-07-28 only, and named them in their message, now "Unsupported protocol version" as
+          for the adapter's own answers. The `requested` version they echo is cut to 64 characters,
+          so that a long version no longer turns the answer into an HTTP 500 (#1723).
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).

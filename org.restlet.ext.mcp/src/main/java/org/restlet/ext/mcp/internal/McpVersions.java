@@ -41,9 +41,13 @@ public final class McpVersions {
                 : version.substring(0, MAX_REQUESTED_LENGTH);
     }
 
+    /** The message of every -32022 the endpoint answers; the versions are in its data. */
+    public static final String MESSAGE = "Unsupported protocol version";
+
     /**
      * A response of the SDK's modern server with the versions of the whole endpoint: the SDK knows
-     * only the modern one, so its -32022 answers would leave out the legacy edge's.
+     * only the modern one, so its -32022 answers would leave out the legacy edge's. Its message,
+     * which names the versions and echoes the requested one in full, becomes {@link #MESSAGE}.
      *
      * @param response The SDK's response.
      * @return The response, with {@link #SERVED} when it is an unsupported version error.
@@ -60,7 +64,7 @@ public final class McpVersions {
                 response.id(),
                 new JsonRpc.JSONRPCResponse.JSONRPCError(
                         error.code(),
-                        error.message(),
+                        MESSAGE,
                         new McpSchema.UnsupportedProtocolVersionData(
                                 SERVED, requested(data.requested()))));
     }
