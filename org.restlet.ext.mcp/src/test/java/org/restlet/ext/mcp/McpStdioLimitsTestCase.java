@@ -17,7 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
+import io.modelcontextprotocol.modern.McpSchema.CallToolOutcome;
 import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
+import io.modelcontextprotocol.modern.McpSchema.Tool;
+import io.modelcontextprotocol.modern.server.McpAsyncResponse;
+import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +29,7 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.Pipe;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +49,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
+import reactor.core.publisher.Mono;
 
 /**
  * The limits of the STDIO connector: the adapter's, or else the connector's parameters, and what a
@@ -170,6 +176,103 @@ class McpStdioLimitsTestCase {
         assertTrue(first.containsKey("result"), first.toString());
     }
 
+    /**
+     * A result over the size limit is answered with an internal error under its id, in both eras,
+     * and the session goes on.
+     */
+    @Test
+    void aResultOverTheLimitIsAnswered() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("big", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<CallToolOutcome>result(
+                                                        McpTestFeatures.text("b".repeat(8192))))));
+        adapter.setMaxMessageBytes(4096);
+        start(adapter, new Context());
+
+        send(named(1, "big"));
+        Map<String, Object> modern = read();
+        assertEquals(1, ((Number) modern.get("id")).intValue(), modern.toString());
+        assertEquals(-32603, code(modern));
+
+        sendRaw(legacy(2, "big"));
+        Map<String, Object> old = read();
+        assertEquals(2, ((Number) old.get("id")).intValue(), old.toString());
+        assertTrue(old.containsKey("error"), old.toString());
+
+        send(call(3, "small"));
+        assertEquals("echo:small", firstText(read()));
+    }
+
+    /**
+     * On the 2026-07-28 path too, the adapter's call limit and request timeout answer a request,
+     * and the session goes on.
+     */
+    @Test
+    void theAdaptersCallLimitAndTimeoutApplyToModernRequests() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("hang", Map.of("type", "object")).build(),
+                                (ctx, request) -> Mono.never()));
+        adapter.setMaxConcurrentCalls(1);
+        adapter.setRequestTimeout(Duration.ofMillis(1500));
+        start(adapter, new Context());
+
+        send(named(1, "hang"));
+        send(call(2, "busy"));
+        Map<String, Object> refused = read();
+        assertEquals(2, ((Number) refused.get("id")).intValue(), refused.toString());
+        assertTrue(refused.containsKey("error"), refused.toString());
+
+        Map<String, Object> timedOut = read();
+        assertEquals(1, ((Number) timedOut.get("id")).intValue(), timedOut.toString());
+        assertTrue(timedOut.containsKey("error"), timedOut.toString());
+
+        send(call(3, "free"));
+        assertEquals("echo:free", firstText(read()));
+    }
+
+    /** Limits as large as allowed don't overflow the pending requests' bound. */
+    @Test
+    void theLargestLimitsAreAllowed() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.setMaxConcurrentCalls(Integer.MAX_VALUE);
+        adapter.setMaxListenStreams(Integer.MAX_VALUE);
+        start(adapter, new Context());
+
+        send(call(1, "large"));
+        assertEquals("echo:large", firstText(read()));
+    }
+
+    /**
+     * A request answered just before its timeout gets no error after its answer: its worker, still
+     * releasing the response when cut short, is past answering.
+     */
+    @Test
+    void anAnsweredRequestGetsNoErrorAfterItsTimeout() throws Exception {
+        Context context = new Context();
+        context.getParameters().add("requestTimeout", "300");
+        start(new SlowRelease(), context);
+
+        sendRaw(legacy(1, "answered"));
+        Map<String, Object> answered = read();
+        assertEquals(1, ((Number) answered.get("id")).intValue(), answered.toString());
+        assertTrue(answered.containsKey("result"), answered.toString());
+
+        // Past the timeout, the next line answers the next request: no error came between.
+        TimeUnit.MILLISECONDS.sleep(600);
+        sendRaw(legacy(2, "next"));
+        Map<String, Object> next = read();
+        assertEquals(2, ((Number) next.get("id")).intValue(), next.toString());
+        assertTrue(next.containsKey("result"), next.toString());
+    }
+
     /** The limits are set in one place: an adapter's can't be given as parameters too. */
     @Test
     void anAdaptersLimitsAreNotParameters() throws Exception {
@@ -261,6 +364,38 @@ class McpStdioLimitsTestCase {
         server.start();
     }
 
+    /** Answers legacy requests at once, but releases its responses slowly. */
+    private static final class SlowRelease extends Restlet {
+        @Override
+        public void handle(Request request, Response response) {
+            try {
+                Map<String, Object> message =
+                        MAPPER.readValue(
+                                request.getEntity().getText(),
+                                new TypeRef<Map<String, Object>>() {});
+                Map<String, Object> reply = new LinkedHashMap<>();
+                reply.put("jsonrpc", "2.0");
+                reply.put("id", message.get("id"));
+                reply.put("result", Map.of());
+                response.setEntity(
+                        new StringRepresentation(
+                                MAPPER.writeValueAsString(reply), MediaType.APPLICATION_JSON) {
+                            @Override
+                            public void release() {
+                                try {
+                                    TimeUnit.SECONDS.sleep(1);
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+                                super.release();
+                            }
+                        });
+            } catch (IOException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        }
+    }
+
     /** Answers legacy requests, those named "slow" once released. */
     private static final class Blocking extends Restlet {
         private final CountDownLatch release;
@@ -301,6 +436,16 @@ class McpStdioLimitsTestCase {
                 + ",\"method\":\"tools/call\",\"params\":{\"name\":\""
                 + name
                 + "\"}}";
+    }
+
+    /** A 2026-07-28 call of a tool without arguments. */
+    private static Map<String, Object> named(int id, String tool) {
+        Map<String, Object> message = call(id, "");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> params = (Map<String, Object>) message.get("params");
+        params.put("name", tool);
+        params.put("arguments", Map.of());
+        return message;
     }
 
     private static Map<String, Object> call(int id, String text) {

@@ -67,14 +67,18 @@ import tools.jackson.core.json.JsonFactory;
  * {@link Server}'s parameters of the same names, {@code requestTimeout} in milliseconds, with the
  * same defaults; given those parameters as well, an adapter refuses to start. A message over the
  * size limit is skipped and answered with an invalid request error (-32600), under its id when its
- * first bytes give it; a request the limits refuse or cut short is answered with an internal error
- * (-32603). Either way the session goes on.
+ * first bytes give it; a request the limits refuse or cut short, or whose response or streamed
+ * message exceeds the size limit, is answered with an internal error (-32603), unless it was
+ * answered already. Either way the session goes on.
  */
 public final class StdioServerHelper extends ServerHelper {
     private static final String CANCELLED = "notifications/cancelled";
 
     /** Request attribute marking a request the client cancelled, which gets no response. */
     private static final String CANCELLED_ATTRIBUTE = "org.restlet.ext.mcp.stdio.cancelled";
+
+    /** Request attribute marking a request whose response was written, which gets no other. */
+    private static final String ANSWERED_ATTRIBUTE = "org.restlet.ext.mcp.stdio.answered";
 
     /** Room for the {@code data: } prefix of a streamed message's line. */
     private static final int EVENT_LINE_OVERHEAD = 16;
@@ -148,7 +152,13 @@ public final class StdioServerHelper extends ServerHelper {
         stream.start();
         workers = new McpWorkers(limits.maxConcurrentCalls(), limits.requestTimeout());
         modernWorkers = new McpWorkers(Integer.MAX_VALUE, null, Duration.ofSeconds(30));
-        pending = new Semaphore(limits.maxListenStreams() + limits.maxConcurrentCalls());
+        pending =
+                new Semaphore(
+                        (int)
+                                Math.min(
+                                        (long) limits.maxListenStreams()
+                                                + limits.maxConcurrentCalls(),
+                                        Integer.MAX_VALUE));
         reader = Thread.ofVirtual().name("restlet-mcp-stdio-server").start(this::read);
     }
 
@@ -220,21 +230,31 @@ public final class StdioServerHelper extends ServerHelper {
      * @return The frame, or null at the end of the input.
      */
     private Frame readFrame() throws IOException {
-        var frame = new ByteArrayOutputStream(Math.min(maxMessageBytes, 8192));
-        int kept = Math.min(maxMessageBytes, OVERSIZED_PREFIX);
+        // Grown as needed up to the limit; past it, only the first bytes are kept.
+        byte[] frame = new byte[Math.min(maxMessageBytes, 8192)];
+        byte[] prefix = null;
         byte[] single = new byte[1];
         long size = 0;
         while (stream.read(single, 0, 1) != -1) {
             if (single[0] == NEWLINE) {
-                if (size <= maxMessageBytes) {
-                    return new Frame(frame.toByteArray(), false);
+                return prefix == null
+                        ? new Frame(Arrays.copyOf(frame, (int) size), false)
+                        : new Frame(prefix, true);
+            }
+            if (prefix == null) {
+                if (size == maxMessageBytes) {
+                    prefix = Arrays.copyOf(frame, Math.min(maxMessageBytes, OVERSIZED_PREFIX));
+                    frame = null;
+                } else {
+                    if (size == frame.length) {
+                        frame =
+                                Arrays.copyOf(
+                                        frame, (int) Math.min(2L * frame.length, maxMessageBytes));
+                    }
+                    frame[(int) size] = single[0];
                 }
-                return new Frame(Arrays.copyOf(frame.toByteArray(), kept), true);
             }
             size++;
-            if (size <= maxMessageBytes) {
-                frame.write(single[0]);
-            }
         }
         if (size != 0) {
             throw new IOException("Truncated MCP STDIO frame");
@@ -254,7 +274,8 @@ public final class StdioServerHelper extends ServerHelper {
                                     idOf(prefix),
                                     -32600,
                                     "MCP message exceeds " + maxMessageBytes + " bytes"),
-                            maxMessageBytes));
+                            maxMessageBytes),
+                    true);
         } catch (IOException | RuntimeException e) {
             fail(e);
         }
@@ -483,17 +504,50 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /**
-     * Writes a frame of a request, unless the client cancelled it.
+     * Writes a frame of a request, unless the client cancelled it or it was answered.
      *
      * @param request The request answered, or null for none.
      * @param frame The frame, without its newline.
+     * @param last Whether it is the request's response, after which nothing of it is written.
      */
-    private void emit(Request request, byte[] frame) throws IOException {
+    private void emit(Request request, byte[] frame, boolean last) throws IOException {
         synchronized (output) {
-            if (request == null || !isCancelled(request)) {
+            if (request == null) {
                 McpMessages.writeFrame(stream, frame);
+            } else if (!isCancelled(request) && !isAnswered(request)) {
+                McpMessages.writeFrame(stream, frame);
+                if (last) {
+                    request.getAttributes().put(ANSWERED_ATTRIBUTE, Boolean.TRUE);
+                }
             }
         }
+    }
+
+    private static boolean isAnswered(Request request) {
+        return Boolean.TRUE.equals(request.getAttributes().get(ANSWERED_ATTRIBUTE));
+    }
+
+    /** Whether a streamed message is a response, carrying a result or an error. */
+    private static boolean isResponse(byte[] message) {
+        try (JsonParser parser = JSON.createParser(ObjectReadContext.empty(), message)) {
+            if (parser.nextToken() != JsonToken.START_OBJECT) {
+                return false;
+            }
+            while (parser.nextToken() == JsonToken.PROPERTY_NAME) {
+                String name = parser.currentName();
+                if ("result".equals(name) || "error".equals(name)) {
+                    return true;
+                }
+                if ("method".equals(name)) {
+                    return false;
+                }
+                parser.nextToken();
+                parser.skipChildren();
+            }
+        } catch (JacksonException e) {
+            // Not JSON: not a response.
+        }
+        return false;
     }
 
     /**
@@ -514,8 +568,8 @@ public final class StdioServerHelper extends ServerHelper {
                             McpMessages.error(id, -32603, "MCP exchange unavailable"),
                             maxMessageBytes);
             synchronized (output) {
-                if (isCancelled(request)) {
-                    return;
+                if (isCancelled(request) || isAnswered(request)) {
+                    return; // Cancelled, or answered just before being cut short.
                 }
                 // A worker cut short may still be answering: its answer is dropped.
                 request.getAttributes().put(CANCELLED_ATTRIBUTE, Boolean.TRUE);
@@ -574,7 +628,7 @@ public final class StdioServerHelper extends ServerHelper {
                     }
                 } else if (MediaType.APPLICATION_JSON.isCompatible(entity.getMediaType())) {
                     try (var input = entity.getStream()) {
-                        emit(request, withId(McpMessages.read(input, maxMessageBytes), id));
+                        emit(request, withId(McpMessages.read(input, maxMessageBytes), id), true);
                     }
                 } else {
                     throw new IOException("MCP STDIO handler returned a non-JSON entity");
@@ -663,7 +717,8 @@ public final class StdioServerHelper extends ServerHelper {
         /** Writes the event that ends, if it has data; a cancelled request's is dropped. */
         private void endEvent() throws IOException {
             if (hasData) {
-                emit(request, data.toByteArray());
+                byte[] message = data.toByteArray();
+                emit(request, message, isResponse(message));
             }
             data.reset();
             hasData = false;
