@@ -867,16 +867,14 @@ public final class McpServerAdapter extends Restlet {
         }
         Map<String, Object> reply =
                 McpMessages.error(
-                        id,
-                        McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
-                        "Unsupported protocol version");
+                        id, McpProtocol.UNSUPPORTED_PROTOCOL_VERSION, McpVersions.MESSAGE);
         reply.put(
                 "error",
                 Map.of(
                         "code",
                         McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
                         "message",
-                        "Unsupported protocol version",
+                        McpVersions.MESSAGE,
                         "data",
                         Map.of(
                                 "supported",
