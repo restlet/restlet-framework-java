@@ -16,6 +16,7 @@ import org.restlet.ext.mcp.McpJsonResult;
 import org.restlet.ext.mcp.McpMethod;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.McpRequestContext;
+import org.restlet.ext.mcp.McpTask;
 import org.restlet.ext.mcp.McpTaskStore;
 import reactor.core.publisher.Mono;
 
@@ -43,7 +44,7 @@ public final class McpTaskMethods {
                         (taskId, params, context) ->
                                 store.get(taskId, context)
                                         .switchIfEmpty(Mono.error(notFound()))
-                                        .map(task -> McpJsonResult.complete(task.toFields()))),
+                                        .map(McpTask::toResult)),
                 method(
                         "tasks/update",
                         (taskId, params, context) -> {

@@ -19,9 +19,9 @@ import java.util.Objects;
  * A result made of JSON fields, for an {@link McpMethod} whose result has no SDK type, such as the
  * {@code skills/list} result of the Skills extension. Its fields are written after {@code
  * resultType}, as they are and in their order; the adapter adds its {@code _meta} server info as
- * for any result. A {@code complete} result takes a cache hint through {@link
- * #withCacheHint(McpCacheHint)}; fields named {@code ttlMs} or {@code cacheScope} are written as
- * they are but aren't a hint, as for the task a {@code tasks/get} result describes. Experimental.
+ * for any result. A {@code complete} result takes its cache hint, {@code ttlMs} and {@code
+ * cacheScope}, only through {@link #withCacheHint(McpCacheHint)}, so that the answer to a retry
+ * after {@code input_required} is never reused. Experimental.
  */
 public sealed class McpJsonResult implements McpSchema.Result permits McpJsonResult.Cached {
     private final Map<String, Object> fields;
@@ -33,8 +33,10 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
     /**
      * Creates a {@code complete} result.
      *
-     * @param fields The fields, without {@code resultType}; copied.
+     * @param fields The fields, without {@code resultType}, {@code ttlMs} or {@code cacheScope};
+     *     copied.
      * @return The result.
+     * @see #withCacheHint(McpCacheHint)
      */
     public static McpJsonResult complete(Map<String, ?> fields) {
         return of(McpSchema.ResultType.COMPLETE, fields);
@@ -46,8 +48,11 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
      * questions are checked against the client's capabilities and whose state is sealed.
      *
      * @param resultType The result type, not {@code input_required}.
-     * @param fields The fields, without {@code resultType}; copied.
+     * @param fields The fields, without {@code resultType}, nor {@code ttlMs} or {@code cacheScope}
+     *     for a {@code complete} result; copied.
      * @return The result.
+     * @throws IllegalArgumentException If the type is blank or {@code input_required}, or the
+     *     fields hold {@code resultType}, or a {@code complete} result's cache hint.
      */
     public static McpJsonResult of(String resultType, Map<String, ?> fields) {
         Objects.requireNonNull(resultType, "resultType");
@@ -63,6 +68,24 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
         if (fields.containsKey("resultType")) {
             throw new IllegalArgumentException("resultType is given apart from the fields");
         }
+        if (McpSchema.ResultType.COMPLETE.equals(resultType)
+                && (fields.containsKey(TTL_MS) || fields.containsKey(CACHE_SCOPE))) {
+            // Raw, the hint would survive a retry after input_required.
+            throw new IllegalArgumentException(
+                    "A complete result's ttlMs and cacheScope are given by withCacheHint");
+        }
+        return unchecked(resultType, fields);
+    }
+
+    /**
+     * Creates a result whose fields aren't checked, for the task a {@code tasks/get} result
+     * describes, whose {@code ttlMs} is how long the task is kept.
+     *
+     * @param resultType The result type.
+     * @param fields The fields, without {@code resultType}; copied.
+     * @return The result.
+     */
+    static McpJsonResult unchecked(String resultType, Map<String, ?> fields) {
         Map<String, Object> copy = new LinkedHashMap<>();
         copy.put("resultType", resultType);
         copy.putAll(fields);
@@ -73,12 +96,12 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
      * This {@code complete} result with a cache hint: its {@code ttlMs} and {@code cacheScope}
      * follow its fields. As for the results of {@code server/discover} and the listings, a client
      * doesn't reuse the answer to a retry after {@code input_required}: there the hint becomes
-     * {@link McpCacheHint#NONE}. 2025-11-25 clients get the result without it.
+     * {@link McpCacheHint#NONE}.
      *
      * @param hint The hint.
      * @return The result with the hint.
-     * @throws IllegalStateException If this result isn't {@code complete}, or already has a hint or
-     *     a {@code ttlMs} or {@code cacheScope} field.
+     * @throws IllegalStateException If this result isn't {@code complete}, already has a hint, or
+     *     is a task's {@code tasks/get} result.
      */
     public McpJsonResult withCacheHint(McpCacheHint hint) {
         Objects.requireNonNull(hint, "hint");
@@ -118,7 +141,10 @@ public sealed class McpJsonResult implements McpSchema.Result permits McpJsonRes
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof McpJsonResult result && fields.equals(result.fields);
+        // A hinted result and an unhinted one aren't equal: only the first is a CacheableResult.
+        return other instanceof McpJsonResult result
+                && other.getClass() == getClass()
+                && fields.equals(result.fields);
     }
 
     @Override

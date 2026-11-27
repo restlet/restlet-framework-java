@@ -8,6 +8,7 @@
  */
 package org.restlet.ext.mcp;
 
+import io.modelcontextprotocol.modern.McpSchema;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
@@ -151,6 +152,17 @@ public record McpTask(
                 null,
                 null,
                 null);
+    }
+
+    /**
+     * The {@code complete} result of {@code tasks/get} for this state, made of its {@link
+     * #toFields() fields}. Its {@code ttlMs} is how long the task is kept, so it takes no {@link
+     * McpJsonResult#withCacheHint cache hint}.
+     *
+     * @return The result.
+     */
+    public McpJsonResult toResult() {
+        return McpJsonResult.unchecked(McpSchema.ResultType.COMPLETE, toFields());
     }
 
     /**

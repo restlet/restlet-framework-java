@@ -48,6 +48,9 @@ Changes log
         - `McpJsonResult.withCacheHint(McpCacheHint)` gives the `complete` result of an MCP
           extension method, such as `skills/list`, its `ttlMs` and `cacheScope` (#1720). As for
           the other hinted results, the answer to a retry after `input_required` is not reusable.
+          `McpJsonResult.complete` and `of` refuse these fields on a `complete` result, which would
+          keep their hint on that answer; `McpTask.toResult()` builds a `tasks/get` result, whose
+          `ttlMs` is how long the task is kept.
         - MCP prompts and resource templates can complete their arguments for
           `completion/complete` (#1705): a prompt's completion handler
           (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and
