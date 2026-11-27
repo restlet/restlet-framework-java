@@ -71,6 +71,13 @@ import reactor.core.publisher.Sinks;
  * deprecates or removes: it advertises only tools, resources and prompts, issues no session, opens
  * no {@code GET} stream and sends no request to the client; {@code ping} gets an empty result and
  * {@code logging/setLevel} is not found. A result requiring input fails for a legacy client.
+ *
+ * <p>The limits, {@link #setMaxMessageBytes(int) message size}, {@link #setMaxConcurrentCalls(int)
+ * concurrent calls}, {@link #setRequestTimeout(Duration) request timeout} and {@link
+ * #setMaxListenStreams(int) listen streams}, apply over HTTP and STDIO alike: a {@link
+ * StdioServerHelper} serving the adapter reads them when it starts. Over HTTP, a message over the
+ * size limit is refused with 413 (Request Entity Too Large); over STDIO, it is answered with an
+ * invalid request error (-32600) and the session goes on.
  */
 public final class McpServerAdapter extends Restlet {
     /** How long stopping waits for listen streams to end with their result. */

@@ -51,6 +51,11 @@ Changes log
           `McpJsonResult.complete` and `of` refuse these fields on a `complete` result, which would
           keep their hint on that answer; `McpTask.toResult()` builds a `tasks/get` result, whose
           `ttlMs` is how long the task is kept.
+        - The MCP STDIO connector takes its limits from the `McpServerAdapter` it serves (#1706):
+          its message size, concurrent calls, request timeout and listen streams, instead of a
+          fixed 1 MiB, 128 calls and 30 seconds, so that a large result or a slow tool can be
+          allowed. Serving another Restlet, it takes them from the `Server`'s parameters of the
+          same names.
         - MCP prompts and resource templates can complete their arguments for
           `completion/complete` (#1705): a prompt's completion handler
           (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and
@@ -114,6 +119,10 @@ Changes log
           and 2025-11-25 is answered with `UnsupportedProtocolVersionError` (-32022) listing both,
           as over HTTP, instead of being served as a 2025-11-25 request (#1725). A notification
           naming one is dropped.
+        - An MCP STDIO session no longer ends on a message over the size limit, which is answered
+          with an invalid request error (-32600) under its id when it can be read, nor on a
+          2025-11-25 request over the call limit or the request timeout, which is answered with an
+          internal error (-32603) (#1706).
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).

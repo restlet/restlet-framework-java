@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +30,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.ServerHelper;
 import org.restlet.ext.mcp.internal.McpMessages;
@@ -36,6 +39,12 @@ import org.restlet.ext.mcp.internal.McpWorkers;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
+import org.restlet.util.Series;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.json.JsonFactory;
 
 /**
  * Explicit newline-framed MCP STDIO connector. Every message traverses the Server's configured
@@ -50,6 +59,16 @@ import org.restlet.routing.Filter;
  * newer, older or malformed, is answered with {@code UnsupportedProtocolVersionError} (-32022),
  * listing the versions served, as over HTTP; a notification naming one is dropped. A message
  * without a {@code _meta} protocol version, or naming 2025-11-25, goes to the 2025-11-25 edge.
+ *
+ * <p>Its limits are those of the {@link McpServerAdapter} it serves, read when the connector
+ * starts: {@link McpServerAdapter#getMaxMessageBytes()}, {@link
+ * McpServerAdapter#getMaxConcurrentCalls()}, {@link McpServerAdapter#getRequestTimeout()} and
+ * {@link McpServerAdapter#getMaxListenStreams()}. Serving another Restlet, it takes them from the
+ * {@link Server}'s parameters of the same names, {@code requestTimeout} in milliseconds, with the
+ * same defaults; given those parameters as well, an adapter refuses to start. A message over the
+ * size limit is skipped and answered with an invalid request error (-32600), under its id when its
+ * first bytes give it; a request the limits refuse or cut short is answered with an internal error
+ * (-32603). Either way the session goes on.
  */
 public final class StdioServerHelper extends ServerHelper {
     private static final String CANCELLED = "notifications/cancelled";
@@ -59,6 +78,17 @@ public final class StdioServerHelper extends ServerHelper {
 
     /** Room for the {@code data: } prefix of a streamed message's line. */
     private static final int EVENT_LINE_OVERHEAD = 16;
+
+    /** The bytes of a message over the size limit kept to read its id. */
+    private static final int OVERSIZED_PREFIX = 64 * 1024;
+
+    /** The parameters giving the limits when the connector serves no adapter. */
+    private static final List<String> LIMIT_PARAMETERS =
+            List.of("maxMessageBytes", "maxConcurrentCalls", "requestTimeout", "maxListenStreams");
+
+    private static final JsonFactory JSON = new JsonFactory();
+
+    private static final byte NEWLINE = (byte) 10;
 
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
     private final Set<Request> requests = ConcurrentHashMap.newKeySet();
@@ -74,6 +104,9 @@ public final class StdioServerHelper extends ServerHelper {
 
     private org.restlet.util.StreamTransport stream;
     private McpWorkers workers;
+
+    /** The size limit of a message, read or written. */
+    private int maxMessageBytes = McpProtocol.DEFAULT_MAX_MESSAGE_BYTES;
 
     /**
      * The workers of 2026-07-28 requests, without limits of their own: the adapter's call and
@@ -108,24 +141,26 @@ public final class StdioServerHelper extends ServerHelper {
             throw new IllegalStateException(
                     "MCP STDIO requires an explicitly configured StreamTransport");
         }
+        Limits limits = limits();
         stream = configured;
-        stream.setMaxOperationBytes(McpProtocol.DEFAULT_MAX_MESSAGE_BYTES + 1);
+        maxMessageBytes = limits.maxMessageBytes();
+        stream.setMaxOperationBytes(maxMessageBytes + 1);
         stream.start();
-        workers = new McpWorkers(McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS, Duration.ofSeconds(30));
+        workers = new McpWorkers(limits.maxConcurrentCalls(), limits.requestTimeout());
         modernWorkers = new McpWorkers(Integer.MAX_VALUE, null, Duration.ofSeconds(30));
-        pending = new Semaphore(pendingLimit());
+        pending = new Semaphore(limits.maxListenStreams() + limits.maxConcurrentCalls());
         reader = Thread.ofVirtual().name("restlet-mcp-stdio-server").start(this::read);
     }
 
     private void read() {
         try {
-            byte[] bytes;
-            while (!closed
-                    && (bytes =
-                                    McpMessages.readFrame(
-                                            stream, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES))
-                            != null) {
-                accept(bytes);
+            Frame frame;
+            while (!closed && (frame = readFrame()) != null) {
+                if (frame.oversized()) {
+                    refuseOversized(frame.bytes());
+                } else {
+                    accept(frame.bytes());
+                }
             }
             if (!closed) {
                 fail(new IOException("MCP STDIO input ended"));
@@ -162,9 +197,91 @@ public final class StdioServerHelper extends ServerHelper {
         if (modern) {
             submitModern(request, envelope, method);
         } else {
-            workers.submit(() -> dispatch(request, null), () -> {})
-                    .subscribe(ignored -> {}, this::fail);
+            boolean answered = envelope.containsKey("id");
+            Object id = validId(envelope.get("id"));
+            workers.submit(() -> dispatch(request, null), request::abort)
+                    .subscribe(
+                            ignored -> {},
+                            error -> {
+                                if (!closed) {
+                                    // Over the call limit, too slow or too large: answered.
+                                    refuse(request, answered, id, error);
+                                }
+                            });
         }
+    }
+
+    /** A frame read, or the first bytes of one over the size limit, the rest skipped. */
+    private record Frame(byte[] bytes, boolean oversized) {}
+
+    /**
+     * Reads the next frame. One over the size limit is read to its end, keeping its first bytes.
+     *
+     * @return The frame, or null at the end of the input.
+     */
+    private Frame readFrame() throws IOException {
+        var frame = new ByteArrayOutputStream(Math.min(maxMessageBytes, 8192));
+        int kept = Math.min(maxMessageBytes, OVERSIZED_PREFIX);
+        byte[] single = new byte[1];
+        long size = 0;
+        while (stream.read(single, 0, 1) != -1) {
+            if (single[0] == NEWLINE) {
+                if (size <= maxMessageBytes) {
+                    return new Frame(frame.toByteArray(), false);
+                }
+                return new Frame(Arrays.copyOf(frame.toByteArray(), kept), true);
+            }
+            size++;
+            if (size <= maxMessageBytes) {
+                frame.write(single[0]);
+            }
+        }
+        if (size != 0) {
+            throw new IOException("Truncated MCP STDIO frame");
+        }
+        return null;
+    }
+
+    /** Answers a message over the size limit, under its id when its first bytes give it. */
+    private void refuseOversized(byte[] prefix) {
+        getLogger().log(Level.FINE, "MCP STDIO message over {0} bytes skipped", maxMessageBytes);
+        try {
+            emit(
+                    null,
+                    McpMessages.encode(
+                            mapper,
+                            McpMessages.error(
+                                    idOf(prefix),
+                                    -32600,
+                                    "MCP message exceeds " + maxMessageBytes + " bytes"),
+                            maxMessageBytes));
+        } catch (IOException | RuntimeException e) {
+            fail(e);
+        }
+    }
+
+    /** The id of the JSON-RPC object a message starts with, if it comes before its cut. */
+    private static Object idOf(byte[] prefix) {
+        try (JsonParser parser = JSON.createParser(ObjectReadContext.empty(), prefix)) {
+            if (parser.nextToken() != JsonToken.START_OBJECT) {
+                return null;
+            }
+            while (parser.nextToken() == JsonToken.PROPERTY_NAME) {
+                String name = parser.currentName();
+                JsonToken value = parser.nextToken();
+                if ("id".equals(name)) {
+                    return switch (value) {
+                        case VALUE_STRING -> parser.getString();
+                        case VALUE_NUMBER_INT, VALUE_NUMBER_FLOAT -> parser.getNumberValue();
+                        default -> null;
+                    };
+                }
+                parser.skipChildren();
+            }
+        } catch (JacksonException e) {
+            // Cut short before its id, or not JSON.
+        }
+        return null;
     }
 
     /** Whether a message is a {@code notifications/cancelled} notification. */
@@ -241,19 +358,72 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /**
-     * How many 2026-07-28 requests may be pending at once, writing or waiting to write: the open
-     * listen streams the adapter allows, and as many other requests as the default call limit.
+     * The limits of the connector. The 2026-07-28 requests pending at once, writing or waiting to
+     * write, are as many as the open listen streams allowed and the call limit.
      */
-    private int pendingLimit() {
+    private record Limits(
+            int maxMessageBytes,
+            int maxConcurrentCalls,
+            Duration requestTimeout,
+            int maxListenStreams) {}
+
+    /**
+     * The limits of the adapter served, or else of the connector's parameters.
+     *
+     * @throws IllegalStateException If the parameters are given while an adapter is served.
+     * @throws IllegalArgumentException If a parameter isn't a valid limit.
+     */
+    private Limits limits() {
         Restlet next = getHelped() == null ? null : getHelped().getNext();
         while (next instanceof Filter filter) {
             next = filter.getNext();
         }
-        int listens =
-                next instanceof McpServerAdapter adapter
-                        ? adapter.getMaxListenStreams()
-                        : McpProtocol.DEFAULT_MAX_LISTEN_STREAMS;
-        return listens + McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
+        Series<Parameter> parameters =
+                getHelped() == null ? new Series<>(Parameter.class) : getHelpedParameters();
+        if (next instanceof McpServerAdapter adapter) {
+            for (String name : LIMIT_PARAMETERS) {
+                if (parameters.getFirst(name) != null) {
+                    throw new IllegalStateException(
+                            "The MCP STDIO "
+                                    + name
+                                    + " is the McpServerAdapter's, not a connector parameter");
+                }
+            }
+            return new Limits(
+                    adapter.getMaxMessageBytes(),
+                    adapter.getMaxConcurrentCalls(),
+                    adapter.getRequestTimeout(),
+                    adapter.getMaxListenStreams());
+        }
+        int bytes = limit(parameters, "maxMessageBytes", maxMessageBytes);
+        if (bytes == Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("maxMessageBytes must be below Integer.MAX_VALUE");
+        }
+        return new Limits(
+                bytes,
+                limit(parameters, "maxConcurrentCalls", McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS),
+                Duration.ofMillis(limit(parameters, "requestTimeout", 30_000)),
+                limit(parameters, "maxListenStreams", McpProtocol.DEFAULT_MAX_LISTEN_STREAMS));
+    }
+
+    /** A positive int parameter, or its default. */
+    private static int limit(Series<Parameter> parameters, String name, int defaultValue) {
+        String value = parameters.getFirstValue(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        int parsed;
+        try {
+            parsed = Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "The MCP STDIO " + name + " isn't a number: " + value, e);
+        }
+        if (parsed <= 0) {
+            throw new IllegalArgumentException(
+                    "The MCP STDIO " + name + " must be positive: " + value);
+        }
+        return parsed;
     }
 
     /** The JSON object of a frame, or an empty map when it isn't one; the adapter rejects it. */
@@ -327,7 +497,8 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /**
-     * Answers a 2026-07-28 request refused, cut short or failed, unless it was cancelled.
+     * Answers a request refused, cut short or failed, unless it was cancelled; nothing of it is
+     * written after.
      *
      * @param request The request.
      * @param answered Whether it is a request, which gets an answer, rather than a notification.
@@ -336,16 +507,22 @@ public final class StdioServerHelper extends ServerHelper {
      */
     private void refuse(Request request, boolean answered, Object id, Throwable cause) {
         getLogger().log(Level.FINE, "MCP STDIO request refused or failed", cause);
-        if (!answered) {
-            return;
-        }
         try {
-            emit(
-                    request,
+            byte[] frame =
                     McpMessages.encode(
                             mapper,
                             McpMessages.error(id, -32603, "MCP exchange unavailable"),
-                            McpProtocol.DEFAULT_MAX_MESSAGE_BYTES));
+                            maxMessageBytes);
+            synchronized (output) {
+                if (isCancelled(request)) {
+                    return;
+                }
+                // A worker cut short may still be answering: its answer is dropped.
+                request.getAttributes().put(CANCELLED_ATTRIBUTE, Boolean.TRUE);
+                if (answered) {
+                    McpMessages.writeFrame(stream, frame);
+                }
+            }
         } catch (IOException | RuntimeException e) {
             fail(e);
         }
@@ -397,12 +574,7 @@ public final class StdioServerHelper extends ServerHelper {
                     }
                 } else if (MediaType.APPLICATION_JSON.isCompatible(entity.getMediaType())) {
                     try (var input = entity.getStream()) {
-                        emit(
-                                request,
-                                withId(
-                                        McpMessages.read(
-                                                input, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES),
-                                        id));
+                        emit(request, withId(McpMessages.read(input, maxMessageBytes), id));
                     }
                 } else {
                     throw new IOException("MCP STDIO handler returned a non-JSON entity");
@@ -433,7 +605,7 @@ public final class StdioServerHelper extends ServerHelper {
                         id,
                         error.get("code") instanceof Number code ? code.intValue() : -32603,
                         String.valueOf(error.get("message")));
-        return McpMessages.encode(mapper, answered, McpProtocol.DEFAULT_MAX_MESSAGE_BYTES);
+        return McpMessages.encode(mapper, answered, maxMessageBytes);
     }
 
     /**
@@ -457,7 +629,7 @@ public final class StdioServerHelper extends ServerHelper {
         public void write(int b) throws IOException {
             if (b == '\n') {
                 endLine();
-            } else if (line.size() > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES + EVENT_LINE_OVERHEAD) {
+            } else if (line.size() > maxMessageBytes + EVENT_LINE_OVERHEAD) {
                 throw new IOException("MCP streamed message exceeds the message size");
             } else {
                 line.write(b);
@@ -501,7 +673,7 @@ public final class StdioServerHelper extends ServerHelper {
         private void addData(String value) throws IOException {
             byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             int separator = hasData ? 1 : 0;
-            if (data.size() + separator + bytes.length > McpProtocol.DEFAULT_MAX_MESSAGE_BYTES) {
+            if (data.size() + separator + bytes.length > maxMessageBytes) {
                 throw new IOException("MCP streamed message exceeds the message size");
             }
             if (hasData) {
