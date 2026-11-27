@@ -45,6 +45,9 @@ Changes log
           `prompts/list`, which were never cacheable before; `tools/list` stays private while tool
           filters apply. A `resources/read` result keeps the hint its handler gives it, and
           2025-11-25 clients still get no hints.
+        - `McpJsonResult.withCacheHint(McpCacheHint)` gives the `complete` result of an MCP
+          extension method, such as `skills/list`, its `ttlMs` and `cacheScope` (#1720). As for
+          the other hinted results, the answer to a retry after `input_required` is not reusable.
         - MCP prompts and resource templates can complete their arguments for
           `completion/complete` (#1705): a prompt's completion handler
           (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and

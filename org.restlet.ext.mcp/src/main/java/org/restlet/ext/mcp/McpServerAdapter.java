@@ -442,8 +442,9 @@ public final class McpServerAdapter extends Restlet {
      * #getInterceptors() interceptor} changes the result per request. A {@code resources/read}
      * result carries the hint its handler builds it with, through {@link
      * McpSchema.ReadResourceResult.Builder#ttlMs(long)} and {@link
-     * McpSchema.ReadResourceResult.Builder#cacheScope(McpSchema.CacheScope)}, none by default. A
-     * result answering a retry after {@code input_required} is never reused. Experimental.
+     * McpSchema.ReadResourceResult.Builder#cacheScope(McpSchema.CacheScope)}, none by default, and
+     * the result of an {@link McpMethod} the hint of {@link McpJsonResult#withCacheHint}. These
+     * hinted results answering a retry after {@code input_required} are never reused. Experimental.
      *
      * @param method The method.
      * @param value The hint, or null for none.

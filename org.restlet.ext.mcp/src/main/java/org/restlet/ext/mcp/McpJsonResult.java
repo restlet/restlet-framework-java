@@ -19,9 +19,11 @@ import java.util.Objects;
  * A result made of JSON fields, for an {@link McpMethod} whose result has no SDK type, such as the
  * {@code skills/list} result of the Skills extension. Its fields are written after {@code
  * resultType}, as they are and in their order; the adapter adds its {@code _meta} server info as
- * for any result. Experimental.
+ * for any result. A {@code complete} result takes a cache hint through {@link
+ * #withCacheHint(McpCacheHint)}; fields named {@code ttlMs} or {@code cacheScope} are written as
+ * they are but aren't a hint, as for the task a {@code tasks/get} result describes. Experimental.
  */
-public final class McpJsonResult implements McpSchema.Result {
+public sealed class McpJsonResult implements McpSchema.Result permits McpJsonResult.Cached {
     private final Map<String, Object> fields;
 
     private McpJsonResult(Map<String, Object> fields) {
@@ -68,6 +70,32 @@ public final class McpJsonResult implements McpSchema.Result {
     }
 
     /**
+     * This {@code complete} result with a cache hint: its {@code ttlMs} and {@code cacheScope}
+     * follow its fields. As for the results of {@code server/discover} and the listings, a client
+     * doesn't reuse the answer to a retry after {@code input_required}: there the hint becomes
+     * {@link McpCacheHint#NONE}. 2025-11-25 clients get the result without it.
+     *
+     * @param hint The hint.
+     * @return The result with the hint.
+     * @throws IllegalStateException If this result isn't {@code complete}, or already has a hint or
+     *     a {@code ttlMs} or {@code cacheScope} field.
+     */
+    public McpJsonResult withCacheHint(McpCacheHint hint) {
+        Objects.requireNonNull(hint, "hint");
+        if (!McpSchema.ResultType.COMPLETE.equals(resultType())) {
+            // A task's ttlMs is how long it is kept, which a retry must not reset.
+            throw new IllegalStateException("Only a complete result takes a cache hint");
+        }
+        if (fields.containsKey(TTL_MS) || fields.containsKey(CACHE_SCOPE)) {
+            throw new IllegalStateException("This result already has ttlMs or cacheScope");
+        }
+        Map<String, Object> copy = new LinkedHashMap<>(fields);
+        copy.put(TTL_MS, hint.ttlMs());
+        copy.put(CACHE_SCOPE, hint.scope() == McpSchema.CacheScope.PUBLIC ? "public" : "private");
+        return new Cached(Collections.unmodifiableMap(copy), hint);
+    }
+
+    /**
      * The fields written for this result, {@code resultType} included.
      *
      * @return The fields, unmodifiable.
@@ -101,5 +129,37 @@ public final class McpJsonResult implements McpSchema.Result {
     @Override
     public String toString() {
         return "McpJsonResult" + fields;
+    }
+
+    private static final String TTL_MS = "ttlMs";
+
+    private static final String CACHE_SCOPE = "cacheScope";
+
+    /**
+     * A result with a cache hint. Being a {@link McpSchema.CacheableResult}, the SDK answers a
+     * retry after {@code input_required} with it as not reusable.
+     */
+    private static final class Cached extends McpJsonResult implements McpSchema.CacheableResult {
+        private final McpCacheHint hint;
+
+        private Cached(Map<String, Object> fields, McpCacheHint hint) {
+            super(fields);
+            this.hint = hint;
+        }
+
+        @Override
+        public Long ttlMs() {
+            return hint.ttlMs();
+        }
+
+        @Override
+        public McpSchema.CacheScope cacheScope() {
+            return hint.scope();
+        }
+
+        @Override
+        public McpJsonResult withCacheHint(McpCacheHint hint) {
+            throw new IllegalStateException("This result already has a cache hint");
+        }
     }
 }
