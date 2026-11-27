@@ -10,6 +10,7 @@ package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -132,6 +133,78 @@ class McpCacheHintsTestCase {
         assertHint(0, "private", answered, "retry");
     }
 
+    /**
+     * An extension method's result carries the hint it was built with, but the answer to a retry
+     * after input_required is never reused. Raw ttlMs fields, as a task's, are left as they are.
+     */
+    @Test
+    void methodsCarryTheirResultsHint() throws Exception {
+        McpServerAdapter adapter = adapter();
+        adapter.getMethods()
+                .add(
+                        McpMethod.of(
+                                "com.example/hinted",
+                                (ctx, params) ->
+                                        Mono.just(
+                                                McpAsyncResponse.<McpSchema.Result>result(
+                                                        hintedJson()))));
+        adapter.getMethods().add(askingMethod("com.example/asking", hintedJson()));
+        adapter.getMethods()
+                .add(
+                        askingMethod(
+                                "com.example/task",
+                                McpJsonResult.complete(Map.of("taskId", "t-1", "ttlMs", 60_000))));
+        adapter.start();
+
+        Map<String, Object> hinted = result(adapter, "com.example/hinted", Map.of());
+        assertHint(9000, "public", hinted, "hinted");
+        assertEquals(List.of(), hinted.get("items"), hinted.toString());
+
+        Map<String, Object> meta = meta();
+        meta.put(MetaKeys.CLIENT_CAPABILITIES, Map.of("elicitation", Map.of("form", Map.of())));
+        Map<String, Object> answered = answer(adapter, "com.example/asking", meta);
+        assertEquals(List.of(), answered.get("items"), answered.toString());
+        assertHint(0, "private", answered, "retry");
+
+        Map<String, Object> task = answer(adapter, "com.example/task", meta);
+        assertEquals(60_000, ((Number) task.get("ttlMs")).intValue(), task.toString());
+        assertFalse(task.containsKey("cacheScope"), task.toString());
+    }
+
+    /** Only a complete result without ttlMs or cacheScope fields takes a hint, once. */
+    @Test
+    void jsonResultHintsAreChecked() {
+        McpCacheHint hint = McpCacheHint.privateFor(Duration.ofSeconds(2));
+        McpJsonResult plain = McpJsonResult.complete(Map.of("a", 1));
+        assertFalse(plain instanceof McpSchema.CacheableResult);
+
+        McpJsonResult hinted = plain.withCacheHint(hint);
+        McpSchema.CacheableResult cacheable =
+                assertInstanceOf(McpSchema.CacheableResult.class, hinted);
+        assertEquals(2000L, cacheable.ttlMs());
+        assertEquals(CacheScope.PRIVATE, cacheable.cacheScope());
+        assertEquals(List.of("resultType", "a", "ttlMs", "cacheScope"), keys(hinted));
+        assertEquals("private", hinted.fields().get("cacheScope"));
+        assertEquals(
+                "public",
+                plain.withCacheHint(McpCacheHint.publicFor(Duration.ZERO))
+                        .fields()
+                        .get("cacheScope"));
+        assertEquals(hinted, plain.withCacheHint(hint));
+
+        assertThrows(IllegalStateException.class, () -> hinted.withCacheHint(hint));
+        assertThrows(NullPointerException.class, () -> plain.withCacheHint(null));
+        assertThrows(
+                IllegalStateException.class,
+                () -> McpJsonResult.of("task", Map.of("taskId", "t-1")).withCacheHint(hint));
+        assertThrows(
+                IllegalStateException.class,
+                () -> McpJsonResult.complete(Map.of("ttlMs", 5)).withCacheHint(hint));
+        assertThrows(
+                IllegalStateException.class,
+                () -> McpJsonResult.complete(Map.of("cacheScope", "public")).withCacheHint(hint));
+    }
+
     /** 2025-11-25 clients get their results without hints. */
     @Test
     void legacyClientsGetNoHints() throws Exception {
@@ -247,6 +320,57 @@ class McpCacheHintsTestCase {
                                             .build();
                     return Mono.just(McpAsyncResponse.result(outcome));
                 });
+    }
+
+    /** An empty listing publicly cacheable for 9 seconds. */
+    private static McpJsonResult hintedJson() {
+        return McpJsonResult.complete(Map.of("items", List.of()))
+                .withCacheHint(McpCacheHint.publicFor(Duration.ofSeconds(9)));
+    }
+
+    /** An input-required method asking a confirmation first, then answering with a result. */
+    private static McpMethod askingMethod(String name, McpJsonResult answer) {
+        return McpMethod.of(
+                        name,
+                        (ctx, params) ->
+                                Mono.just(
+                                        params.get("requestState") == null
+                                                ? McpAsyncResponse.<McpSchema.Result>result(
+                                                        McpSchema.InputRequiredResult.builder()
+                                                                .elicit(
+                                                                        "confirm",
+                                                                        McpSchema.ElicitFormRequest
+                                                                                .builder(
+                                                                                        "Proceed?",
+                                                                                        Map.of(
+                                                                                                "type",
+                                                                                                "object",
+                                                                                                "properties",
+                                                                                                Map
+                                                                                                        .of()))
+                                                                                .build())
+                                                                .requestState("s1")
+                                                                .build())
+                                                : McpAsyncResponse.<McpSchema.Result>result(
+                                                        answer)))
+                .withInputRequired(true);
+    }
+
+    /** Calls an input-required method, then retries it with the confirmation. */
+    private static Map<String, Object> answer(
+            McpServerAdapter adapter, String method, Map<String, Object> meta) throws Exception {
+        Map<String, Object> asked = result(adapter, method, Map.of(), meta);
+        assertEquals("input_required", asked.get("resultType"), asked.toString());
+        Map<String, Object> retry = new LinkedHashMap<>();
+        retry.put("requestState", asked.get("requestState"));
+        retry.put(
+                "inputResponses",
+                Map.of("confirm", Map.of("action", "accept", "content", Map.of())));
+        return result(adapter, method, retry, meta);
+    }
+
+    private static List<String> keys(McpJsonResult result) {
+        return List.copyOf(result.fields().keySet());
     }
 
     private static List<McpSchema.ResourceContents> contents(String uri) {
