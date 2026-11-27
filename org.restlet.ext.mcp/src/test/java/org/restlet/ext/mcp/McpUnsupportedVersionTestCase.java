@@ -9,11 +9,15 @@
 package org.restlet.ext.mcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.modelcontextprotocol.modern.JsonRpc;
+import io.modelcontextprotocol.modern.McpSchema;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -117,6 +121,69 @@ class McpUnsupportedVersionTestCase {
         Response duplicated = adapter.handle(twice);
         assertEquals(400, duplicated.getStatus().getCode());
         assertNull(duplicated.getEntity());
+    }
+
+    /**
+     * The modern server's own -32022 lists the legacy version too: a legacy initialize sent with
+     * the 2026-07-28 header is told that 2025-11-25 is served, without the header.
+     */
+    @Test
+    void aHeaderedInitializeIsToldTheSupportedOnes() throws Exception {
+        Request request =
+                request(
+                        "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"initialize\",\"params\":"
+                                + "{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},"
+                                + "\"clientInfo\":{\"name\":\"c\",\"version\":\"1\"}}}",
+                        McpProtocol.MODERN_VERSION);
+        request.getHeaders().set("Mcp-Method", "initialize");
+        assertUnsupported(adapter.handle(request), 4, McpProtocol.VERSION);
+    }
+
+    /** Without headers, an unsupported _meta version gets the same list, through dispatch. */
+    @Test
+    void anUnsupportedMetaVersionIsToldTheSupportedOnes() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(
+                "_meta",
+                Map.of(
+                        McpSchema.MetaKeys.PROTOCOL_VERSION,
+                        "2027-03-15",
+                        McpSchema.MetaKeys.CLIENT_CAPABILITIES,
+                        Map.of()));
+        JsonRpc.JSONRPCResponse answer =
+                adapter.dispatch(
+                                new JsonRpc.JSONRPCRequest("2.0", "tools/list", 9, params),
+                                new McpRequestContext(null))
+                        .orElseThrow();
+        assertEquals(McpProtocol.UNSUPPORTED_PROTOCOL_VERSION, answer.error().code());
+        McpSchema.UnsupportedProtocolVersionData data =
+                assertInstanceOf(
+                        McpSchema.UnsupportedProtocolVersionData.class, answer.error().data());
+        assertEquals(List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION), data.supported());
+        assertEquals("2027-03-15", data.requested());
+    }
+
+    /** A long version is echoed cut, so that the answer stays within the message limit. */
+    @Test
+    void aLongVersionIsEchoedCut() throws Exception {
+        String version = "2027-" + "x".repeat(900);
+        assertUnsupported(send(String.format(LIST, 6), version), 6, version.substring(0, 64));
+    }
+
+    /** The Origin and Accept checks still come before the answer. */
+    @Test
+    void originAndAcceptStillApply() throws Exception {
+        Request foreign = request(String.format(LIST, 1), "2027-03-15");
+        foreign.getHeaders().set("Origin", "https://evil.example");
+        Response forbidden = adapter.handle(foreign);
+        assertEquals(403, forbidden.getStatus().getCode());
+        assertNull(forbidden.getEntity());
+
+        Request jsonOnly = request(String.format(LIST, 1), "2027-03-15");
+        jsonOnly.getHeaders().set("Accept", "application/json");
+        Response notAcceptable = adapter.handle(jsonOnly);
+        assertEquals(406, notAcceptable.getStatus().getCode());
+        assertNull(notAcceptable.getEntity());
     }
 
     /** Requests without the header, or with 2025-11-25, still reach the legacy edge. */

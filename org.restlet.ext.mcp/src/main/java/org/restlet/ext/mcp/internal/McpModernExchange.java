@@ -386,7 +386,8 @@ public final class McpModernExchange {
                 return result.response();
             }
             if (reply instanceof McpTransportResponse.Error failure) {
-                return failure.response();
+                // An unsupported version lists the legacy edge's too.
+                return McpVersions.served(failure.response());
             }
             if (!(reply instanceof McpTransportResponse.Streaming streaming)) {
                 throw new IOException("MCP request got no response");
