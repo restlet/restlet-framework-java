@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * An {@code MCP-Protocol-Version} header the adapter doesn't serve is answered with {@code
@@ -96,6 +101,16 @@ class McpUnsupportedVersionTestCase {
                         + "\"}}";
         Response tooLarge = send(padded, "2027-03-15");
         assertEquals(413, tooLarge.getStatus().getCode());
+        // Of unknown size, as when chunked: refused while read, within the call.
+        Request chunked = request(padded, "2027-03-15");
+        chunked.setEntity(
+                new InputRepresentation(
+                        new ByteArrayInputStream(padded.getBytes(StandardCharsets.UTF_8)),
+                        MediaType.APPLICATION_JSON));
+        assertEquals(Representation.UNKNOWN_SIZE, chunked.getEntity().getSize());
+        Response unknownSize = adapter.handle(chunked);
+        assertEquals(413, unknownSize.getStatus().getCode());
+        assertNull(unknownSize.getEntity());
 
         Request twice = request(String.format(LIST, 1), "2027-03-15");
         twice.getHeaders().add(McpProtocol.VERSION_HEADER, "2027-04-01");
