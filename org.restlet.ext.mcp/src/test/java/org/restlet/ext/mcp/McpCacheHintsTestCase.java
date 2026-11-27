@@ -11,6 +11,7 @@ package org.restlet.ext.mcp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +25,7 @@ import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -135,7 +137,7 @@ class McpCacheHintsTestCase {
 
     /**
      * An extension method's result carries the hint it was built with, but the answer to a retry
-     * after input_required is never reused. Raw ttlMs fields, as a task's, are left as they are.
+     * after input_required is never reused. A task's ttlMs, how long it is kept, is left as it is.
      */
     @Test
     void methodsCarryTheirResultsHint() throws Exception {
@@ -153,7 +155,7 @@ class McpCacheHintsTestCase {
                 .add(
                         askingMethod(
                                 "com.example/task",
-                                McpJsonResult.complete(Map.of("taskId", "t-1", "ttlMs", 60_000))));
+                                McpTask.working("t-1", Instant.EPOCH, 60_000L, null).toResult()));
         adapter.start();
 
         Map<String, Object> hinted = result(adapter, "com.example/hinted", Map.of());
@@ -171,7 +173,10 @@ class McpCacheHintsTestCase {
         assertFalse(task.containsKey("cacheScope"), task.toString());
     }
 
-    /** Only a complete result without ttlMs or cacheScope fields takes a hint, once. */
+    /**
+     * A complete result takes its hint only through withCacheHint, once; a task's result takes
+     * none.
+     */
     @Test
     void jsonResultHintsAreChecked() {
         McpCacheHint hint = McpCacheHint.privateFor(Duration.ofSeconds(2));
@@ -191,18 +196,26 @@ class McpCacheHintsTestCase {
                         .fields()
                         .get("cacheScope"));
         assertEquals(hinted, plain.withCacheHint(hint));
+        assertEquals(hinted.hashCode(), plain.withCacheHint(hint).hashCode());
+        // The same fields without the hint's retry rule make another result.
+        assertNotEquals(hinted, McpJsonResult.unchecked("complete", hinted.fields()));
 
         assertThrows(IllegalStateException.class, () -> hinted.withCacheHint(hint));
         assertThrows(NullPointerException.class, () -> plain.withCacheHint(null));
         assertThrows(
                 IllegalStateException.class,
                 () -> McpJsonResult.of("task", Map.of("taskId", "t-1")).withCacheHint(hint));
+        McpJsonResult task = McpTask.working("t-1", Instant.EPOCH, 5L, null).toResult();
+        assertEquals(5L, task.fields().get("ttlMs"));
+        assertThrows(IllegalStateException.class, () -> task.withCacheHint(hint));
+
+        // Raw, a complete result's hint would survive a retry: it is refused.
         assertThrows(
-                IllegalStateException.class,
-                () -> McpJsonResult.complete(Map.of("ttlMs", 5)).withCacheHint(hint));
+                IllegalArgumentException.class, () -> McpJsonResult.complete(Map.of("ttlMs", 5)));
         assertThrows(
-                IllegalStateException.class,
-                () -> McpJsonResult.complete(Map.of("cacheScope", "public")).withCacheHint(hint));
+                IllegalArgumentException.class,
+                () -> McpJsonResult.of("complete", Map.of("cacheScope", "public")));
+        assertEquals(5, McpJsonResult.of("task", Map.of("ttlMs", 5)).fields().get("ttlMs"));
     }
 
     /** 2025-11-25 clients get their results without hints. */
