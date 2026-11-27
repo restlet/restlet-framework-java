@@ -39,6 +39,12 @@ Changes log
           receives. A stream too slow to write its changes keeps them pending instead of
           queueing them without bound: a later one replaces a pending one of the same coalescing
           key (such as a task's state) in place, and past 1024 pending the oldest is dropped.
+        - MCP results can tell 2026-07-28 clients how long to reuse them (#1703).
+          `McpServerAdapter.setCacheHint(method, McpCacheHint)` sets the `ttlMs` and `cacheScope`
+          of `server/discover`, `tools/list`, `resources/list`, `resources/templates/list` and
+          `prompts/list`, which were never cacheable before; `tools/list` stays private while tool
+          filters apply. A `resources/read` result keeps the hint its handler gives it, and
+          2025-11-25 clients still get no hints.
         - MCP prompts and resource templates can complete their arguments for
           `completion/complete` (#1705): a prompt's completion handler
           (`McpAsyncPrompt.withCompletionHandler`, kept by `McpBlocking.prompt`) and
