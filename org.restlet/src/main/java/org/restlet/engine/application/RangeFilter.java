@@ -14,6 +14,7 @@ import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_RANGE_COMPLETE
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
@@ -42,7 +43,9 @@ public class RangeFilter extends Filter {
         if (!getRangeService().isEnabled()) {
             return;
         }
-        if (!request.getMethod().isSafe() || !response.isEntityAvailable()) {
+        // RFC 9110 section 14.2: GET is the only method for which range handling is defined, the
+        // Range header of any other method (HEAD, OPTIONS...) must be ignored.
+        if (!Method.GET.equals(request.getMethod()) || !response.isEntityAvailable()) {
             return;
         }
         if (!response.getStatus().isSuccess()) {
