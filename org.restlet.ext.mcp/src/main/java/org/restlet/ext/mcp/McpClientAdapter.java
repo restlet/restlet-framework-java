@@ -816,23 +816,24 @@ public final class McpClientAdapter implements AutoCloseable {
 
     public synchronized void stop() {
         RuntimeException failure = null;
-        // The adapter's own stream is stopped first: a write stuck on a server that stopped
-        // reading then ends at once, instead of holding the client's close until it times out.
-        // Only one client is attached to it, and the stream ends with the adapter anyway.
-        try {
-            closeOwnChannel();
-        } catch (RuntimeException e) {
-            failure = e;
-        }
+        // The modern client first: closing it frees the stream's reader, which a subscriber slow
+        // to take its messages may hold.
         if (modern != null) {
             started = false;
             try {
                 modern.close();
             } catch (RuntimeException e) {
-                failure = suppress(failure, e);
+                failure = e;
             } finally {
                 modern = null;
             }
+        }
+        // Then the adapter's own stream: a write stuck on a server that stopped reading ends at
+        // once, instead of holding the legacy client's close until it times out.
+        try {
+            closeOwnChannel();
+        } catch (RuntimeException e) {
+            failure = suppress(failure, e);
         }
         if (legacy != null) {
             started = false;

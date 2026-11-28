@@ -453,6 +453,107 @@ class McpStdioAutoTestCase {
         assertTrue(call.join(Duration.ofSeconds(10)), "the stuck call did not end");
     }
 
+    /**
+     * A modern subscriber slow to take its messages doesn't hold the stop: the client is closed
+     * before the stream, which frees the reader waiting for that subscriber.
+     */
+    @Test
+    void aSlowModernSubscriberDoesNotHoldTheStop() throws Exception {
+        java.util.concurrent.CountDownLatch first = new java.util.concurrent.CountDownLatch(1);
+        java.util.concurrent.CountDownLatch released = new java.util.concurrent.CountDownLatch(1);
+        FakeServer fake =
+                new FakeServer(
+                        (message, server) -> {
+                            Object id = message.get("id");
+                            switch (String.valueOf(message.get("method"))) {
+                                case "server/discover" ->
+                                        server.send(
+                                                Map.of(
+                                                        "jsonrpc",
+                                                        "2.0",
+                                                        "id",
+                                                        id,
+                                                        "result",
+                                                        Map.of(
+                                                                "supportedVersions",
+                                                                List.of(McpProtocol.MODERN_VERSION),
+                                                                "capabilities",
+                                                                Map.of("tools", Map.of()),
+                                                                "serverInfo",
+                                                                Map.of(
+                                                                        "name", "modern", "version",
+                                                                        "1"))));
+                                case "tools/list" ->
+                                        server.send(
+                                                Map.of(
+                                                        "jsonrpc",
+                                                        "2.0",
+                                                        "id",
+                                                        id,
+                                                        "result",
+                                                        Map.of(
+                                                                "tools",
+                                                                List.of(
+                                                                        Map.of(
+                                                                                "name",
+                                                                                "slow",
+                                                                                "inputSchema",
+                                                                                Map.of(
+                                                                                        "type",
+                                                                                        "object"))))));
+                                case "tools/call" -> {
+                                    Object token =
+                                            ((Map<?, ?>)
+                                                            ((Map<?, ?>) message.get("params"))
+                                                                    .get("_meta"))
+                                                    .get("progressToken");
+                                    // More than the channel queues (64): its reader then waits.
+                                    for (int i = 0; i < 256; i++) {
+                                        server.send(
+                                                Map.of(
+                                                        "jsonrpc",
+                                                        "2.0",
+                                                        "method",
+                                                        "notifications/progress",
+                                                        "params",
+                                                        Map.of(
+                                                                "progressToken",
+                                                                token,
+                                                                "progress",
+                                                                i)));
+                                    }
+                                }
+                                default -> {}
+                            }
+                        });
+        cleanup.add(released::countDown);
+        McpClientAdapter client =
+                client(fake.clientStream(), McpProtocol.MODERN_VERSION, Duration.ofSeconds(30));
+        client.start();
+        client.getModernClient()
+                .tool("slow")
+                .arguments(Map.of())
+                .progress(
+                        progress -> {
+                            first.countDown();
+                            try {
+                                released.await(); // Takes nothing more.
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                            return reactor.core.publisher.Mono.empty();
+                        })
+                .call()
+                .subscribe(null, error -> {});
+        assertTrue(first.await(10, TimeUnit.SECONDS), "no progress arrived");
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        // Well within the request timeout, which a reader left waiting would take.
+        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
+                Duration.ofSeconds(10), client::stop);
+        assertFalse(client.isStarted());
+    }
+
     private static McpStdioChannel.Sink sink(
             BlockingQueue<String> frames, BlockingQueue<IOException> ends) {
         return new McpStdioChannel.Sink() {
