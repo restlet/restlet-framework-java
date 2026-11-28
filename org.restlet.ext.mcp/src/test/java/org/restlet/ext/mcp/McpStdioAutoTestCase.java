@@ -402,8 +402,9 @@ class McpStdioAutoTestCase {
     }
 
     /**
-     * A server that stops reading its input doesn't keep the client from stopping: a write stuck on
-     * the full pipe doesn't hold the detach, and stopping the stream ends it.
+     * A server that stops reading its input doesn't keep the client from stopping, nor makes it
+     * fail: a write stuck on the full pipe doesn't hold the detach, and stopping the stream first
+     * ends it.
      */
     @Test
     void aServerThatStopsReadingDoesNotHoldTheStop() throws Exception {
@@ -445,15 +446,9 @@ class McpStdioAutoTestCase {
                                 });
         TimeUnit.MILLISECONDS.sleep(500);
 
+        // The stream stops first, which ends the write: the client then closes without error.
         org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
-                Duration.ofSeconds(20),
-                () -> {
-                    try {
-                        client.stop();
-                    } catch (RuntimeException _) {
-                        // A client may fail to close in time; the stream is stopped anyway.
-                    }
-                });
+                Duration.ofSeconds(20), client::stop);
         assertFalse(client.isStarted());
         assertTrue(call.join(Duration.ofSeconds(10)), "the stuck call did not end");
     }

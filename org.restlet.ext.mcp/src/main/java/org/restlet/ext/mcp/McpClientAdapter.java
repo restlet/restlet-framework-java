@@ -815,28 +815,47 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     public synchronized void stop() {
+        RuntimeException failure = null;
+        // The adapter's own stream is stopped first: a write stuck on a server that stopped
+        // reading then ends at once, instead of holding the client's close until it times out.
+        // Only one client is attached to it, and the stream ends with the adapter anyway.
         try {
-            if (modern != null) {
-                started = false;
-                try {
-                    modern.close();
-                } finally {
-                    modern = null;
-                }
-            }
-            if (legacy != null) {
-                started = false;
-                try {
-                    legacy.close();
-                } finally {
-                    legacy = null;
-                }
-            }
-        } finally {
-            // Even when a client fails to close, as when a write is stuck: stopping the stream
-            // ends that write.
             closeOwnChannel();
+        } catch (RuntimeException e) {
+            failure = e;
         }
+        if (modern != null) {
+            started = false;
+            try {
+                modern.close();
+            } catch (RuntimeException e) {
+                failure = suppress(failure, e);
+            } finally {
+                modern = null;
+            }
+        }
+        if (legacy != null) {
+            started = false;
+            try {
+                legacy.close();
+            } catch (RuntimeException e) {
+                failure = suppress(failure, e);
+            } finally {
+                legacy = null;
+            }
+        }
+        if (failure != null) {
+            throw failure;
+        }
+    }
+
+    /** The first failure, with a later one suppressed in it. */
+    private static RuntimeException suppress(RuntimeException first, RuntimeException later) {
+        if (first == null) {
+            return later;
+        }
+        first.addSuppressed(later);
+        return first;
     }
 
     @Override
