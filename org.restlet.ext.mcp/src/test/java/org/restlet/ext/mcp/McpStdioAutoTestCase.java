@@ -401,6 +401,63 @@ class McpStdioAutoTestCase {
         assertTrue(first.isEmpty());
     }
 
+    /**
+     * A server that stops reading its input doesn't keep the client from stopping: a write stuck on
+     * the full pipe doesn't hold the detach, and stopping the stream ends it.
+     */
+    @Test
+    void aServerThatStopsReadingDoesNotHoldTheStop() throws Exception {
+        java.util.concurrent.CountDownLatch stalled = new java.util.concurrent.CountDownLatch(1);
+        FakeServer fake =
+                new FakeServer(
+                        (message, server) -> {
+                            if ("server/discover".equals(message.get("method"))) {
+                                server.error(message.get("id"), -32601, "Method not found");
+                            } else if ("notifications/initialized".equals(message.get("method"))) {
+                                try {
+                                    stalled.await(); // Reads nothing more.
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            } else {
+                                server.legacy(message);
+                            }
+                        });
+        cleanup.add(stalled::countDown);
+        McpClientAdapter client = new McpClientAdapter(fake.clientStream());
+        client.setProtocolVersion(McpProtocol.AUTO);
+        client.setRequestTimeout(Duration.ofSeconds(2));
+        client.setMaxMessageBytes(32 * 1024 * 1024);
+        client.start();
+        assertEquals("2025-06-18", client.getNegotiatedVersion());
+
+        // Larger than the pipe holds: the write waits for a reader that never comes.
+        String large = "x".repeat(16 * 1024 * 1024);
+        Thread call =
+                Thread.ofVirtual()
+                        .start(
+                                () -> {
+                                    try {
+                                        client.callTool("echo", Map.of("text", large));
+                                    } catch (RuntimeException _) {
+                                        // Timed out, or ended by the stop.
+                                    }
+                                });
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
+                Duration.ofSeconds(20),
+                () -> {
+                    try {
+                        client.stop();
+                    } catch (RuntimeException _) {
+                        // A client may fail to close in time; the stream is stopped anyway.
+                    }
+                });
+        assertFalse(client.isStarted());
+        assertTrue(call.join(Duration.ofSeconds(10)), "the stuck call did not end");
+    }
+
     private static McpStdioChannel.Sink sink(
             BlockingQueue<String> frames, BlockingQueue<IOException> ends) {
         return new McpStdioChannel.Sink() {

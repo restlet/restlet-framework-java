@@ -164,23 +164,21 @@ public final class McpStdioChannel {
     }
 
     /**
-     * Detaches a sink, if attached: the responses to its unanswered requests will be dropped.
+     * Detaches a sink, if attached: the responses to its unanswered requests will be dropped. It
+     * doesn't wait for a write in progress, which a peer that stops reading may block until the
+     * stream stops: that request's id is already pending, so its response is dropped too.
      *
      * @param current The sink.
      */
-    public void detach(Sink current) {
-        synchronized (writing) {
-            synchronized (this) {
-                if (sink != current) {
-                    return;
-                }
-                sink = null;
-                for (Object id : pending) {
-                    remember(abandoned, id);
-                }
-                pending.clear();
-            }
+    public synchronized void detach(Sink current) {
+        if (sink != current) {
+            return;
         }
+        sink = null;
+        for (Object id : pending) {
+            remember(abandoned, id);
+        }
+        pending.clear();
     }
 
     /**

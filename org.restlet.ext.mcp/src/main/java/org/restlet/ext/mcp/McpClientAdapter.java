@@ -815,23 +815,28 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     public synchronized void stop() {
-        if (modern != null) {
-            started = false;
-            try {
-                modern.close();
-            } finally {
-                modern = null;
+        try {
+            if (modern != null) {
+                started = false;
+                try {
+                    modern.close();
+                } finally {
+                    modern = null;
+                }
             }
-        }
-        if (legacy != null) {
-            started = false;
-            try {
-                legacy.close();
-            } finally {
-                legacy = null;
+            if (legacy != null) {
+                started = false;
+                try {
+                    legacy.close();
+                } finally {
+                    legacy = null;
+                }
             }
+        } finally {
+            // Even when a client fails to close, as when a write is stuck: stopping the stream
+            // ends that write.
+            closeOwnChannel();
         }
-        closeOwnChannel();
     }
 
     @Override
