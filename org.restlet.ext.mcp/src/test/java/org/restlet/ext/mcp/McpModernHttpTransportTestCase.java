@@ -20,6 +20,8 @@ import io.modelcontextprotocol.modern.client.McpResponseLostException;
 import io.modelcontextprotocol.modern.client.transport.McpTransportRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -137,6 +139,75 @@ class McpModernHttpTransportTestCase {
         Flux<JsonRpc.JSONRPCMessage> refused = transport.exchange(request);
         assertThrows(McpHttpStatusException.class, () -> block(refused));
         assertTrue(transport.mirrorsToolParams());
+    }
+
+    /**
+     * A request refused before it is sent, over the size limit or by a closed transport, fails as
+     * it is: nothing was lost, and a client retrying lost exchanges would only be refused again.
+     */
+    @Test
+    void aRequestRefusedBeforeItIsSentIsNotLost() throws Exception {
+        start(64, 1);
+        McpTransportRequest big =
+                McpTransportRequest.builder(
+                                new JsonRpc.JSONRPCRequest(
+                                        "tools/list", 1L, Map.of("pad", "x".repeat(200))),
+                                McpProtocol.MODERN_VERSION)
+                        .build();
+        Flux<JsonRpc.JSONRPCMessage> oversized = transport.exchange(big);
+        Exception refused = assertThrows(Exception.class, () -> block(oversized));
+        assertFalse(refused instanceof McpResponseLostException, refused.toString());
+        assertInstanceOf(IOException.class, refused);
+
+        transport.close();
+        McpTransportRequest small =
+                McpTransportRequest.builder(
+                                new JsonRpc.JSONRPCRequest("tools/list", 2L, Map.of()),
+                                McpProtocol.MODERN_VERSION)
+                        .build();
+        Flux<JsonRpc.JSONRPCMessage> closed = transport.exchange(small);
+        Exception closedFailure = assertThrows(Exception.class, () -> block(closed));
+        assertFalse(closedFailure instanceof McpResponseLostException, closedFailure.toString());
+        assertInstanceOf(IOException.class, closedFailure);
+    }
+
+    /** A connection the server closes before the response's head is lost to the SDK's client. */
+    @Test
+    void aConnectionLostBeforeTheResponseIsLost() throws Exception {
+        start(1024, 1);
+        try (ServerSocket closing = new ServerSocket(0)) {
+            Thread acceptor =
+                    Thread.ofVirtual()
+                            .start(
+                                    () -> {
+                                        try (Socket socket = closing.accept()) {
+                                            socket.getInputStream().read(new byte[1024]);
+                                        } catch (IOException ignored) {
+                                            // The connection is closed either way.
+                                        }
+                                    });
+            McpModernHttpTransport dropped =
+                    new McpModernHttpTransport(
+                            connector,
+                            "http://localhost:" + closing.getLocalPort() + "/mcp",
+                            McpJsonDefaults.getMapper(),
+                            1024,
+                            1,
+                            WAIT,
+                            ignored -> {});
+            try {
+                McpTransportRequest request =
+                        McpTransportRequest.builder(
+                                        new JsonRpc.JSONRPCRequest("tools/list", 1L, Map.of()),
+                                        McpProtocol.MODERN_VERSION)
+                                .build();
+                Flux<JsonRpc.JSONRPCMessage> sent = dropped.exchange(request);
+                assertThrows(McpResponseLostException.class, () -> block(sent));
+            } finally {
+                dropped.close();
+                acceptor.join(WAIT);
+            }
+        }
     }
 
     @Test

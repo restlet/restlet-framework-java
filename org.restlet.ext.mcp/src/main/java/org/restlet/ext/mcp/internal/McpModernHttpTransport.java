@@ -28,7 +28,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -37,6 +39,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.ServerSentEvent;
+import org.restlet.data.Status;
 import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.EventStreamReader;
@@ -113,9 +116,11 @@ public final class McpModernHttpTransport implements McpClientTransport {
      * Sends a request of the SDK's client, within the call limit, or the listen limit for a {@code
      * subscriptions/listen} stream. The round timeout the client gives is the request's only time
      * limit: the client sends a round without one on purpose, such as after an accepted URL
-     * elicitation. An exchange that breaks before its response, such as a stream the server or a
-     * proxy closes, fails with {@link McpResponseLostException}, as the client expects; an HTTP
-     * failure keeps its status.
+     * elicitation. Once the request reached the connector, an exchange that breaks before its
+     * response, such as a stream the server or a proxy closes, or a connection lost before the
+     * response's head (statuses 1001 and 1002), fails with {@link McpResponseLostException}, as the
+     * client expects. A request refused before it is sent, such as over a limit, fails as it is,
+     * and so does an HTTP failure, which keeps its status.
      */
     @Override
     public Flux<JsonRpc.JSONRPCMessage> exchange(McpTransportRequest request) {
@@ -127,13 +132,21 @@ public final class McpModernHttpTransport implements McpClientTransport {
                         request.name(),
                         request.paramHeaders(),
                         listen,
-                        null);
-        return (listen ? sent : request.withRoundTimeout(sent))
-                .onErrorMap(
-                        error ->
-                                error instanceof IOException
-                                        && !(error instanceof McpHttpStatusException),
-                        error -> new McpResponseLostException(request.method(), error));
+                        null,
+                        (error, dispatched) ->
+                                dispatched && isLost(error)
+                                        ? new McpResponseLostException(request.method(), error)
+                                        : error);
+        return listen ? sent : request.withRoundTimeout(sent);
+    }
+
+    /** Whether a failure after dispatch broke the exchange, rather than answered it. */
+    private static boolean isLost(Throwable error) {
+        if (error instanceof McpHttpStatusException status) {
+            return status.getStatus() == Status.CONNECTOR_ERROR_COMMUNICATION.getCode()
+                    || status.getStatus() == Status.CONNECTOR_ERROR_INTERNAL.getCode();
+        }
+        return error instanceof IOException;
     }
 
     /** Sends the {@code Mcp-Param-*} headers of the tools' {@code x-mcp-header} arguments. */
@@ -160,20 +173,32 @@ public final class McpModernHttpTransport implements McpClientTransport {
             String name,
             Map<String, String> params,
             boolean listen) {
-        return send(rpc, version, name, params, listen, listen ? null : timeout);
+        return send(
+                rpc,
+                version,
+                name,
+                params,
+                listen,
+                listen ? null : timeout,
+                (error, sent) -> error);
     }
 
-    /** Sends a request within a time limit, or none. */
+    /**
+     * Sends a request within a time limit, or none, its failure mapped knowing whether the request
+     * reached the connector.
+     */
     private Flux<JsonRpc.JSONRPCMessage> send(
             JsonRpc.JSONRPCRequest rpc,
             String version,
             String name,
             Map<String, String> params,
             boolean listen,
-            Duration limit) {
+            Duration limit,
+            BiFunction<Throwable, Boolean, Throwable> failure) {
         return Flux.<JsonRpc.JSONRPCMessage>create(
                         sink -> {
                             AtomicReference<Request> active = new AtomicReference<>();
+                            AtomicBoolean dispatched = new AtomicBoolean();
                             Demand demand = new Demand();
                             sink.onRequest(demand::add);
                             Emitter emitter =
@@ -186,11 +211,23 @@ public final class McpModernHttpTransport implements McpClientTransport {
                                             .submit(
                                                     () ->
                                                             exchange(
-                                                                    rpc, version, name, params,
-                                                                    active, emitter),
+                                                                    rpc,
+                                                                    version,
+                                                                    name,
+                                                                    params,
+                                                                    active,
+                                                                    dispatched,
+                                                                    emitter),
                                                     () -> abort(active.get()),
                                                     limit)
-                                            .subscribe(null, sink::error, sink::complete);
+                                            .subscribe(
+                                                    null,
+                                                    error ->
+                                                            sink.error(
+                                                                    failure.apply(
+                                                                            error,
+                                                                            dispatched.get())),
+                                                    sink::complete);
                             sink.onCancel(running);
                         })
                 // What follows runs off the worker, which then frees its slot without waiting. The
@@ -207,6 +244,7 @@ public final class McpModernHttpTransport implements McpClientTransport {
             String name,
             Map<String, String> params,
             AtomicReference<Request> active,
+            AtomicBoolean dispatched,
             Emitter sink)
             throws IOException {
         if (closed) {
@@ -221,6 +259,7 @@ public final class McpModernHttpTransport implements McpClientTransport {
                 request.abort();
                 throw new IOException("MCP exchange cancelled");
             }
+            dispatched.set(true);
             response = client.handle(request);
             Representation entity = response.getEntity();
             MediaType type = entity == null ? null : entity.getMediaType();
