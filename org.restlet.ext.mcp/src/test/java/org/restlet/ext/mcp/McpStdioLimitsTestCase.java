@@ -417,12 +417,56 @@ class McpStdioLimitsTestCase {
         assertEquals(slow + 1, answered.size(), answered.toString());
     }
 
+    /**
+     * A refused 2025-11-25 request gives its pending slot back: with a single slot, a request cut
+     * short by its timeout or failing is followed by one that is served.
+     */
+    @Test
+    void aRefusedRequestGivesItsSlotBack() throws Exception {
+        Context context = new Context();
+        context.getParameters().add("maxConcurrentCalls", "1");
+        context.getParameters().add("requestTimeout", "300");
+        start(new Blocking(new CountDownLatch(1)), context);
+
+        sendRaw(legacy(1, "slow"));
+        Map<String, Object> slow = read();
+        assertEquals(1, ((Number) slow.get("id")).intValue(), slow.toString());
+        assertEquals(-32603, code(slow));
+        assertServed(100);
+
+        sendRaw(legacy(2, "fail"));
+        Map<String, Object> failed = read();
+        assertEquals(2, ((Number) failed.get("id")).intValue(), failed.toString());
+        assertTrue(failed.containsKey("error"), failed.toString());
+        assertServed(200);
+    }
+
+    /**
+     * Asserts a request is served once the slot is back, which happens just after the refusal is
+     * written: retried until then, but not past a deadline a leaked slot would reach.
+     */
+    private void assertServed(int firstId) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Map<String, Object> reply;
+        int id = firstId;
+        do {
+            sendRaw(legacy(id, "fast"));
+            reply = read();
+            assertEquals(id++, ((Number) reply.get("id")).intValue(), reply.toString());
+            if (reply.containsKey("error")) {
+                TimeUnit.MILLISECONDS.sleep(20);
+            }
+        } while (reply.containsKey("error") && System.nanoTime() < deadline);
+        assertTrue(reply.containsKey("result"), "the slot never came back: " + reply);
+    }
+
     /** The limits are set in one place: an adapter's can't be given as parameters too. */
     @Test
     void anAdaptersLimitsAreNotParameters() throws Exception {
         Context context = new Context();
         context.getParameters().add("requestTimeout", "1000");
-        Exception refused = assertThrows(Exception.class, () -> start(adapter(), context));
+        McpServerAdapter adapter = adapter();
+        Exception refused = assertThrows(Exception.class, () -> start(adapter, context));
         assertTrue(
                 String.valueOf(rootCause(refused).getMessage()).contains("requestTimeout"),
                 String.valueOf(rootCause(refused)));
@@ -568,6 +612,10 @@ class McpStdioLimitsTestCase {
                         MAPPER.readValue(
                                 request.getEntity().getText(),
                                 new TypeRef<Map<String, Object>>() {});
+                if (message.get("params") instanceof Map<?, ?> params
+                        && "fail".equals(params.get("name"))) {
+                    throw new IllegalStateException("Failing on purpose");
+                }
                 if (message.get("params") instanceof Map<?, ?> params
                         && "slow".equals(params.get("name"))) {
                     release.await(30, TimeUnit.SECONDS);

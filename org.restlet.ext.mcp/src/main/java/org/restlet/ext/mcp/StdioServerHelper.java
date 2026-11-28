@@ -268,8 +268,27 @@ public final class StdioServerHelper extends ServerHelper {
                         done);
     }
 
-    /** A frame read, or the first bytes of one over the size limit, the rest skipped. */
-    private record Frame(byte[] bytes, boolean oversized) {}
+    /**
+     * A frame read, or the first bytes of one over the size limit, the rest skipped. Not a record:
+     * its bytes are handed over, never compared.
+     */
+    private static final class Frame {
+        private final byte[] bytes;
+        private final boolean oversized;
+
+        private Frame(byte[] bytes, boolean oversized) {
+            this.bytes = bytes;
+            this.oversized = oversized;
+        }
+
+        private byte[] bytes() {
+            return bytes;
+        }
+
+        private boolean oversized() {
+            return oversized;
+        }
+    }
 
     /**
      * Reads the next frame. One over the size limit is read to its end, keeping its first bytes.
