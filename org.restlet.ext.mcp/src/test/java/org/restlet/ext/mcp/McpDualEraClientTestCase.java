@@ -228,7 +228,7 @@ class McpDualEraClientTestCase {
 
     /**
      * The legacy edge declares no capability and refuses what a legacy server asks: an elicitation
-     * is never sent, and a ping from the server is refused, even with an input handler set.
+     * is never sent, and a ping from the server is refused, even with an elicitation handler set.
      */
     @Test
     void refusesWhatALegacyServerAsks() throws Exception {
@@ -238,18 +238,11 @@ class McpDualEraClientTestCase {
                         legacy.target,
                         adapter -> {
                             adapter.setLegacySessions(true);
-                            adapter.setModernCapabilities(
-                                    io.modelcontextprotocol.modern.McpSchema.ClientCapabilities
-                                            .builder()
-                                            .elicitation(
-                                                    new io.modelcontextprotocol.modern.McpSchema
-                                                            .ClientCapabilities.Elicitation(
-                                                            new io.modelcontextprotocol.modern
-                                                                    .McpSchema.ClientCapabilities
-                                                                    .Elicitation.Form(),
-                                                            null))
-                                            .build());
-                            adapter.setInputHandler(required -> Mono.just(Map.of()));
+                            adapter.setFormElicitation(
+                                    request ->
+                                            Mono.just(
+                                                    io.modelcontextprotocol.modern.McpSchema
+                                                            .ElicitResult.decline()));
                         });
 
         assertEquals(List.of(Map.of()), legacy.host.capabilities);

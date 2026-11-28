@@ -72,8 +72,20 @@ public final class McpWorkers {
     }
 
     public Mono<Void> submit(Operation operation, Runnable cancel) {
+        return submit(operation, cancel, timeout);
+    }
+
+    /**
+     * Submits a call with its own time limit instead of the workers' one.
+     *
+     * @param operation The call.
+     * @param cancel Run when the call is cancelled.
+     * @param limit The time limit of the call, or null for none.
+     * @return Completes when the call ends.
+     */
+    public Mono<Void> submit(Operation operation, Runnable cancel, Duration limit) {
         Mono<Void> call = Mono.<Void>create(sink -> admit(sink, operation, cancel));
-        return timeout == null ? call : call.timeout(timeout);
+        return limit == null ? call : call.timeout(limit);
     }
 
     /** Admits a call, or refuses it at once; cancelling it interrupts its worker. */

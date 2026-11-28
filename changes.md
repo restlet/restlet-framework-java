@@ -17,6 +17,20 @@ Changes log
         - The MCP extension depends on Jackson 3, as `org.restlet.ext.jackson` does, through the
           SDK's `mcp-json-jackson3` module, instead of Jackson 2 (#1705). An application that got
           Jackson 2 through it must now declare it.
+        - The MCP 2026-07-28 client is the SDK's: `McpClientAdapter.getModernClient()` returns
+          its `McpAsyncClient`, which sends its requests over the adapter's Restlet HTTP
+          connector, within the adapter's limits, and `McpModernClient` is removed. The SDK's
+          client lists the tools it doesn't know before calling one with `x-mcp-header`
+          arguments, leaves out of its listings, and refuses to call, a tool whose header
+          argument is a number, and fails an `input_required` request it can't answer instead of
+          returning the result; its `callOnce`, `readOnce` and `getOnce` return it.
+          `McpInputHandler`, `setInputHandler` and `setModernCapabilities` give way to
+          `setFormElicitation` and `setUrlElicitation`, whose handlers also set the declared
+          elicitation capabilities, and `setMaxInputRounds` requires at least one round.
+          Task-augmented calls, which the SDK's client can't declare, go through
+          `McpClientAdapter.getTasksClient()`, an `McpTasksClient`: its `callTool` takes the
+          tool's definition, from which it mirrors the annotated arguments, no longer takes a
+          progress listener, and still returns an `input_required` result it can't answer.
         - `DefaultSslContextFactory` now uses the JVM default algorithms for the trust manager
           (`TrustManagerFactory.getDefaultAlgorithm()`, `PKIX`) and the key manager
           (`KeyManagerFactory.getDefaultAlgorithm()`) instead of the obsolete `SunX509`, unless the
@@ -78,9 +92,9 @@ Changes log
           `tasks/cancel` on the application's tasks, scoped to the principal that created them
           (`McpRequestContext.principal()`), and advertises the extension. A tool returns an
           `McpTaskResult` to run a call as a task, only to clients declaring the extension
-          (`McpTaskResult.isDeclared`). `McpModernClient.callTool` returns that task, and
-          `awaitTask` polls it to its result, answering its questions through the input handler;
-          `getTask`, `updateTask` and `cancelTask` drive it directly.
+          (`McpTaskResult.isDeclared`). `McpTasksClient.callTool` returns that task, and
+          `awaitTask` polls it to its result, answering its questions through the elicitation
+          handlers; `getTask`, `updateTask` and `cancelTask` drive it directly.
         - The sealed `requestState` of MCP `input_required` results can be sealed by the
           application's codec, `McpServerAdapter.setRequestStateCodec(RequestStateCodec)` (#1701).
           `McpAeadRequestStateCodec` seals it with AES-256-GCM, so the client can't read it, with a
