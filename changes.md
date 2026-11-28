@@ -103,6 +103,9 @@ Changes log
           first scope outermost. `McpRequestContext.transportResponse()` gives the transport
           response.
     - Bugs fixed
+        - The `Range` header is now applied to GET requests only, as RFC 9110 section 14.2 requires:
+          a HEAD request with a range was answered "206 Partial Content" (and so was OPTIONS), it is
+          now answered as without the range (#1734).
         - A 304 (Not Modified) response now carries the `Expires` header of the entity, as RFC 9110
           section 15.4.5 requires, so that a revalidating cache refreshes it (#1712).
         - An MCP request whose `MCP-Protocol-Version` header is neither 2026-07-28 nor 2025-11-25,
