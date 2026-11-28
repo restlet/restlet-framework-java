@@ -410,14 +410,24 @@ public final class CacheDirective implements NamedValue<String> {
      * @param name The directive name.
      * @param value The directive value.
      * @param digit The kind of value (true for a digit value, false otherwise).
+     * @deprecated The kind of value has no effect on the written header: use {@link
+     *     #CacheDirective(String, String)}. Will be removed in Restlet 3.0.
      */
+    @Deprecated(since = "2.7.1")
     public CacheDirective(String name, String value, boolean digit) {
         this.name = name;
         this.value = value;
         this.digit = digit;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Indicates if the other object is a directive with the same name and value. The kind of value
+     * ({@link #isDigit()}) is not compared, so that a directive created by a factory equals the
+     * same directive read from a header.
+     *
+     * @param obj The object to compare to.
+     * @return True if both directives have the same name and value.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -428,8 +438,7 @@ public final class CacheDirective implements NamedValue<String> {
         }
 
         return Objects.equals(getName(), that.getName())
-                && Objects.equals(getValue(), that.getValue())
-                && (this.digit == that.digit);
+                && Objects.equals(getValue(), that.getValue());
     }
 
     /**
@@ -453,14 +462,17 @@ public final class CacheDirective implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(getName(), getValue(), isDigit());
+        return SystemUtils.hashCode(getName(), getValue());
     }
 
     /**
      * Returns true if the directive contains a digit value.
      *
      * @return True if the directive contains a digit value.
+     * @deprecated The kind of value has no effect on the written header, nor on {@link
+     *     #equals(Object)}. Will be removed in Restlet 3.0.
      */
+    @Deprecated(since = "2.7.1")
     public boolean isDigit() {
         return digit;
     }
@@ -469,7 +481,10 @@ public final class CacheDirective implements NamedValue<String> {
      * Indicates if the directive is a digit value.
      *
      * @param digit True if the directive contains a digit value.
+     * @deprecated The kind of value has no effect on the written header, nor on {@link
+     *     #equals(Object)}. Will be removed in Restlet 3.0.
      */
+    @Deprecated(since = "2.7.1")
     public void setDigit(boolean digit) {
         this.digit = digit;
     }
