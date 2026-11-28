@@ -23,9 +23,9 @@ public final class McpProtocol {
     public static final String MODERN_VERSION = "2026-07-28";
 
     /**
-     * Makes {@link McpClientAdapter} speak whichever revision the server does, experimentally: over
-     * HTTP, {@link #MODERN_VERSION} when the server answers {@code server/discover}, else one of
-     * {@link #LEGACY_VERSIONS} through an {@code initialize} handshake.
+     * Makes {@link McpClientAdapter} speak whichever revision the server does, experimentally, over
+     * HTTP or stdio: {@link #MODERN_VERSION} when the server answers {@code server/discover}, else
+     * one of {@link #LEGACY_VERSIONS} through an {@code initialize} handshake.
      */
     public static final String AUTO = "auto";
 

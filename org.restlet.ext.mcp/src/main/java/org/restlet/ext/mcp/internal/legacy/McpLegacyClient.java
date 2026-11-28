@@ -19,9 +19,6 @@ import io.modelcontextprotocol.spec.McpError;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import org.restlet.ext.mcp.McpProtocol;
 import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import reactor.core.publisher.Mono;
@@ -76,18 +73,12 @@ public final class McpLegacyClient implements McpLegacyEdge.Client {
     /**
      * Starts a client over stdio.
      *
-     * @param transport The transport.
-     * @param owned Whether the client closes the transport, rather than its connector.
+     * @param transport The transport, offering the revisions accepted.
      * @param timeout The request timeout.
      * @return The started client.
      */
-    public static McpLegacyClient stdio(
-            StdioMcpClientTransport transport, boolean owned, Duration timeout) {
-        return start(
-                owned ? transport : new Borrowed(transport),
-                null,
-                List.of(McpProtocol.VERSION),
-                timeout);
+    public static McpLegacyClient stdio(StdioMcpClientTransport transport, Duration timeout) {
+        return start(transport, null, transport.protocolVersions(), timeout);
     }
 
     /** Initializes the SDK client, closing the transport if that fails. */
@@ -217,43 +208,5 @@ public final class McpLegacyClient implements McpLegacyEdge.Client {
     @Override
     public void close() {
         sdk.closeGracefully().block(timeout);
-    }
-
-    /** A connector's transport, which the client uses but doesn't close. */
-    private record Borrowed(StdioMcpClientTransport delegate) implements McpClientTransport {
-        @Override
-        public Mono<Void> connect(
-                Function<
-                                Mono<io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage>,
-                                Mono<io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage>>
-                        handler) {
-            return delegate.connect(handler);
-        }
-
-        @Override
-        public void setExceptionHandler(Consumer<Throwable> handler) {
-            delegate.setExceptionHandler(handler);
-        }
-
-        @Override
-        public List<String> protocolVersions() {
-            return delegate.protocolVersions();
-        }
-
-        @Override
-        public Mono<Void> sendMessage(
-                io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage message) {
-            return delegate.sendMessage(message);
-        }
-
-        @Override
-        public <T> T unmarshalFrom(Object data, TypeRef<T> type) {
-            return delegate.unmarshalFrom(data, type);
-        }
-
-        @Override
-        public Mono<Void> closeGracefully() {
-            return Mono.empty();
-        }
     }
 }
