@@ -110,6 +110,10 @@ Changes log
           The `requested` version echoed over HTTP is cut to 64 characters, so that a long version
           no longer turns the answer into an HTTP 500 (#1723). `dispatch`, which serves 2026-07-28
           only, still lists that version alone.
+        - Over STDIO, an MCP request whose `_meta` names a protocol version other than 2026-07-28
+          and 2025-11-25 is answered with `UnsupportedProtocolVersionError` (-32022) listing both,
+          as over HTTP, instead of being served as a 2025-11-25 request (#1725). A notification
+          naming one is dropped.
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).

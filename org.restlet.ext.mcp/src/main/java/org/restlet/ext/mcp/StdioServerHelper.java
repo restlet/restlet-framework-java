@@ -45,6 +45,11 @@ import org.restlet.routing.Filter;
  * adapter's 2026-07-28 server: the messages it streams, such as progress, are written as separate
  * lines as they come, a {@code subscriptions/listen} stream stays open without time limit, and a
  * {@code notifications/cancelled} naming an in-flight request ends it without a response.
+ *
+ * <p>A request whose {@code _meta} names another protocol version than 2026-07-28 and 2025-11-25,
+ * newer, older or malformed, is answered with {@code UnsupportedProtocolVersionError} (-32022),
+ * listing the versions served, as over HTTP; a notification naming one is dropped. A message
+ * without a {@code _meta} protocol version, or naming 2025-11-25, goes to the 2025-11-25 edge.
  */
 public final class StdioServerHelper extends ServerHelper {
     private static final String CANCELLED = "notifications/cancelled";
@@ -135,14 +140,25 @@ public final class StdioServerHelper extends ServerHelper {
     /** Builds the request of a frame, in reading order, and hands it to a worker. */
     private void accept(byte[] bytes) {
         Map<?, ?> envelope = envelope(bytes);
-        boolean modern = modern(envelope);
+        String version = version(envelope);
+        boolean modern = McpProtocol.MODERN_VERSION.equals(version);
         String method = envelope.get("method") instanceof String m ? m : null;
         // A cancellation of an in-flight 2026-07-28 request, with or without _meta. A request
         // naming this method, or a malformed envelope, goes on to be answered.
         if (isCancellation(envelope, method) && (cancel(envelope) || modern)) {
             return;
         }
-        Request request = request(bytes, modern);
+        if (version != null && !modern && !McpProtocol.VERSION.equals(version)) {
+            if (!envelope.containsKey("id")) {
+                // A notification of an unsupported version: not answered, as JSON-RPC wants.
+                getLogger().log(Level.FINE, "MCP STDIO notification of an unsupported version");
+                return;
+            }
+        } else if (!modern) {
+            version = McpProtocol.VERSION;
+        }
+        // As over HTTP, the adapter answers a version it doesn't serve with -32022.
+        Request request = request(bytes, version);
         if (modern) {
             submitModern(request, envelope, method);
         } else {
@@ -159,16 +175,13 @@ public final class StdioServerHelper extends ServerHelper {
     }
 
     /** The request of a frame, with the headers it would have over HTTP. */
-    private static Request request(byte[] bytes, boolean modern) {
+    private static Request request(byte[] bytes, String version) {
         Request request =
                 new Request(
                         Method.POST,
                         "stdio://localhost/mcp",
                         new ByteArrayRepresentation(bytes, MediaType.APPLICATION_JSON));
-        request.getHeaders()
-                .set(
-                        McpProtocol.VERSION_HEADER,
-                        modern ? McpProtocol.MODERN_VERSION : McpProtocol.VERSION);
+        request.getHeaders().set(McpProtocol.VERSION_HEADER, version);
         request.getHeaders().set("Accept", "application/json, text/event-stream");
         return request;
     }
@@ -255,14 +268,25 @@ public final class StdioServerHelper extends ServerHelper {
         }
     }
 
-    /** Whether a message's {@code _meta} names the 2026-07-28 revision. */
-    private static boolean modern(Map<?, ?> envelope) {
-        return envelope.get("params") instanceof Map<?, ?> params
-                && params.get("_meta") instanceof Map<?, ?> meta
-                && McpProtocol.MODERN_VERSION.equals(
-                        meta.get(
-                                io.modelcontextprotocol.modern.McpSchema.MetaKeys
-                                        .PROTOCOL_VERSION));
+    /**
+     * The protocol version a message's {@code _meta} names, as its JSON text when it isn't a
+     * string, or null when it names none.
+     */
+    private String version(Map<?, ?> envelope) {
+        if (!(envelope.get("params") instanceof Map<?, ?> params
+                && params.get("_meta") instanceof Map<?, ?> meta)) {
+            return null;
+        }
+        Object version =
+                meta.get(io.modelcontextprotocol.modern.McpSchema.MetaKeys.PROTOCOL_VERSION);
+        if (version == null || version instanceof String) {
+            return (String) version;
+        }
+        try {
+            return mapper.writeValueAsString(version);
+        } catch (IOException | RuntimeException _) {
+            return String.valueOf(version);
+        }
     }
 
     /**
