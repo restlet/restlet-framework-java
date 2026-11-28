@@ -21,14 +21,16 @@ Changes log
           its `McpAsyncClient`, which sends its requests over the adapter's Restlet HTTP
           connector, within the adapter's limits, and `McpModernClient` is removed. The SDK's
           client lists the tools it doesn't know before calling one with `x-mcp-header`
-          arguments, leaves out of its listings, and refuses to call, a tool whose header argument
-          is a number, and fails an `input_required` request it can't answer instead of returning
-          the result; its `callOnce`, `readOnce` and `getOnce` return it. `McpInputHandler`, `setInputHandler` and
-          `setModernCapabilities` give way to `setFormElicitation` and `setUrlElicitation`, whose
-          handlers also set the declared elicitation capabilities, and `setMaxInputRounds`
-          requires at least one round. Task-augmented calls, which the SDK's client can't
-          declare, go through `McpClientAdapter.getTasksClient()`, an `McpTasksClient`: its
-          `callTool` takes the tool's definition, from which it mirrors the annotated arguments.
+          arguments, leaves out of its listings, and refuses to call, a tool whose header
+          argument is a number, and fails an `input_required` request it can't answer instead of
+          returning the result; its `callOnce`, `readOnce` and `getOnce` return it.
+          `McpInputHandler`, `setInputHandler` and `setModernCapabilities` give way to
+          `setFormElicitation` and `setUrlElicitation`, whose handlers also set the declared
+          elicitation capabilities, and `setMaxInputRounds` requires at least one round.
+          Task-augmented calls, which the SDK's client can't declare, go through
+          `McpClientAdapter.getTasksClient()`, an `McpTasksClient`: its `callTool` takes the
+          tool's definition, from which it mirrors the annotated arguments, no longer takes a
+          progress listener, and still returns an `input_required` result it can't answer.
         - `DefaultSslContextFactory` now uses the JVM default algorithms for the trust manager
           (`TrustManagerFactory.getDefaultAlgorithm()`, `PKIX`) and the key manager
           (`KeyManagerFactory.getDefaultAlgorithm()`) instead of the obsolete `SunX509`, unless the

@@ -439,7 +439,12 @@ public final class McpClientAdapter implements AutoCloseable {
             return false;
         } finally {
             if (!kept) {
-                candidate.close();
+                try {
+                    candidate.close();
+                } catch (RuntimeException cleanup) {
+                    // The probe exchange is over: its failure to close neither replaces the
+                    // fallback nor the probe's own failure.
+                }
             }
         }
     }

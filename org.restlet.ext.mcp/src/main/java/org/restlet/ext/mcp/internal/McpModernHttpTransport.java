@@ -11,6 +11,7 @@ package org.restlet.ext.mcp.internal;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema;
+import io.modelcontextprotocol.modern.client.McpResponseLostException;
 import io.modelcontextprotocol.modern.client.transport.McpClientTransport;
 import io.modelcontextprotocol.modern.client.transport.McpTransportRequest;
 import java.io.IOException;
@@ -75,6 +76,7 @@ public final class McpModernHttpTransport implements McpClientTransport {
     private final McpJsonMapper mapper;
     private final int maxMessageBytes;
     private final Consumer<Request> customizer;
+    private final Duration timeout;
     private final McpWorkers calls;
     private final McpWorkers listeners;
     private final Set<Request> requests = ConcurrentHashMap.newKeySet();
@@ -102,13 +104,18 @@ public final class McpModernHttpTransport implements McpClientTransport {
         this.mapper = Objects.requireNonNull(mapper, "mapper");
         this.maxMessageBytes = maxMessageBytes;
         this.customizer = Objects.requireNonNull(customizer, "customizer");
+        this.timeout = timeout;
         calls = new McpWorkers(maxConcurrentCalls, timeout);
         listeners = new McpWorkers(McpProtocol.DEFAULT_MAX_LISTEN_STREAMS, null, timeout);
     }
 
     /**
-     * Sends a request of the SDK's client, a {@code subscriptions/listen} stream without time
-     * limit, any other within the round timeout it gives too.
+     * Sends a request of the SDK's client, within the call limit, or the listen limit for a {@code
+     * subscriptions/listen} stream. The round timeout the client gives is the request's only time
+     * limit: the client sends a round without one on purpose, such as after an accepted URL
+     * elicitation. An exchange that breaks before its response, such as a stream the server or a
+     * proxy closes, fails with {@link McpResponseLostException}, as the client expects; an HTTP
+     * failure keeps its status.
      */
     @Override
     public Flux<JsonRpc.JSONRPCMessage> exchange(McpTransportRequest request) {
@@ -119,8 +126,14 @@ public final class McpModernHttpTransport implements McpClientTransport {
                         request.protocolVersion(),
                         request.name(),
                         request.paramHeaders(),
-                        listen);
-        return listen ? sent : request.withRoundTimeout(sent);
+                        listen,
+                        null);
+        return (listen ? sent : request.withRoundTimeout(sent))
+                .onErrorMap(
+                        error ->
+                                error instanceof IOException
+                                        && !(error instanceof McpHttpStatusException),
+                        error -> new McpResponseLostException(request.method(), error));
     }
 
     /** Sends the {@code Mcp-Param-*} headers of the tools' {@code x-mcp-header} arguments. */
@@ -147,6 +160,17 @@ public final class McpModernHttpTransport implements McpClientTransport {
             String name,
             Map<String, String> params,
             boolean listen) {
+        return send(rpc, version, name, params, listen, listen ? null : timeout);
+    }
+
+    /** Sends a request within a time limit, or none. */
+    private Flux<JsonRpc.JSONRPCMessage> send(
+            JsonRpc.JSONRPCRequest rpc,
+            String version,
+            String name,
+            Map<String, String> params,
+            boolean listen,
+            Duration limit) {
         return Flux.<JsonRpc.JSONRPCMessage>create(
                         sink -> {
                             AtomicReference<Request> active = new AtomicReference<>();
@@ -164,7 +188,8 @@ public final class McpModernHttpTransport implements McpClientTransport {
                                                             exchange(
                                                                     rpc, version, name, params,
                                                                     active, emitter),
-                                                    () -> abort(active.get()))
+                                                    () -> abort(active.get()),
+                                                    limit)
                                             .subscribe(null, sink::error, sink::complete);
                             sink.onCancel(running);
                         })

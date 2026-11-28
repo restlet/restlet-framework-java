@@ -26,6 +26,7 @@ import io.modelcontextprotocol.modern.McpSchema.TextContent;
 import io.modelcontextprotocol.modern.McpSchema.Tool;
 import io.modelcontextprotocol.modern.client.McpAsyncClient;
 import io.modelcontextprotocol.modern.client.McpAsyncElicitationHandler;
+import io.modelcontextprotocol.modern.client.McpTimeoutException;
 import io.modelcontextprotocol.modern.client.SubscriptionEvent;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
@@ -109,7 +110,7 @@ class McpModernClientTestCase {
         // The SDK's client leaves out a tool it can't call, such as level, whose header argument
         // is a number.
         assertEquals(
-                List.of("echo", "progress", "approve", "endless", "region"),
+                List.of("echo", "progress", "approve", "endless", "region", "slow"),
                 modern.tools().list().block(WAIT).tools().stream().map(Tool::name).toList());
         assertEquals(
                 "echo:café",
@@ -135,7 +136,7 @@ class McpModernClientTestCase {
     void theAdapterCallsThroughTheSdkClient() throws Exception {
         start("HTTP2", null);
 
-        assertEquals(5, client.listTools(null).tools().size());
+        assertEquals(6, client.listTools(null).tools().size());
         assertEquals("echo:hi", text(client.callTool("echo", Map.of("text", "hi"))));
         assertEquals(
                 "modern",
@@ -322,6 +323,25 @@ class McpModernClientTestCase {
         assertTrue(refused.getMessage().contains("unsupported type number"), refused.getMessage());
     }
 
+    /**
+     * The SDK's round timeout is a request's only time limit: the adapter's request timeout is its
+     * default, and a longer one given for a call lets it run past it.
+     */
+    @Test
+    void theRoundTimeoutLimitsACall() throws Exception {
+        McpAsyncClient modern =
+                start(
+                        "HTTP2",
+                        null,
+                        configured -> configured.setRequestTimeout(Duration.ofMillis(300)));
+
+        Mono<CallToolResult> cut = modern.tool("slow").call();
+        McpTimeoutException timeout =
+                assertThrows(McpTimeoutException.class, () -> cut.block(WAIT));
+        assertEquals(McpTimeoutException.Kind.ROUND, timeout.kind());
+        assertEquals("slow", text(modern.tool("slow").roundTimeout(WAIT).call().block(WAIT)));
+    }
+
     /** An error response fails the request with its JSON-RPC error. */
     @Test
     void anErrorResponseFails() throws Exception {
@@ -489,6 +509,15 @@ class McpModernClientTestCase {
                                                                 "level:"
                                                                         + request.arguments()
                                                                                 .get("level"))))));
+        served.getTools()
+                .add(
+                        McpAsyncTool.of(
+                                Tool.builder("slow", Map.of("type", "object")).build(),
+                                (ctx, request) ->
+                                        Mono.delay(Duration.ofMillis(900))
+                                                .thenReturn(
+                                                        McpAsyncResponse.<CallToolOutcome>result(
+                                                                result("slow")))));
         served.getResources()
                 .add(
                         new McpResource(

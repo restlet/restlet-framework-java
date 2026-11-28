@@ -358,6 +358,50 @@ class McpTasksTestCase {
         assertEquals(2, rounds.size()); // One more round, then the limit.
     }
 
+    /**
+     * A result asking for no input, only for a retry with its request state, is retried; a tool
+     * whose header annotation is invalid isn't called.
+     */
+    @Test
+    void theTasksClientRetriesStateOnlyRoundsAndRefusesInvalidTools() throws Exception {
+        McpTasksClient tasks = start(null);
+        CallToolRequest state =
+                new CallToolRequest("gated", Map.of("region", "state"), null, null, null);
+
+        assertEquals(
+                "gated:state:none",
+                firstText(
+                        MAPPER.convertValue(
+                                tasks.callTool(state, gatedTool()).block(WAIT),
+                                new TypeRef<Map<String, Object>>() {})));
+        assertEquals(Duration.ofMillis(50), McpTasksClient.backoff(1));
+        assertEquals(Duration.ofMillis(100), McpTasksClient.backoff(2));
+        assertEquals(Duration.ofMillis(250), McpTasksClient.backoff(9));
+
+        Tool numbered =
+                Tool.builder(
+                                "gated",
+                                Map.of(
+                                        "type",
+                                        "object",
+                                        "properties",
+                                        Map.of(
+                                                "region",
+                                                Map.of(
+                                                        "type",
+                                                        "number",
+                                                        "x-mcp-header",
+                                                        "Region"))))
+                        .build();
+        Mono<CallToolOutcome> invalid =
+                tasks.callTool(
+                        new CallToolRequest("gated", Map.of("region", 1.5), null, null, null),
+                        numbered);
+        IllegalArgumentException refused =
+                assertThrows(IllegalArgumentException.class, () -> invalid.block(WAIT));
+        assertTrue(refused.getMessage().contains("unsupported type number"), refused.getMessage());
+    }
+
     /** The definition of the gated tool, as the SDK's client lists it. */
     private Tool gatedTool() {
         return client.getModernClient().tools().list().block(WAIT).tools().stream()
@@ -748,9 +792,25 @@ class McpTasksTestCase {
                                                         "Region"))))
                         .build(),
                 (ctx, request) -> {
+                    Object region = request.arguments().get("region");
+                    if ("state".equals(region) && request.requestState() == null) {
+                        // Asks for nothing, only for a retry with its state.
+                        return Mono.just(
+                                McpAsyncResponse.<CallToolOutcome>result(
+                                        McpSchema.InputRequiredResult.builder()
+                                                .requestState("s0")
+                                                .build()));
+                    }
+                    if ("state".equals(region)) {
+                        return Mono.just(
+                                McpAsyncResponse.<CallToolOutcome>result(
+                                        McpTestFeatures.text(
+                                                request.inputResponses() == null
+                                                        ? "gated:state:none"
+                                                        : "gated:state:answered")));
+                    }
                     CallToolOutcome outcome =
-                            request.requestState() == null
-                                            || "loop".equals(request.arguments().get("region"))
+                            request.requestState() == null || "loop".equals(region)
                                     ? McpSchema.InputRequiredResult.builder()
                                             .elicit(
                                                     "confirm",

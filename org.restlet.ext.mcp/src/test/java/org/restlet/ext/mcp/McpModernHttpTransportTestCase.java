@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.modern.JsonRpc;
+import io.modelcontextprotocol.modern.client.McpResponseLostException;
+import io.modelcontextprotocol.modern.client.transport.McpTransportRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
@@ -36,6 +38,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpMessages;
 import org.restlet.ext.mcp.internal.McpModernHttpTransport;
 import org.restlet.representation.ByteArrayRepresentation;
@@ -111,6 +114,29 @@ class McpModernHttpTransportTestCase {
         Flux<JsonRpc.JSONRPCMessage> sent = send(1);
         IOException failure = assertThrows(IOException.class, () -> block(sent));
         assertTrue(failure.getMessage().contains("without a response"), failure.getMessage());
+    }
+
+    /**
+     * To the SDK's client, an exchange broken before its response is lost, as its transport
+     * contract says, while an HTTP failure keeps its status.
+     */
+    @Test
+    void theSdkClientSeesABrokenExchangeAsLost() throws Exception {
+        start(1024, 1);
+        reply = events(NOTIFICATION);
+        JsonRpc.JSONRPCRequest rpc = new JsonRpc.JSONRPCRequest("tools/list", 1L, Map.of());
+        McpTransportRequest request =
+                McpTransportRequest.builder(rpc, McpProtocol.MODERN_VERSION).build();
+
+        Flux<JsonRpc.JSONRPCMessage> broken = transport.exchange(request);
+        McpResponseLostException lost =
+                assertThrows(McpResponseLostException.class, () -> block(broken));
+        assertInstanceOf(IOException.class, lost.getCause());
+
+        type = MediaType.TEXT_PLAIN;
+        Flux<JsonRpc.JSONRPCMessage> refused = transport.exchange(request);
+        assertThrows(McpHttpStatusException.class, () -> block(refused));
+        assertTrue(transport.mirrorsToolParams());
     }
 
     @Test

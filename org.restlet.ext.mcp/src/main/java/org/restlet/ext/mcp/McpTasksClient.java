@@ -39,8 +39,10 @@ import reactor.core.publisher.Mono;
  *
  * <p>The questions of an {@code input_required} result or task go to the adapter's form and URL
  * elicitation handlers, and the call is retried, or the task updated, with their answers, within
- * the round limit. A question no handler covers, a handler completing empty, or the round limit
- * hands the result or task back to the caller as it is.
+ * the round limit. A result asking for no input, only for a retry with its {@code requestState}, is
+ * retried after a short wait, 50 ms doubling up to 250 ms, as the SDK's client does. Unlike the
+ * SDK's client, which fails the call, a question no handler covers, a handler completing empty, or
+ * the round limit hands the result or task back to the caller as it is.
  *
  * <p>Obtained from {@link McpClientAdapter#getTasksClient()}, which owns its lifecycle.
  * Experimental: the SDK's modern API and the Tasks extension are previews.
@@ -57,6 +59,8 @@ public final class McpTasksClient {
     public static final long MAX_POLL_MS = 30_000;
 
     private static final long DEFAULT_POLL_MS = 1_000;
+    private static final long MIN_BACKOFF_MS = 50;
+    private static final long MAX_BACKOFF_MS = 250;
 
     private final McpModernHttpTransport transport;
     private final McpJsonMapper mapper;
@@ -103,17 +107,25 @@ public final class McpTasksClient {
      * @param request The call.
      * @param tool The tool's definition, or null for a tool without {@code x-mcp-header}
      *     annotations.
-     * @return The tool's result, an {@code input_required} result left unanswered, or a task.
+     * @return The tool's result, an {@code input_required} result left unanswered, or a task. The
+     *     call fails with an {@link IllegalArgumentException} when the definition has an invalid
+     *     annotation, such as one on a number, as the SDK's client refuses such a tool.
      */
     public Mono<McpSchema.CallToolOutcome> callTool(
             McpSchema.CallToolRequest request, McpSchema.Tool tool) {
         Objects.requireNonNull(request, "request");
-        return Mono.defer(() -> call(request, paramHeaders(request, tool), 0));
+        return Mono.defer(() -> call(request, paramHeaders(request, tool), 0, 0));
     }
 
-    /** One round of a call, then the next with the answers to its questions, if any. */
+    /**
+     * One round of a call, then the next with the answers to its questions, if any, or after a wait
+     * when it asks for none.
+     */
     private Mono<McpSchema.CallToolOutcome> call(
-            McpSchema.CallToolRequest request, Map<String, String> headers, int round) {
+            McpSchema.CallToolRequest request,
+            Map<String, String> headers,
+            int round,
+            int stateOnlyRounds) {
         return result(McpSchema.METHOD_TOOLS_CALL, params(request), request.name(), headers)
                 .map(this::callOutcome)
                 .flatMap(
@@ -121,6 +133,16 @@ public final class McpTasksClient {
                             if (!(outcome instanceof McpSchema.InputRequiredResult required)
                                     || round >= maxInputRounds) {
                                 return Mono.just(outcome);
+                            }
+                            if (required.inputRequests() == null
+                                    || required.inputRequests().isEmpty()) {
+                                return Mono.delay(backoff(stateOnlyRounds + 1))
+                                        .then(
+                                                call(
+                                                        retry(request, null, required),
+                                                        headers,
+                                                        round + 1,
+                                                        stateOnlyRounds + 1));
                             }
                             return answers(required.inputRequests())
                                     .map(Optional::of)
@@ -130,15 +152,32 @@ public final class McpTasksClient {
                                                     answers.isEmpty()
                                                             ? Mono.just(outcome)
                                                             : call(
-                                                                    new McpSchema.CallToolRequest(
-                                                                            request.name(),
-                                                                            request.arguments(),
+                                                                    retry(
+                                                                            request,
                                                                             answers.get(),
-                                                                            required.requestState(),
-                                                                            request.meta()),
+                                                                            required),
                                                                     headers,
-                                                                    round + 1));
+                                                                    round + 1,
+                                                                    0));
                         });
+    }
+
+    /** The retry of a call, with the answers given and the server's request state. */
+    private static McpSchema.CallToolRequest retry(
+            McpSchema.CallToolRequest request,
+            Map<String, Object> answers,
+            McpSchema.InputRequiredResult required) {
+        return new McpSchema.CallToolRequest(
+                request.name(),
+                request.arguments(),
+                answers,
+                required.requestState(),
+                request.meta());
+    }
+
+    /** The wait before the nth retry in a row asking for no input: 50 ms, doubling up to 250 ms. */
+    static Duration backoff(int n) {
+        return Duration.ofMillis(Math.min(MAX_BACKOFF_MS, MIN_BACKOFF_MS << Math.min(n - 1, 10)));
     }
 
     private McpSchema.CallToolOutcome callOutcome(Map<String, Object> result) {
@@ -386,11 +425,22 @@ public final class McpTasksClient {
         if (tool == null || request.arguments() == null || !tool.name().equals(request.name())) {
             return Map.of();
         }
+        ToolParamHeaderAnnotations parsed = ToolParamHeaderAnnotations.parse(tool);
+        if (!parsed.isValid()) {
+            throw new IllegalArgumentException(
+                    "Tool '"
+                            + tool.name()
+                            + "' can't be called: invalid "
+                            + ToolParamHeaderAnnotations.KEYWORD
+                            + " annotations: "
+                            + parsed.invalid().stream()
+                                    .map(ToolParamHeaderAnnotations.InvalidAnnotation::describe)
+                                    .collect(java.util.stream.Collectors.joining("; ")));
+        }
         // The arguments as the server sees them, in JSON: a UUID or an enum is a string.
         Map<String, Object> arguments = mapper.convertValue(request.arguments(), MAP);
         Map<String, String> headers = new LinkedHashMap<>();
-        for (ToolParamHeaderAnnotations.Annotation annotation :
-                ToolParamHeaderAnnotations.parse(tool).valid()) {
+        for (ToolParamHeaderAnnotations.Annotation annotation : parsed.valid()) {
             String value = headerValue(argument(arguments, annotation.path()));
             if (value != null) {
                 headers.put(annotation.name(), value);
