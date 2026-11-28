@@ -402,6 +402,63 @@ class McpModernStdioTestCase {
         assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the request was not cancelled");
     }
 
+    /**
+     * A _meta version neither era speaks is answered with -32022 listing both, as over HTTP, cut
+     * when long; a notification naming one is dropped, and the session goes on.
+     */
+    @Test
+    void anUnsupportedMetaVersionIsToldTheSupportedOnes() throws Exception {
+        String lengthy = "2027-" + "x".repeat(900);
+        List<Object> versions = List.of("2027-03-15", "garbage", "2025-06-18", 20270315, lengthy);
+        int id = 300;
+        for (Object version : versions) {
+            Map<String, Object> meta = meta();
+            meta.put(MetaKeys.PROTOCOL_VERSION, version);
+            Map<String, Object> notification =
+                    request(0, "notifications/initialized", Map.of(), meta);
+            notification.remove("id");
+            send(notification);
+            send(request(++id, "tools/list", Map.of(), meta));
+            Map<String, Object> reply = read();
+
+            assertEquals(id, ((Number) reply.get("id")).intValue(), reply.toString());
+            Map<?, ?> error = (Map<?, ?>) reply.get("error");
+            assertEquals(
+                    McpProtocol.UNSUPPORTED_PROTOCOL_VERSION,
+                    ((Number) error.get("code")).intValue(),
+                    reply.toString());
+            assertEquals("Unsupported protocol version", error.get("message"));
+            Map<?, ?> data = (Map<?, ?>) error.get("data");
+            assertEquals(
+                    List.of(McpProtocol.MODERN_VERSION, McpProtocol.VERSION),
+                    data.get("supported"));
+            String requested = String.valueOf(version);
+            assertEquals(
+                    requested.substring(0, Math.min(64, requested.length())),
+                    data.get("requested"));
+        }
+
+        send(
+                request(
+                        ++id,
+                        "tools/call",
+                        Map.of("name", "echo", "arguments", Map.of("text", "after")),
+                        meta()));
+        assertEquals("echo:after", firstText(result(read())));
+    }
+
+    /** A _meta naming 2025-11-25 still goes to the 2025-11-25 edge. */
+    @Test
+    void aLegacyMetaVersionIsServed() throws Exception {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put(MetaKeys.PROTOCOL_VERSION, McpProtocol.VERSION);
+        send(request(400, "tools/list", Map.of(), meta));
+        Map<String, Object> reply = read();
+
+        assertEquals(400, ((Number) reply.get("id")).intValue(), reply.toString());
+        assertTrue(reply.containsKey("result"), reply.toString());
+    }
+
     private static Map<String, Object> request(
             int id, String method, Map<String, Object> params, Map<String, Object> meta) {
         Map<String, Object> withMeta = new LinkedHashMap<>(params);
