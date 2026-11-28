@@ -121,8 +121,9 @@ Changes log
           naming one is dropped.
         - An MCP STDIO session no longer ends on a message over the size limit, which is answered
           with an invalid request error (-32600) under its id when it can be read, nor on a
-          2025-11-25 request over the call limit or the request timeout, which is answered with an
-          internal error (-32603) (#1706).
+          2025-11-25 request over the call limit or the request timeout, whose handler fails, or
+          whose response exceeds the size limit, such as a large tool result, which is answered
+          with an internal error (-32603) (#1706).
         - A 2026-07-28 MCP request sending its `Mcp-Method` or `Mcp-Name` header more than once is
           refused with a header mismatch (-32020), as the MCP SDK's own transport does, instead of
           being checked on its first value only (#1705).
