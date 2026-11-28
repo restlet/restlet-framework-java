@@ -67,11 +67,11 @@ import tools.jackson.core.json.JsonFactory;
  * McpServerAdapter#getMaxConcurrentCalls()}, {@link McpServerAdapter#getRequestTimeout()} and
  * {@link McpServerAdapter#getMaxListenStreams()}. Serving another Restlet, it takes them from the
  * {@link Server}'s parameters of the same names, {@code requestTimeout} in milliseconds, with the
- * same defaults; given those parameters as well, an adapter refuses to start. A message over the
- * size limit is skipped and answered with an invalid request error (-32600), under its id when its
- * first bytes give it; a request the limits refuse or cut short, or whose response or streamed
- * message exceeds the size limit, is answered with an internal error (-32603), unless it was
- * answered already. Either way the session goes on.
+ * same defaults. Serving an adapter, the connector refuses to start if any of those parameters is
+ * given too. A message over the size limit is skipped and answered with an invalid request error
+ * (-32600), under its id when its first bytes give it; a request the limits refuse or cut short, or
+ * whose response or streamed message exceeds the size limit, is answered with an internal error
+ * (-32603), unless it was answered already. Either way the session goes on.
  */
 public final class StdioServerHelper extends ServerHelper {
     private static final String CANCELLED = "notifications/cancelled";
