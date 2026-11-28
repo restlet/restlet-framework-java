@@ -352,7 +352,10 @@ class McpModernClientTestCase {
         assertEquals(McpSchema.ErrorCodes.INVALID_PARAMS, error.error().code().intValue());
     }
 
-    /** The modern client is reached through getModernClient() only, over HTTP for now. */
+    /**
+     * The modern client is reached through getModernClient() only; over stdio, it needs a stdio
+     * connector.
+     */
     @Test
     void modernModeLimits() throws Exception {
         start("HTTP2", null);
@@ -363,7 +366,7 @@ class McpModernClientTestCase {
 
         McpClientAdapter stdio = new McpClientAdapter(connector, "stdio://localhost/mcp");
         stdio.setProtocolVersion(McpProtocol.MODERN_VERSION);
-        assertThrows(UnsupportedOperationException.class, stdio::start);
+        assertThrows(IllegalStateException.class, stdio::start);
         McpClientAdapter unknown = new McpClientAdapter(connector, "http://localhost/mcp");
         assertThrows(
                 IllegalArgumentException.class, () -> unknown.setProtocolVersion("2024-11-05"));

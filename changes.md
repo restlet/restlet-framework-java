@@ -41,6 +41,13 @@ Changes log
           stricter than `SunX509` on unusual chains: set the trust manager algorithm to `SunX509`
           to get the previous behavior.
     - Enhancements
+        - `McpClientAdapter` in `auto` mode now probes stdio servers too (#1670), over its own
+          stream or a `stdio:` connector: it sends `server/discover` within the request timeout and
+          keeps the 2026-07-28 client when the server names that revision, or falls back to a
+          legacy `initialize`, offering the legacy revisions, on the same stream when the server
+          rejects the probe or leaves it unanswered, dropping a late answer to the probe. The
+          2026-07-28 client, also when asked for explicitly, now speaks over stdio through the SDK's
+          stdio transport; `getTasksClient()` stays HTTP only.
         - `McpServerAdapter.setJsonMapper` and `McpClientAdapter.setJsonMapper` (for the
           2026-07-28 client) let the application supply the JSON mapper of the MCP messages, the
           SDK's Jackson 3 one by default (#1705).

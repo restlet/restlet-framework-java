@@ -11,6 +11,8 @@ package org.restlet.ext.mcp.internal;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpSchema;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,7 +22,6 @@ import org.restlet.ext.mcp.McpRequestContext;
 import org.restlet.ext.mcp.internal.legacy.McpLegacyClient;
 import org.restlet.ext.mcp.internal.legacy.McpLegacyServer;
 import org.restlet.ext.mcp.internal.legacy.StdioMcpClientTransport;
-import org.restlet.util.StreamTransport;
 import reactor.core.publisher.Mono;
 
 /**
@@ -144,16 +145,6 @@ public interface McpLegacyEdge {
             boolean sessions,
             String sessionId) {}
 
-    /** The transport a stdio client connector owns, for one legacy client to bind. */
-    interface StdioTransport {
-
-        /** Applies a client's limits, before it connects. */
-        void setLimits(int maxMessageBytes, int maxConcurrentCalls, Duration timeout);
-
-        /** Ends the transport. */
-        void close(Duration timeout);
-    }
-
     /**
      * Creates the server edge of an adapter.
      *
@@ -190,52 +181,30 @@ public interface McpLegacyEdge {
     }
 
     /**
-     * Starts a legacy client over a stream it owns.
+     * Starts a legacy client over a stdio channel, opening it with the client's message limit if
+     * not yet open. The channel stays open when the client closes: the client detaches from it.
      *
-     * @param stream The stream.
+     * @param channel The channel.
+     * @param versions The revisions offered, newest first.
      * @param maxMessageBytes The largest message.
      * @param maxConcurrentCalls The most exchanges at once.
      * @param timeout The request timeout.
      * @return The started client.
      */
     static Client stdio(
-            StreamTransport stream, int maxMessageBytes, int maxConcurrentCalls, Duration timeout) {
-        return McpLegacyClient.stdio(
-                new StdioMcpClientTransport(stream, maxMessageBytes, maxConcurrentCalls, timeout),
-                true,
-                timeout);
-    }
-
-    /**
-     * Starts a legacy client over the transport a stdio connector owns, which stays open when the
-     * client closes.
-     *
-     * @param transport The connector's transport.
-     * @param maxMessageBytes The largest message.
-     * @param maxConcurrentCalls The most exchanges at once.
-     * @param timeout The request timeout.
-     * @return The started client.
-     */
-    static Client stdio(
-            StdioTransport transport,
+            McpStdioChannel channel,
+            List<String> versions,
             int maxMessageBytes,
             int maxConcurrentCalls,
             Duration timeout) {
-        transport.setLimits(maxMessageBytes, maxConcurrentCalls, timeout);
-        return McpLegacyClient.stdio((StdioMcpClientTransport) transport, false, timeout);
-    }
-
-    /**
-     * Creates the transport of a stdio client connector.
-     *
-     * @param stream The stream.
-     * @return The transport.
-     */
-    static StdioTransport stdioTransport(StreamTransport stream) {
-        return new StdioMcpClientTransport(
-                stream,
-                org.restlet.ext.mcp.McpProtocol.DEFAULT_MAX_MESSAGE_BYTES,
-                org.restlet.ext.mcp.McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS,
-                Duration.ofSeconds(30));
+        try {
+            channel.open(maxMessageBytes);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return McpLegacyClient.stdio(
+                new StdioMcpClientTransport(
+                        channel, false, versions, maxMessageBytes, maxConcurrentCalls, timeout),
+                timeout);
     }
 }

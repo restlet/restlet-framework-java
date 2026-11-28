@@ -8,24 +8,34 @@
  */
 package org.restlet.ext.mcp;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.List;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.ClientHelper;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
+import org.restlet.ext.mcp.internal.McpStdioChannel;
 
 /**
  * Explicit MCP STDIO connector helper. Its owner supplies an unstarted StreamTransport in the
  * connector context under STREAM_TRANSPORT_ATTRIBUTE and stops the connector after the {@link
  * McpClientAdapter} using it. No executable is inferred from the stdio URI and no system stream is
- * installed by default. The connector speaks MCP {@link McpProtocol#VERSION}, the modern client
- * being HTTP only for now.
+ * installed by default.
+ *
+ * <p>The connector frames the stream, one JSON-RPC message per line, for one {@link
+ * McpClientAdapter} at a time, which speaks MCP {@link McpProtocol#VERSION}, {@link
+ * McpProtocol#MODERN_VERSION} or, with {@link McpProtocol#AUTO}, probes with {@code
+ * server/discover} first and falls back to a legacy {@code initialize} on the same stream. The
+ * first client to use the connector fixes its message limit. Stopping the connector ends the
+ * stream.
  */
 public final class StdioClientHelper extends ClientHelper {
     static final String TRANSPORT_ATTRIBUTE = "org.restlet.ext.mcp.clientTransport";
-    private McpLegacyEdge.StdioTransport transport;
+    private McpStdioChannel channel;
 
     public StdioClientHelper(Client client) {
         super(client);
@@ -39,27 +49,39 @@ public final class StdioClientHelper extends ClientHelper {
             throw new IllegalStateException(
                     "MCP STDIO requires an explicitly configured StreamTransport");
         }
-        transport = McpLegacyEdge.stdioTransport(stream);
+        channel = new McpStdioChannel(stream);
         getContext().getAttributes().put(TRANSPORT_ATTRIBUTE, this);
     }
 
     /**
-     * Starts a client on this connector's transport, with an MCP client's limits. One client may
-     * bind it.
+     * The framing of this connector's stream, which the client adapter using it attaches to.
+     *
+     * @return The channel.
      */
-    synchronized McpLegacyEdge.Client bind(int maxMessageBytes, int maxCalls, Duration timeout) {
-        if (transport == null) {
+    synchronized McpStdioChannel channel() {
+        if (channel == null) {
             throw new IllegalStateException("Start the MCP STDIO client connector first");
         }
-        return McpLegacyEdge.stdio(transport, maxMessageBytes, maxCalls, timeout);
+        return channel;
+    }
+
+    /**
+     * Starts a legacy client on this connector's stream, with an MCP client's limits, offering
+     * {@link McpProtocol#VERSION}.
+     */
+    McpLegacyEdge.Client bind(int maxMessageBytes, int maxCalls, Duration timeout) {
+        return McpLegacyEdge.stdio(
+                channel(), List.of(McpProtocol.VERSION), maxMessageBytes, maxCalls, timeout);
     }
 
     @Override
     public synchronized void stop() {
         try {
-            if (transport != null) {
-                transport.close(Duration.ofSeconds(30));
+            if (channel != null) {
+                channel.close(Duration.ofSeconds(30));
             }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         } finally {
             getContext().getAttributes().remove(TRANSPORT_ATTRIBUTE, this);
         }

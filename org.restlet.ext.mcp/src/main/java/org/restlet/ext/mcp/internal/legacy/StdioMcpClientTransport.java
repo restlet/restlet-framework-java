@@ -13,7 +13,6 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
-import java.io.EOFException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,24 +26,26 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.restlet.ext.mcp.McpProtocol;
-import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpMessages;
+import org.restlet.ext.mcp.internal.McpStdioChannel;
 import org.restlet.ext.mcp.internal.McpWorkers;
 import reactor.core.publisher.Mono;
 
 /**
- * One reader per pipe, finite outstanding IDs for admission only; the SDK owns correlation. An ID
- * left unanswered past the call timeout frees its slot, and its late reply is dropped. Requests the
+ * Reads its frames from a stdio channel, whose reader it shares with the client that probed the
+ * server before; finite outstanding IDs for admission only; the SDK owns correlation. An ID left
+ * unanswered past the call timeout frees its slot, and its late reply is dropped. Requests the
  * server sends, such as sampling, roots or elicitation, are answered as not found without reaching
  * the SDK client: the legacy edge declares no capability and answers none.
  */
-public final class StdioMcpClientTransport
-        implements McpClientTransport, McpLegacyEdge.StdioTransport {
+public final class StdioMcpClientTransport implements McpClientTransport, McpStdioChannel.Sink {
     private final McpJsonMapper mapper = McpJsonDefaults.getMapper();
-    private final org.restlet.util.StreamTransport stream;
-    private volatile int maxMessageBytes;
-    private volatile int maxPendingCalls;
-    private volatile Duration timeout;
+    private final McpStdioChannel channel;
+    private final boolean owned;
+    private final List<String> versions;
+    private final int maxMessageBytes;
+    private final int maxPendingCalls;
+    private final Duration timeout;
     private volatile McpWorkers writers;
     private final Map<Object, Long> outstanding = new HashMap<>();
     private final Set<Object> expired = new HashSet<>();
@@ -56,23 +57,40 @@ public final class StdioMcpClientTransport
                             .log(Level.WARNING, "MCP STDIO failure", error);
     private volatile Throwable failure;
     private volatile boolean closed;
-    private Thread reader;
 
+    /** Over a stream it owns, offering {@link McpProtocol#VERSION}. */
     public StdioMcpClientTransport(
             org.restlet.util.StreamTransport stream,
             int maxMessageBytes,
             int maxPendingCalls,
             Duration timeout) {
-        this.stream = Objects.requireNonNull(stream, "stream");
-        setLimits(maxMessageBytes, maxPendingCalls, timeout);
+        this(
+                new McpStdioChannel(stream),
+                true,
+                List.of(McpProtocol.VERSION),
+                maxMessageBytes,
+                maxPendingCalls,
+                timeout);
     }
 
-    /** Replaces the byte, call and timeout limits; only allowed before connecting. */
-    @Override
-    public synchronized void setLimits(int maxMessageBytes, int maxPendingCalls, Duration timeout) {
-        if (closed || incoming != null) {
-            throw new IllegalStateException("MCP STDIO limits are fixed once connected");
-        }
+    /**
+     * @param channel The channel.
+     * @param owned Whether closing the transport closes the channel, rather than detaching from it.
+     * @param versions The revisions offered, newest first.
+     * @param maxMessageBytes The largest message.
+     * @param maxPendingCalls The most requests awaiting a response.
+     * @param timeout The request timeout.
+     */
+    public StdioMcpClientTransport(
+            McpStdioChannel channel,
+            boolean owned,
+            List<String> versions,
+            int maxMessageBytes,
+            int maxPendingCalls,
+            Duration timeout) {
+        this.channel = Objects.requireNonNull(channel, "channel");
+        this.owned = owned;
+        this.versions = List.copyOf(versions);
         if (maxMessageBytes <= 0
                 || maxMessageBytes == Integer.MAX_VALUE
                 || maxPendingCalls <= 0
@@ -93,11 +111,10 @@ public final class StdioMcpClientTransport
             return Mono.error(new IllegalStateException("MCP STDIO is single-use"));
         }
         try {
-            stream.setMaxOperationBytes(maxMessageBytes + 1);
-            stream.start();
+            channel.open(maxMessageBytes);
             writers = new McpWorkers(maxPendingCalls, timeout);
             incoming = Objects.requireNonNull(handler, "handler");
-            reader = Thread.ofVirtual().name("restlet-mcp-stdio-reader").start(this::read);
+            channel.attach(this);
             return Mono.empty();
         } catch (IOException | RuntimeException e) {
             return Mono.error(e);
@@ -111,7 +128,7 @@ public final class StdioMcpClientTransport
 
     @Override
     public List<String> protocolVersions() {
-        return List.of(McpProtocol.VERSION);
+        return versions.reversed(); // The SDK takes the last one as the newest.
     }
 
     @Override
@@ -130,8 +147,7 @@ public final class StdioMcpClientTransport
                         admit(id);
                     }
                     try {
-                        McpMessages.writeFrame(
-                                stream, McpMessages.encode(mapper, message, maxMessageBytes));
+                        channel.write(this, McpMessages.encode(mapper, message, maxMessageBytes));
                     } catch (IOException | RuntimeException e) {
                         if (id != null) {
                             synchronized (outstanding) {
@@ -180,27 +196,35 @@ public final class StdioMcpClientTransport
         throw new IOException("Unsolicited MCP STDIO response id");
     }
 
-    private void read() {
+    /** Handles a frame of the channel, until the transport fails or closes. */
+    @Override
+    public void receive(byte[] bytes) {
+        if (closed || failure != null) {
+            return;
+        }
         try {
-            byte[] bytes;
-            while (!closed && (bytes = McpMessages.readFrame(stream, maxMessageBytes)) != null) {
-                McpSchema.JSONRPCMessage message =
-                        McpSchema.deserializeJsonRpcMessage(mapper, McpMessages.utf8(bytes));
-                if (message instanceof McpSchema.JSONRPCRequest request) {
-                    reject(request);
-                } else if (!(message instanceof McpSchema.JSONRPCResponse response)
-                        || correlate(response)) {
-                    incoming.apply(Mono.just(message)).block(timeout);
-                }
-            }
-            if (!closed) {
-                throw new EOFException("MCP subprocess or pipe ended");
+            McpSchema.JSONRPCMessage message =
+                    McpSchema.deserializeJsonRpcMessage(mapper, McpMessages.utf8(bytes));
+            if (message instanceof McpSchema.JSONRPCRequest request) {
+                reject(request);
+            } else if (!(message instanceof McpSchema.JSONRPCResponse response)
+                    || correlate(response)) {
+                incoming.apply(Mono.just(message)).block(timeout);
             }
         } catch (IOException | RuntimeException e) {
-            if (!closed) {
-                failure = e;
-                exceptionHandler.accept(e);
-            }
+            fail(e);
+        }
+    }
+
+    @Override
+    public void end(IOException cause) {
+        fail(cause);
+    }
+
+    private void fail(Exception cause) {
+        if (!closed && failure == null) {
+            failure = cause;
+            exceptionHandler.accept(cause);
         }
     }
 
@@ -223,11 +247,6 @@ public final class StdioMcpClientTransport
     }
 
     @Override
-    public void close(Duration timeout) {
-        closeGracefully().block(timeout);
-    }
-
-    @Override
     public <T> T unmarshalFrom(Object data, TypeRef<T> type) {
         return mapper.convertValue(data, type);
     }
@@ -239,7 +258,11 @@ public final class StdioMcpClientTransport
                             closed = true;
                             IOException error = null;
                             try {
-                                stream.stop();
+                                if (owned) {
+                                    channel.close(timeout);
+                                } else {
+                                    channel.detach(this);
+                                }
                             } catch (IOException e) {
                                 error = e;
                             }
@@ -252,15 +275,6 @@ public final class StdioMcpClientTransport
                                     error = e;
                                 } else {
                                     error.addSuppressed(e);
-                                }
-                            }
-                            if (reader != null && !reader.join(timeout)) {
-                                IOException join =
-                                        new IOException("MCP STDIO reader shutdown timed out");
-                                if (error == null) {
-                                    error = join;
-                                } else {
-                                    error.addSuppressed(join);
                                 }
                             }
                             synchronized (outstanding) {

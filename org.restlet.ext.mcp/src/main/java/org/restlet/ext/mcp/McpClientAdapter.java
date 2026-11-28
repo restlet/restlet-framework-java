@@ -14,6 +14,7 @@ import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.client.McpAsyncClient;
 import io.modelcontextprotocol.modern.client.McpAsyncElicitationHandler;
 import io.modelcontextprotocol.modern.client.McpClient;
+import io.modelcontextprotocol.modern.client.McpTimeoutException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -28,8 +30,11 @@ import org.restlet.ext.mcp.internal.McpEras;
 import org.restlet.ext.mcp.internal.McpHttpStatusException;
 import org.restlet.ext.mcp.internal.McpLegacyEdge;
 import org.restlet.ext.mcp.internal.McpModernHttpTransport;
+import org.restlet.ext.mcp.internal.McpModernStdioTransport;
 import org.restlet.ext.mcp.internal.McpServerErrorException;
+import org.restlet.ext.mcp.internal.McpStdioChannel;
 import reactor.core.Exceptions;
+import reactor.core.publisher.Mono;
 
 /**
  * Lifecycle facade of an MCP client, on the SDK's {@code 2026-07-28} types. Borrowed Restlet
@@ -37,9 +42,10 @@ import reactor.core.Exceptions;
  *
  * <p>By default it speaks MCP {@link McpProtocol#VERSION} through the SDK's client, behind a legacy
  * edge. With {@link #setProtocolVersion(String)} set to {@link McpProtocol#MODERN_VERSION}, it
- * speaks {@code 2026-07-28} over HTTP instead, experimentally: {@link #start()} discovers the
- * server, and {@link #getModernClient()}, the SDK's client over this adapter's HTTP connector,
- * makes the requests, the task-augmented ones excepted, which {@link #getTasksClient()} makes.
+ * speaks {@code 2026-07-28} instead, experimentally, over HTTP or stdio: {@link #start()} discovers
+ * the server, and {@link #getModernClient()}, the SDK's client over this adapter's connector or
+ * stream, makes the requests, the task-augmented ones excepted, which {@link #getTasksClient()}
+ * makes, over HTTP only for now.
  *
  * <p>With {@link McpProtocol#AUTO}, also experimental, it speaks whichever era the server does, as
  * the 2026-07-28 revision specifies for a dual-era client. Over HTTP, {@link #start()} sends {@code
@@ -51,8 +57,15 @@ import reactor.core.Exceptions;
  * a later start skips the probe, and probes again only if the server contradicts that era, with a
  * {@code 4xx} or a JSON-RPC error that the other era would answer with, not with a timeout or a
  * {@code 5xx}. A started client keeps its era: requests are never replayed on the other one, so
- * when a server changes era, stop the client and start a new one. Over stdio, it speaks {@link
- * McpProtocol#VERSION}, the modern client being HTTP only.
+ * when a server changes era, stop the client and start a new one.
+ *
+ * <p>Over stdio, whether its own stream or a {@code stdio:} connector's, {@link McpProtocol#AUTO}
+ * probes the same way, within the request timeout, on the stream it then keeps using: a discovery
+ * result naming {@code 2026-07-28}, or a recognized modern error, selects the modern client; an
+ * unsupported version error offering a legacy revision, any other JSON-RPC error, or a timeout
+ * selects the legacy one, whose {@code initialize} offers {@link McpProtocol#LEGACY_VERSIONS}. A
+ * late answer to the probe is dropped. No era is remembered: the process at the other end of the
+ * stream serves this client only, and is probed once per start.
  *
  * <p>With a legacy server, the client exposes nothing 2026-07-28 deprecates or removes: it declares
  * no roots, sampling or elicitation capability, never sets a logging level, refuses the requests a
@@ -87,6 +100,7 @@ public final class McpClientAdapter implements AutoCloseable {
     private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
     private boolean legacySessions;
     private String legacySessionId;
+    private McpStdioChannel ownChannel;
     private Modern modern;
     private McpLegacyEdge.Client legacy;
     private String negotiatedVersion;
@@ -159,8 +173,8 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * Sets the MCP revision spoken: {@link McpProtocol#VERSION}, the default, through the SDK's
-     * client; {@link McpProtocol#MODERN_VERSION} through {@link #getModernClient()}, over HTTP only
-     * for now; or {@link McpProtocol#AUTO}, whichever the server speaks. Experimental for {@code
+     * client; {@link McpProtocol#MODERN_VERSION} through {@link #getModernClient()}, over HTTP or
+     * stdio; or {@link McpProtocol#AUTO}, whichever the server speaks. Experimental for {@code
      * 2026-07-28} and {@code auto}.
      *
      * @param value The revision, or {@link McpProtocol#AUTO}.
@@ -324,15 +338,61 @@ public final class McpClientAdapter implements AutoCloseable {
         }
         requireConfigurable();
         configured = true;
-        if (McpProtocol.MODERN_VERSION.equals(protocolVersion)) {
-            startModern(createModern());
-            return;
+        try {
+            if (McpProtocol.MODERN_VERSION.equals(protocolVersion)) {
+                startModern(createModern());
+            } else if (McpProtocol.AUTO.equals(protocolVersion)) {
+                startAuto();
+            } else {
+                startLegacy(List.of(McpProtocol.VERSION));
+            }
+        } catch (RuntimeException e) {
+            try {
+                closeOwnChannel();
+            } catch (RuntimeException cleanup) {
+                e.addSuppressed(cleanup);
+            }
+            throw e;
         }
-        if (McpProtocol.AUTO.equals(protocolVersion)) {
-            startAuto();
-            return;
+    }
+
+    /** Whether this client speaks over stdio: its own stream, or a {@code stdio:} connector. */
+    private boolean isStdio() {
+        return stream != null || target.startsWith("stdio:");
+    }
+
+    /**
+     * The framing of the stdio stream: this adapter's own, or the connector's, which the clients of
+     * either era attach to in turn.
+     */
+    private McpStdioChannel stdioChannel() {
+        if (stream != null) {
+            if (ownChannel == null) {
+                ownChannel = new McpStdioChannel(stream);
+            }
+            return ownChannel;
         }
-        startLegacy(List.of(McpProtocol.VERSION));
+        if (!client.isStarted()
+                || client.getContext() == null
+                || !(client.getContext().getAttributes().get(StdioClientHelper.TRANSPORT_ATTRIBUTE)
+                        instanceof StdioClientHelper helper)) {
+            throw new IllegalStateException(
+                    "A started explicitly selected MCP STDIO helper is required");
+        }
+        return helper.channel();
+    }
+
+    /** Stops this adapter's own stream, if it has one. */
+    private void closeOwnChannel() {
+        if (ownChannel != null) {
+            try {
+                ownChannel.close(requestTimeout);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            } finally {
+                ownChannel = null;
+            }
+        }
     }
 
     /** Starts the legacy client: an {@code initialize} handshake offering these revisions. */
@@ -347,8 +407,14 @@ public final class McpClientAdapter implements AutoCloseable {
      * the server contradicts it, else the one a {@code server/discover} probe tells.
      */
     private void startAuto() {
-        if (stream != null || target.startsWith("stdio:")) {
-            startLegacy(List.of(McpProtocol.VERSION));
+        if (isStdio()) {
+            // One client per process or connector: there is no era to remember.
+            if (probe(createModern())) {
+                negotiatedVersion = McpProtocol.MODERN_VERSION;
+                started = true;
+            } else {
+                startLegacy(McpProtocol.LEGACY_VERSIONS);
+            }
             return;
         }
         String cached = McpEras.get(target);
@@ -369,9 +435,7 @@ public final class McpClientAdapter implements AutoCloseable {
                 McpEras.remove(target);
             }
         }
-        Modern candidate = createModern();
-        if (probe(candidate)) {
-            modern = candidate;
+        if (probe(createModern())) {
             negotiatedVersion = McpProtocol.MODERN_VERSION;
             started = true;
             McpEras.put(target, McpEras.MODERN);
@@ -412,16 +476,20 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     /**
-     * Probes the server with {@code server/discover}.
+     * Probes the server with {@code server/discover}. Over stdio, where a legacy server may leave
+     * the request unanswered, a timeout marks a legacy server too.
      *
      * @return True for a modern server, which the candidate then serves; false for a legacy one,
-     *     for which the candidate is closed.
+     *     for which the candidate is closed, and detached from the stdio stream.
      */
     private boolean probe(Modern candidate) {
         boolean kept = false;
         try {
+            Mono<McpSchema.DiscoverResult> discover = candidate.client().discover();
             McpSchema.DiscoverResult discovered =
-                    candidate.client().discover().block(requestTimeout);
+                    isStdio()
+                            ? discover.timeout(requestTimeout).block()
+                            : discover.block(requestTimeout);
             List<String> supported =
                     discovered == null || discovered.supportedVersions() == null
                             ? List.of()
@@ -431,9 +499,13 @@ public final class McpClientAdapter implements AutoCloseable {
                 throw new IllegalStateException(
                         "No MCP revision supported by both the client and the peer: " + supported);
             }
+            if (kept) {
+                modern = candidate;
+            }
             return kept;
         } catch (RuntimeException e) {
-            if (!isLegacy(Exceptions.unwrap(e))) {
+            Throwable cause = Exceptions.unwrap(e);
+            if (!(isStdio() && isTimeout(cause)) && !isLegacy(cause)) {
                 throw e;
             }
             return false;
@@ -447,6 +519,11 @@ public final class McpClientAdapter implements AutoCloseable {
                 }
             }
         }
+    }
+
+    /** Whether a failure is a timeout: the probe's, or the SDK's round timeout. */
+    private static boolean isTimeout(Throwable failure) {
+        return failure instanceof TimeoutException || failure instanceof McpTimeoutException;
     }
 
     /**
@@ -493,10 +570,10 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     /**
-     * The {@code 2026-07-28} clients over one HTTP transport: the SDK's and the Tasks extension's.
+     * The {@code 2026-07-28} clients over one transport: the SDK's and, over HTTP, the Tasks
+     * extension's.
      */
-    private record Modern(
-            McpAsyncClient client, McpTasksClient tasks, McpModernHttpTransport transport) {
+    private record Modern(McpAsyncClient client, McpTasksClient tasks, AutoCloseable transport) {
 
         /** Ends the exchanges in flight and listen streams. */
         void close() {
@@ -504,14 +581,29 @@ public final class McpClientAdapter implements AutoCloseable {
                 transport.close();
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
         }
     }
 
     private Modern createModern() {
-        if (stream != null || target.startsWith("stdio:")) {
-            throw new UnsupportedOperationException(
-                    "The MCP 2026-07-28 client supports HTTP only for now");
+        if (isStdio()) {
+            McpModernStdioTransport transport;
+            try {
+                transport =
+                        new McpModernStdioTransport(
+                                stdioChannel(),
+                                jsonMapper,
+                                maxMessageBytes,
+                                maxConcurrentCalls,
+                                requestTimeout);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            return new Modern(modernBuilder(transport).build(), null, transport);
         }
         if (!client.isStarted()
                 || client.getContext() == null
@@ -532,6 +624,16 @@ public final class McpClientAdapter implements AutoCloseable {
                         maxConcurrentCalls,
                         requestTimeout,
                         requestCustomizer);
+        return new Modern(
+                modernBuilder(transport).build(),
+                new McpTasksClient(
+                        transport, jsonMapper, formElicitation, urlElicitation, maxInputRounds),
+                transport::close);
+    }
+
+    /** The builder of the SDK's modern client over a transport, with this adapter's settings. */
+    private McpClient.AsyncBuilder modernBuilder(
+            io.modelcontextprotocol.modern.client.transport.McpClientTransport transport) {
         McpClient.AsyncBuilder builder =
                 McpClient.async(transport)
                         .jsonMapper(jsonMapper)
@@ -543,11 +645,7 @@ public final class McpClientAdapter implements AutoCloseable {
         if (urlElicitation != null) {
             builder.urlElicitation(urlElicitation);
         }
-        return new Modern(
-                builder.build(),
-                new McpTasksClient(
-                        transport, jsonMapper, formElicitation, urlElicitation, maxInputRounds),
-                transport);
+        return builder;
     }
 
     /** Starts a {@code 2026-07-28} client, and discovers the server's support of it. */
@@ -575,9 +673,10 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * The SDK's {@link McpProtocol#MODERN_VERSION} client, once that is the revision spoken. It
-     * sends its requests over this adapter's HTTP connector, within its limits, and answers their
-     * {@code input_required} results with its elicitation handlers. It declares the capabilities of
-     * those handlers only: task-augmented calls go through {@link #getTasksClient()}.
+     * sends its requests over this adapter's HTTP connector or stdio stream, within its limits, and
+     * answers their {@code input_required} results with its elicitation handlers. It declares the
+     * capabilities of those handlers only: task-augmented calls go through {@link
+     * #getTasksClient()}.
      *
      * @return The client.
      */
@@ -587,12 +686,18 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /**
      * The client of the Tasks extension, once {@link McpProtocol#MODERN_VERSION} is the revision
-     * spoken.
+     * spoken, over HTTP only for now.
      *
      * @return The client.
+     * @throws UnsupportedOperationException Over stdio.
      */
     public synchronized McpTasksClient getTasksClient() {
-        return modern().tasks();
+        McpTasksClient tasks = modern().tasks();
+        if (tasks == null) {
+            throw new UnsupportedOperationException(
+                    "The MCP Tasks extension client supports HTTP only for now");
+        }
+        return tasks;
     }
 
     private Modern modern() {
@@ -604,20 +709,9 @@ public final class McpClientAdapter implements AutoCloseable {
 
     /** Starts a legacy client, over the stream, the stdio connector or HTTP. */
     private McpLegacyEdge.Client createLegacy(List<String> versions) {
-        if (stream != null) {
-            return McpLegacyEdge.stdio(stream, maxMessageBytes, maxConcurrentCalls, requestTimeout);
-        }
-        if (target.startsWith("stdio:")) {
-            if (!client.isStarted()
-                    || client.getContext() == null
-                    || !(client.getContext()
-                                    .getAttributes()
-                                    .get(StdioClientHelper.TRANSPORT_ATTRIBUTE)
-                            instanceof StdioClientHelper helper)) {
-                throw new IllegalStateException(
-                        "A started explicitly selected MCP STDIO helper is required");
-            }
-            return helper.bind(maxMessageBytes, maxConcurrentCalls, requestTimeout);
+        if (isStdio()) {
+            return McpLegacyEdge.stdio(
+                    stdioChannel(), versions, maxMessageBytes, maxConcurrentCalls, requestTimeout);
         }
         return McpLegacyEdge.http(
                 new McpLegacyEdge.HttpOptions(
@@ -721,22 +815,48 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     public synchronized void stop() {
+        RuntimeException failure = null;
+        // The modern client first: closing it frees the stream's reader, which a subscriber slow
+        // to take its messages may hold.
         if (modern != null) {
             started = false;
             try {
                 modern.close();
+            } catch (RuntimeException e) {
+                failure = e;
             } finally {
                 modern = null;
             }
+        }
+        // Then the adapter's own stream: a write stuck on a server that stopped reading ends at
+        // once, instead of holding the legacy client's close until it times out.
+        try {
+            closeOwnChannel();
+        } catch (RuntimeException e) {
+            failure = suppress(failure, e);
         }
         if (legacy != null) {
             started = false;
             try {
                 legacy.close();
+            } catch (RuntimeException e) {
+                failure = suppress(failure, e);
             } finally {
                 legacy = null;
             }
         }
+        if (failure != null) {
+            throw failure;
+        }
+    }
+
+    /** The first failure, with a later one suppressed in it. */
+    private static RuntimeException suppress(RuntimeException first, RuntimeException later) {
+        if (first == null) {
+            return later;
+        }
+        first.addSuppressed(later);
+        return first;
     }
 
     @Override
