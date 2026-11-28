@@ -14,9 +14,9 @@ import java.util.List;
 import org.restlet.ext.mcp.McpProtocol;
 
 /**
- * The protocol versions an adapter's HTTP endpoint serves, as every {@code
- * UnsupportedProtocolVersionError} (-32022) it answers lists them, whichever check failed. Through
- * {@code dispatch}, without HTTP, only the modern version is served, as the SDK's answer says.
+ * The protocol versions an adapter serves through {@code handle}, over HTTP or stdio, as every
+ * {@code UnsupportedProtocolVersionError} (-32022) it answers over HTTP lists them, whichever check
+ * failed. Through {@code dispatch}, only the modern version is served, as the SDK's answer says.
  */
 public final class McpVersions {
 
