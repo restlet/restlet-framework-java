@@ -179,10 +179,11 @@ class CacheDirectiveTestCase {
     }
 
     @Test
-    void equals_differentDigitFlag_returnsFalse() {
+    void equals_differentDigitFlag_returnsTrue() {
         CacheDirective d1 = new CacheDirective("max-age", "10", true);
         CacheDirective d2 = new CacheDirective("max-age", "10", false);
-        assertNotEquals(d1, d2);
+        assertEquals(d1, d2);
+        assertEquals(d1.hashCode(), d2.hashCode());
     }
 
     @Test
