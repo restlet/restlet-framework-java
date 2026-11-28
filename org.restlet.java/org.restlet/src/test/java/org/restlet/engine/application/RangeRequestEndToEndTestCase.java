@@ -10,6 +10,7 @@
 package org.restlet.engine.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -156,5 +157,40 @@ class RangeRequestEndToEndTestCase {
         HttpResponse<String> response = get(range);
         assertEquals(416, response.statusCode(), range);
         assertEquals("bytes */10", header(response, "Content-Range"), range);
+    }
+
+    private HttpResponse<String> send(String method, String range) throws Exception {
+        HttpRequest request =
+                HttpRequest.newBuilder(uri)
+                        .method(method, HttpRequest.BodyPublishers.noBody())
+                        .header("Range", range)
+                        .build();
+        return client.send(request, BodyHandlers.ofString());
+    }
+
+    /**
+     * RFC 9110 section 14.2: the Range of a HEAD request is ignored, so it describes the full
+     * entity (#1734).
+     */
+    @Test
+    void head_withRange_ignoresTheRange() throws Exception {
+        HttpResponse<String> response = send("HEAD", "bytes=0-3");
+
+        assertEquals(200, response.statusCode());
+        assertEquals("10", header(response, "Content-Length"));
+        assertEquals(null, header(response, "Content-Range"));
+    }
+
+    @Test
+    void options_withRange_ignoresTheRange() throws Exception {
+        HttpResponse<String> response = send("OPTIONS", "bytes=0-3");
+
+        assertNotEquals(206, response.statusCode());
+        assertEquals(null, header(response, "Content-Range"));
+    }
+
+    @Test
+    void get_withRange_stillReturnsPartialContent() throws Exception {
+        assertPartial("bytes=0-3", "0123", "bytes 0-3/10");
     }
 }

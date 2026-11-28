@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -291,5 +293,32 @@ class RangeFilterTestCase {
     @Test
     void getRangeService_returnsApplicationRangeService() {
         assertEquals(application.getRangeService(), filter.getRangeService());
+    }
+
+    /**
+     * RFC 9110 section 14.2: GET is the only method for which range handling is defined (#1734).
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"HEAD", "OPTIONS", "TRACE"})
+    void afterHandle_rangeOnAnotherSafeMethod_isIgnored(String method) {
+        Response response =
+                successResponse(Method.valueOf(method), new StringRepresentation("0123456789"));
+        Representation original = response.getEntity();
+        response.getRequest().getRanges().add(new Range(0, 4));
+
+        filter.afterHandle(response.getRequest(), response);
+
+        assertEquals(Status.SUCCESS_OK, response.getStatus(), method);
+        assertEquals(original, response.getEntity(), method);
+    }
+
+    @Test
+    void afterHandle_rangeOnGet_stillGivesPartialContent() {
+        Response response = successResponse(Method.GET, new StringRepresentation("0123456789"));
+        response.getRequest().getRanges().add(new Range(0, 4));
+
+        filter.afterHandle(response.getRequest(), response);
+
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
     }
 }
