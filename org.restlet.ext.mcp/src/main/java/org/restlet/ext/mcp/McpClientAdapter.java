@@ -11,6 +11,9 @@ package org.restlet.ext.mcp;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.McpSchema;
+import io.modelcontextprotocol.modern.client.McpAsyncClient;
+import io.modelcontextprotocol.modern.client.McpAsyncElicitationHandler;
+import io.modelcontextprotocol.modern.client.McpClient;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -35,7 +38,8 @@ import reactor.core.Exceptions;
  * <p>By default it speaks MCP {@link McpProtocol#VERSION} through the SDK's client, behind a legacy
  * edge. With {@link #setProtocolVersion(String)} set to {@link McpProtocol#MODERN_VERSION}, it
  * speaks {@code 2026-07-28} over HTTP instead, experimentally: {@link #start()} discovers the
- * server, and {@link #getModernClient()} makes the requests.
+ * server, and {@link #getModernClient()}, the SDK's client over this adapter's HTTP connector,
+ * makes the requests, the task-augmented ones excepted, which {@link #getTasksClient()} makes.
  *
  * <p>With {@link McpProtocol#AUTO}, also experimental, it speaks whichever era the server does, as
  * the 2026-07-28 revision specifies for a dual-era client. Over HTTP, {@link #start()} sends {@code
@@ -77,13 +81,13 @@ public final class McpClientAdapter implements AutoCloseable {
     private int maxConcurrentCalls = McpProtocol.DEFAULT_MAX_CONCURRENT_CALLS;
     private Consumer<Request> requestCustomizer = request -> {};
     private String protocolVersion = McpProtocol.VERSION;
-    private McpSchema.ClientCapabilities modernCapabilities = McpSchema.ClientCapabilities.NONE;
-    private McpInputHandler inputHandler;
+    private McpAsyncElicitationHandler<McpSchema.ElicitFormRequest> formElicitation;
+    private McpAsyncElicitationHandler<McpSchema.ElicitUrlRequest> urlElicitation;
     private int maxInputRounds = DEFAULT_MAX_INPUT_ROUNDS;
     private McpJsonMapper jsonMapper = McpJsonDefaults.getMapper();
     private boolean legacySessions;
     private String legacySessionId;
-    private McpModernClient modern;
+    private Modern modern;
     private McpLegacyEdge.Client legacy;
     private String negotiatedVersion;
     private boolean started;
@@ -190,21 +194,6 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     /**
-     * Sets the client capabilities sent with each {@link McpProtocol#MODERN_VERSION} request, none
-     * by default. A server asks only for the input they declare, such as elicitation.
-     *
-     * @param value The capabilities.
-     */
-    public synchronized void setModernCapabilities(McpSchema.ClientCapabilities value) {
-        requireConfigurable();
-        modernCapabilities = Objects.requireNonNull(value, "value");
-    }
-
-    public synchronized McpSchema.ClientCapabilities getModernCapabilities() {
-        return modernCapabilities;
-    }
-
-    /**
      * Sets the JSON mapper of the {@link McpProtocol#MODERN_VERSION} client's messages, so that
      * they share the application's settings. The SDK's default, Jackson 3 based, otherwise.
      *
@@ -220,31 +209,51 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     /**
-     * Sets what answers the {@code input_required} results of {@link McpProtocol#MODERN_VERSION}
-     * requests, after which the request is retried; without one, the result is returned. Legacy
-     * servers ask for no input: the legacy edge declares no elicitation capability.
+     * Sets what answers the form elicitations of {@link McpProtocol#MODERN_VERSION} requests,
+     * through {@code input_required} results, after which the request is retried. With a handler,
+     * each request declares the form elicitation capability. Legacy servers ask for no input: the
+     * legacy edge declares no elicitation capability.
      *
      * @param value The handler, or null for none.
      */
-    public synchronized void setInputHandler(McpInputHandler value) {
+    public synchronized void setFormElicitation(
+            McpAsyncElicitationHandler<McpSchema.ElicitFormRequest> value) {
         requireConfigurable();
-        inputHandler = value;
+        formElicitation = value;
     }
 
-    public synchronized McpInputHandler getInputHandler() {
-        return inputHandler;
+    public synchronized McpAsyncElicitationHandler<McpSchema.ElicitFormRequest>
+            getFormElicitation() {
+        return formElicitation;
     }
 
     /**
-     * Sets how many {@code input_required} results the input handler answers for one request,
-     * {@value #DEFAULT_MAX_INPUT_ROUNDS} by default; the next one is returned.
+     * Sets what answers the URL elicitations of {@link McpProtocol#MODERN_VERSION} requests, as
+     * {@link #setFormElicitation} does for forms.
      *
-     * @param value The number of rounds, zero or more.
+     * @param value The handler, or null for none.
+     */
+    public synchronized void setUrlElicitation(
+            McpAsyncElicitationHandler<McpSchema.ElicitUrlRequest> value) {
+        requireConfigurable();
+        urlElicitation = value;
+    }
+
+    public synchronized McpAsyncElicitationHandler<McpSchema.ElicitUrlRequest> getUrlElicitation() {
+        return urlElicitation;
+    }
+
+    /**
+     * Sets how many {@code input_required} rounds the elicitation handlers answer for one request,
+     * {@value #DEFAULT_MAX_INPUT_ROUNDS} by default. Past it, the SDK's client fails the request,
+     * and {@link McpTasksClient} returns the result or task as it is.
+     *
+     * @param value The number of rounds, one or more.
      */
     public synchronized void setMaxInputRounds(int value) {
         requireConfigurable();
-        if (value < 0) {
-            throw new IllegalArgumentException("Input rounds must not be negative");
+        if (value <= 0) {
+            throw new IllegalArgumentException("Input rounds must be positive");
         }
         maxInputRounds = value;
     }
@@ -360,7 +369,7 @@ public final class McpClientAdapter implements AutoCloseable {
                 McpEras.remove(target);
             }
         }
-        McpModernClient candidate = createModern();
+        Modern candidate = createModern();
         if (probe(candidate)) {
             modern = candidate;
             negotiatedVersion = McpProtocol.MODERN_VERSION;
@@ -408,10 +417,11 @@ public final class McpClientAdapter implements AutoCloseable {
      * @return True for a modern server, which the candidate then serves; false for a legacy one,
      *     for which the candidate is closed.
      */
-    private boolean probe(McpModernClient candidate) {
+    private boolean probe(Modern candidate) {
         boolean kept = false;
         try {
-            McpSchema.DiscoverResult discovered = candidate.discover().block(requestTimeout);
+            McpSchema.DiscoverResult discovered =
+                    candidate.client().discover().block(requestTimeout);
             List<String> supported =
                     discovered == null || discovered.supportedVersions() == null
                             ? List.of()
@@ -429,11 +439,7 @@ public final class McpClientAdapter implements AutoCloseable {
             return false;
         } finally {
             if (!kept) {
-                try {
-                    candidate.close();
-                } catch (IOException cleanup) {
-                    // The probe exchange is over: nothing is left to release.
-                }
+                candidate.close();
             }
         }
     }
@@ -481,7 +487,23 @@ public final class McpClientAdapter implements AutoCloseable {
         return supported.stream().anyMatch(McpProtocol.LEGACY_VERSIONS::contains);
     }
 
-    private McpModernClient createModern() {
+    /**
+     * The {@code 2026-07-28} clients over one HTTP transport: the SDK's and the Tasks extension's.
+     */
+    private record Modern(
+            McpAsyncClient client, McpTasksClient tasks, McpModernHttpTransport transport) {
+
+        /** Ends the exchanges in flight and listen streams. */
+        void close() {
+            try {
+                transport.close();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    private Modern createModern() {
         if (stream != null || target.startsWith("stdio:")) {
             throw new UnsupportedOperationException(
                     "The MCP 2026-07-28 client supports HTTP only for now");
@@ -496,26 +518,38 @@ public final class McpClientAdapter implements AutoCloseable {
             throw new IllegalStateException(
                     "Borrowed MCP client must be started with followRedirects=false");
         }
-        McpJsonMapper mapper = jsonMapper;
-        return new McpModernClient(
+        McpModernHttpTransport transport =
                 new McpModernHttpTransport(
                         client,
                         target,
-                        mapper,
+                        jsonMapper,
                         maxMessageBytes,
                         maxConcurrentCalls,
                         requestTimeout,
-                        requestCustomizer),
-                mapper,
-                modernCapabilities,
-                inputHandler,
-                maxInputRounds);
+                        requestCustomizer);
+        McpClient.AsyncBuilder builder =
+                McpClient.async(transport)
+                        .jsonMapper(jsonMapper)
+                        .roundTimeout(requestTimeout)
+                        .maxInputRounds(maxInputRounds);
+        if (formElicitation != null) {
+            builder.formElicitation(formElicitation);
+        }
+        if (urlElicitation != null) {
+            builder.urlElicitation(urlElicitation);
+        }
+        return new Modern(
+                builder.build(),
+                new McpTasksClient(
+                        transport, jsonMapper, formElicitation, urlElicitation, maxInputRounds),
+                transport);
     }
 
     /** Starts a {@code 2026-07-28} client, and discovers the server's support of it. */
-    private void startModern(McpModernClient candidate) {
+    private void startModern(Modern candidate) {
         try {
-            McpSchema.DiscoverResult discovered = candidate.discover().block(requestTimeout);
+            McpSchema.DiscoverResult discovered =
+                    candidate.client().discover().block(requestTimeout);
             if (discovered == null
                     || discovered.supportedVersions() == null
                     || !discovered.supportedVersions().contains(McpProtocol.MODERN_VERSION)) {
@@ -524,7 +558,7 @@ public final class McpClientAdapter implements AutoCloseable {
         } catch (RuntimeException e) {
             try {
                 candidate.close();
-            } catch (IOException cleanup) {
+            } catch (RuntimeException cleanup) {
                 e.addSuppressed(cleanup);
             }
             throw e;
@@ -535,11 +569,28 @@ public final class McpClientAdapter implements AutoCloseable {
     }
 
     /**
-     * The {@link McpProtocol#MODERN_VERSION} client, when that is the revision set.
+     * The SDK's {@link McpProtocol#MODERN_VERSION} client, once that is the revision spoken. It
+     * sends its requests over this adapter's HTTP connector, within its limits, and answers their
+     * {@code input_required} results with its elicitation handlers. It declares the capabilities of
+     * those handlers only: task-augmented calls go through {@link #getTasksClient()}.
      *
      * @return The client.
      */
-    public synchronized McpModernClient getModernClient() {
+    public synchronized McpAsyncClient getModernClient() {
+        return modern().client();
+    }
+
+    /**
+     * The client of the Tasks extension, once {@link McpProtocol#MODERN_VERSION} is the revision
+     * spoken.
+     *
+     * @return The client.
+     */
+    public synchronized McpTasksClient getTasksClient() {
+        return modern().tasks();
+    }
+
+    private Modern modern() {
         if (!started || modern == null) {
             throw new IllegalStateException("MCP 2026-07-28 client is not started");
         }
@@ -580,11 +631,11 @@ public final class McpClientAdapter implements AutoCloseable {
         return started;
     }
 
-    private synchronized McpModernClient modernOrNull() {
+    private synchronized McpAsyncClient modernOrNull() {
         if (!started) {
             throw new IllegalStateException("MCP client is not started");
         }
-        return modern;
+        return modern == null ? null : modern.client();
     }
 
     /**
@@ -594,15 +645,15 @@ public final class McpClientAdapter implements AutoCloseable {
      * @return The page of tools.
      */
     public McpSchema.ListToolsResult listTools(String cursor) {
-        McpModernClient current = modernOrNull();
+        McpAsyncClient current = modernOrNull();
         if (current != null) {
-            return current.listTools(cursor).block(requestTimeout);
+            return current.tools().cursor(cursor).list().block(requestTimeout);
         }
         return legacy().listTools(cursor).block(requestTimeout);
     }
 
     /**
-     * Calls a tool, in either era. An {@code input_required} result the input handler doesn't
+     * Calls a tool, in either era. An {@code input_required} result the elicitation handlers don't
      * answer fails the call.
      *
      * @param name The tool.
@@ -610,47 +661,34 @@ public final class McpClientAdapter implements AutoCloseable {
      * @return The tool's result.
      */
     public McpSchema.CallToolResult callTool(String name, Map<String, Object> arguments) {
-        McpModernClient current = modernOrNull();
+        McpAsyncClient current = modernOrNull();
         if (current == null) {
             return legacy().callTool(
                             new McpSchema.CallToolRequest(name, arguments, null, null, null))
                     .block(requestTimeout);
         }
-        var outcome =
-                current.callTool(new McpSchema.CallToolRequest(name, arguments, null, null, null))
-                        .block(requestTimeout);
-        if (!(outcome instanceof McpSchema.CallToolResult result)) {
-            throw new IllegalStateException(
-                    "MCP tool " + name + " requires input that was not provided");
-        }
-        return result;
+        var tool = current.tool(name);
+        return (arguments == null ? tool : tool.arguments(arguments)).call().block(requestTimeout);
     }
 
     /**
-     * Reads a resource, in either era. An {@code input_required} result the input handler doesn't
-     * answer fails the read.
+     * Reads a resource, in either era. An {@code input_required} result the elicitation handlers
+     * don't answer fails the read.
      *
      * @param uri The resource URI.
      * @return The resource's contents.
      */
     public McpSchema.ReadResourceResult readResource(String uri) {
-        McpModernClient current = modernOrNull();
+        McpAsyncClient current = modernOrNull();
         if (current == null) {
             return legacy().readResource(new McpSchema.ReadResourceRequest(uri, null, null, null))
                     .block(requestTimeout);
         }
-        var outcome =
-                current.readResource(new McpSchema.ReadResourceRequest(uri, null, null, null), null)
-                        .block(requestTimeout);
-        if (!(outcome instanceof McpSchema.ReadResourceResult result)) {
-            throw new IllegalStateException(
-                    "MCP resource " + uri + " requires input that was not provided");
-        }
-        return result;
+        return current.resource(uri).read().block(requestTimeout);
     }
 
     /**
-     * Gets a prompt, in either era. An {@code input_required} result the input handler doesn't
+     * Gets a prompt, in either era. An {@code input_required} result the elicitation handlers don't
      * answer fails the request.
      *
      * @param name The prompt.
@@ -658,17 +696,16 @@ public final class McpClientAdapter implements AutoCloseable {
      * @return The prompt.
      */
     public McpSchema.GetPromptResult getPrompt(String name, Map<String, String> arguments) {
-        McpModernClient current = modernOrNull();
-        var request = new McpSchema.GetPromptRequest(name, arguments, null, null, null);
+        McpAsyncClient current = modernOrNull();
         if (current == null) {
-            return legacy().getPrompt(request).block(requestTimeout);
+            return legacy().getPrompt(
+                            new McpSchema.GetPromptRequest(name, arguments, null, null, null))
+                    .block(requestTimeout);
         }
-        var outcome = current.getPrompt(request, null).block(requestTimeout);
-        if (!(outcome instanceof McpSchema.GetPromptResult result)) {
-            throw new IllegalStateException(
-                    "MCP prompt " + name + " requires input that was not provided");
-        }
-        return result;
+        var prompt = current.prompt(name);
+        return (arguments == null ? prompt : prompt.arguments(arguments))
+                .get()
+                .block(requestTimeout);
     }
 
     private synchronized McpLegacyEdge.Client legacy() {
@@ -683,8 +720,6 @@ public final class McpClientAdapter implements AutoCloseable {
             started = false;
             try {
                 modern.close();
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
             } finally {
                 modern = null;
             }

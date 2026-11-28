@@ -15,16 +15,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.modelcontextprotocol.modern.JsonRpc;
 import io.modelcontextprotocol.modern.McpException;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.McpSchema.CallToolOutcome;
-import io.modelcontextprotocol.modern.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.modern.McpSchema.CallToolResult;
 import io.modelcontextprotocol.modern.McpSchema.ElicitFormRequest;
+import io.modelcontextprotocol.modern.McpSchema.ElicitResult;
 import io.modelcontextprotocol.modern.McpSchema.InputRequiredResult;
 import io.modelcontextprotocol.modern.McpSchema.TextContent;
 import io.modelcontextprotocol.modern.McpSchema.Tool;
+import io.modelcontextprotocol.modern.client.McpAsyncClient;
+import io.modelcontextprotocol.modern.client.McpAsyncElicitationHandler;
+import io.modelcontextprotocol.modern.client.SubscriptionEvent;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncPrompt;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncResource;
@@ -51,8 +53,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * {@link McpClientAdapter} speaking MCP {@code 2026-07-28} to {@link McpServerAdapter} over real
- * HTTP connectors: discovery, listings, calls, streamed progress, {@code input_required} retries,
- * {@code subscriptions/listen} and cancellation.
+ * HTTP connectors, through the SDK's client: discovery, listings, calls, streamed progress, {@code
+ * input_required} retries, {@code subscriptions/listen} and cancellation.
  */
 class McpModernClientTestCase {
     private static final Duration WAIT = Duration.ofSeconds(10);
@@ -100,119 +102,130 @@ class McpModernClientTestCase {
 
     /** Discovery, then the tools, resources and prompts of both revisions' registrations. */
     private void discoversAndCalls(String mode) throws Exception {
-        McpModernClient modern = start(mode, null);
+        McpAsyncClient modern = start(mode, null);
 
         McpSchema.DiscoverResult discovered = modern.discover().block(WAIT);
         assertEquals(List.of(McpProtocol.MODERN_VERSION), discovered.supportedVersions());
+        // The SDK's client leaves out a tool it can't call, such as level, whose header argument
+        // is a number.
         assertEquals(
-                List.of("echo", "progress", "approve", "endless", "region", "level"),
-                modern.listTools(null).block(WAIT).tools().stream().map(Tool::name).toList());
+                List.of("echo", "progress", "approve", "endless", "region"),
+                modern.tools().list().block(WAIT).tools().stream().map(Tool::name).toList());
         assertEquals(
                 "echo:café",
-                text(
-                        modern.callTool(
-                                        new CallToolRequest(
-                                                "echo", Map.of("text", "café"), null, null, null))
-                                .block(WAIT)));
+                text(modern.tool("echo").arguments(Map.of("text", "café")).call().block(WAIT)));
         assertEquals(
                 List.of("test://modern"),
-                modern.listResources(null).block(WAIT).resources().stream()
+                modern.resources().list().block(WAIT).resources().stream()
                         .map(McpSchema.Resource::uri)
                         .toList());
-        McpSchema.ReadResourceResult read =
-                (McpSchema.ReadResourceResult)
-                        modern.readResource(
-                                        new McpSchema.ReadResourceRequest(
-                                                "test://modern", null, null, null),
-                                        null)
-                                .block(WAIT);
+        McpSchema.ReadResourceResult read = modern.resource("test://modern").read().block(WAIT);
         assertEquals(
                 "modern", ((McpSchema.TextResourceContents) read.contents().getFirst()).text());
         assertEquals(
                 List.of("welcome"),
-                modern.listPrompts(null).block(WAIT).prompts().stream()
+                modern.prompts().list().block(WAIT).prompts().stream()
                         .map(McpSchema.Prompt::name)
                         .toList());
-        McpSchema.GetPromptResult prompt =
-                (McpSchema.GetPromptResult)
-                        modern.getPrompt(
-                                        new McpSchema.GetPromptRequest(
-                                                "welcome", null, null, null, null),
-                                        null)
-                                .block(WAIT);
-        assertEquals("modern welcome", prompt.description());
+        assertEquals("modern welcome", modern.prompt("welcome").get().block(WAIT).description());
     }
 
-    /** A call's progress notifications reach its consumer before its result. */
+    /** The adapter's convenience methods go through the SDK's client. */
+    @Test
+    void theAdapterCallsThroughTheSdkClient() throws Exception {
+        start("HTTP2", null);
+
+        assertEquals(5, client.listTools(null).tools().size());
+        assertEquals("echo:hi", text(client.callTool("echo", Map.of("text", "hi"))));
+        assertEquals(
+                "modern",
+                ((McpSchema.TextResourceContents)
+                                client.readResource("test://modern").contents().getFirst())
+                        .text());
+        assertEquals("modern welcome", client.getPrompt("welcome", null).description());
+        // Without an elicitation handler, the client declares no elicitation capability, and the
+        // server refuses to ask for one.
+        McpException refused =
+                assertThrows(McpException.class, () -> client.callTool("approve", null));
+        assertEquals(McpSchema.ErrorCodes.INTERNAL_ERROR, refused.error().code().intValue());
+    }
+
+    /** A call's progress notifications reach its listener before its result. */
     @Test
     void streamsProgress() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
+        McpAsyncClient modern = start("HTTP2", null);
         List<String> progress = new CopyOnWriteArrayList<>();
 
-        CallToolOutcome outcome =
-                modern.callTool(
-                                new CallToolRequest("progress", Map.of(), null, null, null),
-                                update -> progress.add(update.message()))
+        CallToolResult result =
+                modern.tool("progress")
+                        .progress(
+                                update -> {
+                                    progress.add(update.message());
+                                    return Mono.empty();
+                                })
+                        .call()
                         .block(WAIT);
 
-        assertEquals("done", text(outcome));
+        assertEquals("done", text(result));
         assertEquals(List.of("half"), progress);
     }
 
-    /** Without a handler, an input_required result is returned; with one, the call is retried. */
+    /**
+     * A single round returns an input_required result, for the caller to answer; a call answers it
+     * with the form elicitation handler, which also declares the capability the server requires.
+     */
     @Test
     void answersInputRequired() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
-        CallToolRequest approve = new CallToolRequest("approve", Map.of(), null, null, null);
+        List<String> asked = new CopyOnWriteArrayList<>();
+        McpAsyncClient modern =
+                start(
+                        "HTTP2",
+                        request -> {
+                            asked.add(request.message());
+                            return Mono.just(ElicitResult.accept(Map.of()));
+                        });
 
         InputRequiredResult required =
-                assertInstanceOf(InputRequiredResult.class, modern.callTool(approve).block(WAIT));
+                assertInstanceOf(
+                        InputRequiredResult.class, modern.tool("approve").callOnce().block(WAIT));
         assertNotNull(required.requestState()); // Sealed by the server.
         assertTrue(required.inputRequests().containsKey("confirm"));
         assertEquals(
                 "approved:s1",
                 text(
-                        modern.callTool(
-                                        new CallToolRequest(
-                                                "approve",
-                                                Map.of(),
-                                                Map.of("confirm", accepted()),
-                                                required.requestState(),
-                                                null))
+                        modern.tool("approve")
+                                .inputResponses(Map.of("confirm", accepted()))
+                                .requestState(required.requestState())
+                                .call()
                                 .block(WAIT)));
+        assertEquals(List.of(), asked);
 
-        client.stop();
-        McpModernClient handled =
-                start("HTTP2", result -> Mono.just(Map.of("confirm", accepted())));
-        assertEquals("approved:s1", text(handled.callTool(approve).block(WAIT)));
+        assertEquals("approved:s1", text(modern.tool("approve").call().block(WAIT)));
+        assertEquals(List.of("Proceed?"), asked);
     }
 
     /** A listen stream carries the changes published, and completes when the server stops. */
     @Test
     void listensToChanges() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
-        BlockingQueue<JsonRpc.JSONRPCNotification> changes = new LinkedBlockingQueue<>();
+        McpAsyncClient modern = start("HTTP2", null);
+        BlockingQueue<SubscriptionEvent> changes = new LinkedBlockingQueue<>();
         CountDownLatch completed = new CountDownLatch(1);
         List<Throwable> errors = new CopyOnWriteArrayList<>();
         Disposable listening =
-                modern.listen(
-                                McpSchema.SubscriptionFilter.of(
-                                        Map.of(
-                                                McpSchema.SubscriptionFilter.TOOLS_LIST_CHANGED,
-                                                true)))
+                modern.listen()
+                        .toolsChanged()
+                        .events()
+                        .filter(SubscriptionEvent.ToolsListChanged.class::isInstance)
                         .doOnComplete(completed::countDown)
                         .subscribe(changes::add, errors::add);
         try {
             // The listen stream opens asynchronously: publish until the change arrives.
-            JsonRpc.JSONRPCNotification change = null;
+            SubscriptionEvent change = null;
             for (int i = 0; i < 200 && change == null; i++) {
                 adapter.getChanges().broadcast(new ServerChange.ToolsListChanged());
                 change = changes.poll(50, TimeUnit.MILLISECONDS);
             }
-            assertEquals(
-                    McpSchema.METHOD_NOTIFICATION_TOOLS_LIST_CHANGED,
-                    change == null ? null : change.method(),
-                    errors.toString());
+            assertInstanceOf(SubscriptionEvent.ToolsListChanged.class, change, errors.toString());
 
             adapter.stop();
             assertTrue(completed.await(10, TimeUnit.SECONDS), "the listen stream did not end");
@@ -225,13 +238,17 @@ class McpModernClientTestCase {
     /** Cancelling a call aborts its exchange, which cancels the tool on the server. */
     @Test
     void cancellingACallCancelsTheTool() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
+        McpAsyncClient modern = start("HTTP2", null);
         CountDownLatch started = new CountDownLatch(1);
 
         Disposable call =
-                modern.callTool(
-                                new CallToolRequest("endless", Map.of(), null, null, null),
-                                update -> started.countDown())
+                modern.tool("endless")
+                        .progress(
+                                update -> {
+                                    started.countDown();
+                                    return Mono.empty();
+                                })
+                        .call()
                         .subscribe();
         assertTrue(started.await(10, TimeUnit.SECONDS), "the tool did not start");
         call.dispose();
@@ -239,104 +256,78 @@ class McpModernClientTestCase {
         assertTrue(cancelled.await(10, TimeUnit.SECONDS), "the tool was not cancelled");
         assertEquals(
                 "echo:after",
-                text(
-                        modern.callTool(
-                                        new CallToolRequest(
-                                                "echo", Map.of("text", "after"), null, null, null))
-                                .block(WAIT)));
-    }
-
-    /** A listed tool's x-mcp-header arguments are mirrored into Mcp-Param headers. */
-    @Test
-    void mirrorsAnnotatedArguments() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
-        CallToolRequest region =
-                new CallToolRequest("region", Map.of("region", "eu"), null, null, null);
-
-        Mono<CallToolOutcome> unlistedCall = modern.callTool(region);
-        McpException unlisted = assertThrows(McpException.class, () -> unlistedCall.block(WAIT));
-        assertEquals(McpSchema.ErrorCodes.HEADER_MISMATCH, unlisted.error().code().intValue());
-
-        modern.listTools(null).block(WAIT);
-        assertEquals("region:eu", text(modern.callTool(region).block(WAIT)));
+                text(modern.tool("echo").arguments(Map.of("text", "after")).call().block(WAIT)));
     }
 
     /**
-     * With a single call slot, an input handler may make a blocking call: the first call no longer
-     * holds its slot, nor runs the handler on its interrupted worker.
+     * A tool's x-mcp-header arguments are mirrored into Mcp-Param headers, the client listing the
+     * tools it doesn't know first.
      */
     @Test
-    void anInputHandlerMayCallWithOneSlot() throws Exception {
-        AtomicReference<McpModernClient> holder = new AtomicReference<>();
+    void mirrorsAnnotatedArguments() throws Exception {
+        McpAsyncClient modern = start("HTTP2", null);
+
+        assertEquals(
+                "region:eu",
+                text(modern.tool("region").arguments(Map.of("region", "eu")).call().block(WAIT)));
+        assertEquals(
+                "region:us",
+                text(modern.tool("region").arguments(Map.of("region", "us")).call().block(WAIT)));
+    }
+
+    /**
+     * With a single call slot, an elicitation handler may make a blocking call: the first call no
+     * longer holds its slot.
+     */
+    @Test
+    void anElicitationHandlerMayCallWithOneSlot() throws Exception {
+        AtomicReference<McpAsyncClient> holder = new AtomicReference<>();
         List<String> nested = new CopyOnWriteArrayList<>();
-        McpModernClient modern =
+        McpAsyncClient modern =
                 start(
                         "HTTP2",
-                        required ->
+                        request ->
                                 Mono.fromCallable(
                                         () -> {
                                             nested.add(
                                                     text(
                                                             holder.get()
-                                                                    .callTool(
-                                                                            new CallToolRequest(
-                                                                                    "echo",
-                                                                                    Map.of(
-                                                                                            "text",
-                                                                                            "nested"),
-                                                                                    null,
-                                                                                    null,
-                                                                                    null))
+                                                                    .tool("echo")
+                                                                    .arguments(
+                                                                            Map.of(
+                                                                                    "text",
+                                                                                    "nested"))
+                                                                    .call()
                                                                     .block(WAIT)));
-                                            return Map.of("confirm", accepted());
+                                            return ElicitResult.accept(Map.of());
                                         }),
                         configured -> configured.setMaxConcurrentCalls(1));
         holder.set(modern);
 
-        assertEquals(
-                "approved:s1",
-                text(
-                        modern.callTool(new CallToolRequest("approve", Map.of(), null, null, null))
-                                .block(WAIT)));
+        assertEquals("approved:s1", text(modern.tool("approve").call().block(WAIT)));
         assertEquals(List.of("echo:nested"), nested);
     }
 
-    /** A call's headers are worked out when it is sent, after a listing chained before it. */
+    /**
+     * A tool whose x-mcp-header argument is a number isn't called: the SDK's client mirrors only
+     * strings, integers and booleans.
+     */
     @Test
-    void headersFollowAChainedListing() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
-        CallToolRequest region =
-                new CallToolRequest("region", Map.of("region", "eu"), null, null, null);
+    void aToolWithANumberHeaderIsNotCalled() throws Exception {
+        McpAsyncClient modern = start("HTTP2", null);
 
-        assertEquals(
-                "region:eu",
-                text(modern.listTools(null).then(modern.callTool(region)).block(WAIT)));
-    }
-
-    /** A number argument is mirrored in plain decimal notation. */
-    @Test
-    void mirrorsNumbersInPlainNotation() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
-        modern.listTools(null).block(WAIT);
-
-        assertEquals(
-                "level:1.0E7",
-                text(
-                        modern.callTool(
-                                        new CallToolRequest(
-                                                "level", Map.of("level", 1.0e7), null, null, null))
-                                .block(WAIT)));
+        Mono<CallToolResult> level = modern.tool("level").arguments(Map.of("level", 1.0e7)).call();
+        IllegalArgumentException refused =
+                assertThrows(IllegalArgumentException.class, () -> level.block(WAIT));
+        assertTrue(refused.getMessage().contains("unsupported type number"), refused.getMessage());
     }
 
     /** An error response fails the request with its JSON-RPC error. */
     @Test
     void anErrorResponseFails() throws Exception {
-        McpModernClient modern = start("HTTP2", null);
+        McpAsyncClient modern = start("HTTP2", null);
 
-        Mono<McpSchema.ReadResourceOutcome> missing =
-                modern.readResource(
-                        new McpSchema.ReadResourceRequest("test://missing", null, null, null),
-                        null);
+        Mono<McpSchema.ReadResourceResult> missing = modern.resource("test://missing").read();
         McpException error = assertThrows(McpException.class, () -> missing.block(WAIT));
         assertEquals(McpSchema.ErrorCodes.INVALID_PARAMS, error.error().code().intValue());
     }
@@ -347,6 +338,8 @@ class McpModernClientTestCase {
         start("HTTP2", null);
         client.stop();
         assertFalse(client.isStarted());
+        assertThrows(IllegalStateException.class, client::getModernClient);
+        assertThrows(IllegalStateException.class, client::getTasksClient);
 
         McpClientAdapter stdio = new McpClientAdapter(connector, "stdio://localhost/mcp");
         stdio.setProtocolVersion(McpProtocol.MODERN_VERSION);
@@ -354,15 +347,20 @@ class McpModernClientTestCase {
         McpClientAdapter unknown = new McpClientAdapter(connector, "http://localhost/mcp");
         assertThrows(
                 IllegalArgumentException.class, () -> unknown.setProtocolVersion("2024-11-05"));
+        assertThrows(IllegalArgumentException.class, () -> unknown.setMaxInputRounds(0));
     }
 
-    /** Starts the server, if needed, and a modern client with an optional input handler. */
-    private McpModernClient start(String mode, McpInputHandler inputHandler) throws Exception {
-        return start(mode, inputHandler, ignored -> {});
+    /** Starts the server, if needed, and a modern client with an optional form handler. */
+    private McpAsyncClient start(
+            String mode, McpAsyncElicitationHandler<McpSchema.ElicitFormRequest> form)
+            throws Exception {
+        return start(mode, form, ignored -> {});
     }
 
-    private McpModernClient start(
-            String mode, McpInputHandler inputHandler, Consumer<McpClientAdapter> configure)
+    private McpAsyncClient start(
+            String mode,
+            McpAsyncElicitationHandler<McpSchema.ElicitFormRequest> form,
+            Consumer<McpClientAdapter> configure)
             throws Exception {
         if (adapter == null) {
             adapter = adapter();
@@ -380,13 +378,7 @@ class McpModernClientTestCase {
                 new McpClientAdapter(
                         connector, "http://localhost:" + server.getActualPort() + "/mcp");
         client.setProtocolVersion(McpProtocol.MODERN_VERSION);
-        client.setModernCapabilities(
-                McpSchema.ClientCapabilities.builder()
-                        .elicitation(
-                                new McpSchema.ClientCapabilities.Elicitation(
-                                        new McpSchema.ClientCapabilities.Elicitation.Form(), null))
-                        .build());
-        client.setInputHandler(inputHandler);
+        client.setFormElicitation(form);
         configure.accept(client);
         client.start();
         return client.getModernClient();

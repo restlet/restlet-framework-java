@@ -10,6 +10,9 @@ package org.restlet.ext.mcp.internal;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.modern.JsonRpc;
+import io.modelcontextprotocol.modern.McpSchema;
+import io.modelcontextprotocol.modern.client.transport.McpClientTransport;
+import io.modelcontextprotocol.modern.client.transport.McpTransportRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.restlet.Client;
@@ -39,6 +43,7 @@ import org.restlet.representation.Representation;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Operators;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -47,9 +52,10 @@ import reactor.core.scheduler.Schedulers;
  * response. Calls are admitted within the call limit and timeout; listen streams within their own
  * limit, without timeout. Messages are read as they are demanded, so a slow subscriber holds back
  * the server rather than filling memory. Cancelling a request aborts its HTTP exchange, which the
- * server sees as a cancellation. It never retries or reconnects.
+ * server sees as a cancellation. It never retries or reconnects. It is the transport of the SDK's
+ * modern client, which it serves within the same limits.
  */
-public final class McpModernHttpTransport {
+public final class McpModernHttpTransport implements McpClientTransport {
     private static final String BASE64_PREFIX = "=?base64?";
     private static final String BASE64_SUFFIX = "?=";
 
@@ -58,6 +64,11 @@ public final class McpModernHttpTransport {
      * fields. Each message is limited in bytes on its own.
      */
     private static final int MAX_FRAMING_CHARS = 8192;
+
+    /** Delivers the messages received, each run on a new virtual thread. */
+    private static final Scheduler DELIVERY =
+            Schedulers.fromExecutorService(
+                    Executors.newVirtualThreadPerTaskExecutor(), "restlet-mcp-delivery");
 
     private final Client client;
     private final String target;
@@ -96,18 +107,46 @@ public final class McpModernHttpTransport {
     }
 
     /**
+     * Sends a request of the SDK's client, a {@code subscriptions/listen} stream without time
+     * limit, any other within the round timeout it gives too.
+     */
+    @Override
+    public Flux<JsonRpc.JSONRPCMessage> exchange(McpTransportRequest request) {
+        boolean listen = McpSchema.METHOD_SUBSCRIPTIONS_LISTEN.equals(request.method());
+        Flux<JsonRpc.JSONRPCMessage> sent =
+                send(
+                        request.message(),
+                        request.protocolVersion(),
+                        request.name(),
+                        request.paramHeaders(),
+                        listen);
+        return listen ? sent : request.withRoundTimeout(sent);
+    }
+
+    /** Sends the {@code Mcp-Param-*} headers of the tools' {@code x-mcp-header} arguments. */
+    @Override
+    public boolean mirrorsToolParams() {
+        return true;
+    }
+
+    /**
      * Sends a request, and streams back the messages answering it: notifications, then its
      * response, after which the stream completes. Responses to other requests are dropped, and the
      * stream fails if it ends without its response. Cancelling the stream aborts the exchange.
      *
      * @param rpc The request.
+     * @param version The value of the {@code MCP-Protocol-Version} header.
      * @param name The value of the {@code Mcp-Name} header, or null.
      * @param params The values of the {@code Mcp-Param-*} headers, by name.
      * @param listen Whether this is a {@code subscriptions/listen} stream, without time limit.
      * @return The messages answering the request.
      */
     public Flux<JsonRpc.JSONRPCMessage> send(
-            JsonRpc.JSONRPCRequest rpc, String name, Map<String, String> params, boolean listen) {
+            JsonRpc.JSONRPCRequest rpc,
+            String version,
+            String name,
+            Map<String, String> params,
+            boolean listen) {
         return Flux.<JsonRpc.JSONRPCMessage>create(
                         sink -> {
                             AtomicReference<Request> active = new AtomicReference<>();
@@ -123,19 +162,23 @@ public final class McpModernHttpTransport {
                                             .submit(
                                                     () ->
                                                             exchange(
-                                                                    rpc, name, params, active,
-                                                                    emitter),
+                                                                    rpc, version, name, params,
+                                                                    active, emitter),
                                                     () -> abort(active.get()))
                                             .subscribe(null, sink::error, sink::complete);
                             sink.onCancel(running);
                         })
                 // What follows runs off the worker, which then frees its slot without waiting. The
-                // worker reads only what this bounded queue has room for.
-                .publishOn(Schedulers.boundedElastic());
+                // worker reads only what this bounded queue has room for. Each delivery runs on a
+                // thread of its own: a subscriber that cancels on the response, as the SDK's client
+                // does, and then blocks, such as an elicitation handler making a call, holds no
+                // pooled thread that the next exchange would wait behind.
+                .publishOn(DELIVERY);
     }
 
     private void exchange(
             JsonRpc.JSONRPCRequest rpc,
+            String version,
             String name,
             Map<String, String> params,
             AtomicReference<Request> active,
@@ -144,7 +187,7 @@ public final class McpModernHttpTransport {
         if (closed) {
             throw new IOException("MCP client is closed");
         }
-        Request request = request(rpc, name, params);
+        Request request = request(rpc, version, name, params);
         active.set(request);
         requests.add(request);
         Response response = null;
@@ -174,7 +217,8 @@ public final class McpModernHttpTransport {
         }
     }
 
-    private Request request(JsonRpc.JSONRPCRequest rpc, String name, Map<String, String> params)
+    private Request request(
+            JsonRpc.JSONRPCRequest rpc, String version, String name, Map<String, String> params)
             throws IOException {
         Request request =
                 new Request(
@@ -184,7 +228,7 @@ public final class McpModernHttpTransport {
                                 McpMessages.encode(mapper, rpc, maxMessageBytes),
                                 MediaType.APPLICATION_JSON));
         customizer.accept(request);
-        request.getHeaders().set(McpProtocol.VERSION_HEADER, McpProtocol.MODERN_VERSION);
+        request.getHeaders().set(McpProtocol.VERSION_HEADER, version);
         request.getHeaders().set("Mcp-Method", rpc.method());
         if (name != null) {
             request.getHeaders().set("Mcp-Name", headerValue(name));

@@ -235,7 +235,11 @@ class McpModernHttpTransportTestCase {
 
     private Flux<JsonRpc.JSONRPCMessage> send(long id) {
         return transport.send(
-                new JsonRpc.JSONRPCRequest("tools/call", id, Map.of()), null, Map.of(), false);
+                new JsonRpc.JSONRPCRequest("tools/call", id, Map.of()),
+                McpProtocol.MODERN_VERSION,
+                null,
+                Map.of(),
+                false);
     }
 
     /** Blocks on a stream, rethrowing the checked exception it failed with. */

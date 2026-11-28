@@ -22,8 +22,11 @@ import io.modelcontextprotocol.modern.McpException;
 import io.modelcontextprotocol.modern.McpSchema;
 import io.modelcontextprotocol.modern.McpSchema.CallToolOutcome;
 import io.modelcontextprotocol.modern.McpSchema.CallToolRequest;
+import io.modelcontextprotocol.modern.McpSchema.ElicitFormRequest;
+import io.modelcontextprotocol.modern.McpSchema.ElicitResult;
 import io.modelcontextprotocol.modern.McpSchema.MetaKeys;
 import io.modelcontextprotocol.modern.McpSchema.Tool;
+import io.modelcontextprotocol.modern.client.McpAsyncElicitationHandler;
 import io.modelcontextprotocol.modern.server.McpAsyncResponse;
 import io.modelcontextprotocol.modern.server.feature.McpAsyncTool;
 import java.io.ByteArrayOutputStream;
@@ -264,16 +267,16 @@ class McpTasksTestCase {
     @Test
     void theClientAwaitsATaskAnsweringItsQuestions() throws Exception {
         store.askFirst = true;
-        List<Map<String, Object>> asked = new CopyOnWriteArrayList<>();
-        McpModernClient modern =
+        List<ElicitFormRequest> asked = new CopyOnWriteArrayList<>();
+        McpTasksClient modern =
                 start(
-                        required -> {
-                            asked.add(MAPPER.convertValue(required, new TypeRef<>() {}));
-                            return Mono.just(Map.of("confirm", Map.of("action", "accept")));
+                        request -> {
+                            asked.add(request);
+                            return Mono.just(new ElicitResult(ElicitResult.Action.ACCEPT, null));
                         });
 
         CallToolOutcome outcome =
-                modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null), null)
                         .block(WAIT);
         McpTaskResult task = assertInstanceOf(McpTaskResult.class, outcome);
         assertEquals("t-1", task.task().taskId());
@@ -283,14 +286,90 @@ class McpTasksTestCase {
                 "done",
                 firstText(MAPPER.convertValue(done, new TypeRef<Map<String, Object>>() {})));
         assertEquals(1, asked.size(), asked.toString());
-        assertTrue(((Map<?, ?>) asked.get(0).get("inputRequests")).containsKey("confirm"));
+        assertEquals("Proceed?", asked.get(0).message());
         assertEquals(Map.of("confirm", Map.of("action", "accept")), store.answers.get("t-1"));
+    }
+
+    /**
+     * The tasks client answers a call's questions with the form handler, and mirrors the arguments
+     * the definition given annotates; without it, the server finds the header missing.
+     */
+    @Test
+    void theTasksClientAnswersACallsQuestions() throws Exception {
+        List<String> asked = new CopyOnWriteArrayList<>();
+        McpTasksClient tasks =
+                start(
+                        request -> {
+                            asked.add(request.message());
+                            return Mono.just(ElicitResult.accept(Map.of()));
+                        });
+        Tool gated = gatedTool();
+        CallToolRequest call =
+                new CallToolRequest("gated", Map.of("region", "eu"), null, null, null);
+
+        assertEquals(
+                "gated:eu:accept",
+                firstText(
+                        MAPPER.convertValue(
+                                tasks.callTool(call, gated).block(WAIT),
+                                new TypeRef<Map<String, Object>>() {})));
+        assertEquals(List.of("Proceed?"), asked);
+        Mono<CallToolOutcome> unmirrored = tasks.callTool(call, null);
+        McpException mismatch = assertThrows(McpException.class, () -> unmirrored.block(WAIT));
+        assertEquals(McpSchema.ErrorCodes.HEADER_MISMATCH, mismatch.error().code().intValue());
+    }
+
+    /**
+     * A call's question goes back to the caller when the handler gives no answer, and past the
+     * round limit.
+     */
+    @Test
+    void theTasksClientHandsBackUnansweredQuestions() throws Exception {
+        CallToolRequest call =
+                new CallToolRequest("gated", Map.of("region", "eu"), null, null, null);
+        McpTasksClient silent = start(request -> Mono.empty());
+        assertInstanceOf(
+                McpSchema.InputRequiredResult.class,
+                silent.callTool(call, gatedTool()).block(WAIT));
+        cleanup();
+
+        List<String> rounds = new CopyOnWriteArrayList<>();
+        McpTasksClient limited =
+                start(
+                        request -> {
+                            rounds.add("asked");
+                            return Mono.just(ElicitResult.accept(Map.of()));
+                        },
+                        client -> client.setMaxInputRounds(1));
+        assertEquals(
+                "gated:eu:accept",
+                firstText(
+                        MAPPER.convertValue(
+                                limited.callTool(call, gatedTool()).block(WAIT),
+                                new TypeRef<Map<String, Object>>() {})));
+        assertEquals(1, rounds.size());
+        CallToolRequest loop =
+                new CallToolRequest("gated", Map.of("region", "loop"), null, null, null);
+        McpSchema.InputRequiredResult again =
+                assertInstanceOf(
+                        McpSchema.InputRequiredResult.class,
+                        limited.callTool(loop, gatedTool()).block(WAIT));
+        assertTrue(again.inputRequests().containsKey("confirm"));
+        assertEquals(2, rounds.size()); // One more round, then the limit.
+    }
+
+    /** The definition of the gated tool, as the SDK's client lists it. */
+    private Tool gatedTool() {
+        return client.getModernClient().tools().list().block(WAIT).tools().stream()
+                .filter(tool -> "gated".equals(tool.name()))
+                .findFirst()
+                .orElseThrow();
     }
 
     /** Waiting for a task through thousands of polls grows neither the stack nor the chain. */
     @Test
     void theClientAwaitsThroughManyPolls() throws Exception {
-        McpModernClient modern = start(null);
+        McpTasksClient modern = start(null);
 
         long few = depthAfter(modern, 5);
         long many = depthAfter(modern, 300);
@@ -301,12 +380,14 @@ class McpTasksTestCase {
     }
 
     /** The stack depth at which the result of a wait through {@code polls} polls arrives. */
-    private long depthAfter(McpModernClient modern, int polls) {
+    private long depthAfter(McpTasksClient modern, int polls) {
         store.workingPolls.set(polls);
         McpTaskResult task =
                 assertInstanceOf(
                         McpTaskResult.class,
-                        modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                        modern.callTool(
+                                        new CallToolRequest("slow", Map.of(), null, null, null),
+                                        null)
                                 .block(WAIT));
         return modern.awaitTask(task, 0)
                 .map(
@@ -328,22 +409,24 @@ class McpTasksTestCase {
     @Test
     void theClientHandsBackATaskWaitingOnInput() throws Exception {
         store.askFirst = true;
-        McpModernClient bare = start(null);
+        McpTasksClient bare = start(null);
         McpTaskResult first =
                 assertInstanceOf(
                         McpTaskResult.class,
-                        bare.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                        bare.callTool(new CallToolRequest("slow", Map.of(), null, null, null), null)
                                 .block(WAIT));
         McpTaskResult waiting =
                 assertInstanceOf(McpTaskResult.class, bare.awaitTask(first).block(WAIT));
         assertEquals(McpTask.Status.INPUT_REQUIRED, waiting.task().status());
         cleanup();
 
-        McpModernClient silent = start(required -> Mono.empty());
+        McpTasksClient silent = start(request -> Mono.empty());
         McpTaskResult second =
                 assertInstanceOf(
                         McpTaskResult.class,
-                        silent.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                        silent.callTool(
+                                        new CallToolRequest("slow", Map.of(), null, null, null),
+                                        null)
                                 .block(WAIT));
         assertEquals(
                 McpTask.Status.INPUT_REQUIRED,
@@ -354,17 +437,19 @@ class McpTasksTestCase {
 
         store.askAlways = true;
         List<String> rounds = new CopyOnWriteArrayList<>();
-        McpModernClient limited =
+        McpTasksClient limited =
                 start(
-                        required -> {
+                        request -> {
                             rounds.add("asked");
-                            return Mono.just(Map.of("confirm", Map.of("action", "accept")));
+                            return Mono.just(new ElicitResult(ElicitResult.Action.ACCEPT, null));
                         },
                         client -> client.setMaxInputRounds(2));
         McpTaskResult third =
                 assertInstanceOf(
                         McpTaskResult.class,
-                        limited.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                        limited.callTool(
+                                        new CallToolRequest("slow", Map.of(), null, null, null),
+                                        null)
                                 .block(WAIT));
         assertEquals(
                 McpTask.Status.INPUT_REQUIRED,
@@ -414,9 +499,9 @@ class McpTasksTestCase {
     /** The client's task methods, and a failed or cancelled task ending the wait with an error. */
     @Test
     void theClientReportsFailedAndCancelledTasks() throws Exception {
-        McpModernClient modern = start(null);
+        McpTasksClient modern = start(null);
         CallToolOutcome outcome =
-                modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null))
+                modern.callTool(new CallToolRequest("slow", Map.of(), null, null, null), null)
                         .block(WAIT);
         McpTaskResult task = assertInstanceOf(McpTaskResult.class, outcome);
 
@@ -637,8 +722,58 @@ class McpTasksTestCase {
                                                                                                         McpProtocol
                                                                                                                 .CONTEXT_KEY)))
                                                                 : McpTestFeatures.text("done")))));
+        adapter.getTools().add(gated());
         adapter.setTaskStore(store);
         return adapter;
+    }
+
+    /**
+     * A tool whose region argument is mirrored in a header, asking to confirm first, or again and
+     * again for the region "loop", then answering with the region and the confirmation.
+     */
+    private static McpAsyncTool gated() {
+        return McpAsyncTool.of(
+                Tool.builder(
+                                "gated",
+                                Map.of(
+                                        "type",
+                                        "object",
+                                        "properties",
+                                        Map.of(
+                                                "region",
+                                                Map.of(
+                                                        "type",
+                                                        "string",
+                                                        "x-mcp-header",
+                                                        "Region"))))
+                        .build(),
+                (ctx, request) -> {
+                    CallToolOutcome outcome =
+                            request.requestState() == null
+                                            || "loop".equals(request.arguments().get("region"))
+                                    ? McpSchema.InputRequiredResult.builder()
+                                            .elicit(
+                                                    "confirm",
+                                                    ElicitFormRequest.builder(
+                                                                    "Proceed?",
+                                                                    Map.of(
+                                                                            "type",
+                                                                            "object",
+                                                                            "properties",
+                                                                            Map.of()))
+                                                            .build())
+                                            .requestState("s1")
+                                            .build()
+                                    : McpTestFeatures.text(
+                                            "gated:"
+                                                    + request.arguments().get("region")
+                                                    + ":"
+                                                    + ((Map<?, ?>)
+                                                                    request.inputResponses()
+                                                                            .get("confirm"))
+                                                            .get("action"));
+                    return Mono.just(McpAsyncResponse.result(outcome));
+                });
     }
 
     private static McpAsyncTool alwaysTask() {
@@ -651,12 +786,14 @@ class McpTasksTestCase {
                                                 McpTask.working("t-1", CREATED, null, null)))));
     }
 
-    private McpModernClient start(McpInputHandler inputHandler) throws Exception {
-        return start(inputHandler, ignored -> {});
+    private McpTasksClient start(McpAsyncElicitationHandler<ElicitFormRequest> form)
+            throws Exception {
+        return start(form, ignored -> {});
     }
 
-    private McpModernClient start(
-            McpInputHandler inputHandler, java.util.function.Consumer<McpClientAdapter> configure)
+    private McpTasksClient start(
+            McpAsyncElicitationHandler<ElicitFormRequest> form,
+            java.util.function.Consumer<McpClientAdapter> configure)
             throws Exception {
         McpServerAdapter adapter = adapter();
         adapter.start();
@@ -670,17 +807,10 @@ class McpTasksTestCase {
                 new McpClientAdapter(
                         connector, "http://localhost:" + server.getActualPort() + "/mcp");
         client.setProtocolVersion(MODERN);
-        client.setModernCapabilities(
-                McpSchema.ClientCapabilities.builder()
-                        .elicitation(
-                                new McpSchema.ClientCapabilities.Elicitation(
-                                        new McpSchema.ClientCapabilities.Elicitation.Form(), null))
-                        .extensions(Map.of(McpTask.EXTENSION_ID, Map.of()))
-                        .build());
-        client.setInputHandler(inputHandler);
+        client.setFormElicitation(form);
         configure.accept(client);
         client.start();
-        return client.getModernClient();
+        return client.getTasksClient();
     }
 
     private Map<String, Object> call(
