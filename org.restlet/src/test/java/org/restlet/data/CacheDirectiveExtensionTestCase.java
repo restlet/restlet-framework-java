@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,19 +49,17 @@ class CacheDirectiveExtensionTestCase {
     }
 
     @Test
-    void staleWhileRevalidate_setsDigitValue() {
+    void staleWhileRevalidate_hasNumericValue() {
         CacheDirective directive = CacheDirective.staleWhileRevalidate(30);
         assertEquals("stale-while-revalidate", directive.getName());
         assertEquals("30", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
-    void staleIfError_setsDigitValue() {
+    void staleIfError_hasNumericValue() {
         CacheDirective directive = CacheDirective.staleIfError(86400);
         assertEquals("stale-if-error", directive.getName());
         assertEquals("86400", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test

@@ -5,6 +5,12 @@ Changes log
 
 - 3.0 Milestone 3 (month-day-2026)
     - Breaking changes
+        - `CacheDirective` no longer has the `digit` attribute: `isDigit()`, `setDigit(boolean)` and
+          the constructor `CacheDirective(String, String, boolean)` are removed (use
+          `new CacheDirective(name, value)`). The attribute had no effect on the header that is
+          written, and made a directive built by a factory such as `CacheDirective.maxAge(60)`
+          different from the same directive read from a header: two directives are now equal when
+          their names and values are equal (#1730).
         - The MCP extension moves from the MCP Java SDK 2.2.0-M2 to 2.2.0, the release Spring AI
           2.1.0 uses (#1705). The SDK types in its public API changed with it: `SubscriptionFilter`
           is an open set of fields (`SubscriptionFilter.of(...)` replaces its constructor),

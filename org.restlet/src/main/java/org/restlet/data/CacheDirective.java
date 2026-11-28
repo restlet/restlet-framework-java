@@ -56,7 +56,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective maxAge(int maxAge) {
-        return new CacheDirective(HeaderConstants.CACHE_MAX_AGE, Integer.toString(maxAge), true);
+        return new CacheDirective(HeaderConstants.CACHE_MAX_AGE, Integer.toString(maxAge));
     }
 
     /**
@@ -85,8 +85,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale(int maxStale) {
-        return new CacheDirective(
-                HeaderConstants.CACHE_MAX_STALE, Integer.toString(maxStale), true);
+        return new CacheDirective(HeaderConstants.CACHE_MAX_STALE, Integer.toString(maxStale));
     }
 
     /**
@@ -103,8 +102,7 @@ public final class CacheDirective implements NamedValue<String> {
      *     Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective minFresh(int minFresh) {
-        return new CacheDirective(
-                HeaderConstants.CACHE_MIN_FRESH, Integer.toString(minFresh), true);
+        return new CacheDirective(HeaderConstants.CACHE_MIN_FRESH, Integer.toString(minFresh));
     }
 
     /**
@@ -324,7 +322,7 @@ public final class CacheDirective implements NamedValue<String> {
      */
     public static CacheDirective sharedMaxAge(int sharedMaxAge) {
         return new CacheDirective(
-                HeaderConstants.CACHE_SHARED_MAX_AGE, Integer.toString(sharedMaxAge), true);
+                HeaderConstants.CACHE_SHARED_MAX_AGE, Integer.toString(sharedMaxAge));
     }
 
     /**
@@ -342,9 +340,7 @@ public final class CacheDirective implements NamedValue<String> {
      */
     public static CacheDirective staleIfError(int seconds) {
         return new CacheDirective(
-                HeaderConstants.CACHE_STALE_IF_ERROR,
-                Integer.toString(checkSeconds(seconds)),
-                true);
+                HeaderConstants.CACHE_STALE_IF_ERROR, Integer.toString(checkSeconds(seconds)));
     }
 
     /**
@@ -362,8 +358,7 @@ public final class CacheDirective implements NamedValue<String> {
     public static CacheDirective staleWhileRevalidate(int seconds) {
         return new CacheDirective(
                 HeaderConstants.CACHE_STALE_WHILE_REVALIDATE,
-                Integer.toString(checkSeconds(seconds)),
-                true);
+                Integer.toString(checkSeconds(seconds)));
     }
 
     private static int checkSeconds(int seconds) {
@@ -375,9 +370,6 @@ public final class CacheDirective implements NamedValue<String> {
 
         return seconds;
     }
-
-    /** Indicates if the directive is a digit value. */
-    private boolean digit;
 
     /** The name. */
     private volatile String name;
@@ -401,20 +393,8 @@ public final class CacheDirective implements NamedValue<String> {
      * @param value The directive value.
      */
     public CacheDirective(String name, String value) {
-        this(name, value, false);
-    }
-
-    /**
-     * Constructor for directives with a value.
-     *
-     * @param name The directive name.
-     * @param value The directive value.
-     * @param digit The kind of value (true for a digit value, false otherwise).
-     */
-    public CacheDirective(String name, String value, boolean digit) {
         this.name = name;
         this.value = value;
-        this.digit = digit;
     }
 
     /** {@inheritDoc} */
@@ -428,8 +408,7 @@ public final class CacheDirective implements NamedValue<String> {
         }
 
         return Objects.equals(getName(), that.getName())
-                && Objects.equals(getValue(), that.getValue())
-                && (this.digit == that.digit);
+                && Objects.equals(getValue(), that.getValue());
     }
 
     /**
@@ -453,25 +432,7 @@ public final class CacheDirective implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(getName(), getValue(), isDigit());
-    }
-
-    /**
-     * Returns true if the directive contains a digit value.
-     *
-     * @return True if the directive contains a digit value.
-     */
-    public boolean isDigit() {
-        return digit;
-    }
-
-    /**
-     * Indicates if the directive is a digit value.
-     *
-     * @param digit True if the directive contains a digit value.
-     */
-    public void setDigit(boolean digit) {
-        this.digit = digit;
+        return SystemUtils.hashCode(getName(), getValue());
     }
 
     /**
@@ -494,6 +455,6 @@ public final class CacheDirective implements NamedValue<String> {
 
     @Override
     public String toString() {
-        return "CacheDirective [digit=" + digit + ", name=" + name + ", value=" + value + "]";
+        return "CacheDirective [name=" + name + ", value=" + value + "]";
     }
 }

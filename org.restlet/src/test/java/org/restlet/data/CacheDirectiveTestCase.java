@@ -9,7 +9,6 @@
 package org.restlet.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,11 +20,10 @@ import org.junit.jupiter.api.Test;
 class CacheDirectiveTestCase {
 
     @Test
-    void maxAge_setsDigitValue() {
+    void maxAge_hasNumericValue() {
         CacheDirective directive = CacheDirective.maxAge(3600);
         assertEquals("max-age", directive.getName());
         assertEquals("3600", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
@@ -33,23 +31,20 @@ class CacheDirectiveTestCase {
         CacheDirective directive = CacheDirective.maxStale();
         assertEquals("max-stale", directive.getName());
         assertNull(directive.getValue());
-        assertFalse(directive.isDigit());
     }
 
     @Test
-    void maxStale_withArgument_setsDigitValue() {
+    void maxStale_withArgument_hasNumericValue() {
         CacheDirective directive = CacheDirective.maxStale(120);
         assertEquals("max-stale", directive.getName());
         assertEquals("120", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
-    void minFresh_setsDigitValue() {
+    void minFresh_hasNumericValue() {
         CacheDirective directive = CacheDirective.minFresh(30);
         assertEquals("min-fresh", directive.getName());
         assertEquals("30", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
@@ -137,26 +132,23 @@ class CacheDirectiveTestCase {
     }
 
     @Test
-    void sharedMaxAge_setsDigitValue() {
+    void sharedMaxAge_hasNumericValue() {
         CacheDirective directive = CacheDirective.sharedMaxAge(600);
         assertEquals("s-maxage", directive.getName());
         assertEquals("600", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
-    void constructor_withNameOnly_hasNoValueAndNotDigit() {
+    void constructor_withNameOnly_hasNoValue() {
         CacheDirective directive = new CacheDirective("custom");
         assertEquals("custom", directive.getName());
         assertNull(directive.getValue());
-        assertFalse(directive.isDigit());
     }
 
     @Test
-    void constructor_withNameAndValue_isNotDigitByDefault() {
+    void constructor_withNameAndValue_hasValue() {
         CacheDirective directive = new CacheDirective("custom", "value");
         assertEquals("value", directive.getValue());
-        assertFalse(directive.isDigit());
     }
 
     @Test
@@ -164,25 +156,16 @@ class CacheDirectiveTestCase {
         CacheDirective directive = new CacheDirective("custom", "value");
         directive.setName("other");
         directive.setValue("otherValue");
-        directive.setDigit(true);
         assertEquals("other", directive.getName());
         assertEquals("otherValue", directive.getValue());
-        assertTrue(directive.isDigit());
     }
 
     @Test
-    void equals_sameNameValueDigit_returnsTrue() {
-        CacheDirective d1 = new CacheDirective("max-age", "10", true);
-        CacheDirective d2 = new CacheDirective("max-age", "10", true);
+    void equals_sameNameAndValue_returnsTrue() {
+        CacheDirective d1 = new CacheDirective("max-age", "10");
+        CacheDirective d2 = CacheDirective.maxAge(10);
         assertEquals(d1, d2);
         assertEquals(d1.hashCode(), d2.hashCode());
-    }
-
-    @Test
-    void equals_differentDigitFlag_returnsFalse() {
-        CacheDirective d1 = new CacheDirective("max-age", "10", true);
-        CacheDirective d2 = new CacheDirective("max-age", "10", false);
-        assertNotEquals(d1, d2);
     }
 
     @Test
@@ -194,9 +177,8 @@ class CacheDirectiveTestCase {
 
     @Test
     void toString_containsFields() {
-        CacheDirective directive = new CacheDirective("no-store", null, false);
+        CacheDirective directive = new CacheDirective("no-store", null);
         String result = directive.toString();
         assertTrue(result.contains("no-store"));
-        assertTrue(result.contains("digit=false"));
     }
 }
