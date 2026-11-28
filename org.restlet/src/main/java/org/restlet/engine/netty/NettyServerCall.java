@@ -585,12 +585,7 @@ class NettyServerCall {
         Method method = response.getRequest().getMethod();
 
         if (Status.REDIRECTION_NOT_MODIFIED.equals(status)) {
-            // Also for a HEAD request: RFC 9110 section 15.4.5, a 304 carries the validators and
-            // caching headers only, whatever the method.
-            if (response.getEntity() != null) {
-                HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(), responseHeaders);
-                response.setEntity(null);
-            }
+            prepareNotModifiedEntity(response);
         } else if (Method.HEAD.equals(method)) {
             HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
             response.setEntity(null);
@@ -626,6 +621,18 @@ class NettyServerCall {
                 }
                 response.setEntity(null);
             }
+        }
+    }
+
+    /**
+     * Adds the entity headers of a 304 response and drops the entity. This is also done for a HEAD
+     * request: RFC 9110 section 15.4.5, a 304 carries the validators and caching headers only,
+     * whatever the method.
+     */
+    private void prepareNotModifiedEntity(Response response) {
+        if (response.getEntity() != null) {
+            HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(), responseHeaders);
+            response.setEntity(null);
         }
     }
 
