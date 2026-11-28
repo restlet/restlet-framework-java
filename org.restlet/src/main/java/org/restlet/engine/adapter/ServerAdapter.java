@@ -88,7 +88,11 @@ public class ServerAdapter extends Adapter {
      */
     public void commit(HttpResponse response) {
         try {
-            if (Method.HEAD.equals(response.getRequest().getMethod())) {
+            if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
+                // Also for a HEAD request: RFC 9110 section 15.4.5, a 304 carries the
+                // validators and caching headers only, whatever the method.
+                handleRedirectionNotNodified(response);
+            } else if (Method.HEAD.equals(response.getRequest().getMethod())) {
                 addEntityHeaders(response);
                 response.setEntity(null);
             } else if (Method.GET.equals(response.getRequest().getMethod())
@@ -104,8 +108,6 @@ public class ServerAdapter extends Adapter {
                 handleNoContentResponse(response);
             } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
                 handleResetContent(response);
-            } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
-                handleRedirectionNotNodified(response);
             } else if (response.getStatus().isInformational()) {
                 handleInformationalStatus(response);
             } else {
