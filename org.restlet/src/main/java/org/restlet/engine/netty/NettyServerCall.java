@@ -584,7 +584,14 @@ class NettyServerCall {
         Status status = response.getStatus();
         Method method = response.getRequest().getMethod();
 
-        if (Method.HEAD.equals(method)) {
+        if (Status.REDIRECTION_NOT_MODIFIED.equals(status)) {
+            // Also for a HEAD request: RFC 9110 section 15.4.5, a 304 carries the validators and
+            // caching headers only, whatever the method.
+            if (response.getEntity() != null) {
+                HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(), responseHeaders);
+                response.setEntity(null);
+            }
+        } else if (Method.HEAD.equals(method)) {
             HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
             response.setEntity(null);
         } else if (Method.GET.equals(method)
@@ -601,11 +608,6 @@ class NettyServerCall {
         } else if (Status.SUCCESS_NO_CONTENT.equals(status)) {
             HeaderUtils.addEntityHeaders(response.getEntity(), responseHeaders);
             dropEntity(response, Level.FINE, "204 (No content)");
-        } else if (Status.REDIRECTION_NOT_MODIFIED.equals(status)) {
-            if (response.getEntity() != null) {
-                HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(), responseHeaders);
-                response.setEntity(null);
-            }
         } else if (Status.SUCCESS_RESET_CONTENT.equals(status)) {
             dropEntity(response, Level.WARNING, "205 (Reset content)");
         } else if (status.isInformational()) {

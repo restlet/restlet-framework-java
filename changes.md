@@ -103,6 +103,9 @@ Changes log
           first scope outermost. `McpRequestContext.transportResponse()` gives the transport
           response.
     - Bugs fixed
+        - A HEAD request answered 304 (Not Modified) now carries the same headers as the GET
+          request: the validators and caching headers only, not the other entity headers such as
+          `Content-Type` and `Last-Modified` (RFC 9110, section 15.4.5) (#1738).
         - The `Range` header is now applied to GET requests only, as RFC 9110 section 14.2 requires:
           a HEAD request with a range was answered "206 Partial Content" (and so was OPTIONS), it is
           now answered as without the range (#1734).
