@@ -8,6 +8,7 @@
  */
 package org.restlet.engine.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,7 +17,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -155,5 +159,55 @@ class NotModifiedHeadersTestCase {
 		assertTrue(
 				headersOf(response).contains("\r\nexpires: fri, 15 jan 2027 08:00:00 gmt"),
 				response);
+	}
+
+	/**
+	 * The names of the header fields of a response, without the ones that depend on the connection.
+	 */
+	private static Set<String> headerNames(String response) {
+		Set<String> names = new TreeSet<>();
+		String[] lines = headersOf(response).split("\r\n");
+		for (int i = 1; i < lines.length; i++) {
+			String name = lines[i].substring(0, lines[i].indexOf(':'));
+			if (!List.of("date", "server", "connection", "content-length").contains(name)) {
+				names.add(name);
+			}
+		}
+		return names;
+	}
+
+	/** RFC 9110 sections 9.3.2 and 15.4.5: a HEAD answered 304 is answered like the GET (#1738). */
+	@Test
+	void head_notModified_doesNotCarryTheOtherEntityHeaders() throws Exception {
+		String response = exchange("HEAD", "If-None-Match: \"v1\"\r\n");
+		String headers = headersOf(response);
+
+		assertTrue(response.startsWith("HTTP/1.1 304"), response);
+		assertTrue(headers.contains("\r\netag: \"v1\""), response);
+		assertTrue(headers.contains("\r\ncache-control: max-age=60"), response);
+		assertTrue(headers.contains("\r\nvary: accept-language"), response);
+		assertTrue(headers.contains("\r\nexpires: fri, 15 jan 2027 08:00:00 gmt"), response);
+		assertFalse(headers.contains("\r\nlast-modified: "), headers);
+		assertFalse(headers.contains("\r\ncontent-type: "), headers);
+	}
+
+	@Test
+	void head_notModified_hasTheHeaderFieldsOfTheGetNotModified() throws Exception {
+		assertEquals(
+				headerNames(exchange("GET", "If-None-Match: \"v1\"\r\n")),
+				headerNames(exchange("HEAD", "If-None-Match: \"v1\"\r\n")));
+	}
+
+	@Test
+	void head_unconditional_stillCarriesTheEntityHeaders() throws Exception {
+		String response = exchange("HEAD", "");
+		String headers = headersOf(response);
+
+		assertTrue(response.startsWith("HTTP/1.1 200"), response);
+		assertTrue(headers.contains("\r\ncontent-type: text/plain"), response);
+		assertTrue(headers.contains("\r\nlast-modified: "), response);
+		assertTrue(headers.contains("\r\netag: \"v1\""), response);
+		assertTrue(headers.contains("\r\nexpires: fri, 15 jan 2027 08:00:00 gmt"), response);
+		assertTrue(headers.contains("\r\ncontent-length: 5"), response);
 	}
 }

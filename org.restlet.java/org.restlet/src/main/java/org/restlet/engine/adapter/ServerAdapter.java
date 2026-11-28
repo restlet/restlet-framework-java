@@ -83,7 +83,16 @@ public class ServerAdapter extends Adapter {
 	 */
 	public void commit(HttpResponse response) {
 		try {
-			if ((response.getRequest().getMethod() != null) && response.getRequest().getMethod().equals(Method.HEAD)) {
+			if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
+				// Also for a HEAD request: RFC 9110 section 15.4.5, a 304 carries the
+				// validators and caching headers only, whatever the method.
+				if (response.getEntity() != null) {
+					HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(),
+							response.getHttpCall().getResponseHeaders());
+					response.setEntity(null);
+				}
+			} else if ((response.getRequest().getMethod() != null)
+					&& response.getRequest().getMethod().equals(Method.HEAD)) {
 				addEntityHeaders(response);
 				response.setEntity(null);
 			} else if (Method.GET.equals(response.getRequest().getMethod())
@@ -107,12 +116,6 @@ public class ServerAdapter extends Adapter {
 					getLogger().warning(
 							"Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
 									+ response.getRequest().getResourceRef() + "\".");
-					response.setEntity(null);
-				}
-			} else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
-				if (response.getEntity() != null) {
-					HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(),
-							response.getHttpCall().getResponseHeaders());
 					response.setEntity(null);
 				}
 			} else if (response.getStatus().isInformational()) {
